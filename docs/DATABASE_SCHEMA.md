@@ -5,10 +5,10 @@ The application uses a **Shared Database** pattern with a **Multi-Tenant** relat
 
 | Service | Database | Description |
 |---------|----------|-------------|
-| **Auth Service** | `cloud-infra-lite` (schema: `public`) | User identities, roles, and permissions (if persisting locally) |
-| **Backend Service** | `backend_db` (or shared `cloud-infra-lite`) | Business data (Entries) |
+| **Auth Service** | `gst-buddy` (schema: `public`) | User identities, roles, and permissions (if persisting locally) |
+| **Backend Service** | `backendgst_buddy` (or shared `gst-buddy`) | Business data (Entries) |
 
-> **Note:** For the "Lite" template, both services typically share the same PostgreSQL instance and can share the same database (`cloud-infra-lite`) for simplicity, but strictly separate tables.
+> **Note:** For the "Lite" template, both services typically share the same PostgreSQL instance and can share the same database (`gst-buddy`) for simplicity, but strictly separate tables.
 
 ## 1. Auth Service Schema
 Handles user identity metadata and role assignments.

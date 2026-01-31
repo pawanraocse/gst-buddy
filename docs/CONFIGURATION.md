@@ -21,15 +21,15 @@ cd terraform && terraform apply
 
 ## Central Configuration
 
-**File:** [`project.config`](file:///Users/pawan.yadav/prototype/CloudInfraLite/project.config)
+**File:** [`project.config`](file:///Users/pawan.yadav/prototype/gst-buddy/project.config)
 
 This is the **single source of truth** for project naming. The spawn script reads from here.
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `PROJECT_NAME` | Base project identifier | `cloud-infra` |
-| `PROJECT_NAME_BUDGET` | Budget env project name | `cloud-infra-budget` |
-| `DB_NAME` | PostgreSQL database name | `saas_db` |
+| `PROJECT_NAME` | Base project identifier | `gst-buddy` |
+| `PROJECT_NAME_BUDGET` | Budget env project name | `gst-buddy-budget` |
+| `DB_NAME` | PostgreSQL database name | `gst_buddy` |
 | `JAVA_GROUP_ID` | Maven groupId | `com.learning` |
 
 ---
@@ -49,8 +49,8 @@ This is the **single source of truth** for project naming. The spawn script read
 Pattern: `/${project_name}/${environment}/<parameter>`
 
 Examples:
-- `/cloud-infra/dev/database/url`
-- `/cloud-infra-budget/budget/cognito/user_pool_id`
+- `/gst-buddy/dev/database/url`
+- `/gst-buddy-budget/budget/cognito/user_pool_id`
 
 **Files that use SSM paths:**
 - `application.yml` (all services)
@@ -82,11 +82,11 @@ ${project_name}-${environment}-${resource_type}
 Examples:
 | Resource | Name |
 |----------|------|
-| VPC | `cloud-infra-budget-vpc` |
-| RDS | `cloud-infra-budget-postgres` |
-| User Pool | `cloud-infra-budget-user-pool` |
-| S3 Bucket | `cloud-infra-budget-uploads` |
-| Log Groups | `/ecs/cloud-infra-budget/service-name` |
+| VPC | `gst-buddy-budget-vpc` |
+| RDS | `gst-buddy-budget-postgres` |
+| User Pool | `gst-buddy-budget-user-pool` |
+| S3 Bucket | `gst-buddy-budget-uploads` |
+| Log Groups | `/ecs/gst-buddy-budget/service-name` |
 
 ---
 
@@ -114,7 +114,7 @@ docker-compose logs -f auth-service
 docker-compose ps
 
 # Check database connection
-docker exec -it cloud-infra-lite-postgres-1 psql -U postgres -d saas_db -c "SELECT 1;"
+docker exec -it gst-buddy-postgres-dev psql -U postgres -d gst_buddy -c "SELECT 1;"
 
 # Check Eureka registrations
 curl http://localhost:8761/eureka/apps

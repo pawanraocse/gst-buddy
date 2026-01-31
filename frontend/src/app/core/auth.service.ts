@@ -5,7 +5,7 @@ import { UserInfo } from './models';
 import { environment } from '../../environments/environment';
 
 /**
- * Authentication service (Simplified for Cloud-Infra-Lite)
+ * Authentication service
  *
  * Handles:
  * - Standard login (Email/Password)

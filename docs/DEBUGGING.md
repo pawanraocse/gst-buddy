@@ -40,10 +40,10 @@ docker-compose -f docker-compose.budget.yml logs auth-service
 
 ```bash
 # Use AWS CLI
-aws logs tail /ecs/cloud-infra-prod/gateway-service --follow
+aws logs tail /ecs/gst-buddy-prod/gateway-service --follow
 
 # Or CloudWatch Console
-# Navigate to: CloudWatch → Log Groups → /ecs/cloud-infra-prod/*
+# Navigate to: CloudWatch → Log Groups → /ecs/gst-buddy-prod/*
 ```
 
 ---
@@ -66,7 +66,7 @@ curl http://localhost:8761/actuator/health  # eureka-server
 
 ```bash
 # Connect to PostgreSQL
-docker exec -it cloud-infra-lite-postgres-1 psql -U postgres -d saas_db
+docker exec -it gst-buddy-postgres-dev psql -U postgres -d gst_buddy
 
 # Quick table check
 \dt
@@ -123,11 +123,11 @@ echo "YOUR_TOKEN" | cut -d'.' -f2 | base64 -d | jq
 **Debug database issues:**
 ```bash
 # Check Flyway history
-docker exec -it cloud-infra-lite-postgres-1 psql -U postgres -d saas_db -c \
+docker exec -it gst-buddy-postgres-dev psql -U postgres -d gst_buddy -c \
   "SELECT version, description, success FROM flyway_schema_history ORDER BY installed_on DESC LIMIT 10;"
 
 # Check if tenant schema exists
-docker exec -it cloud-infra-lite-postgres-1 psql -U postgres -d saas_db -c \
+docker exec -it gst-buddy-postgres-dev psql -U postgres -d gst_buddy -c \
   "SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE 'tenant_%';"
 ```
 
@@ -144,7 +144,7 @@ docker exec -it cloud-infra-lite-postgres-1 psql -U postgres -d saas_db -c \
 **Debug Lambda:**
 ```bash
 # View Lambda logs
-aws logs tail /aws/lambda/cloud-infra-budget-pre-token-generation --follow
+aws logs tail /aws/lambda/gst-buddy-budget-pre-token-generation --follow
 
 # Test Lambda locally (if you have SAM)
 sam local invoke PreTokenGenerationFunction -e event.json
@@ -196,7 +196,7 @@ time curl http://localhost:8080/auth/api/v1/auth/me -H "Authorization: Bearer $T
 docker stats
 
 # Check database slow queries
-docker exec -it cloud-infra-lite-postgres-1 psql -U postgres -d saas_db -c \
+docker exec -it gst-buddy-postgres-dev psql -U postgres -d gst_buddy -c \
   "SELECT query, calls, mean_time FROM pg_stat_statements ORDER BY mean_time DESC LIMIT 10;"
 ```
 
@@ -238,7 +238,7 @@ docker-compose up -d --build auth-service
 ### Clear Tenant (For Testing)
 
 ```bash
-docker exec -it cloud-infra-lite-postgres-1 psql -U postgres -d saas_db -c \
+docker exec -it gst-buddy-postgres-dev psql -U postgres -d gst_buddy -c \
   "DELETE FROM user_tenant_memberships WHERE tenant_id = 'test-tenant';
    DELETE FROM tenant WHERE id = 'test-tenant';"
 ```

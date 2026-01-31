@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "cloud-infra-lite": {
+    "gst-buddy": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -64,10 +64,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "cloud-infra-lite:build:production"
+              "buildTarget": "gst-buddy:build:production"
             },
             "development": {
-              "buildTarget": "cloud-infra-lite:build:development"
+              "buildTarget": "gst-buddy:build:development"
             }
           },
           "defaultConfiguration": "development"

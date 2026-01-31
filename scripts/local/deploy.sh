@@ -37,7 +37,7 @@ else
 fi
 
 # Auto-configure Terraform variables if not set in .env
-export TF_VAR_project_name="${PROJECT_NAME:-cloud-infra-lite}"
+export TF_VAR_project_name="${PROJECT_NAME:-gst-buddy}"
 export TF_VAR_environment="${ENVIRONMENT:-dev}"
 export TF_VAR_aws_region="${AWS_REGION:-us-east-1}"
 
@@ -160,11 +160,11 @@ LOGOUT_REDIRECT_URL=$LOGOUT_REDIRECT_URL
 AWS_REGION=$AWS_REGION
 
 # SSM Parameter Paths (created by Terraform)
-SSM_USER_POOL_ID_PATH=/\${TF_VAR_project_name:-cloud-infra-lite}/\${TF_VAR_environment:-dev}/cognito/user_pool_id
-SSM_CLIENT_ID_PATH=/\${TF_VAR_project_name:-cloud-infra-lite}/\${TF_VAR_environment:-dev}/cognito/client_id
-SSM_CLIENT_SECRET_PATH=/\${TF_VAR_project_name:-cloud-infra-lite}/\${TF_VAR_environment:-dev}/cognito/client_secret
-SSM_ISSUER_URI_PATH=/\${TF_VAR_project_name:-cloud-infra-lite}/\${TF_VAR_environment:-dev}/cognito/issuer_uri
-SSM_DOMAIN_PATH=/\${TF_VAR_project_name:-cloud-infra-lite}/\${TF_VAR_environment:-dev}/cognito/domain
+SSM_USER_POOL_ID_PATH=/\${TF_VAR_project_name:-gst-buddy}/\${TF_VAR_environment:-dev}/cognito/user_pool_id
+SSM_CLIENT_ID_PATH=/\${TF_VAR_project_name:-gst-buddy}/\${TF_VAR_environment:-dev}/cognito/client_id
+SSM_CLIENT_SECRET_PATH=/\${TF_VAR_project_name:-gst-buddy}/\${TF_VAR_environment:-dev}/cognito/client_secret
+SSM_ISSUER_URI_PATH=/\${TF_VAR_project_name:-gst-buddy}/\${TF_VAR_environment:-dev}/cognito/issuer_uri
+SSM_DOMAIN_PATH=/\${TF_VAR_project_name:-gst-buddy}/\${TF_VAR_environment:-dev}/cognito/domain
 EOF
 
 log_info "Configuration saved to $OUTPUT_FILE"
@@ -215,7 +215,7 @@ fi
 # Verify SSM parameters
 log_info "Verifying SSM parameters in AWS..."
 SSM_VERIFY=$(aws ssm get-parameters-by-path \
-  --path "/${TF_VAR_project_name:-cloud-infra-lite}/${TF_VAR_environment:-dev}/cognito" \
+  --path "/${TF_VAR_project_name:-gst-buddy}/${TF_VAR_environment:-dev}/cognito" \
   --region "${AWS_REGION:-us-east-1}" \
   --query 'Parameters[*].Name' \
   --output text 2>/dev/null)
@@ -249,7 +249,7 @@ echo "  - Use the paths in $OUTPUT_FILE to reference them in your app"
 echo "  - The Modern UI provides a better UX with responsive design"
 echo ""
 echo "🔍 Verify SSM Parameters:"
-echo "  aws ssm get-parameters-by-path --path \"/${TF_VAR_project_name:-cloud-infra-lite}/${TF_VAR_environment:-dev}/cognito\" --recursive --region ${AWS_REGION:-us-east-1}"
+echo "  aws ssm get-parameters-by-path --path \"/${TF_VAR_project_name:-gst-buddy}/${TF_VAR_environment:-dev}/cognito\" --recursive --region ${AWS_REGION:-us-east-1}"
 echo ""
 echo "🔐 Security Notes:"
 echo "  - Client secret is stored securely in SSM Parameter Store"

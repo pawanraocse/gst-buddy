@@ -255,7 +255,7 @@ cp terraform.tfvars.example terraform.tfvars
 
 #### Step 4: Trigger ECS Deployment
 ```bash
-aws ecs update-service --cluster cloud-infra-lite-production --service gateway --force-new-deployment
+aws ecs update-service --cluster gst-buddy-production --service gateway --force-new-deployment
 ```
 </details>
 

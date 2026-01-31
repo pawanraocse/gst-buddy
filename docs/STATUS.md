@@ -1,4 +1,4 @@
-# Cloud-Infra-Lite - Project Status
+# GstBuddy - Project Status
 
 **Last Updated:** 2026-01-22  
 **Status:** Lite Optimization Phase (Phase 10)  

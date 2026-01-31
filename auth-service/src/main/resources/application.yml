@@ -7,7 +7,7 @@ spring:
   
   # Default datasource for health checks and when no tenant context is set
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:cloud-infra-lite}}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:gst-buddy}}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 
@@ -147,7 +147,7 @@ auth:
 app:
   datasource:
     platform:
-      url: ${PLATFORM_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:cloud-infra-lite}}
+      url: ${PLATFORM_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:gst-buddy}}
       username: ${PLATFORM_DATASOURCE_USERNAME:postgres}
       password: ${PLATFORM_DATASOURCE_PASSWORD:postgres}
 

@@ -4,7 +4,7 @@ set -e
 # Configuration
 REGION="us-east-1"  # Default, can be overridden by env var
 # Project name and environment should match your terraform variables
-PROJECT_NAME="cloud-infra" 
+PROJECT_NAME=${PROJECT_NAME:-gst-buddy}
 ENVIRONMENT="dev"
 
 echo "================================================================"

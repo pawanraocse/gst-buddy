@@ -1,4 +1,4 @@
-# High-Level Design: Cloud-Infra-Lite
+# High-Level Design: GstBuddy
 
 **Version:** 1.0 (Lite)
 **Last Updated:** 2026-01-22

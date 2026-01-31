@@ -45,9 +45,9 @@ graph LR
 
 ### Service Configuration
 Services load Cognito configuration from AWS Systems Manager (SSM) Parameter Store at startup:
-- `/cloud-infra-lite/<env>/cognito/user_pool_id`
-- `/cloud-infra-lite/<env>/cognito/issuer_uri`
-- `/cloud-infra-lite/<env>/cognito/jwks_uri`
+- `/gst-buddy/<env>/cognito/user_pool_id`
+- `/gst-buddy/<env>/cognito/issuer_uri`
+- `/gst-buddy/<env>/cognito/jwks_uri`
 
 ## Testing
 - **Local Development**: Use the `scripts/create-admin-user.sh` script to create a test user in Cognito.

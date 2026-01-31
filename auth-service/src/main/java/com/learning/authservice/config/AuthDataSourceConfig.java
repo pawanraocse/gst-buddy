@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 @Slf4j
 public class AuthDataSourceConfig {
 
-    @Value("${spring.datasource.url:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:cloud-infra-lite}}")
+    @Value("${spring.datasource.url:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:gst-buddy}}")
     private String jdbcUrl;
 
     @Value("${spring.datasource.username:postgres}")
