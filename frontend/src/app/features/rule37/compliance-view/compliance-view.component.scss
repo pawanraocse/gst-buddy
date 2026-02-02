@@ -1,0 +1,145 @@
+.compliance-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.summary-totals {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.summary-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.summary-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.text-warning {
+    color: var(--warning-text);
+}
+
+.text-error {
+    color: var(--error-500);
+}
+
+.ledger-card {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.ledger-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(99, 102, 241, 0.05);
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.ledger-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    i {
+        font-size: 1.25rem;
+        color: var(--success-500);
+    }
+}
+
+.ledger-name {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.ledger-summary {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.ledger-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.days-badge {
+    display: inline-flex;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.warning {
+        background: var(--warning-bg);
+        color: var(--warning-text);
+    }
+
+    &.success {
+        background: var(--success-bg);
+        color: var(--success-text);
+    }
+}
+
+.no-issues {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    color: var(--success-text);
+
+    i {
+        font-size: 1.25rem;
+    }
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+}

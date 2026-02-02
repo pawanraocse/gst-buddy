@@ -1,0 +1,92 @@
+<p-toast></p-toast>
+
+<div class="settings-container">
+    <div class="settings-header">
+        <h1>Account Settings</h1>
+        <p class="text-secondary">Manage your account preferences and data</p>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="settings-card">
+        <div class="card-header">
+            <i class="pi pi-user"></i>
+            <h2>Profile</h2>
+        </div>
+        <div class="card-content">
+            @if (authService.user(); as user) {
+            <div class="profile-info">
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Account Type</span>
+                    <span class="info-value">{{ user.tenantType === 'ORGANIZATION' ? 'Organization' : 'Personal'
+                        }}</span>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Preferences Section -->
+    <div class="settings-card">
+        <div class="card-header">
+            <i class="pi pi-cog"></i>
+            <h2>Preferences</h2>
+        </div>
+        <div class="card-content">
+            <div class="preference-row">
+                <div class="preference-info">
+                    <span class="preference-label">Email Notifications</span>
+                    <span class="preference-desc">Receive email updates about your calculations</span>
+                </div>
+                <p-toggleswitch [(ngModel)]="preferences.email_notifications"></p-toggleswitch>
+            </div>
+            <div class="preference-row">
+                <div class="preference-info">
+                    <span class="preference-label">Beta Features</span>
+                    <span class="preference-desc">Get early access to new features</span>
+                </div>
+                <p-toggleswitch [(ngModel)]="preferences.beta_features"></p-toggleswitch>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="settings-card danger-zone">
+        <div class="card-header">
+            <i class="pi pi-exclamation-triangle"></i>
+            <h2>Danger Zone</h2>
+        </div>
+        <div class="card-content">
+            <div class="danger-action">
+                <div class="danger-info">
+                    <span class="danger-label">Delete Account</span>
+                    <span class="danger-desc">Permanently delete your account and all associated data. This action
+                        cannot be undone.</span>
+                </div>
+                <button pButton label="Delete Account" severity="danger" [outlined]="true"
+                    (click)="showDeleteDialog = true"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<p-dialog header="Delete Account" [(visible)]="showDeleteDialog" [modal]="true" [style]="{width: '450px'}">
+    <div class="delete-dialog">
+        <p class="warning-text">
+            <i class="pi pi-exclamation-triangle"></i>
+            This action is permanent and cannot be undone. All your data will be deleted.
+        </p>
+        <p>Type <strong>DELETE</strong> to confirm:</p>
+        <input pInputText [(ngModel)]="confirmationText" placeholder="Type DELETE" class="w-full" />
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton label="Cancel" [text]="true" (click)="showDeleteDialog = false"></button>
+        <button pButton label="Delete Account" severity="danger"
+            [disabled]="confirmationText !== 'DELETE' || deleting()" [loading]="deleting()"
+            (click)="deleteAccount()"></button>
+    </ng-template>
+</p-dialog>

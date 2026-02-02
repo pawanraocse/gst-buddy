@@ -63,6 +63,26 @@ export class DashboardComponent {
     return 'amber';
   });
 
+  // KPI Summary computed values
+  totalItcReversal = computed(() => {
+    return this.results().reduce((s, x) => s + x.summary.totalItcReversal, 0);
+  });
+
+  totalInterest = computed(() => {
+    return this.results().reduce((s, x) => s + x.summary.totalInterest, 0);
+  });
+
+  filesProcessed = computed(() => this.results().length);
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  }
+
   onFilesSelected(files: File[]) {
     this.isProcessing.set(true);
     this.error.set(null);

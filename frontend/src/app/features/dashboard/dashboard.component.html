@@ -105,6 +105,44 @@
           <i class="pi pi-calculator text-primary"></i>
           Calculation Results
         </h2>
+
+        <!-- KPI Summary Cards -->
+        <div class="grid mb-4">
+          <div class="col-12 md:col-4">
+            <div class="kpi-card kpi-card-reversal">
+              <div class="kpi-icon">
+                <i class="pi pi-refresh"></i>
+              </div>
+              <div class="kpi-content">
+                <span class="kpi-label">ITC Reversal</span>
+                <span class="kpi-value">{{ formatCurrency(totalItcReversal()) }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 md:col-4">
+            <div class="kpi-card kpi-card-interest">
+              <div class="kpi-icon">
+                <i class="pi pi-percentage"></i>
+              </div>
+              <div class="kpi-content">
+                <span class="kpi-label">Interest Payable</span>
+                <span class="kpi-value">{{ formatCurrency(totalInterest()) }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 md:col-4">
+            <div class="kpi-card kpi-card-files">
+              <div class="kpi-icon">
+                <i class="pi pi-file"></i>
+              </div>
+              <div class="kpi-content">
+                <span class="kpi-label">Files Processed</span>
+                <span class="kpi-value">{{ filesProcessed() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <app-compliance-view [results]="results()" [runId]="runId()" [showExportAll]="true"
           (exportAll)="downloadExport()" (exportLedger)="onExportLedger($event)" />
         <div class="buddy-success-card mt-4 p-4">

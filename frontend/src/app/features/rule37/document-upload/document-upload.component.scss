@@ -1,0 +1,129 @@
+.upload-zone {
+    border: 2px dashed var(--primary-300);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(168, 85, 247, 0.02) 100%);
+
+    &:hover:not(.disabled) {
+        border-color: var(--primary-500);
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+    }
+
+    &.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.upload-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--primary-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+
+    i {
+        font-size: 1.75rem;
+        color: var(--primary-500);
+    }
+}
+
+.upload-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.upload-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+.upload-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(.disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
+.sample-format {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--bg-surface);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+
+    h4 {
+        margin: 0 0 0.75rem;
+        font-size: 0.9rem;
+        color: var(--text-main);
+    }
+}
+
+.sample-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+
+    th,
+    td {
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    th {
+        background: var(--primary-50);
+        font-weight: 600;
+        color: var(--text-main);
+        text-align: left;
+    }
+
+    td {
+        color: var(--text-secondary);
+    }
+}

@@ -1,0 +1,41 @@
+@use '../auth-shared.scss' as *;
+
+.icon-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--primary-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.otp-input-container {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+
+    ::ng-deep .p-inputotp {
+        gap: 0.5rem;
+
+        .p-inputtext {
+            width: 3rem;
+            height: 3.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+            border-radius: 12px;
+            border: 2px solid var(--surface-200);
+            background: rgba(255, 255, 255, 0.7);
+
+            &:focus {
+                border-color: var(--primary-500);
+                box-shadow: 0 0 0 2px var(--primary-200);
+            }
+        }
+    }
+}
+
+.vertical-align-baseline {
+    vertical-align: baseline;
+}

@@ -1,0 +1,150 @@
+.history-container {
+    min-height: 300px;
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+
+    i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--text-light);
+    }
+
+    h3 {
+        margin: 0 0 0.5rem;
+        color: var(--text-main);
+    }
+
+    p {
+        margin: 0;
+    }
+}
+
+.error-state {
+    i {
+        color: var(--error-500);
+    }
+
+    button {
+        margin-top: 1rem;
+    }
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.history-card {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.card-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--primary-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+        font-size: 1.25rem;
+        color: var(--primary-600);
+    }
+}
+
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.card-title {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.meta-sep {
+    color: var(--text-light);
+}
+
+.meta-expires.expiring {
+    color: var(--warning-text);
+}
+
+.card-summary {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+
+    strong {
+        color: var(--text-main);
+    }
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.25rem;
+    padding-right: 0.5rem;
+}
+
+.run-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-date {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}

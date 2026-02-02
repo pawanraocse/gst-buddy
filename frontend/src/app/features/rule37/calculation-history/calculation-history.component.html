@@ -1,0 +1,73 @@
+<div class="history-container">
+    @if (loading()) {
+    <div class="loading-state">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+        <p>Loading saved calculations...</p>
+    </div>
+    } @else if (error()) {
+    <div class="error-state">
+        <i class="pi pi-exclamation-circle"></i>
+        <p>{{ error() }}</p>
+        <button pButton label="Retry" icon="pi pi-refresh" (click)="loadRuns()"></button>
+    </div>
+    } @else if (runs().length === 0) {
+    <div class="empty-state">
+        <i class="pi pi-inbox"></i>
+        <h3>No Saved Calculations</h3>
+        <p>Your calculation history will appear here once you upload ledger files.</p>
+    </div>
+    } @else {
+
+    <!-- Viewing a run detail -->
+    @if (viewingRun()) {
+    <div class="run-detail">
+        <div class="detail-header">
+            <button pButton icon="pi pi-arrow-left" label="Back to History" class="p-button-text"
+                (click)="viewingRun.set(null)"></button>
+            <span class="detail-date">{{ formatDate(viewingRun()!.createdAt) }}</span>
+        </div>
+        <app-compliance-view [results]="normalizeResults(viewingRun()!.calculationData)" [runId]="viewingRun()!.id"
+            [showExportAll]="true"
+            (exportAll)="downloadExport(viewingRun()!.id, viewingRun()!.calculationData[0]?.ledgerName || 'export')"
+            (exportLedger)="onExportLedger($event, viewingRun()!.id, viewingRun()!.calculationData[0]?.ledgerName || 'export')" />
+    </div>
+    } @else {
+
+    <!-- Run list -->
+    <div class="history-list">
+        @for (run of runs(); track run.id) {
+        <div class="history-card">
+            <div class="card-main" (click)="viewingRun.set(run)">
+                <div class="card-icon">
+                    <i class="pi pi-calculator"></i>
+                </div>
+                <div class="card-content">
+                    <div class="card-title">
+                        {{ run.calculationData.length }} {{ run.calculationData.length === 1 ? 'Ledger' : 'Ledgers' }}
+                    </div>
+                    <div class="card-meta">
+                        <span class="meta-date">{{ formatDate(run.createdAt) }}</span>
+                        <span class="meta-sep">•</span>
+                        <span class="meta-expires" [class.expiring]="getDaysRemaining(run.expiresAt) <= 2">
+                            Expires in {{ getDaysRemaining(run.expiresAt) }} days
+                        </span>
+                    </div>
+                    <div class="card-summary">
+                        <span>ITC Reversal: <strong>{{ formatCurrency(run.totalItcReversal || 0) }}</strong></span>
+                        <span>Interest: <strong>{{ formatCurrency(run.totalInterest || 0) }}</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button pButton icon="pi pi-download" pTooltip="Export" class="p-button-text p-button-rounded"
+                    (click)="downloadExport(run.id, run.calculationData[0]?.ledgerName || 'export'); $event.stopPropagation()"></button>
+                <button pButton icon="pi pi-trash" pTooltip="Delete"
+                    class="p-button-text p-button-rounded p-button-danger"
+                    (click)="deleteRun(run.id); $event.stopPropagation()"></button>
+            </div>
+        </div>
+        }
+    </div>
+    }
+    }
+</div>

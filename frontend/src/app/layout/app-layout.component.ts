@@ -45,8 +45,7 @@ export class AppLayoutComponent {
 
   items = computed<MenuItem[]>(() => {
     return [
-      { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/app/dashboard' },
-      { label: 'Calculations', icon: 'pi pi-calculator', routerLink: '/app/dashboard' }, // Assuming history is in dashboard
+      { label: 'Rule 37', icon: 'pi pi-calculator', routerLink: '/app/dashboard' },
       { label: 'Settings', icon: 'pi pi-cog', routerLink: '/app/settings/account' }
     ];
   });

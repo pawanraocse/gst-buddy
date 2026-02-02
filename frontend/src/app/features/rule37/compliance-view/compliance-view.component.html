@@ -1,0 +1,86 @@
+<div class="compliance-view">
+    <!-- Summary Header -->
+    <div class="summary-header">
+        <div class="summary-totals">
+            <div class="summary-item">
+                <span class="summary-label">Total ITC Reversal:</span>
+                <span class="summary-value text-warning">{{ formatCurrency(totalItcReversal) }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Total Interest:</span>
+                <span class="summary-value text-error">{{ formatCurrency(totalInterest) }}</span>
+            </div>
+        </div>
+
+        @if (showExportAll() && results().length > 0) {
+        <button pButton label="Export All" icon="pi pi-download" class="p-button-outlined"
+            (click)="exportAll.emit()"></button>
+        }
+    </div>
+
+    <!-- Ledger Results -->
+    @for (ledger of results(); track ledger.ledgerName) {
+    <div class="ledger-card">
+        <div class="ledger-header">
+            <div class="ledger-info">
+                <i class="pi pi-file-excel"></i>
+                <span class="ledger-name">{{ ledger.ledgerName }}</span>
+            </div>
+            <div class="ledger-summary">
+                <span class="ledger-stat">
+                    <span class="stat-label">ITC Reversal:</span>
+                    <span class="stat-value">{{ formatCurrency(ledger.summary.totalItcReversal) }}</span>
+                </span>
+                <span class="ledger-stat">
+                    <span class="stat-label">Interest:</span>
+                    <span class="stat-value">{{ formatCurrency(ledger.summary.totalInterest) }}</span>
+                </span>
+            </div>
+        </div>
+
+        @if (ledger.summary.details.length > 0) {
+        <p-table [value]="ledger.summary.details" styleClass="p-datatable-sm p-datatable-striped" [scrollable]="true"
+            scrollHeight="400px">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Supplier</th>
+                    <th>Purchase Date</th>
+                    <th>Payment Date</th>
+                    <th>Days Delayed</th>
+                    <th class="text-right">Purchase Amount</th>
+                    <th class="text-right">ITC Reversal</th>
+                    <th class="text-right">Interest</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr>
+                    <td>{{ row.supplier }}</td>
+                    <td>{{ formatDate(row.purchaseDate) }}</td>
+                    <td>{{ formatDate(row.paymentDate) }}</td>
+                    <td>
+                        @if (row.daysDelayed > 0) {
+                        <span class="days-badge warning">{{ row.daysDelayed }} days</span>
+                        } @else {
+                        <span class="days-badge success">On time</span>
+                        }
+                    </td>
+                    <td class="text-right">{{ formatCurrency(row.purchaseAmount) }}</td>
+                    <td class="text-right">{{ formatCurrency(row.itcReversal) }}</td>
+                    <td class="text-right">{{ formatCurrency(row.interest) }}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="7" class="text-center text-secondary">No delayed payments found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+        } @else {
+        <div class="no-issues">
+            <i class="pi pi-check-circle"></i>
+            <span>No delayed payments - all clear!</span>
+        </div>
+        }
+    </div>
+    }
+</div>

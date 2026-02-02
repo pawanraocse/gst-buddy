@@ -1,10 +1,11 @@
-import { Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
+import { InputOtpModule } from 'primeng/inputotp';
 import { environment } from '../../../../environments/environment';
 
 /**
@@ -14,16 +15,15 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-verify-email',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ButtonModule, MessageModule],
+  imports: [CommonModule, FormsModule, RouterModule, ButtonModule, MessageModule, InputOtpModule],
   templateUrl: './verify-email.component.html',
   styleUrls: ['./verify-email.component.scss']
 })
 export class VerifyEmailComponent implements OnInit, OnDestroy {
-  @ViewChildren('digitInput') digitInputs!: QueryList<ElementRef>;
-
   email: string = '';
   tenantId: string = '';
-  codeDigits: string[] = ['', '', '', '', '', ''];
+  otp: string = '';
+
   verifying: boolean = false;
   resending: boolean = false;
   verified: boolean = false;
@@ -33,6 +33,10 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   redirectCountdown: number = 3;
   private cooldownInterval: any;
   private redirectInterval: any;
+
+  // Expose for template
+  isLoading() { return this.verifying; }
+  get resendTimer() { return this.cooldownRemaining; }
 
   constructor(
     private route: ActivatedRoute,
@@ -54,82 +58,12 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
     }
   }
 
-  isCodeComplete(): boolean {
-    return this.codeDigits.every(digit => digit !== '');
-  }
-
-  getVerificationCode(): string {
-    return this.codeDigits.join('');
-  }
-
-  onDigitInput(index: number, event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value;
-
-    // Only allow digits
-    if (!/^\d*$/.test(value)) {
-      this.codeDigits[index] = '';
-      return;
-    }
-
-    // Take only the last character if multiple
-    this.codeDigits[index] = value.slice(-1);
-
-    // Clear error on input
-    this.errorMessage = '';
-
-    // Move to next input
-    if (value && index < 5) {
-      this.focusInput(index + 1);
-    }
-  }
-
-  onKeyDown(index: number, event: KeyboardEvent): void {
-    // Handle backspace
-    if (event.key === 'Backspace') {
-      if (!this.codeDigits[index] && index > 0) {
-        this.focusInput(index - 1);
-        this.codeDigits[index - 1] = '';
-      }
-    }
-
-    // Handle arrow keys
-    if (event.key === 'ArrowLeft' && index > 0) {
-      this.focusInput(index - 1);
-    }
-    if (event.key === 'ArrowRight' && index < 5) {
-      this.focusInput(index + 1);
-    }
-  }
-
-  onPaste(event: ClipboardEvent): void {
-    event.preventDefault();
-    const pastedData = event.clipboardData?.getData('text') || '';
-    const digits = pastedData.replace(/\D/g, '').slice(0, 6);
-
-    for (let i = 0; i < 6; i++) {
-      this.codeDigits[i] = digits[i] || '';
-    }
-
-    // Focus the last filled or first empty input
-    const lastFilledIndex = digits.length - 1;
-    if (lastFilledIndex >= 0 && lastFilledIndex < 5) {
-      this.focusInput(lastFilledIndex + 1);
-    }
-  }
-
-  private focusInput(index: number): void {
-    setTimeout(() => {
-      const inputs = this.digitInputs.toArray();
-      if (inputs[index]) {
-        inputs[index].nativeElement.focus();
-        inputs[index].nativeElement.select();
-      }
-    }, 0);
+  onSubmit() {
+    this.verifyEmail();
   }
 
   verifyEmail(): void {
-    if (!this.isCodeComplete()) return;
+    if (!this.otp || this.otp.length < 6) return;
 
     this.verifying = true;
     this.errorMessage = '';
@@ -137,7 +71,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
 
     const payload = {
       email: this.email,
-      code: this.getVerificationCode(),
+      code: this.otp,
       tenantId: this.tenantId
     };
 

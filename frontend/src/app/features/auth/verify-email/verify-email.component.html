@@ -1,0 +1,38 @@
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon-circle mb-3">
+                <i class="pi pi-envelope text-3xl text-primary-500"></i>
+            </div>
+            <h2>Verify your email</h2>
+            <p>We've sent a verification code to <br><strong>{{ email }}</strong></p>
+        </div>
+
+        <form (submit)="onSubmit()" class="auth-form">
+            <div class="form-field text-center">
+                <label for="code">Enter Verification Code</label>
+                <div class="otp-input-container">
+                    <p-inputotp [(ngModel)]="otp" [length]="6" name="otp" [integerOnly]="true"
+                        [autofocus]="true"></p-inputotp>
+                </div>
+            </div>
+
+            <div class="auth-actions">
+                <!-- Using standard button since loading state is handled by button directive or manual loader -->
+                <button pButton label="Verify Email" type="submit" [disabled]="!otp || otp.length < 6 || isLoading()"
+                    [loading]="isLoading()"></button>
+            </div>
+        </form>
+
+        <div class="auth-footer">
+            <p>Didn't receive the code?
+                <button pButton label="Resend" class="p-button-link p-0 vertical-align-baseline" (click)="resendCode()"
+                    [disabled]="resendTimer > 0"></button>
+                <span *ngIf="resendTimer > 0"> ({{ resendTimer }}s)</span>
+            </p>
+            <div class="mt-3">
+                <a routerLink="/auth/login">Back to Login</a>
+            </div>
+        </div>
+    </div>
+</div>

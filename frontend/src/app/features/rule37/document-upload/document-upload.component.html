@@ -1,0 +1,56 @@
+<div class="upload-zone" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+    [class.disabled]="disabled()">
+    <div class="upload-content">
+        <div class="upload-icon">
+            <i class="pi pi-cloud-upload"></i>
+        </div>
+        <h3 class="upload-title">Upload Supplier Ledgers</h3>
+        <p class="upload-subtitle">Drag & drop Excel files here, or click to browse</p>
+        <p class="upload-hint">Supports Tally/Busy exports in .xlsx or .xls format</p>
+
+        <div class="upload-actions">
+            <label class="upload-btn" [class.disabled]="disabled()">
+                <i class="pi pi-file-excel"></i>
+                Choose Files
+                <input type="file" accept=".xlsx,.xls" multiple [disabled]="disabled()" (change)="onFileChange($event)"
+                    hidden />
+            </label>
+
+            <button type="button" pButton class="p-button-text p-button-secondary"
+                (click)="showSample.set(!showSample())">
+                <i class="pi pi-info-circle"></i>
+                {{ showSample() ? 'Hide' : 'View' }} Sample Format
+            </button>
+        </div>
+
+        @if (showSample()) {
+        <div class="sample-format">
+            <h4>Expected Format:</h4>
+            <table class="sample-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Particulars</th>
+                        <th>Debit (Payment)</th>
+                        <th>Credit (Purchase)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>01-Apr-2024</td>
+                        <td>Opening Balance</td>
+                        <td></td>
+                        <td>50,000</td>
+                    </tr>
+                    <tr>
+                        <td>15-Apr-2024</td>
+                        <td>Payment Made</td>
+                        <td>25,000</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+</div>

@@ -48,11 +48,15 @@
       </button>
 
       <div class="header-content">
-        <!-- Breadcrumb or Title could go here -->
-        <span class="text-secondary font-medium hidden md:block">
-          Welcome back,
-          <span class="text-900 font-semibold">{{ authService.user()?.email?.split('@')?.[0] }}</span>
-        </span>
+        <!-- Page context -->
+        <div class="hidden md:block">
+          <span class="text-secondary font-medium">
+            Welcome back,
+            <span class="text-900 font-semibold">{{ authService.user()?.email?.split('@')?.[0] }}</span>
+          </span>
+          <span class="text-400 mx-2">•</span>
+          <span class="text-primary font-medium">Rule 37 Calculator</span>
+        </div>
 
         <div class="header-actions">
           <button pButton icon="pi pi-bell" class="header-action-btn" [rounded]="true" [text]="true"></button>
