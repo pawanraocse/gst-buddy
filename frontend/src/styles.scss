@@ -2,12 +2,21 @@
 @use "theme.scss" as *;
 @use "animations.scss";
 
-/* Font Family */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Premium Font Stack - Clash Display + General Sans */
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@700,600,500&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
 
 /* PrimeNG Icons */
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
+
+/* CSS Custom Properties for Typography */
+:root {
+  --font-display: 'Clash Display', -apple-system, sans-serif;
+  --font-body: 'General Sans', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
 /* Global Reset & Base Styles */
 * {
@@ -16,11 +25,12 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-body);
   background-color: #f8fafc;
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
 }
 
 /* =========================================
