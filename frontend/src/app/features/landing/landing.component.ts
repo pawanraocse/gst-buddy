@@ -46,6 +46,10 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
     tiltX = 0;
     tiltY = 0;
 
+    // Savings Card Animation
+    savingsValue = signal(0);
+    targetSavings = 124500;
+
     // Count-up animation
     animatedStats: number[] = [0, 0, 0, 0];
     private countUpStarted = false;
@@ -304,6 +308,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
         setTimeout(() => {
             this.isLoading.set(false);
             this.startTypewriter();
+            this.animateSavings();
         }, 1500);
 
         // Initialize particle canvas
@@ -314,6 +319,23 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
 
         // Start activity feed rotation
         this.rotateActivities();
+    }
+
+    animateSavings() {
+        const duration = 2000; // 2 seconds
+        const steps = 60;
+        const stepValue = this.targetSavings / steps;
+        let current = 0;
+
+        const timer = setInterval(() => {
+            current += stepValue;
+            if (current >= this.targetSavings) {
+                this.savingsValue.set(this.targetSavings);
+                clearInterval(timer);
+            } else {
+                this.savingsValue.set(Math.floor(current));
+            }
+        }, duration / steps);
     }
 
     ngOnDestroy(): void {

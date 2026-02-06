@@ -173,13 +173,30 @@
                 </div>
 
                 <!-- Right: Visual -->
-                <div class="hero-visual animate-on-scroll"
+                <div #animateOnScroll class="hero-visual"
                     [style.transform]="'perspective(1000px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg)'">
 
                     <!-- AI Robot Companion -->
                     <div class="ai-companion">
-                        <img src="assets/images/landing/hero/hero-illustration.png" alt="GST Buddy AI Assistant"
-                            loading="eager">
+                        <!-- <img src="assets/images/landing/hero/hero-illustration.png" alt="GST Buddy AI Assistant"
+                            loading="eager"> -->
+                    </div>
+
+                    <!-- Benefit Card (New) -->
+                    <div class="benefit-card glass-card float-animation">
+                        <div class="card-header">
+                            <span class="label">Potential ITC Savings</span>
+                        </div>
+                        <div class="card-value">
+                            <span class="currency">₹</span>
+                            <span class="amount">{{ savingsValue().toLocaleString('en-IN') }}</span>
+                        </div>
+                        <div class="card-footer">
+                            <div class="badge">
+                                <i class="pi pi-bolt"></i>
+                                <span>Found in 30s</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Dashboard Mockup -->
