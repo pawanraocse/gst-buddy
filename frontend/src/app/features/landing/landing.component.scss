@@ -71,7 +71,7 @@ $gray-900: #111827;
         align-items: center;
         justify-content: center;
         margin: 0 auto 24px;
-        animation: pulse-glow 1.5s ease-in-out infinite;
+        animation: pulse-glow 0.5s ease-in-out infinite;
 
         i {
             font-size: 2.5rem;
@@ -89,7 +89,7 @@ $gray-900: #111827;
             font-size: 2rem;
             font-weight: 600;
             color: white;
-            animation: char-reveal 0.5s ease-out forwards;
+            animation: char-reveal 0.3s ease-out forwards;
             opacity: 0;
             transform: translateY(10px);
         }
@@ -106,7 +106,7 @@ $gray-900: #111827;
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, $teal-500, $indigo-500);
-            animation: progress-fill 1.5s ease-out forwards;
+            animation: progress-fill 0.4s ease-out forwards;
         }
     }
 }

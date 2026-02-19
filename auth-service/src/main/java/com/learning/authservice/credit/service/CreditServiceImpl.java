@@ -32,7 +32,7 @@ public class CreditServiceImpl implements CreditService {
     private final PlanRepository planRepository;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional // Not readOnly — lazily creates wallet on first access
     public WalletDto getWallet(String userId) {
         var wallet = getOrCreateWallet(userId);
         return toDto(wallet);
@@ -137,7 +137,7 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional // Not readOnly — lazily creates wallet on first access
     public void validateSufficientCredits(String userId, int requiredCredits) {
         var wallet = getOrCreateWallet(userId);
         if (wallet.getRemainingCredits() < requiredCredits) {
@@ -154,11 +154,28 @@ public class CreditServiceImpl implements CreditService {
     }
 
     private UserCreditWallet createWallet(String userId, String tenantId) {
+        // Find trial plan to auto-grant free credits on first wallet creation
+        var trialPlanOpt = planRepository.findByNameAndIsActiveTrue("trial");
+        int trialCredits = trialPlanOpt.map(Plan::getCredits).orElse(0);
+
         var wallet = UserCreditWallet.builder()
                 .userId(userId)
                 .tenantId(tenantId)
+                .totalCredits(trialCredits)
+                .hasUsedTrial(trialCredits > 0)
                 .build();
-        return walletRepository.save(wallet);
+        wallet = walletRepository.save(wallet);
+
+        // Record the trial grant transaction
+        if (trialCredits > 0) {
+            String idempotencyKey = "trial-" + userId;
+            recordTransaction(wallet, TransactionType.GRANT, trialCredits,
+                    ReferenceType.TRIAL, trialPlanOpt.get().getName(), idempotencyKey,
+                    "Welcome! " + trialCredits + " free trial credits");
+            log.info("Auto-granted {} trial credits to new user {}", trialCredits, userId);
+        }
+
+        return wallet;
     }
 
     private void recordTransaction(UserCreditWallet wallet, TransactionType type,

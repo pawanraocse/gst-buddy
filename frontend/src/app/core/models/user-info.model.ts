@@ -13,4 +13,7 @@ export interface UserInfo {
 
     /** Tenant type (ORGANIZATION or PERSONAL) */
     tenantType?: string;
+
+    /** User's full name */
+    name?: string;
 }

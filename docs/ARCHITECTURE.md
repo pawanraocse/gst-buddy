@@ -61,6 +61,8 @@ graph TB
 - **User Management:** Wraps Cognito actions, manages user profiles.
 - **RBAC & PBAC:** Stores Roles (`admin`, `viewer`) and Permissions (`entry:read`).
 - **Signup Pipeline:** Orchestrates tenant creation, DB provisioning, and email verification.
+- **Billing & Credits:** Manages Plans, User Wallets, and Credit Transactions.
+
 
 
 
@@ -70,7 +72,9 @@ graph TB
 
 - **Business Logic:** Rule 37 ledger upload, calculation, export; future GST rules.
 - **Authorization:** Enforces `@RequirePermission` checks.
+- **Credit Consumption:** Consumes credits via `CreditClient` (Auth Service) before processing.
 - **Isolation:** Uses `TenantAware` entities to automatically filter data by `tenant_id` in shared database.
+
 
 ### 🔍 Eureka Server (Port 8761)
 **Role:** Service Discovery.

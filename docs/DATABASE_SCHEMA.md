@@ -44,6 +44,45 @@ Maps users to roles.
 | `user_id` | VARCHAR(255) | FK -> users.user_id |
 | `role_id` | VARCHAR(64) | FK -> roles.id |
 
+### Credit System (Billing)
+
+### `plans`
+Credit packages available for purchase.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | BIGSERIAL | **PK** |
+| `name` | VARCHAR(50) | Unique internal name (trial, pro, ultra) |
+| `display_name` | VARCHAR(100) | User-facing name |
+| `credits` | INTEGER | Number of credits in this plan |
+| `price_inr` | DECIMAL(10,2) | Cost in INR |
+| `is_trial` | BOOLEAN | If true, auto-granted on signup |
+| `active` | BOOLEAN | If false, plan is hidden |
+
+### `user_credit_wallets`
+Tracks available credits for each user.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | BIGSERIAL | **PK** |
+| `user_id` | VARCHAR(255) | **Unique Index** - Owner of the wallet |
+| `balance` | INTEGER | Current available credits (>= 0) |
+| `version` | BIGINT | Optimistic locking version |
+
+### `credit_transactions`
+Audit log of all credit additions and deductions.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | BIGUUID | **PK** (UUID) |
+| `wallet_id` | BIGINT | FK -> user_credit_wallets.id |
+| `amount` | INTEGER | +/- change in credits |
+| `type` | VARCHAR(20) | `PURCHASE`, `USAGE`, `TRIAL_GRANT`, `ADMIN_GRANT` |
+| `reference_id` | VARCHAR(255) | Related entity ID (e.g., payment ID or calculation ID) |
+| `reference_type` | VARCHAR(50) | `PAYMENT`, `LEDGER_ANALYSIS` |
+| `description` | VARCHAR(255) | Human-readable description |
+| `created_at` | TIMESTAMPTZ | Transaction timestamp |
+
 ---
 
 ## 2. Backend Service Schema

@@ -312,8 +312,7 @@ CREATE TABLE IF NOT EXISTS user_credit_wallets (
     version BIGINT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE(user_id, tenant_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    UNIQUE(user_id, tenant_id)
 );
 
 CREATE INDEX idx_wallets_user_tenant ON user_credit_wallets(user_id, tenant_id);
@@ -340,8 +339,7 @@ CREATE TABLE IF NOT EXISTS credit_transactions (
     reference_id VARCHAR(255),
     idempotency_key VARCHAR(255) UNIQUE,
     description TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_txn_user ON credit_transactions(user_id, created_at DESC);

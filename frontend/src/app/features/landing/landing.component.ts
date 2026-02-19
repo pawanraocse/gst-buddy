@@ -317,12 +317,12 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     ngAfterViewInit(): void {
-        // Hide preloader after 1.5s
+        // Hide preloader quickly (400ms) for snappy feel
         setTimeout(() => {
             this.isLoading.set(false);
             this.startTypewriter();
             this.animateSavings();
-        }, 1500);
+        }, 400);
 
         // Initialize particle canvas
         this.initParticleCanvas();

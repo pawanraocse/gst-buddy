@@ -29,7 +29,7 @@
         <p-avatar icon="pi pi-user" shape="circle" styleClass="bg-primary-100 text-primary-700">
         </p-avatar>
         <div class="user-info">
-          <span class="user-name text-truncate">{{ user.email.split('@')[0] }}</span>
+          <span class="user-name text-truncate">{{ user.name || user.email.split('@')[0] }}</span>
           <span class="user-role">{{ user.tenantType === 'ORGANIZATION' ? 'Org' : 'Personal' }}</span>
         </div>
         <button class="logout-btn" (click)="logout()" pTooltip="Logout">
@@ -52,7 +52,8 @@
         <div class="hidden md:block">
           <span class="text-secondary font-medium">
             Welcome back,
-            <span class="text-900 font-semibold">{{ authService.user()?.email?.split('@')?.[0] }}</span>
+            <span class="text-900 font-semibold">{{ authService.user()?.name ||
+              authService.user()?.email?.split('@')?.[0] }}</span>
           </span>
           <span class="text-400 mx-2">•</span>
           <span class="text-primary font-medium">Rule 37 Calculator</span>

@@ -29,6 +29,36 @@
         </div>
     </div>
 
+    <!-- Credits Section -->
+    <div class="settings-card credits-card">
+        <div class="card-header">
+            <i class="pi pi-bolt"></i>
+            <h2>Credits</h2>
+        </div>
+        <div class="card-content">
+            @if (walletLoading()) {
+            <div class="credits-skeleton">
+                <div class="skeleton-bar"></div>
+                <div class="skeleton-bar short"></div>
+            </div>
+            } @else if (wallet(); as w) {
+            <div class="credits-hero">
+                <span class="credits-big-number">{{ w.remaining }}</span>
+                <span class="credits-big-label">Credits Remaining</span>
+            </div>
+            @if (w.remaining === 0) {
+            <span class="badge badge-danger">No credits left — <a routerLink="/pricing">Buy More</a></span>
+            } @else if (w.remaining <= 1) { <span class="badge badge-warn">Low balance — consider upgrading</span>
+                } @else {
+                <span class="badge badge-ok">{{ w.remaining }} credits available</span>
+                }
+                <p class="credits-note">1 credit = 1 ledger analysis. Credits never expire.</p>
+                } @else {
+                <p class="credits-note">Unable to load credit balance.</p>
+                }
+        </div>
+    </div>
+
     <!-- Preferences Section -->
     <div class="settings-card">
         <div class="card-header">

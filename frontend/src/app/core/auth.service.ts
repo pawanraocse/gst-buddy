@@ -40,7 +40,8 @@ export class AuthService {
           userId: currentUser.userId,
           email: (idToken['email'] as string) || '',
           emailVerified: Boolean(idToken['email_verified']),
-          tenantType: (idToken['custom:tenant_type'] as string) || (idToken['tenant_type'] as string)
+          tenantType: (idToken['custom:tenant_type'] as string) || (idToken['tenant_type'] as string),
+          name: (idToken['name'] as string) || (idToken['given_name'] as string)
         });
         return true;
       }
