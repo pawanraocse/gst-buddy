@@ -1,8 +1,9 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { Rule37ApiService } from '../../core/services/rule37-api.service';
+import { CreditApiService, WalletDto } from '../../core/services/credit-api.service';
 import { DocumentUploadComponent } from '../rule37/document-upload/document-upload.component';
 import { ComplianceViewComponent } from '../rule37/compliance-view/compliance-view.component';
 import { CalculationHistoryComponent } from '../rule37/calculation-history/calculation-history.component';
@@ -29,9 +30,16 @@ import { LedgerResult, UploadResult } from '../../shared/models/rule37.model';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   authService = inject(AuthService);
   private api = inject(Rule37ApiService);
+  private creditApi = inject(CreditApiService);
+
+  // Credit wallet
+  creditTotal = signal(0);
+  creditUsed = signal(0);
+  creditRemaining = signal(0);
+  walletLoaded = signal(false);
 
   activeTab = signal<'new' | 'history'>('new');
   asOnDate = signal<string>(new Date().toISOString().split('T')[0]);
@@ -81,6 +89,22 @@ export class DashboardComponent {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
+  }
+
+  ngOnInit(): void {
+    this.loadWallet();
+  }
+
+  private loadWallet(): void {
+    this.creditApi.getWallet().subscribe({
+      next: (w) => {
+        this.creditTotal.set(w.total);
+        this.creditUsed.set(w.used);
+        this.creditRemaining.set(w.remaining);
+        this.walletLoaded.set(true);
+      },
+      error: () => { /* wallet unavailable, keep defaults */ }
+    });
   }
 
   onFilesSelected(files: File[]) {

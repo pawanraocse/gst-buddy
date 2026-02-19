@@ -8,6 +8,22 @@
           Rule 37 — 180-day ITC Reversal & Interest Calculator
         </p>
       </div>
+
+      <!-- Credit Wallet Badge -->
+      @if (walletLoaded()) {
+      <div
+        class="credit-wallet-badge surface-card border-1 surface-border border-round-xl px-4 py-3 flex align-items-center gap-3 shadow-1">
+        <i class="pi pi-wallet text-2xl" style="color: #8b5cf6;"></i>
+        <div class="flex flex-column">
+          <span class="text-xs text-500 font-medium">Credits Remaining</span>
+          <span class="text-xl font-bold" style="color: #8b5cf6;">{{ creditRemaining() }} <span
+              class="text-sm font-normal text-600">/ {{ creditTotal() }}</span></span>
+        </div>
+        @if (creditRemaining() <= 1) { <span class="text-xs font-semibold px-2 py-1 border-round"
+          style="background: #fef3cd; color: #856404;">Low</span>
+          }
+      </div>
+      }
     </div>
   </div>
 

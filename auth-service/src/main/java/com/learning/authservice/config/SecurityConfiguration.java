@@ -75,8 +75,10 @@ public class SecurityConfiguration {
                                                                 "/api/v1/roles/**",
                                                                 "/api/v1/invitations/**",
                                                                 "/api/v1/users/**",
-                                                                "/api/v1/account/**") // Account deletion (Gateway
+                                                                "/api/v1/account/**", // Account deletion (Gateway
                                                                                       // validates JWT)
+                                                                "/api/v1/plans",       // Public plans listing (landing page)
+                                                                "/api/v1/credits/**")  // Credit wallet/consume (gateway validates JWT)
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2

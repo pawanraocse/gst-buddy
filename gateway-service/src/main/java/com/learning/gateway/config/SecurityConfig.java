@@ -55,7 +55,11 @@ public class SecurityConfig {
                                                                 "/actuator/**", "/fallback",
 
                                                                 // Configuration endpoints (Public)
-                                                                "/api/config/**")
+                                                                "/api/config/**",
+
+                                                                // Credit system (plans are public, credits use gateway JWT)
+                                                                "/auth/api/v1/plans",
+                                                                "/auth/api/v1/credits/**")
                                                 .permitAll()
                                                 // Allow API key authenticated requests (validated by
                                                 // ApiKeyAuthenticationFilter)

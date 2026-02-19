@@ -277,11 +277,96 @@ FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================================
--- SCHEMA COMPLETE - Full Permission Model
+-- 13. PLANS TABLE (Credit-based pricing)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS plans (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    display_name VARCHAR(100) NOT NULL,
+    price_inr DECIMAL(10,2) NOT NULL DEFAULT 0,
+    credits INTEGER NOT NULL,
+    is_trial BOOLEAN NOT NULL DEFAULT false,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    description TEXT,
+    validity_days INTEGER,           -- NULL = no expiry (future-ready)
+    sort_order INTEGER DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_plans_active ON plans(is_active, sort_order);
+
+COMMENT ON TABLE plans IS 'Configurable credit-based pricing plans';
+COMMENT ON COLUMN plans.validity_days IS 'NULL = no expiry. Future: set to e.g. 90 for 3-month validity';
+COMMENT ON COLUMN plans.credits IS '1 credit = 1 ledger analysis';
+
+-- ============================================================================
+-- 14. USER CREDIT WALLETS (Per-user balance with optimistic locking)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS user_credit_wallets (
+    id BIGSERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'default',
+    total_credits INTEGER NOT NULL DEFAULT 0,
+    consumed_credits INTEGER NOT NULL DEFAULT 0,
+    has_used_trial BOOLEAN NOT NULL DEFAULT false,
+    version BIGINT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, tenant_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_wallets_user_tenant ON user_credit_wallets(user_id, tenant_id);
+
+COMMENT ON TABLE user_credit_wallets IS 'Per-user credit balance. version column for optimistic locking';
+COMMENT ON COLUMN user_credit_wallets.has_used_trial IS 'Prevents trial abuse: only one trial per user';
+
+CREATE TRIGGER update_wallets_updated_at
+BEFORE UPDATE ON user_credit_wallets
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- 15. CREDIT TRANSACTIONS (Immutable audit ledger)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS credit_transactions (
+    id BIGSERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'default',
+    type VARCHAR(20) NOT NULL CHECK (type IN ('GRANT', 'CONSUME', 'REFUND', 'ADJUSTMENT')),
+    credits INTEGER NOT NULL,
+    balance_after INTEGER NOT NULL,
+    reference_type VARCHAR(30) NOT NULL,  -- TRIAL, PLAN_PURCHASE, ANALYSIS, ADMIN_GRANT, PROMO, REFUND
+    reference_id VARCHAR(255),
+    idempotency_key VARCHAR(255) UNIQUE,
+    description TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_txn_user ON credit_transactions(user_id, created_at DESC);
+CREATE INDEX idx_txn_idempotency ON credit_transactions(idempotency_key);
+CREATE INDEX idx_txn_reference ON credit_transactions(reference_type, reference_id);
+
+COMMENT ON TABLE credit_transactions IS 'Immutable audit ledger for all credit mutations';
+COMMENT ON COLUMN credit_transactions.idempotency_key IS 'Prevents duplicate transactions (e.g. double-charge)';
+COMMENT ON COLUMN credit_transactions.reference_type IS 'TRIAL | PLAN_PURCHASE | ANALYSIS | ADMIN_GRANT | PROMO | REFUND';
+
+-- ============================================================================
+-- 16. SEED DATA - PRICING PLANS
+-- ============================================================================
+INSERT INTO plans (name, display_name, price_inr, credits, is_trial, sort_order, description) VALUES
+('trial', 'Trial', 0, 2, true, 1, 'Free starter — 2 ledger analyses'),
+('pro', 'Pro', 1000, 5, false, 2, '5 ledger analyses'),
+('ultra', 'Ultra', 3000, 30, false, 3, '30 ledger analyses')
+ON CONFLICT (name) DO NOTHING;
+
+-- ============================================================================
+-- SCHEMA COMPLETE - Full Permission + Credit Model
 -- ============================================================================
 -- Org Roles: admin (full access), editor, viewer, guest (predefined capabilities)
 -- Permissions: Fine-grained resource:action pairs mapped to roles
 -- Resource ACLs: Fine-grained sharing via acl_entries table
+-- Credit System: Plans → Wallets → Transactions (audit-safe, idempotent)
 -- ============================================================================
-
 

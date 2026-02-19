@@ -14,6 +14,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     const skipRedirectUrls = [
         '/auth/api/v1/auth/me',       // Called during auth check
         '/auth/api/v1/auth/lookup',   // Tenant lookup
+        '/auth/api/v1/plans',         // Public plans (landing page)
         '/platform/api/v1/tenants/'   // Tenant type lookup
     ];
 

@@ -9,8 +9,12 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
+import com.learning.backendservice.service.CreditClient;
+
 import javax.sql.DataSource;
 import java.util.Properties;
+
+import static org.mockito.Mockito.mock;
 
 @TestConfiguration
 public class TestConfig {
@@ -44,5 +48,14 @@ public class TestConfig {
     @Primary
     public CacheManager cacheManager() {
         return new ConcurrentMapCacheManager("permissions");
+    }
+
+    /**
+     * Mock CreditClient for tests — avoids needing WebClient/Eureka in test context.
+     */
+    @Bean
+    @Primary
+    public CreditClient creditClient() {
+        return mock(CreditClient.class);
     }
 }

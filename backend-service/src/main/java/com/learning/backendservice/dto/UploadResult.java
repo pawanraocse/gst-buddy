@@ -22,6 +22,14 @@ public class UploadResult {
     @Builder.Default
     private List<FileUploadError> errors = new ArrayList<>();
 
+    /** Number of credits consumed for this analysis. */
+    @Builder.Default
+    private Integer creditsConsumed = 0;
+
+    /** Remaining credits after this analysis. */
+    @Builder.Default
+    private Integer remainingCredits = 0;
+
     public boolean hasErrors() {
         return !errors.isEmpty();
     }

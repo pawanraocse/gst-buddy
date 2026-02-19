@@ -678,44 +678,32 @@
             <div class="section-container">
                 <div class="section-header light animate-on-scroll">
                     <span class="section-label">Transparent Pricing</span>
-                    <h2>Simple, Honest Pricing</h2>
-                    <p>No hidden fees. Cancel anytime.</p>
-                </div>
-
-                <!-- Billing Toggle -->
-                <div class="billing-toggle animate-on-scroll">
-                    <span [class.active]="!isYearly()">Monthly</span>
-                    <label class="switch">
-                        <input type="checkbox" [checked]="isYearly()" (change)="toggleBilling()">
-                        <span class="slider"></span>
-                    </label>
-                    <span [class.active]="isYearly()">
-                        Yearly <span class="save-badge">Save 20%</span>
-                    </span>
+                    <h2>Simple, Credit-Based Pricing</h2>
+                    <p>1 credit = 1 ledger analysis. No subscriptions. Pay as you go.</p>
                 </div>
 
                 <div class="pricing-grid">
-                    @for (plan of pricingPlans; track plan.name) {
+                    @for (plan of pricingPlans(); track plan.name) {
                     <div class="pricing-card animate-on-scroll" [class.popular]="plan.isPopular">
                         @if (plan.isPopular) {
-                        <div class="popular-badge">Most Popular</div>
+                        <div class="popular-badge">Best Value</div>
                         }
                         <div class="card-header">
                             <h3>{{ plan.name }}</h3>
                             <p class="tagline">{{ plan.tagline }}</p>
                         </div>
                         <div class="price">
-                            @if (plan.price !== -1) {
+                            @if (plan.price > 0) {
                             <span class="currency">₹</span>
                             <span class="amount">{{ getPrice(plan) }}</span>
-                            <span class="period">/month</span>
+                            <span class="period">one-time</span>
                             } @else {
-                            <span class="amount custom">Custom</span>
+                            <span class="amount custom">FREE</span>
                             }
                         </div>
-                        @if (isYearly() && plan.price > 0) {
-                        <div class="savings">Save ₹{{ (plan.price - plan.yearlyPrice) * 12 }}/year</div>
-                        }
+                        <div class="credits-badge" style="text-align: center; margin-bottom: 16px; font-weight: 600; color: var(--primary-text, #8b5cf6);">
+                            {{ plan.credits }} credits
+                        </div>
                         <ul class="features">
                             @for (feature of plan.features; track feature.text) {
                             <li [class.disabled]="!feature.included">
@@ -724,13 +712,10 @@
                             </li>
                             }
                         </ul>
-                        <a [routerLink]="plan.price === -1 ? null : '/auth/signup/personal'">
+                        <a [routerLink]="'/auth/signup/personal'">
                             <button pButton [class]="plan.isPopular ? 'cta-primary glowing-button' : 'cta-secondary'"
                                 pRipple>
                                 {{ plan.cta }}
-                                @if (plan.isPopular) {
-                                <span class="trial-badge">14 days free</span>
-                                }
                             </button>
                         </a>
                     </div>
@@ -740,8 +725,8 @@
                 <!-- Money-Back Guarantee -->
                 <div class="guarantee-banner animate-on-scroll">
                     <i class="pi pi-shield"></i>
-                    <p><strong>30-Day Money-Back Guarantee</strong> — Not happy? Get a full refund, no questions
-                        asked.</p>
+                    <p><strong>Secure Payments via Razorpay</strong> — Your payment details are never stored on our
+                        servers.</p>
                 </div>
             </div>
         </section>

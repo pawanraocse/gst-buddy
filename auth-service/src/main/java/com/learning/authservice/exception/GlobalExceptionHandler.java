@@ -1,5 +1,6 @@
 package com.learning.authservice.exception;
 
+import com.learning.authservice.credit.exception.InsufficientCreditsException;
 import com.learning.common.error.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,12 @@ import java.util.UUID;
 public class GlobalExceptionHandler {
 
     private static final String REQUEST_ID_HEADER = "X-Request-Id";
+
+    @ExceptionHandler(InsufficientCreditsException.class)
+    public ResponseEntity<ErrorResponse> handleInsufficientCredits(InsufficientCreditsException ex,
+            HttpServletRequest request) {
+        return buildAndLog(HttpStatus.PAYMENT_REQUIRED, "INSUFFICIENT_CREDITS", ex.getMessage(), request, ex);
+    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex, HttpServletRequest request) {
@@ -41,11 +48,13 @@ public class GlobalExceptionHandler {
     }
 
     // Utility method
-    private ResponseEntity<ErrorResponse> buildAndLog(HttpStatus status, String code, String message, HttpServletRequest request, Exception ex) {
+    private ResponseEntity<ErrorResponse> buildAndLog(HttpStatus status, String code, String message,
+            HttpServletRequest request, Exception ex) {
         String requestId = headerOrGenerate(request, REQUEST_ID_HEADER);
         String path = request.getRequestURI();
         ErrorResponse body = ErrorResponse.of(status.value(), code, sanitize(message), requestId, path);
-        log.warn("error code={} status={} path={} requestId={} message={} exception={}", code, status.value(), path, requestId, message, ex.getClass().getSimpleName());
+        log.warn("error code={} status={} path={} requestId={} message={} exception={}", code, status.value(), path,
+                requestId, message, ex.getClass().getSimpleName());
         return ResponseEntity.status(status).body(body);
     }
 
@@ -55,7 +64,8 @@ public class GlobalExceptionHandler {
     }
 
     private String sanitize(String msg) {
-        if (msg == null) return "";
+        if (msg == null)
+            return "";
         return msg.replace('"', ' ');
     }
 }

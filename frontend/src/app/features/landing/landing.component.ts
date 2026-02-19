@@ -1,4 +1,4 @@
-import { Component, signal, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { Component, signal, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { AccordionModule } from 'primeng/accordion';
 import { RippleModule } from 'primeng/ripple';
 import { CarouselModule } from 'primeng/carousel';
+import { CreditApiService, PlanDto } from '../../core/services/credit-api.service';
 
 @Component({
     selector: 'app-landing',
@@ -14,9 +15,11 @@ import { CarouselModule } from 'primeng/carousel';
     templateUrl: './landing.component.html',
     styleUrl: './landing.component.scss'
 })
-export class LandingComponent implements AfterViewInit, OnDestroy {
+export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
     @ViewChild('particleCanvas') particleCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChildren('animateOnScroll') animatedElements!: QueryList<ElementRef>;
+
+    private creditApi = inject(CreditApiService);
 
     // UI State
     isScrolled = signal(false);
@@ -228,14 +231,22 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
         }
     ];
 
-    pricingPlans = [
+    pricingPlans = signal<Array<{
+        name: string;
+        tagline: string;
+        price: number;
+        credits: number;
+        features: Array<{ text: string; included: boolean }>;
+        cta: string;
+        isPopular: boolean;
+    }>>([
         {
-            name: 'Starter',
-            tagline: 'Perfect for trying out',
+            name: 'Trial',
+            tagline: 'Try it free',
             price: 0,
-            yearlyPrice: 0,
+            credits: 2,
             features: [
-                { text: '5 free calculations', included: true },
+                { text: '2 ledger analyses', included: true },
                 { text: 'Rule 37 support', included: true },
                 { text: 'Excel export', included: true },
                 { text: 'Priority support', included: false }
@@ -244,36 +255,34 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
             isPopular: false
         },
         {
-            name: 'Professional',
-            tagline: 'For growing businesses',
-            price: 999,
-            yearlyPrice: 799,
+            name: 'Pro',
+            tagline: '5 ledger analyses',
+            price: 1000,
+            credits: 5,
             features: [
-                { text: 'Unlimited calculations', included: true },
+                { text: '5 ledger analyses', included: true },
                 { text: 'All GST rules', included: true },
                 { text: 'Priority email support', included: true },
-                { text: 'Custom reports', included: true },
-                { text: 'API access', included: true }
+                { text: 'Custom reports', included: true }
             ],
-            cta: 'Start Free Trial',
+            cta: 'Buy Credits',
             isPopular: true
         },
         {
-            name: 'Enterprise',
-            tagline: 'For CA firms & large teams',
-            price: -1, // Custom
-            yearlyPrice: -1,
+            name: 'Ultra',
+            tagline: '30 ledger analyses',
+            price: 3000,
+            credits: 30,
             features: [
-                { text: 'Everything in Professional', included: true },
-                { text: 'Multi-user access', included: true },
-                { text: 'Dedicated account manager', included: true },
-                { text: 'White-label reports', included: true },
-                { text: 'Custom integrations', included: true }
+                { text: '30 ledger analyses', included: true },
+                { text: 'All GST rules', included: true },
+                { text: 'Priority support', included: true },
+                { text: 'Best value per credit', included: true }
             ],
-            cta: 'Contact Sales',
+            cta: 'Buy Credits',
             isPopular: false
         }
-    ];
+    ]);
 
     comparisons = [
         { feature: 'All Rules in One Place', us: true, others: false },
@@ -301,6 +310,10 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
 
     constructor() {
         this.filteredFAQs = [...this.faqs];
+    }
+
+    ngOnInit(): void {
+        this.loadPlans();
     }
 
     ngAfterViewInit(): void {
@@ -639,9 +652,41 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
         this.isYearly.update(v => !v);
     }
 
-    getPrice(plan: typeof this.pricingPlans[0]): string {
-        if (plan.price === -1) return 'Custom';
-        return this.isYearly() ? plan.yearlyPrice.toString() : plan.price.toString();
+    getPrice(plan: { price: number }): string {
+        if (plan.price === 0) return '0';
+        return plan.price.toLocaleString('en-IN');
+    }
+
+    private loadPlans(): void {
+        this.creditApi.getPlans().subscribe({
+            next: (plans) => {
+                const mapped = plans.map(p => ({
+                    name: p.displayName,
+                    tagline: p.description || `${p.credits} ledger analyses`,
+                    price: p.priceInr,
+                    credits: p.credits,
+                    features: this.buildFeatures(p),
+                    cta: p.isTrial ? 'Get Started Free' : 'Buy Credits',
+                    isPopular: p.name === 'pro'
+                }));
+                this.pricingPlans.set(mapped);
+            },
+            error: () => { /* Keep fallback hardcoded plans */ }
+        });
+    }
+
+    private buildFeatures(plan: PlanDto): Array<{ text: string; included: boolean }> {
+        const features: Array<{ text: string; included: boolean }> = [
+            { text: `${plan.credits} ledger analyses`, included: true },
+            { text: 'Rule 37 support', included: true },
+            { text: 'Excel export', included: true },
+        ];
+        if (!plan.isTrial) {
+            features.push({ text: 'Priority support', included: true });
+        } else {
+            features.push({ text: 'Priority support', included: false });
+        }
+        return features;
     }
 
     // ============================================

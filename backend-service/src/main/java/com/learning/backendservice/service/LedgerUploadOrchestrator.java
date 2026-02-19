@@ -3,6 +3,7 @@ package com.learning.backendservice.service;
 import com.learning.backendservice.config.UploadProperties;
 import com.learning.backendservice.domain.ledger.LedgerFileProcessor;
 import com.learning.backendservice.domain.rule37.LedgerResult;
+import com.learning.backendservice.dto.CreditWalletResponse;
 import com.learning.backendservice.dto.UploadResult;
 import com.learning.backendservice.entity.Rule37CalculationRun;
 import com.learning.backendservice.exception.LedgerParseException;
@@ -19,6 +20,7 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -32,15 +34,18 @@ public class LedgerUploadOrchestrator {
     private final LedgerFileProcessor ledgerFileProcessor;
     private final Rule37RunRepository runRepository;
     private final UploadProperties uploadProperties;
+    private final CreditClient creditClient;
     private final int retentionDays;
 
     public LedgerUploadOrchestrator(LedgerFileProcessor ledgerFileProcessor,
                                     Rule37RunRepository runRepository,
                                     UploadProperties uploadProperties,
+                                    CreditClient creditClient,
                                     @Value("${app.retention.days:7}") int retentionDays) {
         this.ledgerFileProcessor = ledgerFileProcessor;
         this.runRepository = runRepository;
         this.uploadProperties = uploadProperties;
+        this.creditClient = creditClient;
         this.retentionDays = retentionDays;
     }
 
@@ -91,6 +96,18 @@ public class LedgerUploadOrchestrator {
                     .collect(Collectors.joining("; ")));
         }
 
+        // ---- Credit validation + consumption ----
+        // Credits are deducted AFTER parsing succeeds, BEFORE saving results.
+        // This ensures: no charge on parse failure, no results without charge.
+        int creditsRequired = results.size(); // 1 credit per successfully parsed ledger
+        String idempotencyKey = "analysis-" + createdBy + "-" + UUID.randomUUID();
+
+        CreditWalletResponse walletAfter = creditClient.consumeCredits(
+                createdBy, creditsRequired, idempotencyKey, idempotencyKey);
+
+        log.info("Credits consumed: userId={}, consumed={}, remaining={}",
+                createdBy, creditsRequired, walletAfter.getRemaining());
+
         double totalInterest = results.stream()
                 .mapToDouble(r -> r.getSummary().getTotalInterest())
                 .sum();
@@ -130,6 +147,8 @@ public class LedgerUploadOrchestrator {
                 .filename(run.getFilename())
                 .results(resultDtos)
                 .errors(errors)
+                .creditsConsumed(creditsRequired)
+                .remainingCredits(walletAfter.getRemaining())
                 .build();
     }
 

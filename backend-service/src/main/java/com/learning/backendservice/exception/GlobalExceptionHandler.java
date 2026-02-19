@@ -1,5 +1,6 @@
 package com.learning.backendservice.exception;
 
+import com.learning.backendservice.exception.InsufficientCreditsException;
 import com.learning.backendservice.exception.LedgerParseException;
 import com.learning.common.constants.HeaderNames;
 import com.learning.common.error.ErrorResponse;
@@ -74,6 +75,17 @@ public class GlobalExceptionHandler {
                 response.put("path", request.getRequestURI());
                 response.put("requestId", request.getHeader(HeaderNames.REQUEST_ID));
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        @ExceptionHandler(InsufficientCreditsException.class)
+        public ResponseEntity<ErrorResponse> handleInsufficientCredits(
+                        InsufficientCreditsException ex, HttpServletRequest request) {
+                String requestId = request.getHeader(HeaderNames.REQUEST_ID);
+                log.warn("Insufficient credits on path={} requestId={}: {}", request.getRequestURI(), requestId,
+                                ex.getMessage());
+                ErrorResponse error = ErrorResponse.of(HttpStatus.PAYMENT_REQUIRED.value(), "INSUFFICIENT_CREDITS",
+                                ex.getMessage(), requestId, request.getRequestURI());
+                return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(error);
         }
 
         @ExceptionHandler(Exception.class)
