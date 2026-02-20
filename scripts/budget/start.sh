@@ -27,7 +27,7 @@ echo ""
 # Configuration from environment or SSM
 AWS_REGION="${AWS_REGION:-us-east-1}"
 ENVIRONMENT="${ENVIRONMENT:-budget}"
-PROJECT_NAME="${PROJECT_NAME:-cloud-infra}"
+PROJECT_NAME="${PROJECT_NAME:-gst-buddy}"
 
 # =============================================================================
 # Optimize Swap Settings
@@ -51,9 +51,9 @@ export DB_USERNAME=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMEN
 SECRET_ARN=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/rds/secret_arn" --query 'Parameter.Value' --output text --region "$AWS_REGION")
 export DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id "$SECRET_ARN" --query 'SecretString' --output text --region "$AWS_REGION" | jq -r '.password')
 
-# Redis
-export REDIS_HOST=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/redis/endpoint" --query 'Parameter.Value' --output text --region "$AWS_REGION")
-export REDIS_PORT=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/redis/port" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+# Redis (Local Container instead of ElastiCache for budget saving)
+export REDIS_HOST="redis"
+export REDIS_PORT="6379"
 
 # Cognito
 export COGNITO_USER_POOL_ID=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/cognito/user_pool_id" --query 'Parameter.Value' --output text --region "$AWS_REGION")
@@ -145,17 +145,18 @@ wait_for_container() {
 log_info "Starting services with PARALLEL strategy where possible..."
 echo ""
 
-# Phase 1: Infrastructure (OTEL)
+# Phase 1: Infrastructure (OTEL & Redis)
 log_info "Phase 1/3: Starting infrastructure services..."
-docker-compose -f docker-compose.budget.yml up -d otel-collector 2>&1
-wait_for_container "otel-collector" 30 || true
+docker-compose -f docker-compose.budget.yml up -d otel-collector redis 2>&1
+wait_for_container "gst-buddy-otel-collector" 30 || true
+wait_for_container "gst-buddy-redis" 30 || true
 
 # Phase 2: Service Discovery (Eureka - must be healthy before Java services)
 log_info "Phase 2/3: Starting Eureka (required for service discovery)..."
 docker-compose -f docker-compose.budget.yml up -d eureka-server 2>&1
-wait_for_healthy "eureka-server" 300 || {
+wait_for_healthy "gst-buddy-eureka-server" 300 || {
     log_error "Eureka failed to start. Cannot continue."
-    docker logs eureka-server --tail 50
+    docker logs gst-buddy-eureka-server --tail 50
     exit 1
 }
 
@@ -165,7 +166,7 @@ docker-compose -f docker-compose.budget.yml up -d gateway-service auth-service b
 
 # Wait for all services with fast polling
 log_info "Waiting for services to become healthy (polling every 5s)..."
-SERVICES_TO_CHECK=("gateway-service" "auth-service" "backend-service")
+SERVICES_TO_CHECK=("gst-buddy-gateway-service" "gst-buddy-auth-service" "gst-buddy-backend-service")
 MAX_WAIT=300
 elapsed=0
 
