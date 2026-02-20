@@ -124,6 +124,7 @@ management:
 app:
   retention:
     days: ${APP_RETENTION_DAYS:7}  # Calculation run retention; default 1 week
+    max-runs-per-tenant: ${APP_MAX_RUNS_PER_TENANT:50}  # Max saved calculations per tenant
   upload:
     max-file-size: 10MB             # Max ledger Excel size per file
     max-files: 20                   # Max files per multi-file upload (OOM prevention)

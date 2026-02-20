@@ -76,6 +76,9 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         headerRow.createCell(5).setCellValue("ITC Amount (18%)");
         headerRow.createCell(6).setCellValue("Interest (18% p.a.)");
         headerRow.createCell(7).setCellValue("Status");
+        headerRow.createCell(8).setCellValue("Payment Deadline");
+        headerRow.createCell(9).setCellValue("Risk Category");
+        headerRow.createCell(10).setCellValue("GSTR-3B Period");
 
         for (InterestRow r : summary.getDetails()) {
             Row row = sheet.createRow(rowNum++);
@@ -87,6 +90,9 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
             row.createCell(5).setCellValue(formatCurrency(r.getItcAmount()));
             row.createCell(6).setCellValue(formatCurrency(r.getInterest()));
             row.createCell(7).setCellValue(r.getStatus() == InterestRow.InterestStatus.PAID_LATE ? "Paid Late" : "Unpaid");
+            row.createCell(8).setCellValue(formatDate(r.getPaymentDeadline()));
+            row.createCell(9).setCellValue(r.getRiskCategory() != null ? r.getRiskCategory().name() : "");
+            row.createCell(10).setCellValue(r.getGstr3bPeriod() != null ? r.getGstr3bPeriod() : "");
         }
 
         rowNum++;
@@ -104,6 +110,9 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         sheet.setColumnWidth(5, 18 * 256);
         sheet.setColumnWidth(6, 20 * 256);
         sheet.setColumnWidth(7, 12 * 256);
+        sheet.setColumnWidth(8, 15 * 256);
+        sheet.setColumnWidth(9, 15 * 256);
+        sheet.setColumnWidth(10, 15 * 256);
     }
 
     private static String formatDate(LocalDate date) {

@@ -36,27 +36,53 @@ public class LedgerUploadOrchestrator {
     private final UploadProperties uploadProperties;
     private final CreditClient creditClient;
     private final int retentionDays;
+    private final int maxRunsPerTenant;
 
     public LedgerUploadOrchestrator(LedgerFileProcessor ledgerFileProcessor,
                                     Rule37RunRepository runRepository,
                                     UploadProperties uploadProperties,
                                     CreditClient creditClient,
-                                    @Value("${app.retention.days:7}") int retentionDays) {
+                                    @Value("${app.retention.days:7}") int retentionDays,
+                                    @Value("${app.retention.max-runs-per-tenant:50}") int maxRunsPerTenant) {
         this.ledgerFileProcessor = ledgerFileProcessor;
         this.runRepository = runRepository;
         this.uploadProperties = uploadProperties;
         this.creditClient = creditClient;
         this.retentionDays = retentionDays;
+        this.maxRunsPerTenant = maxRunsPerTenant;
     }
 
     public UploadResult processUpload(List<MultipartFile> files, java.time.LocalDate asOnDate, String createdBy) {
         validateRequest(files);
 
+        // ── Per-tenant saved calculation limit ──
+        String tenantId = TenantContext.getCurrentTenant();
+        long currentCount = runRepository.countByTenantId(tenantId);
+        if (currentCount >= maxRunsPerTenant) {
+            throw new IllegalArgumentException(
+                    "Maximum saved calculations (" + maxRunsPerTenant + ") reached. "
+                    + "Delete old calculations or wait for expired ones to be removed.");
+        }
+
+        // ── Pre-validate: user must have at least 1 credit ──
+        CreditWalletResponse wallet = creditClient.checkBalance(createdBy, 1);
+        int remainingCredits = wallet.getRemaining();
+
         List<LedgerResult> results = new ArrayList<>();
         List<UploadResult.FileUploadError> errors = new ArrayList<>();
         DataSize maxSize = uploadProperties.getMaxFileSize();
+        int creditsConsumed = 0;
 
         for (MultipartFile file : files) {
+            // ── Per-ledger credit check ──
+            if (remainingCredits < 1) {
+                errors.add(UploadResult.FileUploadError.builder()
+                        .filename(file.getOriginalFilename())
+                        .message("Insufficient credits. Purchase more credits to continue.")
+                        .build());
+                continue;
+            }
+
             if (file.isEmpty()) {
                 errors.add(UploadResult.FileUploadError.builder()
                         .filename(file.getOriginalFilename())
@@ -73,14 +99,32 @@ public class LedgerUploadOrchestrator {
             }
 
             try {
+                // Parse first (no credit charged if parsing fails)
                 LedgerResult result = ledgerFileProcessor.process(file.getInputStream(), file.getOriginalFilename(), asOnDate);
+
+                // Consume 1 credit after successful parse
+                String idempotencyKey = "analysis-" + createdBy + "-" + UUID.randomUUID();
+                CreditWalletResponse walletAfter = creditClient.consumeCredits(
+                        createdBy, 1, idempotencyKey, idempotencyKey);
+                remainingCredits = walletAfter.getRemaining();
+                creditsConsumed++;
+
                 results.add(result);
+                log.info("Ledger processed: file={}, userId={}, creditsRemaining={}",
+                        file.getOriginalFilename(), createdBy, remainingCredits);
             } catch (LedgerParseException e) {
                 log.warn("Parse error for {}: {}", file.getOriginalFilename(), e.getMessage());
                 errors.add(UploadResult.FileUploadError.builder()
                         .filename(file.getOriginalFilename())
                         .message(e.getMessage())
                         .build());
+            } catch (com.learning.backendservice.exception.InsufficientCreditsException e) {
+                log.warn("Credits exhausted during processing for {}: {}", file.getOriginalFilename(), e.getMessage());
+                errors.add(UploadResult.FileUploadError.builder()
+                        .filename(file.getOriginalFilename())
+                        .message("Insufficient credits. Purchase more credits to continue.")
+                        .build());
+                remainingCredits = 0; // Skip remaining files
             } catch (Exception e) {
                 log.warn("Processing error for {}: {}", file.getOriginalFilename(), e.getMessage());
                 errors.add(UploadResult.FileUploadError.builder()
@@ -96,18 +140,6 @@ public class LedgerUploadOrchestrator {
                     .collect(Collectors.joining("; ")));
         }
 
-        // ---- Credit validation + consumption ----
-        // Credits are deducted AFTER parsing succeeds, BEFORE saving results.
-        // This ensures: no charge on parse failure, no results without charge.
-        int creditsRequired = results.size(); // 1 credit per successfully parsed ledger
-        String idempotencyKey = "analysis-" + createdBy + "-" + UUID.randomUUID();
-
-        CreditWalletResponse walletAfter = creditClient.consumeCredits(
-                createdBy, creditsRequired, idempotencyKey, idempotencyKey);
-
-        log.info("Credits consumed: userId={}, consumed={}, remaining={}",
-                createdBy, creditsRequired, walletAfter.getRemaining());
-
         double totalInterest = results.stream()
                 .mapToDouble(r -> r.getSummary().getTotalInterest())
                 .sum();
@@ -122,7 +154,7 @@ public class LedgerUploadOrchestrator {
                 : results.size() + " files - " + asOnDate;
 
         Rule37CalculationRun run = Rule37CalculationRun.builder()
-                .tenantId(TenantContext.getCurrentTenant())
+                .tenantId(tenantId)
                 .filename(filename)
                 .asOnDate(asOnDate)
                 .totalInterest(java.math.BigDecimal.valueOf(totalInterest))
@@ -147,8 +179,8 @@ public class LedgerUploadOrchestrator {
                 .filename(run.getFilename())
                 .results(resultDtos)
                 .errors(errors)
-                .creditsConsumed(creditsRequired)
-                .remainingCredits(walletAfter.getRemaining())
+                .creditsConsumed(creditsConsumed)
+                .remainingCredits(remainingCredits)
                 .build();
     }
 

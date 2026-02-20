@@ -32,6 +32,10 @@ public class InterestRow {
     private String gstr3bPeriod; // Return period for reversal (e.g., "Jan 2025")
     private int daysToDeadline; // Days until/since 180-day deadline (negative = breached)
 
+    // GSTR-3B readiness: ITC availment date for accurate interest computation
+    // When null, interest is computed from invoice date (current default)
+    private LocalDate itcAvailmentDate;
+
     public enum InterestStatus {
         PAID_LATE,
         UNPAID

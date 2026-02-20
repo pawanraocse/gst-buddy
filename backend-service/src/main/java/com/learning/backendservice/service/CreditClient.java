@@ -58,6 +58,24 @@ public class CreditClient {
     }
 
     /**
+     * Check if user has sufficient credits without consuming.
+     * Used for pre-validation before starting file processing.
+     *
+     * @param userId  the user to check
+     * @param required minimum credits needed
+     * @return wallet balance
+     * @throws InsufficientCreditsException if balance < required
+     */
+    public CreditWalletResponse checkBalance(String userId, int required) {
+        CreditWalletResponse wallet = getWallet(userId);
+        if (wallet.getRemaining() < required) {
+            throw new com.learning.backendservice.exception.InsufficientCreditsException(
+                    "Insufficient credits: need " + required + " but only " + wallet.getRemaining() + " available");
+        }
+        return wallet;
+    }
+
+    /**
      * Get wallet balance for a user.
      */
     public CreditWalletResponse getWallet(String userId) {

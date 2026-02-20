@@ -39,6 +39,8 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
     private static final int AT_RISK_THRESHOLD = 150;
     private static final int DAYS_IN_YEAR = 365;
     private static final int DECIMAL_PLACES = 2;
+    /** Tolerance for floating-point dust after FIFO matching (prevents infinite loops). */
+    private static final double AMOUNT_EPSILON = 0.001;
 
     @Override
     public CalculationSummary calculate(List<LedgerEntry> entries, LocalDate asOnDate) {
@@ -116,21 +118,33 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
     }
 
     /**
-     * Processes remaining unpaid purchases that exceed the 180-day threshold.
+     * Processes remaining unpaid purchases.
+     * <ul>
+     *   <li>Purchases > 180 days: BREACHED — full ITC reversal + interest</li>
+     *   <li>Purchases 151-180 days: AT_RISK — early warning, zero interest/ITC</li>
+     * </ul>
      */
     private void processUnpaidPurchases(String supplier, List<MutableLedgerItem> purchases,
             LocalDate asOnDate, List<InterestRow> results) {
 
-        purchases.stream()
-                .filter(p -> daysBetween(p.date(), asOnDate) > DAYS_THRESHOLD)
-                .forEach(purchase -> results.add(createInterestRow(
+        for (MutableLedgerItem purchase : purchases) {
+            int days = daysBetween(purchase.date(), asOnDate);
+
+            if (days > DAYS_THRESHOLD) {
+                // BREACHED: ITC reversal required under Section 16(2)
+                results.add(createInterestRow(
                         supplier, purchase.date(), null, purchase.amount(),
-                        daysBetween(purchase.date(), asOnDate),
-                        InterestRow.InterestStatus.UNPAID, asOnDate)));
+                        days, InterestRow.InterestStatus.UNPAID, asOnDate));
+            } else if (days > AT_RISK_THRESHOLD) {
+                // AT_RISK: approaching deadline — early warning with zero liability
+                results.add(createAtRiskRow(
+                        supplier, purchase.date(), purchase.amount(), days, asOnDate));
+            }
+        }
     }
 
     /**
-     * Creates an InterestRow with all computed fields.
+     * Creates an InterestRow with all computed fields (BREACHED or PAID_LATE).
      */
     private InterestRow createInterestRow(String supplier, LocalDate purchaseDate,
             LocalDate paymentDate, double principal, int delayDays,
@@ -152,6 +166,33 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .riskCategory(categorizeRisk(delayDays))
                 .gstr3bPeriod(formatGstr3bPeriod(deadline))
                 .daysToDeadline(daysBetween(asOnDate, deadline))
+                .itcAvailmentDate(null) // GSTR-3B readiness: populated when GSTR-3B data available
+                .build();
+    }
+
+    /**
+     * Creates an AT_RISK early-warning row (151-180 days unpaid).
+     * No ITC reversal or interest yet — purely informational.
+     */
+    private InterestRow createAtRiskRow(String supplier, LocalDate purchaseDate,
+            double principal, int delayDays, LocalDate asOnDate) {
+
+        LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
+
+        return InterestRow.builder()
+                .supplier(supplier)
+                .purchaseDate(purchaseDate)
+                .paymentDate(null)
+                .principal(principal)
+                .delayDays(delayDays)
+                .itcAmount(0)    // No reversal yet
+                .interest(0)     // No interest yet
+                .status(InterestRow.InterestStatus.UNPAID)
+                .paymentDeadline(deadline)
+                .riskCategory(InterestRow.RiskCategory.AT_RISK)
+                .gstr3bPeriod(formatGstr3bPeriod(deadline))
+                .daysToDeadline(daysBetween(asOnDate, deadline))
+                .itcAvailmentDate(null)
                 .build();
     }
 
@@ -257,7 +298,7 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
         }
 
         boolean isExhausted() {
-            return amount <= 0;
+            return amount <= AMOUNT_EPSILON;
         }
     }
 }

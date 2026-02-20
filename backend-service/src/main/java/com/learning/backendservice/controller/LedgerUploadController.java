@@ -22,12 +22,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/ledgers")
 @RequiredArgsConstructor
 @Tag(name = "Ledger Upload", description = "Upload Tally/Busy ledger Excel files for Rule 37 calculation")
 public class LedgerUploadController {
+
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(".xlsx", ".xls");
 
     private final Rule37CalculationRunService runService;
 
@@ -40,6 +43,15 @@ public class LedgerUploadController {
             @RequestParam("files") List<MultipartFile> files,
             @RequestParam("asOnDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate asOnDate,
             HttpServletRequest request) {
+        // Validate file extensions
+        for (MultipartFile file : files) {
+            String name = file.getOriginalFilename();
+            if (name == null || ALLOWED_EXTENSIONS.stream().noneMatch(ext -> name.toLowerCase().endsWith(ext))) {
+                throw new IllegalArgumentException(
+                        "Invalid file type: '" + name + "'. Only .xlsx and .xls files are accepted.");
+            }
+        }
+
         String createdBy = request.getHeader(HeaderNames.USER_ID);
         if (createdBy == null || createdBy.isBlank()) {
             createdBy = "system";
