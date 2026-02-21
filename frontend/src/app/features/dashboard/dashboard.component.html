@@ -83,7 +83,12 @@
 
       <!-- As on Date -->
       <div class="surface-50 border-1 surface-border border-round p-4 mb-4">
-        <label class="block mb-2 font-medium text-800">As on Date</label>
+        <label class="block mb-2 font-medium text-800">
+          As on Date
+          <i class="pi pi-question-circle text-500 ml-1 cursor-pointer"
+            pTooltip="This is the reference date used to calculate how many days each invoice has been unpaid. Typically set to today's date or the end of your reporting period."
+            tooltipPosition="right"></i>
+        </label>
         <input type="date" pInputText [ngModel]="asOnDate()" (ngModelChange)="asOnDate.set($event)"
           [disabled]="isProcessing()" class="w-full" />
         <p class="text-sm text-500 mt-2 m-0">Set the date for calculating delays on unpaid amounts</p>

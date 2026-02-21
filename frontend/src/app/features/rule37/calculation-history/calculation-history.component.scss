@@ -108,8 +108,45 @@
     color: var(--text-light);
 }
 
-.meta-expires.expiring {
-    color: var(--warning-text);
+.expiry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--surface-100);
+    color: var(--text-secondary);
+
+    i {
+        font-size: 0.7rem;
+    }
+
+    &.expiry-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+    }
+
+    &.expiry-critical {
+        background: rgba(220, 38, 38, 0.1);
+        color: #dc2626;
+        animation: pulse-red 2s infinite;
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
 }
 
 .card-summary {

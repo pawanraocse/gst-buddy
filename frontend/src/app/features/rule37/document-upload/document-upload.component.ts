@@ -1,7 +1,8 @@
-import { Component, output, input, signal } from '@angular/core';
+import { Component, output, input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-document-upload',
@@ -11,15 +12,42 @@ import { ButtonModule } from 'primeng/button';
   styleUrls: ['./document-upload.component.scss']
 })
 export class DocumentUploadComponent {
+  private messageService = inject(MessageService);
   filesSelected = output<File[]>();
   disabled = input<boolean>(false);
   showSample = signal(false);
 
+  private validateFiles(files: FileList | File[]): void {
+    const validFiles: File[] = [];
+    const invalidFiles: string[] = [];
+    const allowed = ['.xlsx', '.xls'];
+
+    Array.from(files).forEach(f => {
+      const ext = f.name.substring(f.name.lastIndexOf('.')).toLowerCase();
+      if (allowed.includes(ext)) {
+        validFiles.push(f);
+      } else {
+        invalidFiles.push(f.name);
+      }
+    });
+
+    if (invalidFiles.length > 0) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Invalid File Format',
+        detail: `Unsupported files: ${invalidFiles.join(', ')}. Please use .xlsx or .xls.`
+      });
+    }
+
+    if (validFiles.length > 0) {
+      this.filesSelected.emit(validFiles);
+    }
+  }
+
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    const files = input.files;
-    if (files && files.length > 0) {
-      this.filesSelected.emit(Array.from(files));
+    if (input.files && input.files.length > 0) {
+      this.validateFiles(input.files);
     }
     input.value = '';
   }
@@ -41,7 +69,7 @@ export class DocumentUploadComponent {
     if (this.disabled()) return;
 
     if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-      this.filesSelected.emit(Array.from(event.dataTransfer.files));
+      this.validateFiles(event.dataTransfer.files);
     }
   }
 }

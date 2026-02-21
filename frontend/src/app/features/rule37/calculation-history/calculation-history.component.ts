@@ -8,32 +8,43 @@ import {
   LedgerResult,
 } from '../../../shared/models/rule37.model';
 import { ComplianceViewComponent } from '../compliance-view/compliance-view.component';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
   selector: 'app-calculation-history',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TooltipModule, ComplianceViewComponent],
+  imports: [CommonModule, ButtonModule, TooltipModule, ComplianceViewComponent, PaginatorModule],
   templateUrl: './calculation-history.component.html',
   styleUrls: ['./calculation-history.component.scss']
 })
 export class CalculationHistoryComponent {
   private api = inject(Rule37ApiService);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
 
   runs = signal<Rule37RunResponse[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   viewingRun = signal<Rule37RunResponse | null>(null);
 
+  currentPage = signal(0);
+  pageSize = signal(10);
+  totalRecords = signal(0);
+
   constructor() {
     this.loadRuns();
   }
 
-  loadRuns() {
+  loadRuns(page: number = 0, size: number = 10) {
     this.loading.set(true);
     this.error.set(null);
-    this.api.listRuns(0, 20).subscribe({
-      next: (page) => {
-        this.runs.set(page.content);
+    this.api.listRuns(page, size).subscribe({
+      next: (pageRes) => {
+        this.runs.set(pageRes.content);
+        this.totalRecords.set(pageRes.totalElements || 0);
+        this.currentPage.set(page);
+        this.pageSize.set(size);
         this.loading.set(false);
       },
       error: (err) => {
@@ -43,18 +54,34 @@ export class CalculationHistoryComponent {
     });
   }
 
+  onPageChange(event: any) {
+    // PrimeNG paginator passes page natively
+    this.loadRuns(event.page, event.rows);
+  }
+
   deleteRun(id: number) {
-    if (!confirm('Are you sure you want to delete this calculation?')) return;
-    this.api.deleteRun(id).subscribe({
-      next: () => {
-        this.runs.update((list) => list.filter((r) => r.id !== id));
-        if (this.viewingRun()?.id === id) {
-          this.viewingRun.set(null);
-        }
-      },
-      error: (err) => {
-        alert('Failed to delete: ' + (err?.message || 'Unknown error'));
-      },
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this calculation?',
+      header: 'Confirm Deletion',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {
+        this.api.deleteRun(id).subscribe({
+          next: () => {
+            this.runs.update((list) => list.filter((r) => r.id !== id));
+            if (this.viewingRun()?.id === id) {
+              this.viewingRun.set(null);
+            }
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Calculation deleted' });
+          },
+          error: (err) => {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete: ' + (err?.message || 'Unknown error') });
+          },
+        });
+      }
     });
   }
 
@@ -69,7 +96,7 @@ export class CalculationHistoryComponent {
         URL.revokeObjectURL(url);
       },
       error: (err) => {
-        alert('Failed to export: ' + (err?.message || 'Unknown error'));
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to export: ' + (err?.message || 'Unknown error') });
       },
     });
   }

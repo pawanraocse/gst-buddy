@@ -52,8 +52,9 @@
                     <div class="card-meta">
                         <span class="meta-date">{{ formatDate(run.createdAt) }}</span>
                         <span class="meta-sep">•</span>
-                        <span class="meta-expires" [class.expiring]="getDaysRemaining(run.expiresAt) <= 2">
-                            Expires in {{ getDaysRemaining(run.expiresAt) }} days
+                        <span class="expiry-badge" [class.expiry-critical]="getDaysRemaining(run.expiresAt) <= 1"
+                            [class.expiry-warning]="getDaysRemaining(run.expiresAt) <= 3 && getDaysRemaining(run.expiresAt) > 1">
+                            <i class="pi pi-clock"></i> {{ getDaysRemaining(run.expiresAt) }}d remaining
                         </span>
                     </div>
                     <div class="card-summary">
@@ -72,6 +73,14 @@
         </div>
         }
     </div>
+
+    @if (totalRecords() > 0) {
+    <div class="mt-4">
+        <p-paginator [first]="currentPage() * pageSize()" [rows]="pageSize()" [totalRecords]="totalRecords()"
+            [rowsPerPageOptions]="[10, 20, 50]" (onPageChange)="onPageChange($event)">
+        </p-paginator>
+    </div>
+    }
     }
     }
 </div>

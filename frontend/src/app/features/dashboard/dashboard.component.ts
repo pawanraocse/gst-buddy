@@ -11,7 +11,9 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
 import { LedgerResult, UploadResult } from '../../shared/models/rule37.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,6 +25,7 @@ import { LedgerResult, UploadResult } from '../../shared/models/rule37.model';
     ButtonModule,
     MessageModule,
     InputTextModule,
+    TooltipModule,
     DocumentUploadComponent,
     ComplianceViewComponent,
     CalculationHistoryComponent,
@@ -34,6 +37,7 @@ export class DashboardComponent implements OnInit {
   authService = inject(AuthService);
   private api = inject(Rule37ApiService);
   private creditApi = inject(CreditApiService);
+  private messageService = inject(MessageService);
 
   // Credit wallet
   creditTotal = signal(0);
@@ -137,6 +141,8 @@ export class DashboardComponent implements OnInit {
         this.fileNames.set(res.results.map((r) => r.ledgerName));
         if (res.errors.length > 0) {
           this.error.set(res.errors.map((e) => `${e.filename}: ${e.message}`).join('; '));
+        } else {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Files processed successfully' });
         }
         this.isProcessing.set(false);
       },
@@ -162,7 +168,7 @@ export class DashboardComponent implements OnInit {
         a.click();
         URL.revokeObjectURL(url);
       },
-      error: (err) => alert('Export failed: ' + (err?.message || 'Unknown error')),
+      error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Export failed: ' + (err?.message || 'Unknown error') }),
     });
   }
 

@@ -197,24 +197,94 @@
                                     <span class="gstr-badge">{{ row.gstr3bPeriod }}</span>
                                 </td>
                             </tr>
+                            @if (row.status === 'PAID_LATE') {
+                            <tr class="itc-reclaim-row">
+                                <td colspan="9">
+                                    <div class="itc-reclaim-tip">
+                                        <i class="pi pi-info-circle"></i>
+                                        <span>💡 You paid this invoice late. The reversed ITC of <strong>{{
+                                                formatCurrency(row.itcAmount) }}</strong>
+                                            can be re-claimed in the GSTR-3B return for <strong>{{ row.gstr3bPeriod
+                                                }}</strong>.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
                             }
                         </tbody>
                     </table>
                 </div>
-            </div>
-            }
 
-            } @else {
-            <div class="all-clear">
-                <div class="success-icon">
-                    <i class="pi pi-verified"></i>
+                <!-- Mobile Card List (Visible only on < 768px) -->
+                <div class="mobile-card-list">
+                    @for (row of group.rows; track row.purchaseDate + row.principal) {
+                    <div class="mobile-transaction-card" [class]="'row-' + (row.riskCategory || 'safe').toLowerCase()">
+                        <div class="mobile-card-header">
+                            <div class="status-pill" [class]="(row.status || 'unpaid').toLowerCase()">
+                                @if (row.status === 'UNPAID') {
+                                <i class="pi pi-exclamation-triangle"></i> <span>Unpaid</span>
+                                } @else {
+                                <i class="pi pi-check-circle"></i> <span>Late</span>
+                                }
+                            </div>
+                            <span class="mobile-date">{{ formatDate(row.purchaseDate) }}</span>
+                        </div>
+                        <div class="mobile-card-body">
+                            <div class="mobile-metric">
+                                <span class="label">Invoice:</span>
+                                <span class="value invoice">{{ formatCurrency(row.principal) }}</span>
+                            </div>
+                            <div class="mobile-metric">
+                                <span class="label">ITC:</span>
+                                <span class="value itc">{{ formatCurrency(row.itcAmount) }}</span>
+                            </div>
+                            <div class="mobile-metric">
+                                <span class="label">Interest:</span>
+                                <span class="value interest">{{ formatCurrency(row.interest) }}</span>
+                            </div>
+                        </div>
+                        @if (row.daysToDeadline < 0 || row.status==='PAID_LATE' ) { <div class="mobile-card-footer">
+                            @if (row.daysToDeadline < 0) { <span class="overdue-indicator">{{ -row.daysToDeadline }}d
+                                overdue</span>
+                                }
+                                @if (row.status === 'PAID_LATE') {
+                                <div class="itc-reclaim-tip mt-2">
+                                    <i class="pi pi-info-circle"></i>
+                                    <span>Can re-claim reversed ITC of {{ formatCurrency(row.itcAmount) }} in GSTR-3B
+                                        for {{ row.gstr3bPeriod }}</span>
+                                </div>
+                                }
+                    </div>
+                    }
                 </div>
-                <h4>All Payments On Time</h4>
-                <p>No Rule 37 liability for this ledger</p>
+                }
             </div>
-            }
         </div>
         }
-    </section>
-    }
+
+        } @else {
+        <div class="all-clear">
+            <div class="success-icon">
+                <i class="pi pi-verified"></i>
+            </div>
+            <h4>All Payments On Time</h4>
+            <p>No Rule 37 liability for this ledger</p>
+        </div>
+        }
+</div>
+}
+</section>
+}
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+         ⚖️ LEGAL DISCLAIMER
+    ═══════════════════════════════════════════════════════════════════════════ -->
+<p-panel header="⚖️ Legal Disclaimer" [toggleable]="true" [collapsed]="true" styleClass="disclaimer-panel mt-4">
+    <p class="text-sm text-600 m-0">
+        This calculation is for informational purposes only and does not constitute
+        legal or tax advice. Figures are computed based on Rule 37 of the CGST Rules,
+        2017. Consult a qualified CA/tax professional before filing GSTR-3B.
+        Interest calculations use 18% p.a. as per Section 50 of the CGST Act.
+    </p>
+</p-panel>
 </div>

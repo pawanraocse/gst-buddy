@@ -2,13 +2,14 @@ import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
+import { PanelModule } from 'primeng/panel';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LedgerResult } from '../../../shared/models/rule37.model';
 
 @Component({
   selector: 'app-compliance-view',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TableModule],
+  imports: [CommonModule, ButtonModule, TableModule, PanelModule],
   templateUrl: './compliance-view.component.html',
   styleUrls: ['./compliance-view.component.scss'],
   animations: [
