@@ -34,6 +34,10 @@ resource "aws_amplify_app" "frontend" {
         build:
           commands:
             - npm run build
+            - ls -laR frontend/dist || ls -laR dist
+        postBuild:
+          commands:
+            - echo "Build completed on `date`"
       artifacts:
         baseDirectory: dist/${var.app_name}
         files:
@@ -55,7 +59,7 @@ resource "aws_amplify_app" "frontend" {
   # Custom rules (SPA routing)
   custom_rule {
     source = "/<*>"
-    status = "404"
+    status = "404-200"
     target = "/index.html"
   }
 

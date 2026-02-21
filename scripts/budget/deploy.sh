@@ -12,6 +12,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
 TERRAFORM_DIR="$PROJECT_ROOT/terraform/envs/budget"
 
+# Load environment variables from .env file if it exists
+if [ -f "$PROJECT_ROOT/.env" ]; then
+    set -a
+    source "$PROJECT_ROOT/.env"
+    set +a
+fi
+
 AWS_REGION="${AWS_REGION:-us-east-1}"
 AWS_PROFILE="${AWS_PROFILE:-personal}"
 SSH_KEY="${SSH_KEY:-}"
@@ -37,7 +44,7 @@ echo ""
 
 # Auto-detect SSH key if not set
 if [ -z "$SSH_KEY" ]; then
-    for key in ~/.ssh/pawankeys ~/.ssh/id_rsa ~/.ssh/id_ed25519 ~/.ssh/*.pem; do
+    for key in ~/.ssh/id_rsa_personal ~/.ssh/pawankeys ~/.ssh/id_rsa ~/.ssh/id_ed25519 ~/.ssh/*.pem; do
         if [ -f "$key" ]; then
             SSH_KEY="$key"
             log_info "Auto-detected SSH key: $SSH_KEY"
@@ -251,7 +258,7 @@ echo "🌐 Access:"
 echo "  Frontend: $FRONTEND_URL (building...)"
 echo "  API:      http://$EC2_IP:8080"
 echo ""
-echo "💡 Instance Type: t3.small (2GB RAM)"
+echo "💡 Instance Type: t3.medium (4GB RAM)"
 echo "💰 Estimated Cost: ~\$30-40/month"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

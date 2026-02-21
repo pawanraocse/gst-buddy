@@ -34,10 +34,6 @@ output "rds_secret_arn" {
   sensitive   = true
 }
 
-output "redis_endpoint" {
-  description = "ElastiCache Redis endpoint"
-  value       = module.elasticache.primary_endpoint
-}
 
 output "cloudfront_domain" {
   description = "CloudFront Domain (HTTPS API)"
@@ -135,7 +131,6 @@ output "next_steps" {
     
     📦 Infrastructure:
       RDS:   ${module.rds.endpoint}
-      Redis: ${module.elasticache.primary_endpoint}
       EC2:   ${module.bastion.public_ip}
     
     🚀 Deploy Services:

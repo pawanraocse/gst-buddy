@@ -1,4 +1,3 @@
-# Budget Environment - Main Configuration
 # AWS deployment with RDS and ElastiCache (~$15-30/month)
 # Uses Free Tier where possible
 
@@ -65,6 +64,9 @@ module "vpc" {
   enable_flow_logs = var.enable_flow_logs
 }
 
+
+
+
 # =============================================================================
 # RDS PostgreSQL (Free Tier: db.t3.micro)
 # =============================================================================
@@ -94,30 +96,6 @@ module "rds" {
   multi_az            = false
   deletion_protection = false
   skip_final_snapshot = true
-
-  # Allow from EC2 bastion
-  allowed_security_groups = [module.bastion.security_group_id]
-}
-
-# =============================================================================
-# ElastiCache Redis
-# =============================================================================
-
-module "elasticache" {
-  source = "../../modules/elasticache"
-
-  project_name = var.project_name
-  environment  = var.environment
-
-  vpc_id                        = module.vpc.vpc_id
-  elasticache_subnet_group_name = module.vpc.elasticache_subnet_group_name
-
-  # Smallest available: cache.t3.micro (~$12/month - t2 no longer available)
-  node_type       = "cache.t3.micro"
-  num_cache_nodes = 1
-
-  # No snapshots for budget
-  snapshot_retention_limit = 0
 
   # Allow from EC2 bastion
   allowed_security_groups = [module.bastion.security_group_id]
@@ -216,7 +194,7 @@ module "amplify" {
     ANGULAR_APP_API_URL           = "https://${module.cloudfront.domain_name}"
     ANGULAR_APP_COGNITO_POOL_ID   = module.cognito_user_pool.user_pool_id
     ANGULAR_APP_COGNITO_CLIENT_ID = module.cognito_user_pool.spa_client_id
-    ANGULAR_APP_COGNITO_DOMAIN    = module.cognito_user_pool.domain
+    ANGULAR_APP_COGNITO_DOMAIN    = "${module.cognito_user_pool.domain}.auth.${var.aws_region}.amazoncognito.com"
     ANGULAR_APP_COGNITO_REGION    = var.aws_region
   }
 
@@ -236,12 +214,21 @@ module "amplify" {
           commands:
             - npm run build
       artifacts:
-        baseDirectory: frontend/dist/frontend/browser
+        baseDirectory: frontend/dist/gst-buddy/browser
         files:
           - '**/*'
       cache:
         paths:
           - frontend/node_modules/**/*
+    customHeaders:
+      - pattern: '**/*'
+        headers:
+          - key: 'Cache-Control'
+            value: 'public, max-age=31536000, immutable'
+      - pattern: 'index.html'
+        headers:
+          - key: 'Cache-Control'
+            value: 'no-cache, no-store, must-revalidate'
   EOT
 }
 
