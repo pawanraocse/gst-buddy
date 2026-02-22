@@ -4,6 +4,7 @@ import com.learning.authservice.config.CognitoProperties;
 import com.learning.authservice.auth.dto.AuthRequestDto;
 import com.learning.authservice.auth.dto.AuthResponseDto;
 import com.learning.authservice.exception.AuthLoginException;
+import com.learning.authservice.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,9 @@ class AuthServiceImplLoginTest {
         private CognitoIdentityProviderClient cognitoClient;
 
         @Mock
+        private UserService userService;
+
+        @Mock
         private HttpServletRequest request;
 
         @Mock
@@ -54,7 +58,7 @@ class AuthServiceImplLoginTest {
                 props.setDomain("test.auth.us-east-1.amazoncognito.com");
                 props.setRegion("us-east-1");
 
-                authService = new AuthServiceImpl(props, request, response, cognitoClient);
+                authService = new AuthServiceImpl(props, request, response, cognitoClient, userService);
         }
 
         @Test

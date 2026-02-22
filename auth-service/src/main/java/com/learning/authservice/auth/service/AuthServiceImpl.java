@@ -47,9 +47,10 @@ public class AuthServiceImpl implements AuthService {
         private final HttpServletRequest request;
         private final HttpServletResponse response;
         private final CognitoIdentityProviderClient cognitoClient;
+        private final com.learning.authservice.user.service.UserService userService;
 
         @Override
-        @Transactional(readOnly = true)
+        @Transactional
         public UserInfoDto getCurrentUser() {
                 String userId = request.getHeader("X-User-Id");
                 if (userId == null || userId.isBlank()) {
@@ -61,7 +62,8 @@ public class AuthServiceImpl implements AuthService {
                 String email = request.getHeader("X-Email");
                 String name = request.getHeader("X-Username");
 
-                // Default to viewer for now as RBAC is removed
+                userService.upsertOnLogin(userId, email, name, "COGNITO");
+
                 String role = "viewer";
 
                 log.info("operation=getCurrentUser, userId={}, role={}, requestId={}, status=success", userId, role,

@@ -15,5 +15,8 @@ public record PlanDto(
         BigDecimal priceInr,
         int credits,
         boolean isTrial,
-        String description) {
+        boolean isActive,
+        String description,
+        Integer validityDays,
+        int sortOrder) {
 }

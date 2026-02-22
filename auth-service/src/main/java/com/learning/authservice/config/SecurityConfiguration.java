@@ -61,20 +61,27 @@ public class SecurityConfiguration {
                                                                 "/api/v1/invitations/validate",
                                                                 "/api/v1/invitations/accept",
                                                                 "/api/v1/resource-permissions/**",
-                                                                // Gateway-authenticated endpoints (X-User-Id trusted)
-                                                                "/api/v1/auth/me",
-                                                                "/api/v1/acl/**",
-                                                                "/api/v1/roles/**",
-                                                                "/api/v1/invitations/**",
-                                                                "/api/v1/users/**",
-                                                                "/api/v1/account/**",
-                                                                "/api/v1/plans",
-                                                                "/api/v1/credits",
-                                                                "/api/v1/credits/consume",
-                                                                "/api/v1/credits/transactions")
+                                                // Gateway-authenticated endpoints (X-User-Id trusted)
+                                                "/api/v1/auth/me",
+                                                "/api/v1/acl/**",
+                                                "/api/v1/roles/**",
+                                                "/api/v1/invitations/**",
+                                                "/api/v1/users/**",
+                                                "/api/v1/account/**",
+                                                "/api/v1/plans",
+                                                "/api/v1/credits",
+                                                "/api/v1/credits/consume",
+                                                "/api/v1/credits/transactions",
+                                                // Admin endpoints — permission-checked by @RequirePermission aspect
+                                                "/api/v1/admin/users/**",
+                                                "/api/v1/admin/credits/**",
+                                                "/api/v1/admin/plans/**",
+                                                "/api/v1/admin/dashboard/**")
                                                 .permitAll()
                                                 // Internal endpoints require X-Internal-Api-Key header
-                                                .requestMatchers("/internal/**", "/api/v1/credits/grant")
+                                                .requestMatchers("/internal/**",
+                                                                "/api/v1/credits/grant",
+                                                                "/api/v1/admin/bootstrap")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2

@@ -56,12 +56,13 @@ graph TB
 - **Routing:** Dispatches requests to services via Eureka.
 
 ### 🔐 Auth Service (Port 8081)
-**Role:** Identity, Permissions, and Signup Orchestration.
+**Role:** Identity, Permissions, Signup Orchestration, and Platform Administration.
 
 - **User Management:** Wraps Cognito actions, manages user profiles.
-- **RBAC & PBAC:** Stores Roles (`admin`, `viewer`) and Permissions (`entry:read`).
+- **RBAC:** Stores Roles, Permissions, and Role-Permission mappings. Enforced via AOP `@RequirePermission` annotation.
 - **Signup Pipeline:** Orchestrates tenant creation, DB provisioning, and email verification.
 - **Billing & Credits:** Manages Plans, User Wallets, and Credit Transactions.
+- **Admin API:** Platform-wide super-admin endpoints for user lifecycle, credit operations, and plan management. See [Admin Panel](ADMIN_PANEL.md).
 
 
 
@@ -110,12 +111,30 @@ sequenceDiagram
     Gateway-->>Browser: 200 OK
 ```
 
-### 3. Security Boundaries
+### 3. Admin API Flow
+```mermaid
+sequenceDiagram
+    participant Admin as Super-Admin Browser
+    participant Gateway
+    participant Auth as Auth Service
+    participant DB
+
+    Admin->>Gateway: GET /auth/api/v1/admin/users (JWT with custom:role=super-admin)
+    Note over Gateway: Validate JWT, inject X-User-Id
+    Gateway->>Auth: Forward + X-User-Id
+    Note over Auth: AOP @RequirePermission checks<br/>user:read permission
+    Auth->>DB: Resolve permissions via user_roles + role_permissions
+    Auth->>DB: SELECT * FROM users
+    Auth-->>Admin: 200 OK (user list)
+```
+
+### 4. Security Boundaries
 > [!IMPORTANT]
 > **Gateway-as-Gatekeeper Principle**
 > - **External Traffic**: MUST go through Gateway.
 > - **Gateway**: The ONLY service that validates JWTs.
 > - **Internal Services**: Trust `X-Tenant-Id` and `X-User-Id` headers from Gateway.
+> - **Admin API**: Protected by `@RequirePermission` AOP aspect; requires `super-admin` role permissions.
 > - **Network**: Internal services should not be exposed publicly.
 
 ---

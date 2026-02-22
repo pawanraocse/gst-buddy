@@ -13,13 +13,19 @@
 
     <div class="sidebar-content">
       <ul class="layout-menu">
-        @for (item of items(); track item.label) {
-        <li class="menu-item" [class.active-menuitem]="isActive(item.routerLink)">
-          <a [routerLink]="item.routerLink" class="menu-link" (click)="onMenuClick()">
-            <i [class]="item.icon"></i>
-            <span>{{ item.label }}</span>
-          </a>
-        </li>
+        @for (item of items(); track $index) {
+          @if (item.separator) {
+            <li class="menu-separator">
+              <span class="separator-label">Administration</span>
+            </li>
+          } @else {
+            <li class="menu-item" [class.active-menuitem]="isActive(item.routerLink)">
+              <a [routerLink]="item.routerLink" class="menu-link" (click)="onMenuClick()">
+                <i [class]="item.icon"></i>
+                <span>{{ item.label }}</span>
+              </a>
+            </li>
+          }
         }
       </ul>
     </div>

@@ -1,42 +1,56 @@
 package com.learning.authservice.account;
 
+import com.learning.authservice.security.repository.UserRoleRepository;
+import com.learning.authservice.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service for handling account deletion.
- * 
- * Simplified for lite version - no multi-tenancy or SSO cleanup.
- * Just deletes the user from Cognito.
+ * Deletes user from the local database. Cognito deletion is handled
+ * separately via admin CLI or a future async processor.
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AccountDeletionService {
 
+    private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
+
     /**
-     * Delete user's account.
-     * 
-     * @param userId    User ID (from JWT)
-     * @param userEmail User's email
+     * Delete user's account from local database.
+     *
+     * @param userId    User ID (Cognito sub or placeholder)
+     * @param userEmail User's email (used for lookup if userId doesn't match)
      */
+    @Transactional
     public void deleteAccount(String userId, String userEmail) {
         log.info("Deleting account: userId={}, userEmail={}", userId, userEmail);
 
-        // In the lite version, we don't perform SSO cleanup directly here.
-        // This service is simplified to just log the deletion intent.
-        // Actual deletion from Cognito would be handled by an external process or
-        // a different service in a more complete implementation.
+        var user = userRepository.findById(userId)
+                .or(() -> userRepository.findByEmail(userEmail));
 
-        log.info("Account deletion completed: userId={}", userId);
+        if (user.isEmpty()) {
+            log.warn("User not found for deletion: userId={}, email={}", userId, userEmail);
+            return;
+        }
+
+        String actualUserId = user.get().getUserId();
+
+        userRoleRepository.findByUserId(actualUserId)
+                .forEach(userRoleRepository::delete);
+
+        userRepository.delete(user.get());
+        log.info("Account deleted from database: userId={}, email={}", actualUserId, userEmail);
     }
 
     /**
      * Legacy overload for backward compatibility.
      */
     public void deleteAccount(String tenantId, String userEmail, String idpType) {
-        // In lite version, tenantId is ignored
         deleteAccount(tenantId, userEmail);
     }
 }

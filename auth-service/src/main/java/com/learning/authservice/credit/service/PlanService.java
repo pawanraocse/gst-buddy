@@ -46,7 +46,10 @@ public class PlanService {
                 .priceInr(plan.getPriceInr())
                 .credits(plan.getCredits())
                 .isTrial(plan.getIsTrial())
+                .isActive(plan.getIsActive())
                 .description(plan.getDescription())
+                .validityDays(plan.getValidityDays())
+                .sortOrder(plan.getSortOrder() != null ? plan.getSortOrder() : 0)
                 .build();
     }
 }

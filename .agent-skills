@@ -102,11 +102,19 @@
 - Export: `ExportStrategy` interface → `Rule37ExcelExportStrategy` (add new export formats here)
 - Credit consumption: `CreditClient` (WebClient-based call to auth-service)
 
+### Auth Service — Admin Module (Super-Admin)
+- `AuthorizationService` — resolves effective permissions via user_roles → role_permissions
+- `AuthorizationAspect` (AOP) — enforces `@RequirePermission` on controller methods
+- `AdminUserService` — cross-tenant user CRUD, role assignment, system admin bootstrap
+- `AdminCreditService` — dashboard stats, grant/revoke credits, transaction history
+- DTOs in `admin.dto` package — `AdminUserDetailDto`, `AdminDashboardStatsDto`, `AdminTransactionDto`, `CreatePlanRequest`, etc.
+
 ### Frontend Reusable Services
-- `auth.service.ts` — Amplify-based auth (signup, login, tokens, session)
+- `auth.service.ts` — Amplify-based auth (signup, login, tokens, session); exposes `isSuperAdmin` computed signal
 - `http-client.service.ts` — Configured HTTP client with auth interceptor
 - `base-api.service.ts` — Base class for API services
-- Auth guard/guest guard for route protection
+- `admin-api.service.ts` — Full admin API client (dashboard stats, user CRUD, credit mgmt, plan CRUD)
+- Auth guard/guest guard/admin guard for route protection
 
 ## Testing
 
@@ -119,8 +127,11 @@
 - **Config:** `application-test.yml` in test resources
 
 ### Frontend
-- **Framework:** Jasmine + Karma
-- **Run:** `ng test`
+- **Framework:** Jasmine + Karma (ChromeHeadless for CI)
+- **Run:** `ng test` (interactive), `ng test --no-watch --browsers=ChromeHeadless` (CI)
+- **Pattern:** Standalone component testing with `TestBed.configureTestingModule({ imports: [Component] })`
+- **Mocking:** `jasmine.createSpyObj()` for services, `fixture.debugElement.injector.get(Service)` + `spyOn()` for component-level providers
+- **Coverage:** Admin guard, admin-api service, admin dashboard/users/user-detail/plans/credits components
 
 ### System Tests
 - **Framework:** REST Assured 5.5.0 + Testcontainers
@@ -165,4 +176,6 @@
 7. **RetentionScheduler** auto-deletes expired Rule 37 runs (default 7 days) — configurable via `APP_RETENTION_DAYS`
 8. **Excel upload limits:** 10MB per file, max 20 files per request
 9. **Multi-tenant isolation** relies on `tenant_id` column + `TenantFilter` in common-infra — every new entity must include `tenant_id`
-10. **No admin UI for plans** — plan changes require direct SQL against `plans` table
+10. **Admin panel available** — super-admin users (JWT `custom:role=super-admin`) can manage users, credits, and plans at `/app/admin/*`
+11. **Admin guard pattern:** `adminGuard` reads `custom:role` from JWT claim; `AuthorizationAspect` enforces backend `@RequirePermission` via `X-User-Id` header
+12. **Component-level providers (PrimeNG):** When testing components that declare `providers: [MessageService]`, use `fixture.debugElement.injector.get(MessageService)` + `spyOn()` instead of `overrideComponent`

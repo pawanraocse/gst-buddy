@@ -208,12 +208,19 @@ INSERT INTO permissions (id, resource, action, description) VALUES
 ('user:manage', 'user', 'manage', 'Manage user roles and permissions'),
 -- Tenant permissions
 ('tenant:settings', 'tenant', 'settings', 'Manage tenant settings'),
--- SSO permissions (Phase 4)
+-- SSO permissions
 ('sso:read', 'sso', 'read', 'View SSO configuration'),
 ('sso:manage', 'sso', 'manage', 'Configure SSO identity providers'),
--- Group permissions (Phase 4)
+-- Group permissions
 ('group:read', 'group', 'read', 'View IdP group mappings'),
-('group:manage', 'group', 'manage', 'Manage group-to-role mappings')
+('group:manage', 'group', 'manage', 'Manage group-to-role mappings'),
+-- Admin / Platform permissions
+('admin:dashboard', 'admin', 'dashboard', 'View platform admin dashboard'),
+('credit:read', 'credit', 'read', 'View all user wallets and transactions'),
+('credit:manage', 'credit', 'manage', 'Grant or revoke credits for any user'),
+('plan:manage', 'plan', 'manage', 'Create, update, or deactivate pricing plans'),
+('account:suspend', 'account', 'suspend', 'Suspend (disable) any user account'),
+('account:delete', 'account', 'delete', 'Permanently delete any user account')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
@@ -253,6 +260,11 @@ ON CONFLICT (tenant_id, role_id, permission_id) DO NOTHING;
 -- Guest role - minimal read access
 INSERT INTO role_permissions (role_id, permission_id) VALUES
 ('guest', 'entry:read')
+ON CONFLICT (tenant_id, role_id, permission_id) DO NOTHING;
+
+-- Super-admin role - ALL permissions (platform-wide access)
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT 'super-admin', id FROM permissions
 ON CONFLICT (tenant_id, role_id, permission_id) DO NOTHING;
 
 -- ============================================================================
@@ -360,11 +372,27 @@ INSERT INTO plans (name, display_name, price_inr, credits, is_trial, sort_order,
 ON CONFLICT (name) DO NOTHING;
 
 -- ============================================================================
+-- 17. SEED DATA - SYSTEM ADMIN USER
+-- ============================================================================
+-- Placeholder system admin. The bootstrap script creates this user in Cognito,
+-- then calls /api/v1/admin/bootstrap to replace the placeholder user_id with
+-- the real Cognito sub.
+-- ============================================================================
+INSERT INTO users (user_id, tenant_id, email, name, status, source, created_at, updated_at) VALUES
+('SYSTEM_ADMIN_PLACEHOLDER', 'default', 'system-admin@gst-buddy.local', 'System Admin', 'ACTIVE', 'MANUAL', NOW(), NOW())
+ON CONFLICT (user_id) DO NOTHING;
+
+INSERT INTO user_roles (tenant_id, user_id, role_id, assigned_by, assigned_at) VALUES
+('default', 'SYSTEM_ADMIN_PLACEHOLDER', 'super-admin', 'SYSTEM', NOW())
+ON CONFLICT (tenant_id, user_id, role_id) DO NOTHING;
+
+-- ============================================================================
 -- SCHEMA COMPLETE - Full Permission + Credit Model
 -- ============================================================================
 -- Org Roles: admin (full access), editor, viewer, guest (predefined capabilities)
 -- Permissions: Fine-grained resource:action pairs mapped to roles
 -- Resource ACLs: Fine-grained sharing via acl_entries table
 -- Credit System: Plans → Wallets → Transactions (audit-safe, idempotent)
+-- System Admin: Seeded with super-admin role; bootstrap script links Cognito sub
 -- ============================================================================
 

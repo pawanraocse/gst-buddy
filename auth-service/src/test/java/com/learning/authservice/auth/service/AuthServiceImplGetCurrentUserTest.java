@@ -2,6 +2,7 @@ package com.learning.authservice.auth.service;
 
 import com.learning.authservice.config.CognitoProperties;
 import com.learning.authservice.dto.UserInfoDto;
+import com.learning.authservice.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,8 @@ class AuthServiceImplGetCurrentUserTest {
 
                 // Note: Not calling props.validate() to avoid throwing during these tests; we
                 // only test getCurrentUser.
-                return new AuthServiceImpl(props, req, resp, cognitoIdentityProviderClient);
+                UserService userService = Mockito.mock(UserService.class);
+                return new AuthServiceImpl(props, req, resp, cognitoIdentityProviderClient, userService);
         }
 
         private DefaultOidcUser oidcUser(String sub, String email, String name) {

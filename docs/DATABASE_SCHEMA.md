@@ -43,6 +43,33 @@ Maps users to roles.
 | `tenant_id` | VARCHAR(64) | **Discriminator** |
 | `user_id` | VARCHAR(255) | FK -> users.user_id |
 | `role_id` | VARCHAR(64) | FK -> roles.id |
+| `assigned_by` | VARCHAR(255) | Who assigned the role |
+| `assigned_at` | TIMESTAMPTZ | Assignment timestamp |
+| `expires_at` | TIMESTAMPTZ | Optional role expiry |
+
+### `permissions`
+Defines granular resource:action permissions.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | VARCHAR(64) | **PK** — format: `resource:action` |
+| `tenant_id` | VARCHAR(64) | **Discriminator** |
+| `resource` | VARCHAR(50) | Resource name (e.g., `admin`, `credit`, `plan`) |
+| `action` | VARCHAR(50) | Action name (e.g., `dashboard`, `manage`, `read`) |
+| `description` | TEXT | Human-readable description |
+| `created_at` | TIMESTAMPTZ | Creation timestamp |
+
+### `role_permissions`
+Maps roles to permissions (many-to-many).
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `tenant_id` | VARCHAR(64) | **CPK** — Discriminator |
+| `role_id` | VARCHAR(64) | **CPK** — FK -> roles.id |
+| `permission_id` | VARCHAR(128) | **CPK** — FK -> permissions.id |
+| `granted_at` | TIMESTAMPTZ | Grant timestamp |
+
+**Seeded data:** The `super-admin` role is pre-assigned all permissions (`admin:dashboard`, `user:read`, `user:manage`, `credit:read`, `credit:manage`, `plan:manage`, `account:suspend`, `account:delete`). A `SYSTEM_ADMIN_PLACEHOLDER` user is seeded and later linked to a real Cognito identity via the [bootstrap process](ADMIN_PANEL.md#system-admin-bootstrap).
 
 ### Credit System (Billing)
 
@@ -112,13 +139,49 @@ Rule 37 (180-day ITC reversal) calculation runs from ledger uploads.
 erDiagram
     users ||--o{ user_roles : has
     roles ||--o{ user_roles : assigned_to
-    
+    roles ||--o{ role_permissions : grants
+    permissions ||--o{ role_permissions : granted_to
+    users ||--o| user_credit_wallets : owns
+    user_credit_wallets ||--o{ credit_transactions : records
+
     users {
         string user_id PK
         string email
         string status
+        string source
     }
-    
+
+    roles {
+        string id PK
+        string name
+        string scope
+    }
+
+    permissions {
+        string id PK
+        string resource
+        string action
+    }
+
+    role_permissions {
+        string role_id CPK
+        string permission_id CPK
+    }
+
+    user_credit_wallets {
+        bigint id PK
+        string user_id UK
+        int total_credits
+        int consumed_credits
+    }
+
+    credit_transactions {
+        bigint id PK
+        string user_id
+        string type
+        int credits
+    }
+
     rule37_calculation_runs {
         bigint id PK
         string tenant_id

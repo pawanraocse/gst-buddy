@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { adminGuard } from './core/guards/admin.guard';
 import { AppLayoutComponent } from './layout/app-layout.component';
 
 export const routes: Routes = [
@@ -14,7 +15,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent)
       },
       {
-        // Consolidated signup route
         path: 'signup/personal',
         loadComponent: () => import('./features/auth/signup-personal.component').then(m => m.SignupPersonalComponent)
       },
@@ -41,6 +41,33 @@ export const routes: Routes = [
       {
         path: 'settings/account',
         loadComponent: () => import('./features/settings/account-settings.component').then(m => m.AccountSettingsComponent)
+      },
+      {
+        path: 'admin',
+        canActivate: [adminGuard],
+        children: [
+          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+          {
+            path: 'dashboard',
+            loadComponent: () => import('./features/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+          },
+          {
+            path: 'users',
+            loadComponent: () => import('./features/admin/admin-users.component').then(m => m.AdminUsersComponent)
+          },
+          {
+            path: 'users/:userId',
+            loadComponent: () => import('./features/admin/admin-user-detail.component').then(m => m.AdminUserDetailComponent)
+          },
+          {
+            path: 'plans',
+            loadComponent: () => import('./features/admin/admin-plans.component').then(m => m.AdminPlansComponent)
+          },
+          {
+            path: 'credits',
+            loadComponent: () => import('./features/admin/admin-credits.component').then(m => m.AdminCreditsComponent)
+          }
+        ]
       }
     ]
   },

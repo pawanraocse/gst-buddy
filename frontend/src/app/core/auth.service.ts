@@ -1,6 +1,8 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { fetchAuthSession, getCurrentUser, signIn, SignInOutput, signOut } from 'aws-amplify/auth';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { UserInfo } from './models';
 import { environment } from '../../environments/environment';
 
@@ -15,12 +17,16 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
 
   /** Current authenticated user */
   readonly user = signal<UserInfo | null>(null);
 
   /** Authentication state */
   readonly isAuthenticated = signal<boolean>(false);
+
+  /** Whether current user has super-admin role */
+  readonly isSuperAdmin = computed(() => this.user()?.role === 'super-admin');
 
   constructor() {
     this.checkAuth();
@@ -41,8 +47,10 @@ export class AuthService {
           email: (idToken['email'] as string) || '',
           emailVerified: Boolean(idToken['email_verified']),
           tenantType: (idToken['custom:tenant_type'] as string) || (idToken['tenant_type'] as string),
-          name: (idToken['name'] as string) || (idToken['given_name'] as string)
+          name: (idToken['name'] as string) || (idToken['given_name'] as string),
+          role: (idToken['custom:role'] as string) || undefined
         });
+        this.syncUserToBackend();
         return true;
       }
       return false;
@@ -159,6 +167,16 @@ export class AuthService {
   }
 
   // ========== Private Helpers ==========
+
+  /**
+   * Fire-and-forget call to /auth/me which triggers upsertOnLogin
+   * on the backend, ensuring the user exists in the DB.
+   */
+  private syncUserToBackend(): void {
+    firstValueFrom(
+      this.http.get(`${environment.apiUrl}/auth/api/v1/auth/me`)
+    ).catch(() => { /* non-blocking */ });
+  }
 
   private setUserInfo(info: UserInfo) {
     this.user.set(info);

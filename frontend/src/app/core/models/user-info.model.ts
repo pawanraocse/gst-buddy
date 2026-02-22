@@ -16,4 +16,7 @@ export interface UserInfo {
 
     /** User's full name */
     name?: string;
+
+    /** Role from JWT custom:role claim (e.g. 'super-admin', 'admin') */
+    role?: string;
 }

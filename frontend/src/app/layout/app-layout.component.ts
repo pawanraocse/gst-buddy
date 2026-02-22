@@ -44,10 +44,22 @@ export class AppLayoutComponent {
   }
 
   items = computed<MenuItem[]>(() => {
-    return [
+    const base: MenuItem[] = [
       { label: 'Rule 37', icon: 'pi pi-calculator', routerLink: '/app/dashboard' },
       { label: 'Settings', icon: 'pi pi-cog', routerLink: '/app/settings/account' }
     ];
+
+    if (this.authService.isSuperAdmin()) {
+      base.push(
+        { separator: true },
+        { label: 'Admin Dashboard', icon: 'pi pi-chart-bar', routerLink: '/app/admin/dashboard' },
+        { label: 'Manage Users', icon: 'pi pi-users', routerLink: '/app/admin/users' },
+        { label: 'Manage Plans', icon: 'pi pi-credit-card', routerLink: '/app/admin/plans' },
+        { label: 'Credit Overview', icon: 'pi pi-wallet', routerLink: '/app/admin/credits' }
+      );
+    }
+
+    return base;
   });
 
   logout() {

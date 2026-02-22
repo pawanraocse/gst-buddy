@@ -15,8 +15,15 @@ TERRAFORM_DIR="$SCRIPT_DIR/../../terraform/envs/budget"
 
 AWS_PROFILE="${AWS_PROFILE:-personal}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
-PROJECT_NAME="${PROJECT_NAME:-cloud-infra}"
+PROJECT_NAME="${PROJECT_NAME:-gst-buddy}"
 ENVIRONMENT="${ENVIRONMENT:-budget}"
+
+# Load environment variables from .env file if it exists
+if [ -f "$SCRIPT_DIR/../../.env" ]; then
+    set -a
+    source "$SCRIPT_DIR/../../.env"
+    set +a
+fi
 
 # Colors
 RED='\033[0;31m'

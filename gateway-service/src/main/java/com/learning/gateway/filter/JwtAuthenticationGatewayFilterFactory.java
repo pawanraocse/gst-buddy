@@ -58,7 +58,7 @@ public class JwtAuthenticationGatewayFilterFactory
                     }
                     String tenantId = tenantResult.tenantId();
                     String userId = jwt.getSubject();
-                    String username = jwt.getClaimAsString("username");
+                    String username = jwt.getClaimAsString("name");
 
                     // Debug: log all claims to troubleshoot email extraction
                     log.debug("JWT claims for userId={}: {}", userId, jwt.getClaims().keySet());

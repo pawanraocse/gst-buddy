@@ -74,11 +74,10 @@ public class UserService {
         User user;
 
         if (existing.isPresent()) {
-            // Update existing user
             user = existing.get();
             user.setLastLoginAt(Instant.now());
             user.setStatus("ACTIVE");
-            if (name != null) {
+            if (name != null && !name.isBlank()) {
                 user.setName(name);
             }
         } else {
@@ -131,6 +130,18 @@ public class UserService {
         log.info("Disabling user: {}", userId);
         userRepository.findById(userId).ifPresent(user -> {
             user.setStatus("DISABLED");
+            userRepository.save(user);
+        });
+    }
+
+    /**
+     * Re-enable a disabled user.
+     */
+    @Transactional
+    public void enableUser(@NonNull String userId) {
+        log.info("Enabling user: {}", userId);
+        userRepository.findById(userId).ifPresent(user -> {
+            user.setStatus("ACTIVE");
             userRepository.save(user);
         });
     }

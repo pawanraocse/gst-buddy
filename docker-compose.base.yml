@@ -120,7 +120,7 @@ services:
     image: ${PROJECT_NAME}-auth-service:1.0.0
     container_name: gst-buddy-auth-service
     volumes:
-      - ~/.aws:/root/.aws:ro
+      - ~/.aws:/home/spring/.aws:ro
     networks:
       - app-network
     ports:
