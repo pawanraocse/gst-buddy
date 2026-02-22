@@ -36,7 +36,6 @@ public class PurchaseOrchestrator {
      * @return updated wallet after credit grant
      * @throws IllegalStateException if payment verification fails
      */
-    @Transactional
     public WalletDto verifyAndGrantCredits(String orderId, String paymentId, String signature,
             String planName, String userId) {
         // 1. Verify payment signature

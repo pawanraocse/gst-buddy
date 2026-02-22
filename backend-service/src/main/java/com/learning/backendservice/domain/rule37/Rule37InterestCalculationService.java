@@ -3,6 +3,9 @@ package com.learning.backendservice.domain.rule37;
 import com.learning.backendservice.domain.ledger.LedgerEntry;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
@@ -26,21 +29,26 @@ import java.util.Map;
  *
  * <p>
  * <b>Algorithm:</b> FIFO purchase/payment matching per supplier.
+ * All financial calculations use {@link BigDecimal} with HALF_UP rounding.
  *
  * @see Rule37InterestCalculator
  */
 @Service
 public class Rule37InterestCalculationService implements Rule37InterestCalculator {
 
-    // GST calculation constants
-    private static final double ITC_RATE = 18.0 / 118.0;
-    private static final double INTEREST_RATE = 0.18;
+    private static final MathContext MC = MathContext.DECIMAL64;
+    private static final int SCALE = 2;
+    private static final RoundingMode RM = RoundingMode.HALF_UP;
+
+    private static final BigDecimal ITC_NUMERATOR = new BigDecimal("18");
+    private static final BigDecimal ITC_DENOMINATOR = new BigDecimal("118");
+    private static final BigDecimal INTEREST_RATE = new BigDecimal("0.18");
+    private static final BigDecimal DAYS_IN_YEAR = new BigDecimal("365");
+
     private static final int DAYS_THRESHOLD = 180;
     private static final int AT_RISK_THRESHOLD = 150;
-    private static final int DAYS_IN_YEAR = 365;
-    private static final int DECIMAL_PLACES = 2;
-    /** Tolerance for floating-point dust after FIFO matching (prevents infinite loops). */
-    private static final double AMOUNT_EPSILON = 0.001;
+
+    private static final BigDecimal AMOUNT_EPSILON = new BigDecimal("0.001");
 
     @Override
     public CalculationSummary calculate(List<LedgerEntry> entries, LocalDate asOnDate) {
@@ -49,9 +57,6 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
         return buildSummary(results, asOnDate);
     }
 
-    /**
-     * Partitions ledger entries into purchase and payment queues per supplier.
-     */
     private SupplierQueues partitionBySupplier(List<LedgerEntry> entries) {
         Map<String, List<MutableLedgerItem>> purchases = new LinkedHashMap<>();
         Map<String, List<MutableLedgerItem>> payments = new LinkedHashMap<>();
@@ -63,15 +68,13 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                             ? purchases
                             : payments;
                     map.computeIfAbsent(entry.getSupplier(), k -> new ArrayList<>())
-                            .add(new MutableLedgerItem(entry.getDate(), entry.getAmount()));
+                            .add(new MutableLedgerItem(entry.getDate(),
+                                    BigDecimal.valueOf(entry.getAmount())));
                 });
 
         return new SupplierQueues(purchases, payments);
     }
 
-    /**
-     * Processes all suppliers and collects interest rows.
-     */
     private List<InterestRow> processAllSuppliers(SupplierQueues queues, LocalDate asOnDate) {
         List<InterestRow> results = new ArrayList<>();
 
@@ -80,26 +83,20 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                     queues.payments().getOrDefault(supplier, List.of()));
             var pQueue = new ArrayList<>(purchaseQueue);
 
-            // FIFO matching for PAID_LATE entries
             processFifoMatching(supplier, pQueue, paymentQueue, asOnDate, results);
-
-            // Remaining purchases are UNPAID
             processUnpaidPurchases(supplier, pQueue, asOnDate, results);
         });
 
         return results;
     }
 
-    /**
-     * FIFO matching algorithm: matches purchases against payments chronologically.
-     */
     private void processFifoMatching(String supplier, List<MutableLedgerItem> purchases,
             List<MutableLedgerItem> payments, LocalDate asOnDate, List<InterestRow> results) {
 
         while (!purchases.isEmpty() && !payments.isEmpty()) {
             var purchase = purchases.getFirst();
             var payment = payments.getFirst();
-            double matched = Math.min(purchase.amount(), payment.amount());
+            BigDecimal matched = purchase.amount().min(payment.amount());
             int delayDays = daysBetween(purchase.date(), payment.date());
 
             if (delayDays > DAYS_THRESHOLD) {
@@ -107,7 +104,6 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                         matched, delayDays, InterestRow.InterestStatus.PAID_LATE, asOnDate));
             }
 
-            // Reduce amounts and remove exhausted items
             purchase.reduceBy(matched);
             payment.reduceBy(matched);
             if (purchase.isExhausted())
@@ -117,13 +113,6 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
         }
     }
 
-    /**
-     * Processes remaining unpaid purchases.
-     * <ul>
-     *   <li>Purchases > 180 days: BREACHED — full ITC reversal + interest</li>
-     *   <li>Purchases 151-180 days: AT_RISK — early warning, zero interest/ITC</li>
-     * </ul>
-     */
     private void processUnpaidPurchases(String supplier, List<MutableLedgerItem> purchases,
             LocalDate asOnDate, List<InterestRow> results) {
 
@@ -131,23 +120,18 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
             int days = daysBetween(purchase.date(), asOnDate);
 
             if (days > DAYS_THRESHOLD) {
-                // BREACHED: ITC reversal required under Section 16(2)
                 results.add(createInterestRow(
                         supplier, purchase.date(), null, purchase.amount(),
                         days, InterestRow.InterestStatus.UNPAID, asOnDate));
             } else if (days > AT_RISK_THRESHOLD) {
-                // AT_RISK: approaching deadline — early warning with zero liability
                 results.add(createAtRiskRow(
                         supplier, purchase.date(), purchase.amount(), days, asOnDate));
             }
         }
     }
 
-    /**
-     * Creates an InterestRow with all computed fields (BREACHED or PAID_LATE).
-     */
     private InterestRow createInterestRow(String supplier, LocalDate purchaseDate,
-            LocalDate paymentDate, double principal, int delayDays,
+            LocalDate paymentDate, BigDecimal principal, int delayDays,
             InterestRow.InterestStatus status, LocalDate asOnDate) {
 
         LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
@@ -157,7 +141,7 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .supplier(supplier)
                 .purchaseDate(purchaseDate)
                 .paymentDate(paymentDate)
-                .principal(principal)
+                .principal(principal.setScale(SCALE, RM))
                 .delayDays(delayDays)
                 .itcAmount(itcInterest.itcAmount())
                 .interest(itcInterest.interest())
@@ -166,16 +150,12 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .riskCategory(categorizeRisk(delayDays))
                 .gstr3bPeriod(formatGstr3bPeriod(deadline))
                 .daysToDeadline(daysBetween(asOnDate, deadline))
-                .itcAvailmentDate(null) // GSTR-3B readiness: populated when GSTR-3B data available
+                .itcAvailmentDate(null)
                 .build();
     }
 
-    /**
-     * Creates an AT_RISK early-warning row (151-180 days unpaid).
-     * No ITC reversal or interest yet — purely informational.
-     */
     private InterestRow createAtRiskRow(String supplier, LocalDate purchaseDate,
-            double principal, int delayDays, LocalDate asOnDate) {
+            BigDecimal principal, int delayDays, LocalDate asOnDate) {
 
         LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
 
@@ -183,10 +163,10 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .supplier(supplier)
                 .purchaseDate(purchaseDate)
                 .paymentDate(null)
-                .principal(principal)
+                .principal(principal.setScale(SCALE, RM))
                 .delayDays(delayDays)
-                .itcAmount(0)    // No reversal yet
-                .interest(0)     // No interest yet
+                .itcAmount(BigDecimal.ZERO)
+                .interest(BigDecimal.ZERO)
                 .status(InterestRow.InterestStatus.UNPAID)
                 .paymentDeadline(deadline)
                 .riskCategory(InterestRow.RiskCategory.AT_RISK)
@@ -196,45 +176,45 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .build();
     }
 
-    /**
-     * Builds the calculation summary with aggregated metrics.
-     */
     private CalculationSummary buildSummary(List<InterestRow> results, LocalDate asOnDate) {
-        double totalInterest = results.stream()
-                .mapToDouble(InterestRow::getInterest)
-                .sum();
+        BigDecimal totalInterest = results.stream()
+                .map(InterestRow::getInterest)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        double totalItcReversal = results.stream()
+        BigDecimal totalItcReversal = results.stream()
                 .filter(r -> r.getStatus() == InterestRow.InterestStatus.UNPAID)
-                .mapToDouble(InterestRow::getItcAmount)
-                .sum();
+                .map(InterestRow::getItcAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         var atRiskRows = results.stream()
                 .filter(r -> r.getRiskCategory() == InterestRow.RiskCategory.AT_RISK)
                 .toList();
+
+        BigDecimal atRiskAmount = atRiskRows.stream()
+                .map(InterestRow::getPrincipal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         long breachedCount = results.stream()
                 .filter(r -> r.getRiskCategory() == InterestRow.RiskCategory.BREACHED)
                 .count();
 
         return CalculationSummary.builder()
-                .totalInterest(round(totalInterest))
-                .totalItcReversal(round(totalItcReversal))
+                .totalInterest(totalInterest.setScale(SCALE, RM))
+                .totalItcReversal(totalItcReversal.setScale(SCALE, RM))
                 .details(results)
                 .atRiskCount(atRiskRows.size())
-                .atRiskAmount(round(atRiskRows.stream().mapToDouble(InterestRow::getPrincipal).sum()))
+                .atRiskAmount(atRiskAmount.setScale(SCALE, RM))
                 .breachedCount((int) breachedCount)
                 .calculationDate(asOnDate)
                 .build();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Pure calculation methods (Single Responsibility)
-    // ─────────────────────────────────────────────────────────────────────────────
-
-    private static ItcInterest computeItcAndInterest(double principal, int delayDays) {
-        double itcAmount = round(principal * ITC_RATE);
-        double interest = round(itcAmount * INTEREST_RATE * delayDays / DAYS_IN_YEAR);
+    private static ItcInterest computeItcAndInterest(BigDecimal principal, int delayDays) {
+        BigDecimal itcAmount = principal.multiply(ITC_NUMERATOR, MC)
+                .divide(ITC_DENOMINATOR, SCALE, RM);
+        BigDecimal interest = itcAmount.multiply(INTEREST_RATE, MC)
+                .multiply(BigDecimal.valueOf(delayDays), MC)
+                .divide(DAYS_IN_YEAR, SCALE, RM);
         return new ItcInterest(itcAmount, interest);
     }
 
@@ -256,16 +236,7 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
         return (int) ChronoUnit.DAYS.between(from, to);
     }
 
-    private static double round(double value) {
-        double factor = Math.pow(10, DECIMAL_PLACES);
-        return Math.round(value * factor) / factor;
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Immutable records for data transfer (modern Java 17+)
-    // ─────────────────────────────────────────────────────────────────────────────
-
-    private record ItcInterest(double itcAmount, double interest) {
+    private record ItcInterest(BigDecimal itcAmount, BigDecimal interest) {
     }
 
     private record SupplierQueues(
@@ -273,14 +244,11 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
             Map<String, List<MutableLedgerItem>> payments) {
     }
 
-    /**
-     * Mutable ledger item for FIFO matching (amount reduces during processing).
-     */
     private static final class MutableLedgerItem {
         private final LocalDate date;
-        private double amount;
+        private BigDecimal amount;
 
-        MutableLedgerItem(LocalDate date, double amount) {
+        MutableLedgerItem(LocalDate date, BigDecimal amount) {
             this.date = date;
             this.amount = amount;
         }
@@ -289,16 +257,16 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
             return date;
         }
 
-        double amount() {
+        BigDecimal amount() {
             return amount;
         }
 
-        void reduceBy(double value) {
-            this.amount -= value;
+        void reduceBy(BigDecimal value) {
+            this.amount = this.amount.subtract(value);
         }
 
         boolean isExhausted() {
-            return amount <= AMOUNT_EPSILON;
+            return amount.compareTo(AMOUNT_EPSILON) <= 0;
         }
     }
 }

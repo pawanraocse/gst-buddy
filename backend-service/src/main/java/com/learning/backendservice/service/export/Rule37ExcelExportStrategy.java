@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -42,8 +43,12 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
             rowNum++;
             Row totalRow = summarySheet.createRow(rowNum);
             totalRow.createCell(0).setCellValue("GRAND TOTAL");
-            double totalItc = ledgerResults.stream().mapToDouble(lr -> lr.getSummary().getTotalItcReversal()).sum();
-            double totalInterest = ledgerResults.stream().mapToDouble(lr -> lr.getSummary().getTotalInterest()).sum();
+            BigDecimal totalItc = ledgerResults.stream()
+                    .map(lr -> lr.getSummary().getTotalItcReversal())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalInterest = ledgerResults.stream()
+                    .map(lr -> lr.getSummary().getTotalInterest())
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
             totalRow.createCell(1).setCellValue(formatCurrency(totalItc));
             totalRow.createCell(2).setCellValue(formatCurrency(totalInterest));
 
@@ -119,8 +124,9 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         return date != null ? date.format(DATE_FORMAT) : "N/A";
     }
 
-    private static String formatCurrency(double amount) {
-        return String.format("%.2f", amount);
+    private static String formatCurrency(BigDecimal amount) {
+        if (amount == null) return "0.00";
+        return amount.toPlainString();
     }
 
     private static String sanitizeSheetName(String name) {

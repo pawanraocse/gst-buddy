@@ -75,7 +75,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         @Override
-        @Transactional
         public AuthResponseDto login(AuthRequestDto requestDto) {
                 try {
                         // Build auth parameters with SECRET_HASH if client secret is configured
@@ -148,7 +147,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         @Override
-        @Transactional
         public SignupResponseDto signup(SignupRequestDto requestDto) {
                 try {
                         // Use signUp API instead of adminCreateUser to enable email verification
@@ -214,7 +212,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         @Override
-        @Transactional
         public void logout() {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
                 if (auth != null) {
@@ -228,7 +225,6 @@ public class AuthServiceImpl implements AuthService {
         }
 
         @Override
-        @Transactional
         public void deleteAccount() {
                 String userId = request.getHeader("X-User-Id");
                 // In Lite version, we don't track tenants explicitly in the same way, but we

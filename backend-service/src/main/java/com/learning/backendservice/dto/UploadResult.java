@@ -1,11 +1,11 @@
 package com.learning.backendservice.dto;
 
-import com.learning.backendservice.domain.rule37.LedgerResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +22,9 @@ public class UploadResult {
     @Builder.Default
     private List<FileUploadError> errors = new ArrayList<>();
 
-    /** Number of credits consumed for this analysis. */
     @Builder.Default
     private Integer creditsConsumed = 0;
 
-    /** Remaining credits after this analysis. */
     @Builder.Default
     private Integer remainingCredits = 0;
 
@@ -48,8 +46,8 @@ public class UploadResult {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CalculationSummaryDto {
-        private double totalInterest;
-        private double totalItcReversal;
+        private BigDecimal totalInterest;
+        private BigDecimal totalItcReversal;
         private List<InterestRowDto> details;
     }
 
@@ -61,10 +59,10 @@ public class UploadResult {
         private String supplier;
         private String purchaseDate;
         private String paymentDate;
-        private double principal;
+        private BigDecimal principal;
         private int delayDays;
-        private double itcAmount;
-        private double interest;
+        private BigDecimal itcAmount;
+        private BigDecimal interest;
         private String status;
     }
 

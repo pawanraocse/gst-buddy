@@ -6,8 +6,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cache.CacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for CommonCacheConfiguration.
@@ -19,12 +17,18 @@ class CommonCacheConfigurationTest {
 
     @Test
     void cacheManagerCreatesPermissionsCache_WithoutRedisson() {
-        // Test fallback to Caffeine when Redisson is not available
-        @SuppressWarnings("unchecked")
-        ObjectProvider<RedissonClient> mockProvider = mock(ObjectProvider.class);
-        when(mockProvider.getIfAvailable()).thenReturn(null);
+        ObjectProvider<RedissonClient> nullProvider = new ObjectProvider<>() {
+            @Override
+            public RedissonClient getObject() { throw new UnsupportedOperationException(); }
+            @Override
+            public RedissonClient getObject(Object... args) { throw new UnsupportedOperationException(); }
+            @Override
+            public RedissonClient getIfAvailable() { return null; }
+            @Override
+            public RedissonClient getIfUnique() { return null; }
+        };
 
-        CacheManager cacheManager = config.cacheManager(mockProvider);
+        CacheManager cacheManager = config.cacheManager(nullProvider);
 
         assertThat(cacheManager.getCache(CacheNames.PERMISSIONS))
                 .as("Permissions cache should exist")

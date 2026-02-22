@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -59,8 +60,9 @@ class LedgerUploadOrchestratorTest {
 
     private LedgerResult mockLedgerResult(String name) {
         return new LedgerResult(name, CalculationSummary.builder()
-                .totalInterest(100.0)
-                .totalItcReversal(500.0)
+                .totalInterest(new BigDecimal("100.00"))
+                .totalItcReversal(new BigDecimal("500.00"))
+                .atRiskAmount(BigDecimal.ZERO)
                 .details(List.of())
                 .calculationDate(AS_ON_DATE)
                 .build());

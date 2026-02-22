@@ -52,33 +52,29 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/", "/actuator/health", "/actuator/info",
                                                                 "/logged-out", "/error",
                                                                 "/api/v1/auth/signup/**", "/api/v1/auth/login",
-                                                                "/api/v1/auth/lookup", // Multi-tenant login lookup
-                                                                "/api/v1/auth/last-accessed", // Update last accessed
-                                                                                              // after login
+                                                                "/api/v1/auth/lookup",
+                                                                "/api/v1/auth/last-accessed",
                                                                 "/api/v1/auth/verify",
                                                                 "/api/v1/auth/resend-verification",
-                                                                "/api/v1/auth/forgot-password", // Password reset
+                                                                "/api/v1/auth/forgot-password",
                                                                 "/api/v1/auth/reset-password",
                                                                 "/api/v1/invitations/validate",
                                                                 "/api/v1/invitations/accept",
-                                                                "/api/v1/resource-permissions/**", // Internal
-                                                                                                   // service-to-service
-                                                                // calls
-                                                                "/internal/**", // Internal migration and
-                                                                                // service-to-service calls
-                                                                // Gateway-authenticated endpoints (X-User-Id header
-                                                                // trusted)
-                                                                "/api/v1/auth/me", // Current user info (gateway
-                                                                                   // validates JWT)
-                                                                "/api/v1/acl/**", // ACL management (gateway validates
-                                                                                  // JWT)
+                                                                "/api/v1/resource-permissions/**",
+                                                                // Gateway-authenticated endpoints (X-User-Id trusted)
+                                                                "/api/v1/auth/me",
+                                                                "/api/v1/acl/**",
                                                                 "/api/v1/roles/**",
                                                                 "/api/v1/invitations/**",
                                                                 "/api/v1/users/**",
-                                                                "/api/v1/account/**", // Account deletion (Gateway
-                                                                                      // validates JWT)
-                                                                "/api/v1/plans",       // Public plans listing (landing page)
-                                                                "/api/v1/credits/**")  // Credit wallet/consume (gateway validates JWT)
+                                                                "/api/v1/account/**",
+                                                                "/api/v1/plans",
+                                                                "/api/v1/credits",
+                                                                "/api/v1/credits/consume",
+                                                                "/api/v1/credits/transactions")
+                                                .permitAll()
+                                                // Internal endpoints require X-Internal-Api-Key header
+                                                .requestMatchers("/internal/**", "/api/v1/credits/grant")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2

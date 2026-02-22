@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -31,15 +32,19 @@ public class LedgerExcelParser implements LedgerParser {
 
     private static final Logger log = LoggerFactory.getLogger(LedgerExcelParser.class);
 
+    private static final long MAX_DECOMPRESSED_SIZE = 100L * 1024 * 1024; // 100 MB
+    private static final int MAX_ROWS = 50_000;
+
     @Override
     public List<LedgerEntry> parse(InputStream inputStream, String filename) {
         String defaultSupplier = getFileNameWithoutExtension(filename);
 
-        try (Workbook workbook = WorkbookFactory.create(inputStream)) {
+        try (Workbook workbook = createWorkbookWithLimits(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0);
             if (sheet == null || sheet.getPhysicalNumberOfRows() == 0) {
                 throw new LedgerParseException("Excel file is empty");
             }
+            validateRowCount(sheet);
 
             Row headerRow = sheet.getRow(0);
             if (headerRow == null) {
@@ -80,6 +85,20 @@ public class LedgerExcelParser implements LedgerParser {
             throw e;
         } catch (Exception e) {
             throw new LedgerParseException("Failed to parse Excel file: " + e.getMessage(), e);
+        }
+    }
+
+    private Workbook createWorkbookWithLimits(InputStream inputStream) throws Exception {
+        if (!inputStream.markSupported()) {
+            inputStream = new BufferedInputStream(inputStream);
+        }
+        org.apache.poi.util.IOUtils.setByteArrayMaxOverride((int) MAX_DECOMPRESSED_SIZE);
+        return WorkbookFactory.create(inputStream);
+    }
+
+    private void validateRowCount(Sheet sheet) {
+        if (sheet.getPhysicalNumberOfRows() > MAX_ROWS) {
+            throw new LedgerParseException("Sheet exceeds maximum row limit of " + MAX_ROWS);
         }
     }
 

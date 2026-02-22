@@ -22,7 +22,6 @@ public class Rule37CalculationRunService {
     private final LedgerUploadOrchestrator ledgerUploadOrchestrator;
     private final Rule37RunRepository runRepository;
 
-    @Transactional
     public UploadResult processUpload(List<MultipartFile> files, java.time.LocalDate asOnDate, String createdBy) {
         return ledgerUploadOrchestrator.processUpload(files, asOnDate, createdBy);
     }

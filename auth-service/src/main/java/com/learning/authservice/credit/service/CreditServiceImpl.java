@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -105,35 +106,42 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
-    @Transactional
     public WalletDto consumeCredits(String userId, int credits, String referenceId, String idempotencyKey) {
         if (credits <= 0) {
             throw new IllegalArgumentException("Credits must be positive, got: " + credits);
         }
 
-        // Idempotency check
         if (idempotencyKey != null && transactionRepository.existsByIdempotencyKey(idempotencyKey)) {
             log.info("Consumption already processed: idempotencyKey={}", idempotencyKey);
             return getWallet(userId);
         }
 
-        return executeWithOptimisticRetry(() -> {
-            var wallet = getOrCreateWallet(userId);
+        return executeWithOptimisticRetry(() ->
+                consumeCreditsInNewTx(userId, credits, referenceId, idempotencyKey));
+    }
 
-            if (wallet.getRemainingCredits() < credits) {
-                throw new InsufficientCreditsException(credits, wallet.getRemainingCredits());
-            }
+    /**
+     * Each retry gets a fresh transaction so that an optimistic lock failure
+     * does not poison subsequent attempts.
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public WalletDto consumeCreditsInNewTx(String userId, int credits,
+            String referenceId, String idempotencyKey) {
+        var wallet = getOrCreateWallet(userId);
 
-            wallet.deductCredits(credits);
-            wallet = walletRepository.save(wallet);
+        if (wallet.getRemainingCredits() < credits) {
+            throw new InsufficientCreditsException(credits, wallet.getRemainingCredits());
+        }
 
-            recordTransaction(wallet, TransactionType.CONSUME, credits,
-                    ReferenceType.ANALYSIS, referenceId, idempotencyKey,
-                    "Analysis: " + credits + " credit(s) consumed");
+        wallet.deductCredits(credits);
+        wallet = walletRepository.save(wallet);
 
-            log.info("Consumed {} credits for userId={}, refId={}", credits, userId, referenceId);
-            return toDto(wallet);
-        });
+        recordTransaction(wallet, TransactionType.CONSUME, credits,
+                ReferenceType.ANALYSIS, referenceId, idempotencyKey,
+                "Analysis: " + credits + " credit(s) consumed");
+
+        log.info("Consumed {} credits for userId={}, refId={}", credits, userId, referenceId);
+        return toDto(wallet);
     }
 
     @Override

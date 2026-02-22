@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -140,12 +141,12 @@ public class LedgerUploadOrchestrator {
                     .collect(Collectors.joining("; ")));
         }
 
-        double totalInterest = results.stream()
-                .mapToDouble(r -> r.getSummary().getTotalInterest())
-                .sum();
-        double totalItcReversal = results.stream()
-                .mapToDouble(r -> r.getSummary().getTotalItcReversal())
-                .sum();
+        BigDecimal totalInterest = results.stream()
+                .map(r -> r.getSummary().getTotalInterest())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalItcReversal = results.stream()
+                .map(r -> r.getSummary().getTotalItcReversal())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         OffsetDateTime now = OffsetDateTime.now();
         OffsetDateTime expiresAt = now.plus(retentionDays, ChronoUnit.DAYS);
@@ -157,8 +158,8 @@ public class LedgerUploadOrchestrator {
                 .tenantId(tenantId)
                 .filename(filename)
                 .asOnDate(asOnDate)
-                .totalInterest(java.math.BigDecimal.valueOf(totalInterest))
-                .totalItcReversal(java.math.BigDecimal.valueOf(totalItcReversal))
+                .totalInterest(totalInterest)
+                .totalItcReversal(totalItcReversal)
                 .calculationData(results)
                 .createdAt(now)
                 .createdBy(createdBy)
@@ -193,15 +194,18 @@ public class LedgerUploadOrchestrator {
         }
     }
 
-    private static UploadResult.CalculationSummaryDto toSummaryDto(com.learning.backendservice.domain.rule37.CalculationSummary s) {
+    private static UploadResult.CalculationSummaryDto toSummaryDto(
+            com.learning.backendservice.domain.rule37.CalculationSummary s) {
         return UploadResult.CalculationSummaryDto.builder()
                 .totalInterest(s.getTotalInterest())
                 .totalItcReversal(s.getTotalItcReversal())
                 .details(s.getDetails().stream()
                         .map(r -> UploadResult.InterestRowDto.builder()
                                 .supplier(r.getSupplier())
-                                .purchaseDate(r.getPurchaseDate() != null ? r.getPurchaseDate().toString() : null)
-                                .paymentDate(r.getPaymentDate() != null ? r.getPaymentDate().toString() : "Unpaid")
+                                .purchaseDate(r.getPurchaseDate() != null
+                                        ? r.getPurchaseDate().toString() : null)
+                                .paymentDate(r.getPaymentDate() != null
+                                        ? r.getPaymentDate().toString() : "Unpaid")
                                 .principal(r.getPrincipal())
                                 .delayDays(r.getDelayDays())
                                 .itcAmount(r.getItcAmount())

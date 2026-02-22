@@ -35,10 +35,22 @@ public class Rule37ExportController {
             @RequestParam(value = "format", defaultValue = "excel") String format) {
         Rule37CalculationRun run = runService.getRunEntity(id);
         byte[] bytes = exportStrategy.generate(run.getCalculationData(), run.getFilename());
-        String filename = run.getFilename() + "_Interest_Calculation." + exportStrategy.getFileExtension();
+        String safeFilename = sanitizeFilename(run.getFilename())
+                + "_Interest_Calculation." + exportStrategy.getFileExtension();
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(exportStrategy.getContentType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        org.springframework.http.ContentDisposition.attachment()
+                                .filename(safeFilename)
+                                .build()
+                                .toString())
                 .body(bytes);
+    }
+
+    private static String sanitizeFilename(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return "export";
+        }
+        return raw.replaceAll("[^a-zA-Z0-9._\\- ]", "_").replaceAll("_{2,}", "_");
     }
 }

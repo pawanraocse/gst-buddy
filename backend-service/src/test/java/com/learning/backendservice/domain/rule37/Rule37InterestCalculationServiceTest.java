@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,11 +67,13 @@ class Rule37InterestCalculationServiceTest {
             assertEquals(212, row.getDelayDays());
 
             // ITC = 118000 * 18/118 = 18000
-            assertEquals(18_000.0, row.getItcAmount(), 0.01);
+            assertEquals(0, new BigDecimal("18000.00").compareTo(row.getItcAmount()),
+                    "ITC amount should be 18000");
 
             // Interest = 18000 * 0.18 * 212/365 ≈ 1882.19
-            double expectedInterest = 18_000.0 * 0.18 * 212.0 / 365.0;
-            assertEquals(expectedInterest, row.getInterest(), 1.0);
+            assertTrue(row.getInterest().compareTo(new BigDecimal("1800")) > 0
+                    && row.getInterest().compareTo(new BigDecimal("1900")) < 0,
+                    "Interest should be approximately 1882");
 
             assertEquals(InterestRow.RiskCategory.BREACHED, row.getRiskCategory());
         }
@@ -99,9 +102,11 @@ class Rule37InterestCalculationServiceTest {
 
             assertEquals("Supplier B", row.getSupplier());
             assertNull(row.getPaymentDate());
-            assertTrue(row.getItcAmount() > 0, "ITC should be positive for breached unpaid");
-            assertTrue(row.getInterest() > 0, "Interest should be positive for breached unpaid");
-            assertTrue(summary.getTotalItcReversal() > 0);
+            assertTrue(row.getItcAmount().compareTo(BigDecimal.ZERO) > 0,
+                    "ITC should be positive for breached unpaid");
+            assertTrue(row.getInterest().compareTo(BigDecimal.ZERO) > 0,
+                    "Interest should be positive for breached unpaid");
+            assertTrue(summary.getTotalItcReversal().compareTo(BigDecimal.ZERO) > 0);
         }
     }
 
@@ -126,8 +131,8 @@ class Rule37InterestCalculationServiceTest {
                     .anyMatch(r -> r.getStatus() == InterestRow.InterestStatus.PAID_LATE),
                     "FIFO should produce at least one PAID_LATE entry");
 
-            // Total interest should be positive
-            assertTrue(summary.getTotalInterest() > 0);
+            assertTrue(summary.getTotalInterest().compareTo(BigDecimal.ZERO) > 0,
+                    "Total interest should be positive");
         }
     }
 
@@ -164,7 +169,7 @@ class Rule37InterestCalculationServiceTest {
             boolean hasBreached = summary.getDetails().stream()
                     .anyMatch(r -> r.getRiskCategory() == InterestRow.RiskCategory.BREACHED);
             assertTrue(hasBreached, "181 days should trigger reversal");
-            assertTrue(summary.getTotalItcReversal() > 0);
+            assertTrue(summary.getTotalItcReversal().compareTo(BigDecimal.ZERO) > 0);
         }
     }
 
@@ -190,8 +195,10 @@ class Rule37InterestCalculationServiceTest {
 
             assertNotNull(summary);
             assertTrue(summary.getDetails().isEmpty());
-            assertEquals(0, summary.getTotalInterest(), 0.001);
-            assertEquals(0, summary.getTotalItcReversal(), 0.001);
+            assertEquals(0, summary.getTotalInterest().compareTo(BigDecimal.ZERO),
+                    "Empty entries should have zero interest");
+            assertEquals(0, summary.getTotalItcReversal().compareTo(BigDecimal.ZERO),
+                    "Empty entries should have zero ITC reversal");
         }
     }
 
@@ -314,8 +321,10 @@ class Rule37InterestCalculationServiceTest {
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("Expected AT_RISK early warning entry"));
 
-            assertEquals(0, row.getItcAmount(), 0.001, "AT_RISK should have zero ITC");
-            assertEquals(0, row.getInterest(), 0.001, "AT_RISK should have zero interest");
+            assertEquals(0, row.getItcAmount().compareTo(BigDecimal.ZERO),
+                    "AT_RISK should have zero ITC");
+            assertEquals(0, row.getInterest().compareTo(BigDecimal.ZERO),
+                    "AT_RISK should have zero interest");
             assertEquals(InterestRow.InterestStatus.UNPAID, row.getStatus());
             assertTrue(row.getDaysToDeadline() > 0, "AT_RISK should have positive days to deadline");
         }
@@ -329,8 +338,10 @@ class Rule37InterestCalculationServiceTest {
 
             CalculationSummary summary = service.calculate(entries, AS_ON_DATE);
 
-            assertEquals(0, summary.getTotalItcReversal(), 0.001, "AT_RISK should not contribute to ITC reversal total");
-            assertEquals(0, summary.getTotalInterest(), 0.001, "AT_RISK should not contribute to interest total");
+            assertEquals(0, summary.getTotalItcReversal().compareTo(BigDecimal.ZERO),
+                    "AT_RISK should not contribute to ITC reversal total");
+            assertEquals(0, summary.getTotalInterest().compareTo(BigDecimal.ZERO),
+                    "AT_RISK should not contribute to interest total");
             assertEquals(1, summary.getAtRiskCount(), "Should count 1 AT_RISK entry");
         }
     }

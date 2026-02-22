@@ -8,6 +8,7 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 @Slf4j
@@ -32,7 +33,6 @@ public class RouteConfig {
                 log.info("Configuring custom routes");
 
                 return builder.routes()
-                                // Routes for frontend paths (/auth-service/** proxy to /auth/**)
                                 .route("auth-service-proxy", r -> r
                                                 .path("/auth-service/**")
                                                 .filters(f -> f
@@ -45,11 +45,11 @@ public class RouteConfig {
                                                                                 .setFallbackUri(FALLBACK_URI))
                                                                 .retry(rCfg -> rCfg
                                                                                 .setRetries(3)
+                                                                                .setMethods(HttpMethod.GET)
                                                                                 .setStatuses(HttpStatus.BAD_GATEWAY,
                                                                                                 HttpStatus.SERVICE_UNAVAILABLE)))
                                                 .uri("lb://" + AUTH_SERVICE_ID))
 
-                                // Routes for backend-service (/backend-service/** proxy)
                                 .route("backend-service-proxy", r -> r
                                                 .path("/backend-service/**")
                                                 .filters(f -> f
@@ -61,6 +61,7 @@ public class RouteConfig {
                                                                                 .setFallbackUri(FALLBACK_URI))
                                                                 .retry(rCfg -> rCfg
                                                                                 .setRetries(3)
+                                                                                .setMethods(HttpMethod.GET)
                                                                                 .setStatuses(HttpStatus.BAD_GATEWAY,
                                                                                                 HttpStatus.SERVICE_UNAVAILABLE)))
                                                 .uri("lb://" + BACKEND_SERVICE_ID))
@@ -76,6 +77,7 @@ public class RouteConfig {
                                                                                 .setFallbackUri(FALLBACK_URI))
                                                                 .retry(rCfg -> rCfg
                                                                                 .setRetries(3)
+                                                                                .setMethods(HttpMethod.GET)
                                                                                 .setStatuses(HttpStatus.BAD_GATEWAY,
                                                                                                 HttpStatus.SERVICE_UNAVAILABLE)))
                                                 .uri("lb://" + AUTH_SERVICE_ID))
@@ -90,6 +92,7 @@ public class RouteConfig {
                                                                                 .setFallbackUri(FALLBACK_URI))
                                                                 .retry(rCfg -> rCfg
                                                                                 .setRetries(3)
+                                                                                .setMethods(HttpMethod.GET)
                                                                                 .setStatuses(HttpStatus.BAD_GATEWAY,
                                                                                                 HttpStatus.SERVICE_UNAVAILABLE)))
                                                 .uri("lb://" + BACKEND_SERVICE_ID))

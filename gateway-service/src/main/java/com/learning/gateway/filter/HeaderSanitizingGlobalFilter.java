@@ -35,7 +35,8 @@ public class HeaderSanitizingGlobalFilter implements GlobalFilter, Ordered {
             "X-Email",
             "X-Tenant-Id",
             "X-Authorities",
-            "X-Auth-Signature");
+            "X-Auth-Signature",
+            "X-Groups");
 
     @Value("${security.gateway.sanitize-headers:true}")
     private boolean sanitizeEnabled;
