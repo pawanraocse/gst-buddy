@@ -1,0 +1,101 @@
+# GitHub Actions - Budget Deployment
+# Triggered on push to main or manual dispatch
+
+name: Deploy to Budget
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "gateway-service/**"
+      - "auth-service/**"
+      - "backend-service/**"
+      - "eureka-server/**"
+      - "common-dto/**"
+      - "common-infra/**"
+      - "pom.xml"
+      - "docker-compose*.yml"
+      - "scripts/budget/**"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  PROJECT_NAME: gst-buddy
+  ENVIRONMENT: budget
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build applications
+        run: |
+          # Build all services using the root pom
+          mvn clean package -DskipTests -q
+
+      - name: Get EC2 IP from SSM
+        id: get-ip
+        run: |
+          EC2_IP=$(aws ssm get-parameter --name "/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/ec2/public_ip" --query 'Parameter.Value' --output text)
+          echo "ec2_ip=$EC2_IP" >> $GITHUB_OUTPUT
+          
+          if [ -z "$EC2_IP" ]; then
+            echo "Failed to retrieve EC2 IP from SSM. Aborting."
+            exit 1
+          fi
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy to EC2
+        run: |
+          # Sync code + built JARs to EC2 using the exact command from deploy.sh
+          rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+              --exclude '.terraform' \
+              --exclude 'node_modules' \
+              --exclude '.git' \
+              --exclude '.idea' \
+              --exclude 'frontend' \
+              --exclude '*.class' \
+              --exclude 'target/classes' \
+              --exclude 'target/test-classes' \
+              --exclude 'target/generated-sources' \
+              --exclude 'target/maven-status' \
+              --include 'target/*.jar' \
+              ./ ec2-user@${{ steps.get-ip.outputs.ec2_ip }}:/app/
+              
+          # Connect via SSH and restart services
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get-ip.outputs.ec2_ip }} "cd /app && chmod +x scripts/budget/*.sh && ./scripts/budget/start.sh"
+
+  notify:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Deployment Status
+        run: |
+          if [ "${{ needs.build-and-deploy.result }}" == "success" ]; then
+            echo "✅ Budget deployment successful!"
+          else
+            echo "❌ Budget deployment failed!"
+            exit 1
+          fi

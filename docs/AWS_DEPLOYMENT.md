@@ -35,6 +35,15 @@ cd terraform/envs/production && terraform apply
 
 ---
 
+## CI/CD Deployment Workflows
+
+| Environment | Trigger Branch | Action |
+|-------------|----------------|--------|
+| **Budget** | `main` | Builds JARs, syncs to EC2 via rsync, and restarts Docker containers |
+| **Production** | `prod` | Builds Docker images, pushes to Amazon ECR, and deploys to ECS |
+
+---
+
 ## Architecture by Environment
 
 ### Local (Docker Compose)

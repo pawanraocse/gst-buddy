@@ -6,7 +6,7 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - main
+      - prod
     paths:
       - "gateway-service/**"
       - "auth-service/**"
@@ -21,9 +21,9 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  PROJECT_NAME: saas-factory
+  PROJECT_NAME: gst-buddy
   ENVIRONMENT: production
-  ECS_CLUSTER: saas-factory-production
+  ECS_CLUSTER: gst-buddy-production
 
 jobs:
   detect-changes:
