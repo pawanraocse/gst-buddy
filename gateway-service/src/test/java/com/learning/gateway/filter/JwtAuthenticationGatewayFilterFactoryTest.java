@@ -50,7 +50,7 @@ class JwtAuthenticationGatewayFilterFactoryTest extends BaseGatewayFilterTest {
                 JwtAuthenticationToken authentication = jwtAuthentication(
                                 jwt(Map.of(
                                                 "sub", "user-123",
-                                                "username", "jane.doe",
+                                                "name", "jane.doe",
                                                 "email", "jane@example.com",
                                                 "cognito:groups", List.of("tenant_acme"))),
                                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
