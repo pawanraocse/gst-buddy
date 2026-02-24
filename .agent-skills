@@ -34,6 +34,14 @@
 - Runtime: Python 3.11 (PostConfirmation), Python 3.12 (PreTokenGeneration)
 - Test: `cd terraform/lambdas/<function> && pip install -r requirements-test.txt && pytest -v`
 
+## AI Vibe Coding (Token Optimization & Skill+CLI)
+When you (the agent) need to read large datasets or long logs, **you must not read massive raw files into your context window**.
+1. **The Toolkit:** Run `scripts/ai-toolkit/cli.sh help` to see available local shortcuts.
+2. **The Orchestration Pattern:** If a task requires scanning thousands of lines to find a single answer, write a local `orchestrate.js` or `orchestrate.py` script. The script should:
+   - Run the relevant CLI command.
+   - Parse the large output locally.
+   - Print **ONLY the summarized 1-2 sentence answer** to stdout.
+
 ## Frameworks & Key Dependencies
 
 | Dependency | Version | Purpose |
