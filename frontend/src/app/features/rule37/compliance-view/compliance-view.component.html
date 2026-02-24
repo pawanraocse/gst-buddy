@@ -81,10 +81,16 @@
 
         <!-- Export CTA -->
         @if (showExportAll() && results().length > 0) {
-        <button pButton class="export-btn" (click)="exportAll.emit()">
-            <i class="pi pi-download"></i>
-            <span>Export Report</span>
-        </button>
+        <div class="export-actions">
+            <button pButton class="export-btn" (click)="exportAll.emit('issues')">
+                <i class="pi pi-download"></i>
+                <span>Export Issues Report</span>
+            </button>
+            <button pButton class="export-btn export-btn-complete" (click)="exportAll.emit('complete')">
+                <i class="pi pi-file-excel"></i>
+                <span>Export Complete Report</span>
+            </button>
+        </div>
         }
     </section>
 

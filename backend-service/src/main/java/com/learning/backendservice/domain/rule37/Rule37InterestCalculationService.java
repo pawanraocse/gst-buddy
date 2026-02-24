@@ -102,6 +102,10 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
             if (delayDays > DAYS_THRESHOLD) {
                 results.add(createInterestRow(supplier, purchase.date(), payment.date(),
                         matched, delayDays, InterestRow.InterestStatus.PAID_LATE, asOnDate));
+            } else {
+                // On-time payment — no interest/ITC but included for complete report
+                results.add(createOnTimeRow(supplier, purchase.date(), payment.date(),
+                        matched, delayDays, asOnDate));
             }
 
             purchase.reduceBy(matched);
@@ -125,6 +129,10 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                         days, InterestRow.InterestStatus.UNPAID, asOnDate));
             } else if (days > AT_RISK_THRESHOLD) {
                 results.add(createAtRiskRow(
+                        supplier, purchase.date(), purchase.amount(), days, asOnDate));
+            } else {
+                // Safe unpaid — within 180 days, included for complete report
+                results.add(createSafeUnpaidRow(
                         supplier, purchase.date(), purchase.amount(), days, asOnDate));
             }
         }
@@ -170,6 +178,50 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .status(InterestRow.InterestStatus.UNPAID)
                 .paymentDeadline(deadline)
                 .riskCategory(InterestRow.RiskCategory.AT_RISK)
+                .gstr3bPeriod(formatGstr3bPeriod(deadline))
+                .daysToDeadline(daysBetween(asOnDate, deadline))
+                .itcAvailmentDate(null)
+                .build();
+    }
+
+    private InterestRow createOnTimeRow(String supplier, LocalDate purchaseDate,
+            LocalDate paymentDate, BigDecimal principal, int delayDays, LocalDate asOnDate) {
+
+        LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
+
+        return InterestRow.builder()
+                .supplier(supplier)
+                .purchaseDate(purchaseDate)
+                .paymentDate(paymentDate)
+                .principal(principal.setScale(SCALE, RM))
+                .delayDays(delayDays)
+                .itcAmount(BigDecimal.ZERO)
+                .interest(BigDecimal.ZERO)
+                .status(InterestRow.InterestStatus.PAID_ON_TIME)
+                .paymentDeadline(deadline)
+                .riskCategory(InterestRow.RiskCategory.SAFE)
+                .gstr3bPeriod(formatGstr3bPeriod(deadline))
+                .daysToDeadline(daysBetween(asOnDate, deadline))
+                .itcAvailmentDate(null)
+                .build();
+    }
+
+    private InterestRow createSafeUnpaidRow(String supplier, LocalDate purchaseDate,
+            BigDecimal principal, int delayDays, LocalDate asOnDate) {
+
+        LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
+
+        return InterestRow.builder()
+                .supplier(supplier)
+                .purchaseDate(purchaseDate)
+                .paymentDate(null)
+                .principal(principal.setScale(SCALE, RM))
+                .delayDays(delayDays)
+                .itcAmount(BigDecimal.ZERO)
+                .interest(BigDecimal.ZERO)
+                .status(InterestRow.InterestStatus.UNPAID)
+                .paymentDeadline(deadline)
+                .riskCategory(InterestRow.RiskCategory.SAFE)
                 .gstr3bPeriod(formatGstr3bPeriod(deadline))
                 .daysToDeadline(daysBetween(asOnDate, deadline))
                 .itcAvailmentDate(null)

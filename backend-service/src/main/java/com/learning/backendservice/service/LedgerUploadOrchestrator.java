@@ -65,25 +65,13 @@ public class LedgerUploadOrchestrator {
                     + "Delete old calculations or wait for expired ones to be removed.");
         }
 
-        // ── Pre-validate: user must have at least 1 credit ──
-        CreditWalletResponse wallet = creditClient.checkBalance(createdBy, 1);
-        int remainingCredits = wallet.getRemaining();
-
-        List<LedgerResult> results = new ArrayList<>();
+        // ── Phase 1: Parse all files and count total ledgers (distinct suppliers) ──
+        List<LedgerFileProcessor.ProcessingOutcome> outcomes = new ArrayList<>();
         List<UploadResult.FileUploadError> errors = new ArrayList<>();
         DataSize maxSize = uploadProperties.getMaxFileSize();
-        int creditsConsumed = 0;
+        int totalLedgerCount = 0;
 
         for (MultipartFile file : files) {
-            // ── Per-ledger credit check ──
-            if (remainingCredits < 1) {
-                errors.add(UploadResult.FileUploadError.builder()
-                        .filename(file.getOriginalFilename())
-                        .message("Insufficient credits. Purchase more credits to continue.")
-                        .build());
-                continue;
-            }
-
             if (file.isEmpty()) {
                 errors.add(UploadResult.FileUploadError.builder()
                         .filename(file.getOriginalFilename())
@@ -100,32 +88,19 @@ public class LedgerUploadOrchestrator {
             }
 
             try {
-                // Parse first (no credit charged if parsing fails)
-                LedgerResult result = ledgerFileProcessor.process(file.getInputStream(), file.getOriginalFilename(), asOnDate);
-
-                // Consume 1 credit after successful parse
-                String idempotencyKey = "analysis-" + createdBy + "-" + UUID.randomUUID();
-                CreditWalletResponse walletAfter = creditClient.consumeCredits(
-                        createdBy, 1, idempotencyKey, idempotencyKey);
-                remainingCredits = walletAfter.getRemaining();
-                creditsConsumed++;
-
-                results.add(result);
-                log.info("Ledger processed: file={}, userId={}, creditsRemaining={}",
-                        file.getOriginalFilename(), createdBy, remainingCredits);
+                LedgerFileProcessor.ProcessingOutcome outcome =
+                        ledgerFileProcessor.processWithLedgerCount(
+                                file.getInputStream(), file.getOriginalFilename(), asOnDate);
+                outcomes.add(outcome);
+                totalLedgerCount += outcome.ledgerCount();
+                log.info("Ledger parsed: file={}, ledgersFound={}, userId={}",
+                        file.getOriginalFilename(), outcome.ledgerCount(), createdBy);
             } catch (LedgerParseException e) {
                 log.warn("Parse error for {}: {}", file.getOriginalFilename(), e.getMessage());
                 errors.add(UploadResult.FileUploadError.builder()
                         .filename(file.getOriginalFilename())
                         .message(e.getMessage())
                         .build());
-            } catch (com.learning.backendservice.exception.InsufficientCreditsException e) {
-                log.warn("Credits exhausted during processing for {}: {}", file.getOriginalFilename(), e.getMessage());
-                errors.add(UploadResult.FileUploadError.builder()
-                        .filename(file.getOriginalFilename())
-                        .message("Insufficient credits. Purchase more credits to continue.")
-                        .build());
-                remainingCredits = 0; // Skip remaining files
             } catch (Exception e) {
                 log.warn("Processing error for {}: {}", file.getOriginalFilename(), e.getMessage());
                 errors.add(UploadResult.FileUploadError.builder()
@@ -135,11 +110,28 @@ public class LedgerUploadOrchestrator {
             }
         }
 
-        if (results.isEmpty()) {
+        if (outcomes.isEmpty()) {
             throw new IllegalArgumentException("All files failed. " + errors.stream()
                     .map(e -> e.getFilename() + ": " + e.getMessage())
                     .collect(Collectors.joining("; ")));
         }
+
+        // ── Phase 2: Pre-validate credits (1 credit per distinct supplier/ledger) ──
+        creditClient.checkBalance(createdBy, totalLedgerCount);
+
+        // ── Phase 3: Consume credits for all ledgers in one call ──
+        String idempotencyKey = "analysis-" + createdBy + "-" + UUID.randomUUID();
+        CreditWalletResponse walletAfter = creditClient.consumeCredits(
+                createdBy, totalLedgerCount, idempotencyKey, idempotencyKey);
+        int remainingCredits = walletAfter.getRemaining();
+
+        log.info("Credits consumed: userId={}, ledgers={}, creditsRemaining={}",
+                createdBy, totalLedgerCount, remainingCredits);
+
+        // ── Phase 4: Build and persist the calculation run ──
+        List<LedgerResult> results = outcomes.stream()
+                .map(LedgerFileProcessor.ProcessingOutcome::result)
+                .toList();
 
         BigDecimal totalInterest = results.stream()
                 .map(r -> r.getSummary().getTotalInterest())
@@ -180,7 +172,7 @@ public class LedgerUploadOrchestrator {
                 .filename(run.getFilename())
                 .results(resultDtos)
                 .errors(errors)
-                .creditsConsumed(creditsConsumed)
+                .creditsConsumed(totalLedgerCount)
                 .remainingCredits(remainingCredits)
                 .build();
     }

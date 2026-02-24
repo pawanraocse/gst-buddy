@@ -12,7 +12,7 @@ import { AuthService } from '../../core/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { CreditApiService, WalletDto } from '../../core/services/credit-api.service';
+import { CreditApiService, WalletDto, PlanDto } from '../../core/services/credit-api.service';
 
 @Component({
   selector: 'app-account-settings',
@@ -35,6 +35,11 @@ export class AccountSettingsComponent implements OnInit {
   wallet = signal<WalletDto | null>(null);
   walletLoading = signal(true);
 
+  // Plans
+  plans = signal<PlanDto[]>([]);
+  plansLoading = signal(false);
+  showPlansDialog = false;
+
   // Mock preferences for UI
   preferences = {
     email_notifications: true,
@@ -46,6 +51,26 @@ export class AccountSettingsComponent implements OnInit {
       next: (w) => { this.wallet.set(w); this.walletLoading.set(false); },
       error: () => { this.walletLoading.set(false); }
     });
+  }
+
+  get usagePercent(): number {
+    const w = this.wallet();
+    if (!w || w.total === 0) return 0;
+    return Math.round((w.used / w.total) * 100);
+  }
+
+  openPlansDialog(): void {
+    this.showPlansDialog = true;
+    if (this.plans().length === 0) {
+      this.plansLoading.set(true);
+      this.creditApi.getPlans().subscribe({
+        next: (p) => { this.plans.set(p); this.plansLoading.set(false); },
+        error: () => {
+          this.plansLoading.set(false);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load plans.' });
+        }
+      });
+    }
   }
 
   deleteAccount(): void {

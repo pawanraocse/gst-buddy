@@ -13,7 +13,7 @@ export interface InterestRow {
   delayDays: number;
   itcAmount: number;
   interest: number;
-  status: 'PAID_LATE' | 'UNPAID';
+  status: 'PAID_LATE' | 'PAID_ON_TIME' | 'UNPAID';
   // Production enhancements
   paymentDeadline: string;         // purchaseDate + 180 days
   riskCategory: RiskCategory;      // SAFE, AT_RISK, BREACHED

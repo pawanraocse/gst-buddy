@@ -46,61 +46,96 @@
                 <span class="credits-big-number">{{ w.remaining }}</span>
                 <span class="credits-big-label">Credits Remaining</span>
             </div>
+
+            <!-- Usage Progress Bar -->
+            <div class="credits-usage">
+                <div class="usage-bar-track">
+                    <div class="usage-bar-fill" [style.width.%]="usagePercent" [class.usage-low]="w.remaining <= 1"
+                        [class.usage-ok]="w.remaining > 1">
+                    </div>
+                </div>
+                <div class="usage-details">
+                    <span class="usage-stat">{{ w.used }} used</span>
+                    <span class="usage-stat">{{ w.total }} total</span>
+                </div>
+            </div>
+
             @if (w.remaining === 0) {
-            <span class="badge badge-danger">No credits left — <a routerLink="/pricing">Buy More</a></span>
-            } @else if (w.remaining <= 1) { <span class="badge badge-warn">Low balance — consider upgrading</span>
-                } @else {
-                <span class="badge badge-ok">{{ w.remaining }} credits available</span>
-                }
-                <p class="credits-note">1 credit = 1 ledger analysis. Credits never expire.</p>
-                } @else {
-                <p class="credits-note">Unable to load credit balance.</p>
-                }
+            <div class="credits-cta">
+                <span class="badge badge-danger">
+                    <i class="pi pi-exclamation-circle"></i>
+                    No credits left
+                </span>
+                <button pButton label="Buy More Credits" icon="pi pi-shopping-cart" class="p-button-sm buy-credits-btn"
+                    (click)="openPlansDialog()"></button>
+            </div>
+            } @else if (w.remaining <= 1) { <div class="credits-cta">
+                <span class="badge badge-warn">
+                    <i class="pi pi-exclamation-triangle"></i>
+                    Low balance — consider upgrading
+                </span>
+                <button pButton label="View Plans" icon="pi pi-shopping-cart"
+                    class="p-button-sm p-button-outlined buy-credits-btn" (click)="openPlansDialog()"></button>
         </div>
+        } @else {
+        <div class="credits-cta">
+            <span class="badge badge-ok">
+                <i class="pi pi-check-circle"></i>
+                {{ w.remaining }} credits available
+            </span>
+            <button pButton label="View Plans" icon="pi pi-list" class="p-button-sm p-button-text buy-credits-btn"
+                (click)="openPlansDialog()"></button>
+        </div>
+        }
+        <p class="credits-note">1 credit = 1 ledger analysis. Credits never expire.</p>
+        } @else {
+        <p class="credits-note">Unable to load credit balance.</p>
+        }
     </div>
+</div>
 
-    <!-- Preferences Section -->
-    <div class="settings-card">
-        <div class="card-header">
-            <i class="pi pi-cog"></i>
-            <h2>Preferences</h2>
+<!-- Preferences Section -->
+<div class="settings-card">
+    <div class="card-header">
+        <i class="pi pi-cog"></i>
+        <h2>Preferences</h2>
+    </div>
+    <div class="card-content">
+        <div class="preference-row">
+            <div class="preference-info">
+                <span class="preference-label">Email Notifications</span>
+                <span class="preference-desc">Receive email updates about your calculations</span>
+            </div>
+            <p-toggleswitch [(ngModel)]="preferences.email_notifications"></p-toggleswitch>
         </div>
-        <div class="card-content">
-            <div class="preference-row">
-                <div class="preference-info">
-                    <span class="preference-label">Email Notifications</span>
-                    <span class="preference-desc">Receive email updates about your calculations</span>
-                </div>
-                <p-toggleswitch [(ngModel)]="preferences.email_notifications"></p-toggleswitch>
+        <div class="preference-row">
+            <div class="preference-info">
+                <span class="preference-label">Beta Features</span>
+                <span class="preference-desc">Get early access to new features</span>
             </div>
-            <div class="preference-row">
-                <div class="preference-info">
-                    <span class="preference-label">Beta Features</span>
-                    <span class="preference-desc">Get early access to new features</span>
-                </div>
-                <p-toggleswitch [(ngModel)]="preferences.beta_features"></p-toggleswitch>
-            </div>
+            <p-toggleswitch [(ngModel)]="preferences.beta_features"></p-toggleswitch>
         </div>
     </div>
+</div>
 
-    <!-- Danger Zone -->
-    <div class="settings-card danger-zone">
-        <div class="card-header">
-            <i class="pi pi-exclamation-triangle"></i>
-            <h2>Danger Zone</h2>
-        </div>
-        <div class="card-content">
-            <div class="danger-action">
-                <div class="danger-info">
-                    <span class="danger-label">Delete Account</span>
-                    <span class="danger-desc">Permanently delete your account and all associated data. This action
-                        cannot be undone.</span>
-                </div>
-                <button pButton label="Delete Account" severity="danger" [outlined]="true"
-                    (click)="showDeleteDialog = true"></button>
+<!-- Danger Zone -->
+<div class="settings-card danger-zone">
+    <div class="card-header">
+        <i class="pi pi-exclamation-triangle"></i>
+        <h2>Danger Zone</h2>
+    </div>
+    <div class="card-content">
+        <div class="danger-action">
+            <div class="danger-info">
+                <span class="danger-label">Delete Account</span>
+                <span class="danger-desc">Permanently delete your account and all associated data. This action
+                    cannot be undone.</span>
             </div>
+            <button pButton label="Delete Account" severity="danger" [outlined]="true"
+                (click)="showDeleteDialog = true"></button>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Delete Confirmation Dialog -->
@@ -119,4 +154,54 @@
             [disabled]="confirmationText !== 'DELETE' || deleting()" [loading]="deleting()"
             (click)="deleteAccount()"></button>
     </ng-template>
+</p-dialog>
+
+<!-- Plans Dialog -->
+<p-dialog header="Credit Plans" [(visible)]="showPlansDialog" [modal]="true"
+    [style]="{width: '700px', maxWidth: '95vw'}" [draggable]="false" [resizable]="false">
+    <div class="plans-dialog-content">
+        @if (plansLoading()) {
+        <div class="plans-loading">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+            <p>Loading plans...</p>
+        </div>
+        } @else if (plans().length === 0) {
+        <div class="plans-empty">
+            <i class="pi pi-info-circle" style="font-size: 2rem; color: var(--text-secondary);"></i>
+            <p>No plans available at the moment. Please check back later.</p>
+        </div>
+        } @else {
+        <p class="plans-subtitle">Choose a plan to add more credits to your account.</p>
+        <div class="plans-grid">
+            @for (plan of plans(); track plan.id) {
+            <div class="plan-card" [class.plan-featured]="!plan.isTrial">
+                @if (!plan.isTrial) {
+                <div class="plan-badge">Popular</div>
+                }
+                <h3 class="plan-name">{{ plan.displayName }}</h3>
+                <div class="plan-price">
+                    @if (plan.priceInr === 0) {
+                    <span class="price-amount">Free</span>
+                    } @else {
+                    <span class="price-currency">₹</span>
+                    <span class="price-amount">{{ plan.priceInr }}</span>
+                    }
+                </div>
+                <div class="plan-credits">
+                    <i class="pi pi-bolt"></i>
+                    <span>{{ plan.credits }} credits</span>
+                </div>
+                <p class="plan-description">{{ plan.description }}</p>
+                @if (plan.isTrial) {
+                <button pButton label="Current Plan" [disabled]="true"
+                    class="p-button-outlined p-button-secondary w-full plan-btn"></button>
+                } @else {
+                <button pButton label="Buy Credits" icon="pi pi-shopping-cart"
+                    class="p-button w-full plan-btn"></button>
+                }
+            </div>
+            }
+        </div>
+        }
+    </div>
 </p-dialog>

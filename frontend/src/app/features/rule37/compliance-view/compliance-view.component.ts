@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { PanelModule } from 'primeng/panel';
+import { MenuModule } from 'primeng/menu';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LedgerResult } from '../../../shared/models/rule37.model';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-compliance-view',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TableModule, PanelModule],
+  imports: [CommonModule, ButtonModule, TableModule, PanelModule, MenuModule],
   templateUrl: './compliance-view.component.html',
   styleUrls: ['./compliance-view.component.scss'],
   animations: [
@@ -28,11 +30,27 @@ export class ComplianceViewComponent {
   results = input.required<LedgerResult[]>();
   runId = input<number | null>(null);
   showExportAll = input<boolean>(true);
-  exportAll = output<void>();
+  exportAll = output<string>(); // now emits 'issues' or 'complete'
   exportLedger = output<{ ledgerName: string; summary: LedgerResult['summary'] }>();
 
   // Track expanded/collapsed state per ledger
   expandedLedgers: Record<string, boolean> = {};
+
+  /** Export dropdown menu items */
+  exportMenuItems: MenuItem[] = [
+    {
+      label: 'Issues Report',
+      icon: 'pi pi-exclamation-triangle',
+      command: () => this.exportAll.emit('issues'),
+      tooltip: 'Export only late/unpaid transactions'
+    },
+    {
+      label: 'Complete Report',
+      icon: 'pi pi-list',
+      command: () => this.exportAll.emit('complete'),
+      tooltip: 'Export all transactions including on-time payments'
+    }
+  ];
 
   get totalItcReversal(): number {
     return this.results().reduce((s, r) => s + r.summary.totalItcReversal, 0);
@@ -42,19 +60,27 @@ export class ComplianceViewComponent {
     return this.results().reduce((s, r) => s + r.summary.totalInterest, 0);
   }
 
-  // Risk counts for KPI cards and donut chart
+  /** Filter out PAID_ON_TIME and SAFE-unpaid entries for UI display */
+  private getIssueDetails(details: LedgerResult['summary']['details']): LedgerResult['summary']['details'] {
+    return details.filter(d =>
+      d.status !== 'PAID_ON_TIME' &&
+      !(d.riskCategory === 'SAFE' && d.interest === 0 && d.itcAmount === 0)
+    );
+  }
+
+  // Risk counts for KPI cards and donut chart — only count issue rows
   getBreachedCount(): number {
-    return this.results().flatMap(r => r.summary.details)
+    return this.results().flatMap(r => this.getIssueDetails(r.summary.details))
       .filter(d => d.riskCategory === 'BREACHED').length;
   }
 
   getAtRiskCount(): number {
-    return this.results().flatMap(r => r.summary.details)
+    return this.results().flatMap(r => this.getIssueDetails(r.summary.details))
       .filter(d => d.riskCategory === 'AT_RISK').length;
   }
 
   getSafeCount(): number {
-    const total = this.results().flatMap(r => r.summary.details).length;
+    const total = this.results().flatMap(r => this.getIssueDetails(r.summary.details)).length;
     return total - this.getBreachedCount() - this.getAtRiskCount();
   }
 
@@ -77,8 +103,9 @@ export class ComplianceViewComponent {
   }
 
   getGroupedBySupplier(lr: LedgerResult): { supplier: string; rows: typeof lr.summary.details }[] {
+    const issueDetails = this.getIssueDetails(lr.summary.details);
     const map = new Map<string, typeof lr.summary.details>();
-    for (const row of lr.summary.details) {
+    for (const row of issueDetails) {
       const list = map.get(row.supplier) ?? [];
       list.push(row);
       map.set(row.supplier, list);

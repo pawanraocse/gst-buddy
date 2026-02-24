@@ -14,6 +14,8 @@ if [ -z "$AWS_PROFILE" ]; then
   unset AWS_PROFILE
 fi
 
+export HOME=/home/spring
+
 # SSM Parameter Path Prefix
 PROJECT_NAME=${PROJECT_NAME:-gst-buddy}
 SSM_PREFIX="/${PROJECT_NAME}/dev/cognito"
@@ -21,6 +23,10 @@ SSM_PREFIX="/${PROJECT_NAME}/dev/cognito"
 echo "[INFO] Starting Auth Service Entrypoint"
 echo "[INFO] Region: $AWS_REGION"
 echo "[INFO] SSM Prefix: $SSM_PREFIX"
+
+echo "[INFO] HOME is: $HOME"
+ls -la $HOME/.aws || echo "Could not ls .aws"
+cat $HOME/.aws/credentials || echo "Could not read credentials"
 
 # Verify AWS Identity (useful for troubleshooting but less verbose)
 IDENTITY=$(aws sts get-caller-identity --query "Arn" --output text 2>/dev/null || echo "Unknown/None")
@@ -51,7 +57,7 @@ fetch_ssm_param() {
   if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to fetch SSM parameter: $param_path" >&2
     echo "[ERROR] $result" >&2
-    exit 1
+    return 1
   fi
 
   echo "$result"
@@ -59,17 +65,18 @@ fetch_ssm_param() {
 
 # Fetch SSM parameters
 echo "[INFO] Fetching SSM parameters..."
-export COGNITO_USER_POOL_ID=$(fetch_ssm_param "user_pool_id")
-export COGNITO_CLIENT_ID=$(fetch_ssm_param "client_id")
-export COGNITO_CLIENT_SECRET=$(fetch_ssm_param "client_secret" "decrypt")
-export COGNITO_ISSUER_URI=$(fetch_ssm_param "issuer_uri")
-export COGNITO_DOMAIN=$(fetch_ssm_param "domain")
-export COGNITO_REDIRECT_URI=$(fetch_ssm_param "callback_url")
-export COGNITO_LOGOUT_REDIRECT_URL=$(fetch_ssm_param "logout_redirect_url")
+export COGNITO_USER_POOL_ID=$(fetch_ssm_param "user_pool_id") || echo "Failed"
+export COGNITO_CLIENT_ID=$(fetch_ssm_param "client_id") || echo "Failed"
+export COGNITO_CLIENT_SECRET=$(fetch_ssm_param "client_secret" "decrypt") || echo "Failed"
+export COGNITO_ISSUER_URI=$(fetch_ssm_param "issuer_uri") || echo "Failed"
+export COGNITO_DOMAIN=$(fetch_ssm_param "domain") || echo "Failed"
+export COGNITO_REDIRECT_URI=$(fetch_ssm_param "callback_url") || echo "Failed"
+export COGNITO_LOGOUT_REDIRECT_URL=$(fetch_ssm_param "logout_redirect_url") || echo "Failed"
 
 # Validate required parameters
-if [ -z "$COGNITO_USER_POOL_ID" ] || [ -z "$COGNITO_CLIENT_ID" ]; then
+if [ -z "$COGNITO_USER_POOL_ID" ] || [ -z "$COGNITO_CLIENT_ID" ] || [ "$COGNITO_USER_POOL_ID" = "Failed" ]; then
   echo "[ERROR] Missing required Cognito configuration."
+  sleep 60
   exit 1
 fi
 

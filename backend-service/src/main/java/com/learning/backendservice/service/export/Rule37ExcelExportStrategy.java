@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Exports Rule 37 calculation results to Excel.
@@ -27,6 +28,12 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
 
     @Override
     public byte[] generate(List<LedgerResult> ledgerResults, String filename) {
+        return generate(ledgerResults, filename, "issues");
+    }
+
+    @Override
+    public byte[] generate(List<LedgerResult> ledgerResults, String filename, String reportType) {
+        boolean issuesOnly = !"complete".equalsIgnoreCase(reportType);
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             // Summary sheet first
             Sheet summarySheet = workbook.createSheet("Summary");
@@ -34,11 +41,13 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
             summarySheet.createRow(rowNum++).createCell(0).setCellValue("Ledger Name");
             summarySheet.getRow(0).createCell(1).setCellValue("Total ITC Reversal");
             summarySheet.getRow(0).createCell(2).setCellValue("Total Interest");
+            summarySheet.getRow(0).createCell(3).setCellValue("Report Type");
             for (LedgerResult lr : ledgerResults) {
                 Row row = summarySheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(lr.getLedgerName());
                 row.createCell(1).setCellValue(formatCurrency(lr.getSummary().getTotalItcReversal()));
                 row.createCell(2).setCellValue(formatCurrency(lr.getSummary().getTotalInterest()));
+                row.createCell(3).setCellValue(issuesOnly ? "Issues Only" : "Complete");
             }
             rowNum++;
             Row totalRow = summarySheet.createRow(rowNum);
@@ -55,12 +64,13 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
             summarySheet.setColumnWidth(0, 40 * 256);
             summarySheet.setColumnWidth(1, 20 * 256);
             summarySheet.setColumnWidth(2, 20 * 256);
+            summarySheet.setColumnWidth(3, 15 * 256);
 
             // Per-ledger sheets
             for (LedgerResult lr : ledgerResults) {
                 String sheetName = sanitizeSheetName(lr.getLedgerName());
                 Sheet sheet = workbook.createSheet(sheetName);
-                writeLedgerSheet(sheet, lr.getSummary());
+                writeLedgerSheet(sheet, lr.getSummary(), issuesOnly);
             }
 
             workbook.write(out);
@@ -70,7 +80,16 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         }
     }
 
-    private void writeLedgerSheet(Sheet sheet, CalculationSummary summary) {
+    private void writeLedgerSheet(Sheet sheet, CalculationSummary summary, boolean issuesOnly) {
+        List<InterestRow> rows = summary.getDetails();
+        if (issuesOnly) {
+            rows = rows.stream()
+                    .filter(r -> r.getStatus() != InterestRow.InterestStatus.PAID_ON_TIME
+                            && !(r.getRiskCategory() == InterestRow.RiskCategory.SAFE
+                                    && r.getInterest().signum() == 0))
+                    .collect(Collectors.toList());
+        }
+
         int rowNum = 0;
         Row headerRow = sheet.createRow(rowNum++);
         headerRow.createCell(0).setCellValue("Supplier");
@@ -85,7 +104,7 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         headerRow.createCell(9).setCellValue("Risk Category");
         headerRow.createCell(10).setCellValue("GSTR-3B Period");
 
-        for (InterestRow r : summary.getDetails()) {
+        for (InterestRow r : rows) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(r.getSupplier());
             row.createCell(1).setCellValue(formatDate(r.getPurchaseDate()));
@@ -94,7 +113,7 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
             row.createCell(4).setCellValue(r.getDelayDays());
             row.createCell(5).setCellValue(formatCurrency(r.getItcAmount()));
             row.createCell(6).setCellValue(formatCurrency(r.getInterest()));
-            row.createCell(7).setCellValue(r.getStatus() == InterestRow.InterestStatus.PAID_LATE ? "Paid Late" : "Unpaid");
+            row.createCell(7).setCellValue(formatStatus(r.getStatus()));
             row.createCell(8).setCellValue(formatDate(r.getPaymentDeadline()));
             row.createCell(9).setCellValue(r.getRiskCategory() != null ? r.getRiskCategory().name() : "");
             row.createCell(10).setCellValue(r.getGstr3bPeriod() != null ? r.getGstr3bPeriod() : "");
@@ -122,6 +141,15 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
 
     private static String formatDate(LocalDate date) {
         return date != null ? date.format(DATE_FORMAT) : "N/A";
+    }
+
+    private static String formatStatus(InterestRow.InterestStatus status) {
+        if (status == null) return "";
+        return switch (status) {
+            case PAID_LATE -> "Paid Late";
+            case PAID_ON_TIME -> "Paid on Time";
+            case UNPAID -> "Unpaid";
+        };
     }
 
     private static String formatCurrency(BigDecimal amount) {

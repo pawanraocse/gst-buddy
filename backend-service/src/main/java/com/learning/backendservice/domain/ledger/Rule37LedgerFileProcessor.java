@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Processes one ledger file: parse → Rule 37 calculate → LedgerResult.
@@ -24,13 +25,20 @@ public class Rule37LedgerFileProcessor implements LedgerFileProcessor {
 
     @Override
     public LedgerResult process(InputStream inputStream, String filename, LocalDate asOnDate) {
+        return processWithLedgerCount(inputStream, filename, asOnDate).result();
+    }
+
+    @Override
+    public ProcessingOutcome processWithLedgerCount(InputStream inputStream, String filename, LocalDate asOnDate) {
         String ledgerName = getFileNameWithoutExtension(filename);
-        var entries = ledgerParser.parse(inputStream, filename);
+        List<LedgerEntry> entries = ledgerParser.parse(inputStream, filename);
+        int ledgerCount = ledgerParser.countLedgers(entries);
         CalculationSummary summary = calculator.calculate(entries, asOnDate);
-        return LedgerResult.builder()
+        LedgerResult result = LedgerResult.builder()
                 .ledgerName(ledgerName)
                 .summary(summary)
                 .build();
+        return new ProcessingOutcome(result, ledgerCount);
     }
 
     private static String getFileNameWithoutExtension(String filename) {

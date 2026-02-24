@@ -28,7 +28,7 @@
         </div>
         <app-compliance-view [results]="normalizeResults(viewingRun()!.calculationData)" [runId]="viewingRun()!.id"
             [showExportAll]="true"
-            (exportAll)="downloadExport(viewingRun()!.id, viewingRun()!.calculationData[0]?.ledgerName || 'export')"
+            (exportAll)="downloadExport(viewingRun()!.id, viewingRun()!.calculationData[0]?.ledgerName || 'export', $event)"
             (exportLedger)="onExportLedger($event, viewingRun()!.id, viewingRun()!.calculationData[0]?.ledgerName || 'export')" />
     </div>
     } @else {

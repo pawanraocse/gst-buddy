@@ -85,8 +85,9 @@ export class CalculationHistoryComponent {
     });
   }
 
-  downloadExport(id: number, filename: string) {
-    this.api.exportRun(id).subscribe({
+  downloadExport(id: number, filename: string, reportType: string = 'issues') {
+    const rt = (reportType === 'complete' ? 'complete' : 'issues') as 'issues' | 'complete';
+    this.api.exportRun(id, rt).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');

@@ -36,6 +36,7 @@ public class InterestRow {
 
     public enum InterestStatus {
         PAID_LATE,
+        PAID_ON_TIME,
         UNPAID
     }
 

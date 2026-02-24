@@ -147,19 +147,39 @@ export class DashboardComponent implements OnInit {
         this.isProcessing.set(false);
       },
       error: (err) => {
-        this.error.set(err?.message || 'Failed to process files');
+        if (err?.status === 402) {
+          const body = err?.error;
+          const detail = body?.message || body?.error || 'You do not have enough credits to process these files. Please purchase more credits.';
+          this.error.set(detail);
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Insufficient Credits',
+            detail,
+            life: 8000,
+          });
+          this.loadWallet();
+        } else {
+          const detail = err?.error?.message || err?.message || 'Failed to process files';
+          this.error.set(detail);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Upload Failed',
+            detail,
+          });
+        }
         this.fileNames.set([]);
         this.isProcessing.set(false);
       },
     });
   }
 
-  downloadExport() {
+  downloadExport(reportType: string = 'issues') {
+    const rt = (reportType === 'complete' ? 'complete' : 'issues') as 'issues' | 'complete';
     const id = this.runId();
     const r = this.results();
     if (!id || r.length === 0) return;
     const filename = r.length === 1 ? r[0].ledgerName : `${r.length} files`;
-    this.api.exportRun(id).subscribe({
+    this.api.exportRun(id, rt).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -173,7 +193,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onExportLedger(ev: { ledgerName: string; summary: LedgerResult['summary'] }) {
-    this.downloadExport();
+    this.downloadExport('issues');
   }
 
   switchToHistory() {

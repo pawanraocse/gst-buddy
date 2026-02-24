@@ -32,9 +32,11 @@ public class Rule37ExportController {
     @GetMapping("/{id}/export")
     public ResponseEntity<byte[]> exportRun(
             @Parameter(description = "Run ID") @PathVariable Long id,
-            @RequestParam(value = "format", defaultValue = "excel") String format) {
+            @RequestParam(value = "format", defaultValue = "excel") String format,
+            @Parameter(description = "Report type: 'issues' (default) or 'complete'")
+            @RequestParam(value = "reportType", defaultValue = "issues") String reportType) {
         Rule37CalculationRun run = runService.getRunEntity(id);
-        byte[] bytes = exportStrategy.generate(run.getCalculationData(), run.getFilename());
+        byte[] bytes = exportStrategy.generate(run.getCalculationData(), run.getFilename(), reportType);
         String safeFilename = sanitizeFilename(run.getFilename())
                 + "_Interest_Calculation." + exportStrategy.getFileExtension();
         return ResponseEntity.ok()

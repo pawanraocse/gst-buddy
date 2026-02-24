@@ -2,6 +2,7 @@ package com.learning.backendservice.service;
 
 import com.learning.backendservice.config.UploadProperties;
 import com.learning.backendservice.domain.ledger.LedgerFileProcessor;
+import com.learning.backendservice.domain.ledger.LedgerFileProcessor.ProcessingOutcome;
 import com.learning.backendservice.domain.rule37.CalculationSummary;
 import com.learning.backendservice.domain.rule37.LedgerResult;
 import com.learning.backendservice.dto.CreditWalletResponse;
@@ -30,7 +31,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("LedgerUploadOrchestrator — Credit validation and per-tenant limits")
+@DisplayName("LedgerUploadOrchestrator — Per-ledger credit validation and consumption")
 class LedgerUploadOrchestratorTest {
 
     @Mock private LedgerFileProcessor ledgerFileProcessor;
@@ -68,19 +69,22 @@ class LedgerUploadOrchestratorTest {
                 .build());
     }
 
+    private ProcessingOutcome mockOutcome(String name, int ledgerCount) {
+        return new ProcessingOutcome(mockLedgerResult(name), ledgerCount);
+    }
+
     @Nested
-    @DisplayName("Credit Pre-Validation")
-    class CreditPreValidation {
+    @DisplayName("Single-Supplier File")
+    class SingleSupplierFile {
 
         @Test
-        @DisplayName("Upload with sufficient credits → success, credits consumed")
-        void sufficientCreditsSuccess() throws Exception {
-            // Arrange
+        @DisplayName("Upload single file with 1 supplier → consumes 1 credit")
+        void singleSupplierConsumesOneCredit() throws Exception {
             when(runRepository.countByTenantId(anyString())).thenReturn(0L);
+            when(ledgerFileProcessor.processWithLedgerCount(any(InputStream.class), anyString(), any(LocalDate.class)))
+                    .thenReturn(mockOutcome("test.xlsx", 1));
             when(creditClient.checkBalance(eq(USER_ID), eq(1)))
                     .thenReturn(CreditWalletResponse.builder().total(10).used(0).remaining(10).build());
-            when(ledgerFileProcessor.process(any(InputStream.class), anyString(), any(LocalDate.class)))
-                    .thenReturn(mockLedgerResult("test.xlsx"));
             when(creditClient.consumeCredits(eq(USER_ID), eq(1), anyString(), anyString()))
                     .thenReturn(CreditWalletResponse.builder().total(10).used(1).remaining(9).build());
             when(runRepository.save(any(Rule37CalculationRun.class)))
@@ -90,12 +94,9 @@ class LedgerUploadOrchestratorTest {
                         return run;
                     });
 
-            // Act
             UploadResult result = orchestrator.processUpload(
                     List.of(mockFile("test.xlsx")), AS_ON_DATE, USER_ID);
 
-            // Assert
-            assertNotNull(result);
             assertEquals(1, result.getCreditsConsumed());
             assertEquals(9, result.getRemainingCredits());
             assertEquals(1, result.getResults().size());
@@ -103,46 +104,22 @@ class LedgerUploadOrchestratorTest {
             verify(creditClient).checkBalance(USER_ID, 1);
             verify(creditClient).consumeCredits(eq(USER_ID), eq(1), anyString(), anyString());
         }
-
-        @Test
-        @DisplayName("Upload with insufficient credits → InsufficientCreditsException before calculation")
-        void insufficientCreditsBeforeCalculation() {
-            // Arrange
-            when(runRepository.countByTenantId(anyString())).thenReturn(0L);
-            when(creditClient.checkBalance(eq(USER_ID), eq(1)))
-                    .thenThrow(new InsufficientCreditsException("Insufficient credits: need 1 but only 0 available"));
-
-            // Act & Assert
-            assertThrows(InsufficientCreditsException.class, () ->
-                    orchestrator.processUpload(List.of(mockFile("test.xlsx")), AS_ON_DATE, USER_ID));
-
-            // Verify no processing occurred
-            verifyNoInteractions(ledgerFileProcessor);
-            verify(creditClient, never()).consumeCredits(anyString(), anyInt(), anyString(), anyString());
-        }
     }
 
     @Nested
-    @DisplayName("Partial Success — Per-Ledger Credit Check")
-    class PartialSuccess {
+    @DisplayName("Multi-Supplier File")
+    class MultiSupplierFile {
 
         @Test
-        @DisplayName("Upload 3 files with 2 credits → first 2 succeed, last 1 fails with error")
-        void partialCreditExhaustion() throws Exception {
-            // Arrange
+        @DisplayName("Upload file with 2 suppliers → consumes 2 credits")
+        void twoSuppliersConsumesTwoCredits() throws Exception {
             when(runRepository.countByTenantId(anyString())).thenReturn(0L);
-            when(creditClient.checkBalance(eq(USER_ID), eq(1)))
-                    .thenReturn(CreditWalletResponse.builder().total(2).used(0).remaining(2).build());
-            when(ledgerFileProcessor.process(any(InputStream.class), anyString(), any(LocalDate.class)))
-                    .thenReturn(mockLedgerResult("file1.xlsx"))
-                    .thenReturn(mockLedgerResult("file2.xlsx"))
-                    .thenReturn(mockLedgerResult("file3.xlsx"));
-
-            // First credit consumption succeeds → 1 remaining
-            when(creditClient.consumeCredits(eq(USER_ID), eq(1), anyString(), anyString()))
-                    .thenReturn(CreditWalletResponse.builder().total(2).used(1).remaining(1).build())
-                    .thenReturn(CreditWalletResponse.builder().total(2).used(2).remaining(0).build());
-
+            when(ledgerFileProcessor.processWithLedgerCount(any(InputStream.class), anyString(), any(LocalDate.class)))
+                    .thenReturn(mockOutcome("KD STEEL.xlsx", 2));
+            when(creditClient.checkBalance(eq(USER_ID), eq(2)))
+                    .thenReturn(CreditWalletResponse.builder().total(10).used(0).remaining(10).build());
+            when(creditClient.consumeCredits(eq(USER_ID), eq(2), anyString(), anyString()))
+                    .thenReturn(CreditWalletResponse.builder().total(10).used(2).remaining(8).build());
             when(runRepository.save(any(Rule37CalculationRun.class)))
                     .thenAnswer(inv -> {
                         Rule37CalculationRun run = inv.getArgument(0);
@@ -150,18 +127,81 @@ class LedgerUploadOrchestratorTest {
                         return run;
                     });
 
-            // Act
-            List<MultipartFile> files = List.of(
-                    mockFile("file1.xlsx"),
-                    mockFile("file2.xlsx"),
-                    mockFile("file3.xlsx"));
-            UploadResult result = orchestrator.processUpload(files, AS_ON_DATE, USER_ID);
+            UploadResult result = orchestrator.processUpload(
+                    List.of(mockFile("KD STEEL.xlsx")), AS_ON_DATE, USER_ID);
 
-            // Assert: 2 succeeded, 1 failed due to credits
             assertEquals(2, result.getCreditsConsumed());
+            assertEquals(8, result.getRemainingCredits());
+            verify(creditClient).checkBalance(USER_ID, 2);
+            verify(creditClient).consumeCredits(eq(USER_ID), eq(2), anyString(), anyString());
+        }
+
+        @Test
+        @DisplayName("Upload file with 3 suppliers but only 2 credits → InsufficientCreditsException")
+        void insufficientCreditsForMultiSupplierFile() throws Exception {
+            when(runRepository.countByTenantId(anyString())).thenReturn(0L);
+            when(ledgerFileProcessor.processWithLedgerCount(any(InputStream.class), anyString(), any(LocalDate.class)))
+                    .thenReturn(mockOutcome("big-file.xlsx", 3));
+            when(creditClient.checkBalance(eq(USER_ID), eq(3)))
+                    .thenThrow(new InsufficientCreditsException("Insufficient credits: need 3 but only 2 available"));
+
+            assertThrows(InsufficientCreditsException.class, () ->
+                    orchestrator.processUpload(List.of(mockFile("big-file.xlsx")), AS_ON_DATE, USER_ID));
+
+            verify(creditClient, never()).consumeCredits(anyString(), anyInt(), anyString(), anyString());
+        }
+    }
+
+    @Nested
+    @DisplayName("Multiple Files — Credits Sum Across Files")
+    class MultipleFiles {
+
+        @Test
+        @DisplayName("Upload 2 files: 2 suppliers + 1 supplier → consumes 3 credits total")
+        void creditsAccumulatedAcrossFiles() throws Exception {
+            when(runRepository.countByTenantId(anyString())).thenReturn(0L);
+            when(ledgerFileProcessor.processWithLedgerCount(any(InputStream.class), anyString(), any(LocalDate.class)))
+                    .thenReturn(mockOutcome("file1.xlsx", 2))
+                    .thenReturn(mockOutcome("file2.xlsx", 1));
+            when(creditClient.checkBalance(eq(USER_ID), eq(3)))
+                    .thenReturn(CreditWalletResponse.builder().total(10).used(0).remaining(10).build());
+            when(creditClient.consumeCredits(eq(USER_ID), eq(3), anyString(), anyString()))
+                    .thenReturn(CreditWalletResponse.builder().total(10).used(3).remaining(7).build());
+            when(runRepository.save(any(Rule37CalculationRun.class)))
+                    .thenAnswer(inv -> {
+                        Rule37CalculationRun run = inv.getArgument(0);
+                        run.setId(1L);
+                        return run;
+                    });
+
+            UploadResult result = orchestrator.processUpload(
+                    List.of(mockFile("file1.xlsx"), mockFile("file2.xlsx")), AS_ON_DATE, USER_ID);
+
+            assertEquals(3, result.getCreditsConsumed());
+            assertEquals(7, result.getRemainingCredits());
             assertEquals(2, result.getResults().size());
-            assertEquals(1, result.getErrors().size());
-            assertTrue(result.getErrors().get(0).getMessage().contains("Insufficient credits"));
+            verify(creditClient).checkBalance(USER_ID, 3);
+            verify(creditClient).consumeCredits(eq(USER_ID), eq(3), anyString(), anyString());
+        }
+    }
+
+    @Nested
+    @DisplayName("Credit Pre-Validation — Fail-Fast")
+    class CreditPreValidation {
+
+        @Test
+        @DisplayName("Insufficient credits for total ledgers → InsufficientCreditsException before charging")
+        void insufficientCreditsBeforeCharging() throws Exception {
+            when(runRepository.countByTenantId(anyString())).thenReturn(0L);
+            when(ledgerFileProcessor.processWithLedgerCount(any(InputStream.class), anyString(), any(LocalDate.class)))
+                    .thenReturn(mockOutcome("test.xlsx", 1));
+            when(creditClient.checkBalance(eq(USER_ID), eq(1)))
+                    .thenThrow(new InsufficientCreditsException("Insufficient credits: need 1 but only 0 available"));
+
+            assertThrows(InsufficientCreditsException.class, () ->
+                    orchestrator.processUpload(List.of(mockFile("test.xlsx")), AS_ON_DATE, USER_ID));
+
+            verify(creditClient, never()).consumeCredits(anyString(), anyInt(), anyString(), anyString());
         }
     }
 
@@ -172,10 +212,8 @@ class LedgerUploadOrchestratorTest {
         @Test
         @DisplayName("Per-tenant limit reached → IllegalArgumentException")
         void tenantLimitReached() {
-            // Arrange: tenant already at max runs
             when(runRepository.countByTenantId(anyString())).thenReturn((long) MAX_RUNS_PER_TENANT);
 
-            // Act & Assert
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                     orchestrator.processUpload(List.of(mockFile("test.xlsx")), AS_ON_DATE, USER_ID));
 
@@ -190,16 +228,15 @@ class LedgerUploadOrchestratorTest {
     class IdempotentCredits {
 
         @Test
-        @DisplayName("Each file gets a unique idempotency key")
-        void uniqueIdempotencyKeys() throws Exception {
+        @DisplayName("Single consumption call with unique idempotency key for all ledgers")
+        void singleConsumptionCallWithUniqueKey() throws Exception {
             when(runRepository.countByTenantId(anyString())).thenReturn(0L);
-            when(creditClient.checkBalance(eq(USER_ID), eq(1)))
+            when(ledgerFileProcessor.processWithLedgerCount(any(InputStream.class), anyString(), any(LocalDate.class)))
+                    .thenReturn(mockOutcome("f1.xlsx", 1))
+                    .thenReturn(mockOutcome("f2.xlsx", 1));
+            when(creditClient.checkBalance(eq(USER_ID), eq(2)))
                     .thenReturn(CreditWalletResponse.builder().total(10).used(0).remaining(10).build());
-            when(ledgerFileProcessor.process(any(InputStream.class), anyString(), any(LocalDate.class)))
-                    .thenReturn(mockLedgerResult("f1.xlsx"))
-                    .thenReturn(mockLedgerResult("f2.xlsx"));
-            when(creditClient.consumeCredits(eq(USER_ID), eq(1), anyString(), anyString()))
-                    .thenReturn(CreditWalletResponse.builder().total(10).used(1).remaining(9).build())
+            when(creditClient.consumeCredits(eq(USER_ID), eq(2), anyString(), anyString()))
                     .thenReturn(CreditWalletResponse.builder().total(10).used(2).remaining(8).build());
             when(runRepository.save(any(Rule37CalculationRun.class)))
                     .thenAnswer(inv -> {
@@ -211,8 +248,8 @@ class LedgerUploadOrchestratorTest {
             orchestrator.processUpload(
                     List.of(mockFile("f1.xlsx"), mockFile("f2.xlsx")), AS_ON_DATE, USER_ID);
 
-            // Each call should have a different idempotency key (verified by 2 separate invocations)
-            verify(creditClient, times(2)).consumeCredits(eq(USER_ID), eq(1), anyString(), anyString());
+            // Single consumption call for all ledgers
+            verify(creditClient, times(1)).consumeCredits(eq(USER_ID), eq(2), anyString(), anyString());
         }
     }
 }
