@@ -5,7 +5,7 @@
       <div>
         <h1 class="text-3xl font-bold text-900 m-0 tracking-tight">GST Buddy</h1>
         <p class="text-secondary mt-2 text-lg m-0">
-          Rule 37 — 180-day ITC Reversal & Interest Calculator
+          Check if you owe interest or need to reverse ITC on late payments
         </p>
       </div>
 
@@ -64,34 +64,30 @@
 
     @if (activeTab() === 'new') {
     <div>
-      <!-- How it works -->
-      <div class="buddy-info-card mb-4 p-4">
-        <div class="flex align-items-start gap-3">
-          <i class="pi pi-info-circle text-2xl text-primary"></i>
-          <div class="text-sm text-700">
-            <p class="font-medium mb-1">How it works:</p>
-            <ul class="list-disc list-inside space-y-1 text-600">
-              <li>Upload one or multiple supplier ledgers from Tally or Busy in Excel format</li>
-              <li>The system parses Date, Debit (Payment), and Credit (Purchase) columns</li>
-              <li>Interest is calculated at 18% p.a. on ITC amount (18/118 of purchase value)</li>
-              <li>ITC reversal applies only to unpaid amounts beyond 180 days</li>
-              <li>Calculations are saved and available for 7 days</li>
-            </ul>
-          </div>
+      <!-- How it works (Collapsible) -->
+      <p-panel header="How it works" [toggleable]="true" [collapsed]="true" styleClass="mb-4 howto-panel">
+        <div class="text-sm text-700">
+          <ul class="list-disc list-inside space-y-1 text-600 m-0 pl-0">
+            <li>Upload one or multiple supplier ledgers from Tally or Busy in Excel format</li>
+            <li>The system reads Date, Debit (payments), and Credit (purchases) columns</li>
+            <li>Interest is calculated at 18% per year on invoices unpaid beyond 180 days</li>
+            <li>ITC reversal is computed automatically per Rule 37 of CGST Rules</li>
+            <li>Results are saved for 7 days — download the Excel report anytime</li>
+          </ul>
         </div>
-      </div>
+      </p-panel>
 
       <!-- As on Date -->
       <div class="surface-50 border-1 surface-border border-round p-4 mb-4">
         <label class="block mb-2 font-medium text-800">
-          As on Date
+          Calculation Date
           <i class="pi pi-question-circle text-500 ml-1 cursor-pointer"
-            pTooltip="This is the reference date used to calculate how many days each invoice has been unpaid. Typically set to today's date or the end of your reporting period."
+            pTooltip="The cutoff date for checking unpaid invoices. Usually today's date or the end of your return period."
             tooltipPosition="right"></i>
         </label>
         <input type="date" pInputText [ngModel]="asOnDate()" (ngModelChange)="asOnDate.set($event)"
           [disabled]="isProcessing()" class="w-full" />
-        <p class="text-sm text-500 mt-2 m-0">Set the date for calculating delays on unpaid amounts</p>
+        <p class="text-sm text-500 mt-2 m-0">Invoices unpaid beyond 180 days from this date will be flagged</p>
       </div>
 
       <!-- Document Upload -->
@@ -109,7 +105,7 @@
       <div class="flex justify-content-center py-8">
         <div class="flex flex-column align-items-center gap-4">
           <i class="pi pi-spin pi-spinner" style="font-size: 3rem;"></i>
-          <p class="text-600 font-medium m-0">Processing your file...</p>
+          <p class="text-600 font-medium m-0">Analyzing your ledger...</p>
         </div>
       </div>
       }
@@ -122,45 +118,30 @@
       <!-- Results -->
       @if (results().length > 0 && !isProcessing()) {
       <div class="mt-6 pt-6 border-top-1 surface-border">
-        <h2 class="text-2xl font-bold text-900 mb-4 flex align-items-center gap-2">
-          <i class="pi pi-calculator text-primary"></i>
-          Calculation Results
-        </h2>
-
-        <!-- KPI Summary Cards -->
-        <div class="grid mb-4">
-          <div class="col-12 md:col-4">
-            <div class="kpi-card kpi-card-reversal">
-              <div class="kpi-icon">
-                <i class="pi pi-refresh"></i>
-              </div>
-              <div class="kpi-content">
-                <span class="kpi-label">ITC Reversal</span>
-                <span class="kpi-value">{{ formatCurrency(totalItcReversal()) }}</span>
-              </div>
+        <!-- Verdict Banner -->
+        <div class="verdict-banner mb-4 p-4 border-round-xl"
+          [ngClass]="totalItcReversal() + totalInterest() > 0 ? 'verdict-action' : 'verdict-clear'">
+          <div class="flex align-items-center gap-3">
+            @if (totalItcReversal() + totalInterest() > 0) {
+            <i class="pi pi-exclamation-circle text-3xl" style="color: #d97706;"></i>
+            <div>
+              <h3 class="text-xl font-bold text-900 m-0">
+                Action Needed — {{ formatCurrency(totalItcReversal() + totalInterest()) }} total liability
+              </h3>
+              <p class="text-600 text-sm m-0 mt-1">
+                {{ formatCurrency(totalItcReversal()) }} ITC to reverse + {{ formatCurrency(totalInterest()) }} interest
+                across {{ filesProcessed() }} file(s)
+              </p>
             </div>
-          </div>
-          <div class="col-12 md:col-4">
-            <div class="kpi-card kpi-card-interest">
-              <div class="kpi-icon">
-                <i class="pi pi-percentage"></i>
-              </div>
-              <div class="kpi-content">
-                <span class="kpi-label">Interest Payable</span>
-                <span class="kpi-value">{{ formatCurrency(totalInterest()) }}</span>
-              </div>
+            } @else {
+            <i class="pi pi-check-circle text-3xl" style="color: #16a34a;"></i>
+            <div>
+              <h3 class="text-xl font-bold text-900 m-0">All Clear — No liability found</h3>
+              <p class="text-600 text-sm m-0 mt-1">
+                All payments are within the 180-day window. No action needed.
+              </p>
             </div>
-          </div>
-          <div class="col-12 md:col-4">
-            <div class="kpi-card kpi-card-files">
-              <div class="kpi-icon">
-                <i class="pi pi-file"></i>
-              </div>
-              <div class="kpi-content">
-                <span class="kpi-label">Files Processed</span>
-                <span class="kpi-value">{{ filesProcessed() }}</span>
-              </div>
-            </div>
+            }
           </div>
         </div>
 

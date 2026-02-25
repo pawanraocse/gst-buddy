@@ -14,18 +14,18 @@
     <div class="sidebar-content">
       <ul class="layout-menu">
         @for (item of items(); track $index) {
-          @if (item.separator) {
-            <li class="menu-separator">
-              <span class="separator-label">Administration</span>
-            </li>
-          } @else {
-            <li class="menu-item" [class.active-menuitem]="isActive(item.routerLink)">
-              <a [routerLink]="item.routerLink" class="menu-link" (click)="onMenuClick()">
-                <i [class]="item.icon"></i>
-                <span>{{ item.label }}</span>
-              </a>
-            </li>
-          }
+        @if (item.separator) {
+        <li class="menu-separator">
+          <span class="separator-label">Administration</span>
+        </li>
+        } @else {
+        <li class="menu-item" [class.active-menuitem]="isActive(item.routerLink)">
+          <a [routerLink]="item.routerLink" class="menu-link" (click)="onMenuClick()">
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        </li>
+        }
         }
       </ul>
     </div>
@@ -62,12 +62,12 @@
               authService.user()?.email?.split('@')?.[0] }}</span>
           </span>
           <span class="text-400 mx-2">•</span>
-          <span class="text-primary font-medium">Rule 37 Calculator</span>
+          <span class="text-primary font-medium">Compliance Dashboard</span>
         </div>
 
         <div class="header-actions">
-          <button pButton icon="pi pi-bell" class="header-action-btn" [rounded]="true" [text]="true"></button>
-          <button pButton icon="pi pi-cog" class="header-action-btn" [rounded]="true" [text]="true"></button>
+          <button pButton icon="pi pi-cog" class="header-action-btn" [rounded]="true" [text]="true"
+            routerLink="/app/settings/account" pTooltip="Settings"></button>
         </div>
       </div>
     </header>

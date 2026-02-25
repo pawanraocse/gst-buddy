@@ -11,7 +11,7 @@
                     <i class="pi pi-wallet"></i>
                 </div>
                 <div class="kpi-content">
-                    <span class="kpi-label">Total Liability</span>
+                    <span class="kpi-label">Total Amount Due</span>
                     <span class="kpi-value">{{ formatCurrency(totalItcReversal + totalInterest) }}</span>
                     <span class="kpi-breakdown">
                         ITC: {{ formatCurrency(totalItcReversal) }} + Interest: {{ formatCurrency(totalInterest) }}
@@ -28,9 +28,9 @@
                     <i class="pi pi-replay"></i>
                 </div>
                 <div class="kpi-content">
-                    <span class="kpi-label">ITC Reversal</span>
+                    <span class="kpi-label">ITC You Must Reverse</span>
                     <span class="kpi-value">{{ formatCurrency(totalItcReversal) }}</span>
-                    <span class="kpi-breakdown">Add back in GSTR-3B</span>
+                    <span class="kpi-breakdown">Tax credit to return in your next filing</span>
                 </div>
             </div>
 
@@ -40,28 +40,28 @@
                     <i class="pi pi-percentage"></i>
                 </div>
                 <div class="kpi-content">
-                    <span class="kpi-label">Interest &#64; 18%</span>
+                    <span class="kpi-label">Interest to Pay</span>
                     <span class="kpi-value">{{ formatCurrency(totalInterest) }}</span>
-                    <span class="kpi-breakdown">Section 50, CGST Act</span>
+                    <span class="kpi-breakdown">Calculated at 18% per year (Section 50)</span>
                 </div>
             </div>
 
             <!-- Risk Summary Card -->
             <div class="kpi-card risk">
                 <div class="kpi-content">
-                    <span class="kpi-label">Risk Summary</span>
+                    <span class="kpi-label">Transaction Health</span>
                     <div class="risk-indicators">
                         <div class="risk-item breached">
                             <span class="risk-count">{{ getBreachedCount() }}</span>
-                            <span class="risk-text">Breached</span>
+                            <span class="risk-text">Overdue</span>
                         </div>
                         <div class="risk-item at-risk">
                             <span class="risk-count">{{ getAtRiskCount() }}</span>
-                            <span class="risk-text">At Risk</span>
+                            <span class="risk-text">Due Soon</span>
                         </div>
                         <div class="risk-item safe">
                             <span class="risk-count">{{ getSafeCount() }}</span>
-                            <span class="risk-text">Safe</span>
+                            <span class="risk-text">OK</span>
                         </div>
                     </div>
                 </div>
@@ -82,14 +82,20 @@
         <!-- Export CTA -->
         @if (showExportAll() && results().length > 0) {
         <div class="export-actions">
-            <button pButton class="export-btn" (click)="exportAll.emit('issues')">
-                <i class="pi pi-download"></i>
-                <span>Export Issues Report</span>
-            </button>
-            <button pButton class="export-btn export-btn-complete" (click)="exportAll.emit('complete')">
-                <i class="pi pi-file-excel"></i>
-                <span>Export Complete Report</span>
-            </button>
+            <div class="export-group">
+                <button pButton class="export-btn" (click)="exportAll.emit('issues')">
+                    <i class="pi pi-download"></i>
+                    <span>Download Issues Report</span>
+                </button>
+                <span class="export-hint">Only transactions needing action</span>
+            </div>
+            <div class="export-group">
+                <button pButton class="export-btn export-btn-complete" (click)="exportAll.emit('complete')">
+                    <i class="pi pi-file-excel"></i>
+                    <span>Download Complete Report</span>
+                </button>
+                <span class="export-hint">All transactions including on-time</span>
+            </div>
         </div>
         }
     </section>
@@ -149,18 +155,28 @@
 
                 <!-- Premium Data Table -->
                 <div class="table-container">
+                    <div class="table-toolbar">
+                        <button pButton class="p-button-text p-button-sm toggle-columns-btn" (click)="toggleColumns()">
+                            <i class="pi" [class.pi-eye]="!showAllColumns" [class.pi-eye-slash]="showAllColumns"></i>
+                            {{ showAllColumns ? 'Simplify View' : 'Show More Details' }}
+                        </button>
+                    </div>
                     <table class="premium-table">
                         <thead>
                             <tr>
                                 <th class="col-status">Status</th>
                                 <th class="col-date">Invoice Date</th>
-                                <th class="col-deadline">Deadline</th>
+                                @if (showAllColumns) {
+                                <th class="col-deadline">Payment Deadline</th>
                                 <th class="col-date">Paid On</th>
-                                <th class="col-days">Days Over</th>
-                                <th class="col-amount">Invoice</th>
-                                <th class="col-amount">ITC</th>
+                                <th class="col-days">How Late</th>
+                                }
+                                <th class="col-amount">Invoice Amount</th>
+                                <th class="col-amount">ITC to Reverse</th>
                                 <th class="col-amount">Interest</th>
-                                <th class="col-gstr">GSTR-3B</th>
+                                @if (showAllColumns) {
+                                <th class="col-gstr">File In</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -168,20 +184,16 @@
                             <tr [class]="'row-' + (row.riskCategory || 'safe').toLowerCase()">
                                 <td>
                                     <div class="status-pill" [class]="(row.status || 'unpaid').toLowerCase()">
-                                        @if (row.status === 'UNPAID') {
-                                        <i class="pi pi-exclamation-triangle"></i>
-                                        <span>Unpaid</span>
-                                        } @else {
-                                        <i class="pi pi-check-circle"></i>
-                                        <span>Late</span>
-                                        }
+                                        <i [class]="humanizeStatus(row.status).icon"></i>
+                                        <span>{{ humanizeStatus(row.status).label }}</span>
                                     </div>
                                 </td>
                                 <td class="date-cell">{{ formatDate(row.purchaseDate) }}</td>
+                                @if (showAllColumns) {
                                 <td class="deadline-cell" [class.breached]="row.daysToDeadline < 0">
                                     <span class="deadline-date">{{ formatDate(row.paymentDeadline) }}</span>
                                     @if (row.daysToDeadline < 0) { <span class="overdue-indicator">{{
-                                        -row.daysToDeadline }}d overdue</span>
+                                        humanizeOverdue(row.daysToDeadline) }}</span>
                                         }
                                 </td>
                                 <td class="date-cell">
@@ -193,24 +205,27 @@
                                 </td>
                                 <td class="days-cell">
                                     <span class="days-chip" [class]="getRiskClass(row.riskCategory)">
-                                        +{{ row.delayDays - 180 }}
+                                        {{ humanizeDays(row.delayDays) }}
                                     </span>
                                 </td>
+                                }
                                 <td class="amount-cell invoice">{{ formatCurrency(row.principal) }}</td>
                                 <td class="amount-cell itc">{{ formatCurrency(row.itcAmount) }}</td>
                                 <td class="amount-cell interest">{{ formatCurrency(row.interest) }}</td>
+                                @if (showAllColumns) {
                                 <td>
                                     <span class="gstr-badge">{{ row.gstr3bPeriod }}</span>
                                 </td>
+                                }
                             </tr>
                             @if (row.status === 'PAID_LATE') {
                             <tr class="itc-reclaim-row">
-                                <td colspan="9">
+                                <td [attr.colspan]="showAllColumns ? 9 : 5">
                                     <div class="itc-reclaim-tip">
                                         <i class="pi pi-info-circle"></i>
-                                        <span>💡 You paid this invoice late. The reversed ITC of <strong>{{
+                                        <span>💡 You paid late — the reversed ITC of <strong>{{
                                                 formatCurrency(row.itcAmount) }}</strong>
-                                            can be re-claimed in the GSTR-3B return for <strong>{{ row.gstr3bPeriod
+                                            can be re-claimed when you file GSTR-3B for <strong>{{ row.gstr3bPeriod
                                                 }}</strong>.</span>
                                     </div>
                                 </td>

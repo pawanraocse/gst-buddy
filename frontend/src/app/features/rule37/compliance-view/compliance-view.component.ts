@@ -36,6 +36,9 @@ export class ComplianceViewComponent {
   // Track expanded/collapsed state per ledger
   expandedLedgers: Record<string, boolean> = {};
 
+  /** Toggle to show all columns or simplified view */
+  showAllColumns = false;
+
   /** Export dropdown menu items */
   exportMenuItems: MenuItem[] = [
     {
@@ -137,5 +140,37 @@ export class ComplianceViewComponent {
       case 'AT_RISK': return 'risk-at-risk';
       default: return 'risk-safe';
     }
+  }
+
+  /** Make days human-friendly: '3+ years overdue' or '45 days late' */
+  humanizeDays(delayDays: number): string {
+    const overBy = delayDays - 180;
+    if (overBy <= 0) return 'On time';
+    if (overBy >= 730) return `${Math.floor(overBy / 365)}+ yrs late`;
+    if (overBy >= 365) return '1+ yr late';
+    return `${overBy} days late`;
+  }
+
+  /** Human-friendly overdue text for deadline */
+  humanizeOverdue(daysToDeadline: number): string {
+    const over = Math.abs(daysToDeadline);
+    if (over >= 730) return `Overdue by ${Math.floor(over / 365)}+ years`;
+    if (over >= 365) return 'Overdue by 1+ year';
+    if (over >= 30) return `Overdue by ${Math.floor(over / 30)} months`;
+    return `Overdue by ${over} days`;
+  }
+
+  /** Status label for display */
+  humanizeStatus(status: string | undefined): { label: string; icon: string } {
+    switch (status) {
+      case 'PAID_LATE': return { label: 'Paid Late', icon: 'pi pi-clock' };
+      case 'UNPAID': return { label: 'Not Paid', icon: 'pi pi-exclamation-triangle' };
+      case 'PAID_ON_TIME': return { label: 'On Time', icon: 'pi pi-check-circle' };
+      default: return { label: 'Pending', icon: 'pi pi-info-circle' };
+    }
+  }
+
+  toggleColumns(): void {
+    this.showAllColumns = !this.showAllColumns;
   }
 }

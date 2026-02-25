@@ -5,13 +5,14 @@ import { AuthService } from '../core/auth.service';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
+import { TooltipModule } from 'primeng/tooltip';
 import { MenuItem } from 'primeng/api';
 import { ShareDialogComponent } from '../shared/components/share-dialog/share-dialog.component';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, MenubarModule, ButtonModule, AvatarModule, ShareDialogComponent],
+  imports: [CommonModule, RouterModule, MenubarModule, ButtonModule, AvatarModule, TooltipModule, ShareDialogComponent],
   templateUrl: './app-layout.component.html',
   styleUrls: ['./app-layout.component.scss']
 })
@@ -45,7 +46,7 @@ export class AppLayoutComponent {
 
   items = computed<MenuItem[]>(() => {
     const base: MenuItem[] = [
-      { label: 'Rule 37', icon: 'pi pi-calculator', routerLink: '/app/dashboard' },
+      { label: 'Compliance Check', icon: 'pi pi-shield', routerLink: '/app/dashboard' },
       { label: 'Settings', icon: 'pi pi-cog', routerLink: '/app/settings/account' }
     ];
 

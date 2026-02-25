@@ -12,6 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
+import { PanelModule } from 'primeng/panel';
 import { LedgerResult, UploadResult } from '../../shared/models/rule37.model';
 import { MessageService } from 'primeng/api';
 
@@ -29,6 +30,7 @@ import { MessageService } from 'primeng/api';
     DocumentUploadComponent,
     ComplianceViewComponent,
     CalculationHistoryComponent,
+    PanelModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
