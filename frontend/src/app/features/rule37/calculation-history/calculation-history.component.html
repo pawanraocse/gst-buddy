@@ -24,51 +24,78 @@
         <div class="detail-header">
             <button pButton icon="pi pi-arrow-left" label="Back to History" class="p-button-text"
                 (click)="viewingRun.set(null)"></button>
+            <span class="detail-title">{{ viewingRun()!.filename || 'Calculation' }}</span>
             <span class="detail-date">{{ formatDate(viewingRun()!.createdAt) }}</span>
+            <div class="detail-export">
+                <button class="export-compact-btn primary"
+                    (click)="downloadExport(viewingRun()!.id, viewingRun()!.filename || 'export', 'issues')"
+                    pTooltip="Only late/unpaid transactions" tooltipPosition="bottom">
+                    <i class="pi pi-exclamation-triangle"></i>
+                    <span>Issues</span>
+                </button>
+                <button class="export-compact-btn secondary"
+                    (click)="downloadExport(viewingRun()!.id, viewingRun()!.filename || 'export', 'complete')"
+                    pTooltip="All transactions including on-time" tooltipPosition="bottom">
+                    <i class="pi pi-file-excel"></i>
+                    <span>Full Report</span>
+                </button>
+            </div>
         </div>
         <app-compliance-view [results]="normalizeResults(viewingRun()!.calculationData)" [runId]="viewingRun()!.id"
-            [showExportAll]="true"
-            (exportAll)="downloadExport(viewingRun()!.id, viewingRun()!.calculationData[0]?.ledgerName || 'export', $event)"
-            (exportLedger)="onExportLedger($event, viewingRun()!.id, viewingRun()!.calculationData[0]?.ledgerName || 'export')" />
+            [showExportAll]="false" />
     </div>
     } @else {
 
     <!-- Run list -->
     <div class="history-list">
         @for (run of runs(); track run.id) {
-        <div class="history-card">
-            <div class="card-main" (click)="viewingRun.set(run)">
-                <div class="card-icon">
-                    <i class="pi pi-calculator"></i>
+        <div class="history-card" (click)="viewingRun.set(run)">
+            <!-- Card Header: File icon + Filename + Date -->
+            <div class="card-header-row">
+                <div class="card-file-identity">
+                    <div class="card-icon">
+                        <i class="pi pi-file-excel"></i>
+                    </div>
+                    <div class="card-title-block">
+                        <span class="card-filename">{{ run.filename || 'Calculation #' + run.id }}</span>
+                        <span class="card-date">{{ formatDate(run.createdAt) }}</span>
+                    </div>
                 </div>
-                <div class="card-content">
-                    <div class="card-title">
-                        @if (run.calculationData.length === 1) {
-                        {{ run.calculationData[0].ledgerName }}
-                        } @else {
-                        {{ run.calculationData[0].ledgerName }} +{{ run.calculationData.length - 1 }} more
-                        }
-                    </div>
-                    <div class="card-meta">
-                        <span class="meta-date">{{ formatDate(run.createdAt) }}</span>
-                        <span class="meta-sep">•</span>
-                        <span class="expiry-badge" [class.expiry-critical]="getDaysRemaining(run.expiresAt) <= 1"
-                            [class.expiry-warning]="getDaysRemaining(run.expiresAt) <= 3 && getDaysRemaining(run.expiresAt) > 1">
-                            <i class="pi pi-clock"></i> {{ getDaysRemaining(run.expiresAt) }}d remaining
-                        </span>
-                    </div>
-                    <div class="card-summary">
-                        <span>ITC Reversal: <strong>{{ formatCurrency(run.totalItcReversal || 0) }}</strong></span>
-                        <span>Interest: <strong>{{ formatCurrency(run.totalInterest || 0) }}</strong></span>
-                    </div>
+                <div class="card-header-actions">
+                    <span class="expiry-badge" [class.expiry-critical]="getDaysRemaining(run.expiresAt) <= 1"
+                        [class.expiry-warning]="getDaysRemaining(run.expiresAt) <= 3 && getDaysRemaining(run.expiresAt) > 1">
+                        <i class="pi pi-clock"></i> {{ getDaysRemaining(run.expiresAt) }}d remaining
+                    </span>
+                    <button pButton icon="pi pi-download" pTooltip="Export"
+                        class="p-button-text p-button-rounded p-button-sm"
+                        (click)="downloadExport(run.id, run.filename || run.calculationData[0]?.ledgerName || 'export'); $event.stopPropagation()"></button>
+                    <button pButton icon="pi pi-trash" pTooltip="Delete"
+                        class="p-button-text p-button-rounded p-button-danger p-button-sm"
+                        (click)="deleteRun(run.id); $event.stopPropagation()"></button>
                 </div>
             </div>
-            <div class="card-actions">
-                <button pButton icon="pi pi-download" pTooltip="Export" class="p-button-text p-button-rounded"
-                    (click)="downloadExport(run.id, run.calculationData[0]?.ledgerName || 'export'); $event.stopPropagation()"></button>
-                <button pButton icon="pi pi-trash" pTooltip="Delete"
-                    class="p-button-text p-button-rounded p-button-danger"
-                    (click)="deleteRun(run.id); $event.stopPropagation()"></button>
+
+            <!-- Card Stats Row: Quick metrics -->
+            <div class="card-stats-row">
+                <div class="stat-chip suppliers">
+                    <i class="pi pi-users"></i>
+                    <span class="stat-value">{{ countDistinctSuppliers(run) }}</span>
+                    <span class="stat-label">suppliers</span>
+                </div>
+                <div class="stat-chip transactions">
+                    <i class="pi pi-list"></i>
+                    <span class="stat-value">{{ countTransactions(run) }}</span>
+                    <span class="stat-label">transactions</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-amount itc">
+                    <span class="stat-amount-label">ITC Reversal</span>
+                    <span class="stat-amount-value">{{ formatCurrency(run.totalItcReversal || 0) }}</span>
+                </div>
+                <div class="stat-amount interest">
+                    <span class="stat-amount-label">Interest</span>
+                    <span class="stat-amount-value">{{ formatCurrency(run.totalInterest || 0) }}</span>
+                </div>
             </div>
         </div>
         }

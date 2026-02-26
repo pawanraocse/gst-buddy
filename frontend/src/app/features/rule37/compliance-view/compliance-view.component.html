@@ -1,300 +1,320 @@
 <div class="compliance-view">
     <!-- ═══════════════════════════════════════════════════════════════════════════
-         🎯 EXECUTIVE SUMMARY - KPI Hero Cards
-         Premium glassmorphic cards with at-a-glance metrics
+         🎯 COMPACT SUMMARY STRIP — All KPIs in one row
     ═══════════════════════════════════════════════════════════════════════════ -->
-    <section class="executive-summary">
-        <div class="kpi-grid">
-            <!-- Total Liability Card -->
-            <div class="kpi-card liability">
-                <div class="kpi-icon">
-                    <i class="pi pi-wallet"></i>
-                </div>
-                <div class="kpi-content">
-                    <span class="kpi-label">Total Amount Due</span>
-                    <span class="kpi-value">{{ formatCurrency(totalItcReversal + totalInterest) }}</span>
-                    <span class="kpi-breakdown">
-                        ITC: {{ formatCurrency(totalItcReversal) }} + Interest: {{ formatCurrency(totalInterest) }}
-                    </span>
-                </div>
-                <div class="kpi-trend negative">
-                    <i class="pi pi-arrow-up"></i>
-                </div>
-            </div>
-
-            <!-- ITC Reversal Card -->
-            <div class="kpi-card reversal">
-                <div class="kpi-icon">
-                    <i class="pi pi-replay"></i>
-                </div>
-                <div class="kpi-content">
-                    <span class="kpi-label">ITC You Must Reverse</span>
-                    <span class="kpi-value">{{ formatCurrency(totalItcReversal) }}</span>
-                    <span class="kpi-breakdown">Tax credit to return in your next filing</span>
-                </div>
-            </div>
-
-            <!-- Interest Due Card -->
-            <div class="kpi-card interest">
-                <div class="kpi-icon">
-                    <i class="pi pi-percentage"></i>
-                </div>
-                <div class="kpi-content">
-                    <span class="kpi-label">Interest to Pay</span>
-                    <span class="kpi-value">{{ formatCurrency(totalInterest) }}</span>
-                    <span class="kpi-breakdown">Calculated at 18% per year (Section 50)</span>
-                </div>
-            </div>
-
-            <!-- Risk Summary Card -->
-            <div class="kpi-card risk">
-                <div class="kpi-content">
-                    <span class="kpi-label">Transaction Health</span>
-                    <div class="risk-indicators">
-                        <div class="risk-item breached">
-                            <span class="risk-count">{{ getBreachedCount() }}</span>
-                            <span class="risk-text">Overdue</span>
-                        </div>
-                        <div class="risk-item at-risk">
-                            <span class="risk-count">{{ getAtRiskCount() }}</span>
-                            <span class="risk-text">Due Soon</span>
-                        </div>
-                        <div class="risk-item safe">
-                            <span class="risk-count">{{ getSafeCount() }}</span>
-                            <span class="risk-text">OK</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Risk Donut Visualization -->
-                <div class="risk-donut">
-                    <svg viewBox="0 0 36 36" class="donut-chart">
-                        <circle cx="18" cy="18" r="15.915" class="donut-ring" />
-                        <circle cx="18" cy="18" r="15.915" class="donut-segment breached"
-                            [attr.stroke-dasharray]="getDonutSegment('breached')" stroke-dashoffset="25" />
-                        <circle cx="18" cy="18" r="15.915" class="donut-segment at-risk"
-                            [attr.stroke-dasharray]="getDonutSegment('at-risk')"
-                            [attr.stroke-dashoffset]="getDonutOffset('at-risk')" />
-                    </svg>
-                </div>
+    <section class="summary-strip">
+        <!-- Primary metric: Total -->
+        <div class="strip-chip total">
+            <div class="strip-chip-icon total"><i class="pi pi-wallet"></i></div>
+            <div class="strip-chip-content">
+                <span class="strip-chip-label">Total Due</span>
+                <span class="strip-chip-value total">{{ formatCurrency(totalItcReversal + totalInterest) }}</span>
             </div>
         </div>
 
-        <!-- Export CTA -->
-        @if (showExportAll() && results().length > 0) {
-        <div class="export-actions">
-            <div class="export-group">
-                <button pButton class="export-btn" (click)="exportAll.emit('issues')">
-                    <i class="pi pi-download"></i>
-                    <span>Download Issues Report</span>
-                </button>
-                <span class="export-hint">Only transactions needing action</span>
-            </div>
-            <div class="export-group">
-                <button pButton class="export-btn export-btn-complete" (click)="exportAll.emit('complete')">
-                    <i class="pi pi-file-excel"></i>
-                    <span>Download Complete Report</span>
-                </button>
-                <span class="export-hint">All transactions including on-time</span>
+        <div class="strip-divider"></div>
+
+        <!-- ITC Reversal -->
+        <div class="strip-chip itc">
+            <div class="strip-chip-icon itc"><i class="pi pi-replay"></i></div>
+            <div class="strip-chip-content">
+                <span class="strip-chip-label">ITC Reversal</span>
+                <span class="strip-chip-value itc">{{ formatCurrency(totalItcReversal) }}</span>
             </div>
         </div>
-        }
+
+        <!-- Interest -->
+        <div class="strip-chip interest">
+            <div class="strip-chip-icon interest"><i class="pi pi-percentage"></i></div>
+            <div class="strip-chip-content">
+                <span class="strip-chip-label">Interest @18%</span>
+                <span class="strip-chip-value interest">{{ formatCurrency(totalInterest) }}</span>
+            </div>
+        </div>
+
+        <div class="strip-divider"></div>
+
+        <!-- Suppliers -->
+        <div class="strip-chip suppliers">
+            <div class="strip-chip-icon suppliers"><i class="pi pi-users"></i></div>
+            <div class="strip-chip-content">
+                <span class="strip-chip-value">{{ totalLedgerCount }}</span>
+                <span class="strip-chip-label">Suppliers</span>
+            </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="strip-chip transactions">
+            <div class="strip-chip-icon transactions"><i class="pi pi-list"></i></div>
+            <div class="strip-chip-content">
+                <span class="strip-chip-value">{{ totalTransactions }}</span>
+                <span class="strip-chip-label">Transactions</span>
+            </div>
+        </div>
+
+        <div class="strip-divider"></div>
+
+        <!-- Risk indicators -->
+        <div class="strip-risk">
+            <span class="risk-dot breached" pTooltip="Overdue transactions" tooltipPosition="bottom">
+                <span class="dot"></span> {{ getBreachedCount() }}
+            </span>
+            <span class="risk-dot at-risk" pTooltip="Due soon" tooltipPosition="bottom">
+                <span class="dot"></span> {{ getAtRiskCount() }}
+            </span>
+            <span class="risk-dot safe" pTooltip="On track" tooltipPosition="bottom">
+                <span class="dot"></span> {{ getSafeCount() }}
+            </span>
+        </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════════════════════
-         📊 LEDGER BREAKDOWN - Expandable Cards with Supplier Groups
+         🔍 FILTER TOOLBAR — Search, Quick Filters, Sort
     ═══════════════════════════════════════════════════════════════════════════ -->
-    @for (ledger of results(); track ledger.ledgerName; let i = $index) {
-    <section class="ledger-section" [class.expanded]="expandedLedgers[ledger.ledgerName]">
+    @if (totalLedgerCount > 1) {
+    <section class="filter-toolbar" @slideDown>
+        <!-- Search Box -->
+        <div class="search-box">
+            <i class="pi pi-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Search supplier..." [ngModel]="searchQuery()"
+                (ngModelChange)="searchQuery.set($event)" />
+            @if (searchQuery()) {
+            <button class="search-clear" (click)="searchQuery.set('')">
+                <i class="pi pi-times"></i>
+            </button>
+            }
+            <span class="result-badge">{{ matchingSupplierCount }} of {{ totalLedgerCount }}</span>
+        </div>
 
-        <!-- Ledger Header (Clickable to Expand) -->
-        <header class="ledger-header" (click)="toggleLedger(ledger.ledgerName)">
-            <div class="ledger-identity">
-                <div class="ledger-icon">
-                    <i class="pi pi-file-excel"></i>
+        <!-- Quick Filter Chips -->
+        <div class="filter-chips">
+            <button class="filter-chip" [class.active]="activeStatusFilter() === 'UNPAID'"
+                (click)="toggleStatusFilter('UNPAID')">
+                <i class="pi pi-exclamation-triangle"></i> Unpaid
+            </button>
+            <button class="filter-chip" [class.active]="activeStatusFilter() === 'PAID_LATE'"
+                (click)="toggleStatusFilter('PAID_LATE')">
+                <i class="pi pi-clock"></i> Paid Late
+            </button>
+            <span class="filter-divider"></span>
+            <button class="filter-chip breached" [class.active]="activeRiskFilter() === 'BREACHED'"
+                (click)="toggleRiskFilter('BREACHED')">
+                <span class="filter-dot breached"></span> Overdue
+            </button>
+            <button class="filter-chip at-risk" [class.active]="activeRiskFilter() === 'AT_RISK'"
+                (click)="toggleRiskFilter('AT_RISK')">
+                <span class="filter-dot at-risk"></span> Due Soon
+            </button>
+        </div>
+
+        <!-- Sort & Clear -->
+        <div class="filter-actions">
+            <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+                <option value="risk">Sort: Highest Risk</option>
+                <option value="amount-desc">Sort: Amount ↓</option>
+                <option value="amount-asc">Sort: Amount ↑</option>
+                <option value="date-desc">Sort: Newest First</option>
+                <option value="date-asc">Sort: Oldest First</option>
+            </select>
+            @if (hasActiveFilters) {
+            <button class="clear-filters-btn" (click)="clearAllFilters()">
+                <i class="pi pi-filter-slash"></i> Clear
+            </button>
+            }
+        </div>
+    </section>
+    }
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         📊 SUPPLIER BREAKDOWN — Filtered & Sorted Supplier Cards
+    ═══════════════════════════════════════════════════════════════════════════ -->
+
+    @if (filteredSupplierGroups.length === 0 && hasActiveFilters) {
+    <!-- No matches empty state -->
+    <div class="no-matches" @slideDown>
+        <div class="no-matches-icon">
+            <i class="pi pi-filter-slash"></i>
+        </div>
+        <h4>No Matching Suppliers</h4>
+        <p>Try adjusting your search or filters.</p>
+        <button pButton class="p-button-text p-button-sm" (click)="clearAllFilters()">
+            <i class="pi pi-refresh"></i> Reset All Filters
+        </button>
+    </div>
+    } @else {
+
+    @for (group of filteredSupplierGroups; track group.supplier) {
+    <section class="supplier-section" [class.expanded]="isSupplierExpanded(group.supplier)">
+
+        <!-- Supplier Header (Clickable to Expand) -->
+        <header class="supplier-header" (click)="toggleSupplier(group.supplier)">
+            <div class="supplier-identity">
+                <div class="supplier-risk-indicator" [class]="'risk-' + group.maxRisk.toLowerCase()">
+                    <i class="pi pi-building"></i>
                 </div>
-                <div class="ledger-meta">
-                    <h3 class="ledger-name">{{ ledger.ledgerName }}</h3>
-                    <span class="ledger-invoice-count">
-                        {{ ledger.summary.details.length }} {{ ledger.summary.details.length === 1 ? 'transaction' :
-                        'transactions' }}
+                <div class="supplier-meta">
+                    <h3 class="supplier-name-heading">{{ group.supplier }}</h3>
+                    <span class="supplier-transaction-count">
+                        {{ group.rows.length }} {{ group.rows.length === 1 ? 'transaction' : 'transactions' }}
+                        @if (group.unpaidCount > 0) {
+                        <span class="unpaid-badge">{{ group.unpaidCount }} unpaid</span>
+                        }
                     </span>
                 </div>
             </div>
 
-            <div class="ledger-metrics">
+            <div class="supplier-metrics">
                 <div class="metric">
-                    <span class="metric-value itc">{{ formatCurrency(ledger.summary.totalItcReversal) }}</span>
+                    <span class="metric-value itc">{{ formatCurrency(group.totalItc) }}</span>
                     <span class="metric-label">ITC</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-value interest">{{ formatCurrency(ledger.summary.totalInterest) }}</span>
+                    <span class="metric-value interest">{{ formatCurrency(group.totalInterest) }}</span>
                     <span class="metric-label">Interest</span>
                 </div>
             </div>
 
-            <div class="expand-indicator">
-                <i class="pi" [class.pi-chevron-down]="!expandedLedgers[ledger.ledgerName]"
-                    [class.pi-chevron-up]="expandedLedgers[ledger.ledgerName]"></i>
+            <div class="header-actions">
+                <button class="toggle-details-btn" [pTooltip]="showAllColumns ? 'Simplify View' : 'Show All Columns'"
+                    tooltipPosition="bottom" (click)="toggleColumns(); $event.stopPropagation()">
+                    <i class="pi" [class.pi-eye]="!showAllColumns" [class.pi-eye-slash]="showAllColumns"></i>
+                </button>
+                <div class="expand-indicator">
+                    <i class="pi" [class.pi-chevron-down]="!isSupplierExpanded(group.supplier)"
+                        [class.pi-chevron-up]="isSupplierExpanded(group.supplier)"></i>
+                </div>
             </div>
         </header>
 
-        <!-- Ledger Details (Collapsible) -->
-        @if (expandedLedgers[ledger.ledgerName] !== false) {
-        <div class="ledger-details" @slideDown>
-            @if (ledger.summary.details.length > 0) {
+        <!-- Supplier Transaction Details (Collapsible) -->
+        @if (isSupplierExpanded(group.supplier)) {
+        <div class="supplier-details" @slideDown>
 
-            @for (group of getGroupedBySupplier(ledger); track group.supplier) {
-            <div class="supplier-block">
-                <div class="supplier-ribbon">
-                    <div class="supplier-icon">
-                        <i class="pi pi-building"></i>
-                    </div>
-                    <span class="supplier-name">{{ group.supplier }}</span>
-                    <span class="transaction-count">{{ group.rows.length }} items</span>
-                </div>
-
-                <!-- Premium Data Table -->
-                <div class="table-container">
-                    <div class="table-toolbar">
-                        <button pButton class="p-button-text p-button-sm toggle-columns-btn" (click)="toggleColumns()">
-                            <i class="pi" [class.pi-eye]="!showAllColumns" [class.pi-eye-slash]="showAllColumns"></i>
-                            {{ showAllColumns ? 'Simplify View' : 'Show More Details' }}
-                        </button>
-                    </div>
-                    <table class="premium-table">
-                        <thead>
-                            <tr>
-                                <th class="col-status">Status</th>
-                                <th class="col-date">Invoice Date</th>
-                                @if (showAllColumns) {
-                                <th class="col-deadline">Payment Deadline</th>
-                                <th class="col-date">Paid On</th>
-                                <th class="col-days">How Late</th>
-                                }
-                                <th class="col-amount">Invoice Amount</th>
-                                <th class="col-amount">ITC to Reverse</th>
-                                <th class="col-amount">Interest</th>
-                                @if (showAllColumns) {
-                                <th class="col-gstr">File In</th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (row of group.rows; track row.purchaseDate + row.principal) {
-                            <tr [class]="'row-' + (row.riskCategory || 'safe').toLowerCase()">
-                                <td>
-                                    <div class="status-pill" [class]="(row.status || 'unpaid').toLowerCase()">
-                                        <i [class]="humanizeStatus(row.status).icon"></i>
-                                        <span>{{ humanizeStatus(row.status).label }}</span>
-                                    </div>
-                                </td>
-                                <td class="date-cell">{{ formatDate(row.purchaseDate) }}</td>
-                                @if (showAllColumns) {
-                                <td class="deadline-cell" [class.breached]="row.daysToDeadline < 0">
-                                    <span class="deadline-date">{{ formatDate(row.paymentDeadline) }}</span>
-                                    @if (row.daysToDeadline < 0) { <span class="overdue-indicator">{{
-                                        humanizeOverdue(row.daysToDeadline) }}</span>
-                                        }
-                                </td>
-                                <td class="date-cell">
-                                    @if (row.paymentDate) {
-                                    {{ formatDate(row.paymentDate) }}
-                                    } @else {
-                                    <span class="null-value">—</span>
-                                    }
-                                </td>
-                                <td class="days-cell">
-                                    <span class="days-chip" [class]="getRiskClass(row.riskCategory)">
-                                        {{ humanizeDays(row.delayDays) }}
-                                    </span>
-                                </td>
-                                }
-                                <td class="amount-cell invoice">{{ formatCurrency(row.principal) }}</td>
-                                <td class="amount-cell itc">{{ formatCurrency(row.itcAmount) }}</td>
-                                <td class="amount-cell interest">{{ formatCurrency(row.interest) }}</td>
-                                @if (showAllColumns) {
-                                <td>
-                                    <span class="gstr-badge">{{ row.gstr3bPeriod }}</span>
-                                </td>
-                                }
-                            </tr>
-                            @if (row.status === 'PAID_LATE') {
-                            <tr class="itc-reclaim-row">
-                                <td [attr.colspan]="showAllColumns ? 9 : 5">
-                                    <div class="itc-reclaim-tip">
-                                        <i class="pi pi-info-circle"></i>
-                                        <span>💡 You paid late — the reversed ITC of <strong>{{
-                                                formatCurrency(row.itcAmount) }}</strong>
-                                            can be re-claimed when you file GSTR-3B for <strong>{{ row.gstr3bPeriod
-                                                }}</strong>.</span>
-                                    </div>
-                                </td>
-                            </tr>
+            <!-- Premium Data Table -->
+            <div class="table-container">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th class="col-status">Status</th>
+                            <th class="col-date">Invoice Date</th>
+                            @if (showAllColumns) {
+                            <th class="col-deadline">Payment Deadline</th>
+                            <th class="col-date">Paid On</th>
+                            <th class="col-days">How Late</th>
                             }
+                            <th class="col-amount">Invoice Amount</th>
+                            <th class="col-amount">ITC to Reverse</th>
+                            <th class="col-amount">Interest</th>
+                            @if (showAllColumns) {
+                            <th class="col-gstr">File In</th>
                             }
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Mobile Card List (Visible only on < 768px) -->
-                <div class="mobile-card-list">
-                    @for (row of group.rows; track row.purchaseDate + row.principal) {
-                    <div class="mobile-transaction-card" [class]="'row-' + (row.riskCategory || 'safe').toLowerCase()">
-                        <div class="mobile-card-header">
-                            <div class="status-pill" [class]="(row.status || 'unpaid').toLowerCase()">
-                                @if (row.status === 'UNPAID') {
-                                <i class="pi pi-exclamation-triangle"></i> <span>Unpaid</span>
-                                } @else {
-                                <i class="pi pi-check-circle"></i> <span>Late</span>
-                                }
-                            </div>
-                            <span class="mobile-date">{{ formatDate(row.purchaseDate) }}</span>
-                        </div>
-                        <div class="mobile-card-body">
-                            <div class="mobile-metric">
-                                <span class="label">Invoice:</span>
-                                <span class="value invoice">{{ formatCurrency(row.principal) }}</span>
-                            </div>
-                            <div class="mobile-metric">
-                                <span class="label">ITC:</span>
-                                <span class="value itc">{{ formatCurrency(row.itcAmount) }}</span>
-                            </div>
-                            <div class="mobile-metric">
-                                <span class="label">Interest:</span>
-                                <span class="value interest">{{ formatCurrency(row.interest) }}</span>
-                            </div>
-                        </div>
-                        @if (row.daysToDeadline < 0 || row.status==='PAID_LATE' ) { <div class="mobile-card-footer">
-                            @if (row.daysToDeadline < 0) { <span class="overdue-indicator">{{ -row.daysToDeadline }}d
-                                overdue</span>
-                                }
-                                @if (row.status === 'PAID_LATE') {
-                                <div class="itc-reclaim-tip mt-2">
-                                    <i class="pi pi-info-circle"></i>
-                                    <span>Can re-claim reversed ITC of {{ formatCurrency(row.itcAmount) }} in GSTR-3B
-                                        for {{ row.gstr3bPeriod }}</span>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (row of group.rows; track row.purchaseDate + row.principal) {
+                        <tr [class]="'row-' + (row.riskCategory || 'safe').toLowerCase()">
+                            <td>
+                                <div class="status-pill" [class]="(row.status || 'unpaid').toLowerCase()">
+                                    <i [class]="humanizeStatus(row.status).icon"></i>
+                                    <span>{{ humanizeStatus(row.status).label }}</span>
                                 </div>
+                            </td>
+                            <td class="date-cell">{{ formatDate(row.purchaseDate) }}</td>
+                            @if (showAllColumns) {
+                            <td class="deadline-cell" [class.breached]="row.daysToDeadline < 0">
+                                <span class="deadline-date">{{ formatDate(row.paymentDeadline) }}</span>
+                                @if (row.daysToDeadline < 0) { <span class="overdue-indicator">{{
+                                    humanizeOverdue(row.daysToDeadline) }}</span>
+                                    }
+                            </td>
+                            <td class="date-cell">
+                                @if (row.paymentDate) {
+                                {{ formatDate(row.paymentDate) }}
+                                } @else {
+                                <span class="null-value">—</span>
                                 }
+                            </td>
+                            <td class="days-cell">
+                                <span class="days-chip" [class]="getRiskClass(row.riskCategory)">
+                                    {{ humanizeDays(row.delayDays) }}
+                                </span>
+                            </td>
+                            }
+                            <td class="amount-cell invoice">{{ formatCurrency(row.principal) }}</td>
+                            <td class="amount-cell itc">{{ formatCurrency(row.itcAmount) }}</td>
+                            <td class="amount-cell interest">{{ formatCurrency(row.interest) }}</td>
+                            @if (showAllColumns) {
+                            <td>
+                                <span class="gstr-badge">{{ row.gstr3bPeriod }}</span>
+                            </td>
+                            }
+                        </tr>
+                        @if (row.status === 'PAID_LATE') {
+                        <tr class="itc-reclaim-row">
+                            <td [attr.colspan]="showAllColumns ? 9 : 5">
+                                <div class="itc-reclaim-tip">
+                                    <i class="pi pi-info-circle"></i>
+                                    <span>💡 You paid late — the reversed ITC of <strong>{{
+                                            formatCurrency(row.itcAmount) }}</strong>
+                                        can be re-claimed when you file GSTR-3B for <strong>{{ row.gstr3bPeriod
+                                            }}</strong>.</span>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card List (Visible only on < 768px) -->
+            <div class="mobile-card-list">
+                @for (row of group.rows; track row.purchaseDate + row.principal) {
+                <div class="mobile-transaction-card" [class]="'row-' + (row.riskCategory || 'safe').toLowerCase()">
+                    <div class="mobile-card-header">
+                        <div class="status-pill" [class]="(row.status || 'unpaid').toLowerCase()">
+                            @if (row.status === 'UNPAID') {
+                            <i class="pi pi-exclamation-triangle"></i> <span>Unpaid</span>
+                            } @else {
+                            <i class="pi pi-check-circle"></i> <span>Late</span>
+                            }
+                        </div>
+                        <span class="mobile-date">{{ formatDate(row.purchaseDate) }}</span>
                     </div>
-                    }
+                    <div class="mobile-card-body">
+                        <div class="mobile-metric">
+                            <span class="label">Invoice:</span>
+                            <span class="value invoice">{{ formatCurrency(row.principal) }}</span>
+                        </div>
+                        <div class="mobile-metric">
+                            <span class="label">ITC:</span>
+                            <span class="value itc">{{ formatCurrency(row.itcAmount) }}</span>
+                        </div>
+                        <div class="mobile-metric">
+                            <span class="label">Interest:</span>
+                            <span class="value interest">{{ formatCurrency(row.interest) }}</span>
+                        </div>
+                    </div>
+                    @if (row.daysToDeadline < 0 || row.status==='PAID_LATE' ) { <div class="mobile-card-footer">
+                        @if (row.daysToDeadline < 0) { <span class="overdue-indicator">{{ -row.daysToDeadline }}d
+                            overdue</span>
+                            }
+                            @if (row.status === 'PAID_LATE') {
+                            <div class="itc-reclaim-tip mt-2">
+                                <i class="pi pi-info-circle"></i>
+                                <span>Can re-claim reversed ITC of {{ formatCurrency(row.itcAmount) }} in GSTR-3B
+                                    for {{ row.gstr3bPeriod }}</span>
+                            </div>
+                            }
                 </div>
                 }
             </div>
+            }
         </div>
-        }
-
-        } @else {
-        <div class="all-clear">
-            <div class="success-icon">
-                <i class="pi pi-verified"></i>
-            </div>
-            <h4>All Payments On Time</h4>
-            <p>No Rule 37 liability for this ledger</p>
-        </div>
-        }
 </div>
 }
 </section>
+}
 }
 
 <!-- ═══════════════════════════════════════════════════════════════════════════

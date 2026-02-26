@@ -1,17 +1,33 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { PanelModule } from 'primeng/panel';
 import { MenuModule } from 'primeng/menu';
+import { TooltipModule } from 'primeng/tooltip';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { LedgerResult } from '../../../shared/models/rule37.model';
+import { LedgerResult, InterestRow } from '../../../shared/models/rule37.model';
 import { MenuItem } from 'primeng/api';
+
+type StatusFilter = 'ALL' | 'UNPAID' | 'PAID_LATE' | 'PAID_ON_TIME';
+type RiskFilter = 'ALL' | 'BREACHED' | 'AT_RISK' | 'SAFE';
+type SortOption = 'risk' | 'amount-desc' | 'amount-asc' | 'date-desc' | 'date-asc';
+
+interface SupplierGroup {
+  supplier: string;
+  rows: InterestRow[];
+  totalItc: number;
+  totalInterest: number;
+  maxRisk: 'BREACHED' | 'AT_RISK' | 'SAFE';
+  unpaidCount: number;
+  latestDate: string;
+}
 
 @Component({
   selector: 'app-compliance-view',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TableModule, PanelModule, MenuModule],
+  imports: [CommonModule, FormsModule, ButtonModule, TableModule, PanelModule, MenuModule, TooltipModule],
   templateUrl: './compliance-view.component.html',
   styleUrls: ['./compliance-view.component.scss'],
   animations: [
@@ -30,11 +46,17 @@ export class ComplianceViewComponent {
   results = input.required<LedgerResult[]>();
   runId = input<number | null>(null);
   showExportAll = input<boolean>(true);
-  exportAll = output<string>(); // now emits 'issues' or 'complete'
+  exportAll = output<string>();
   exportLedger = output<{ ledgerName: string; summary: LedgerResult['summary'] }>();
 
-  // Track expanded/collapsed state per ledger
-  expandedLedgers: Record<string, boolean> = {};
+  // ── Filter & Search State ──
+  searchQuery = signal('');
+  activeStatusFilter = signal<StatusFilter>('ALL');
+  activeRiskFilter = signal<RiskFilter>('ALL');
+  sortBy = signal<SortOption>('risk');
+
+  // Track expanded/collapsed state per supplier
+  expandedSuppliers: Record<string, boolean> = {};
 
   /** Toggle to show all columns or simplified view */
   showAllColumns = false;
@@ -55,6 +77,10 @@ export class ComplianceViewComponent {
     }
   ];
 
+  // ══════════════════════════════════════════════════════
+  //  COMPUTED PROPERTIES — KPIs
+  // ══════════════════════════════════════════════════════
+
   get totalItcReversal(): number {
     return this.results().reduce((s, r) => s + r.summary.totalItcReversal, 0);
   }
@@ -63,15 +89,148 @@ export class ComplianceViewComponent {
     return this.results().reduce((s, r) => s + r.summary.totalInterest, 0);
   }
 
+  get totalLedgerCount(): number {
+    const suppliers = new Set<string>();
+    this.results().forEach(lr =>
+      lr.summary.details.forEach(d => suppliers.add(d.supplier))
+    );
+    return Math.max(1, suppliers.size);
+  }
+
+  get totalTransactions(): number {
+    return this.results().reduce((s, r) => s + r.summary.details.length, 0);
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  FILTERED + SORTED SUPPLIER GROUPS
+  // ══════════════════════════════════════════════════════
+
   /** Filter out PAID_ON_TIME and SAFE-unpaid entries for UI display */
-  private getIssueDetails(details: LedgerResult['summary']['details']): LedgerResult['summary']['details'] {
+  private getIssueDetails(details: InterestRow[]): InterestRow[] {
     return details.filter(d =>
       d.status !== 'PAID_ON_TIME' &&
       !(d.riskCategory === 'SAFE' && d.interest === 0 && d.itcAmount === 0)
     );
   }
 
-  // Risk counts for KPI cards and donut chart — only count issue rows
+  /** Build all supplier groups from all ledger results */
+  private getAllSupplierGroups(): SupplierGroup[] {
+    const map = new Map<string, InterestRow[]>();
+    for (const lr of this.results()) {
+      const issueDetails = this.getIssueDetails(lr.summary.details);
+      for (const row of issueDetails) {
+        const list = map.get(row.supplier) ?? [];
+        list.push(row);
+        map.set(row.supplier, list);
+      }
+    }
+
+    return Array.from(map.entries()).map(([supplier, rows]) => ({
+      supplier,
+      rows,
+      totalItc: rows.reduce((s, r) => s + r.itcAmount, 0),
+      totalInterest: rows.reduce((s, r) => s + r.interest, 0),
+      maxRisk: this.getMaxRisk(rows),
+      unpaidCount: rows.filter(r => r.status === 'UNPAID').length,
+      latestDate: rows.reduce((latest, r) =>
+        r.purchaseDate > latest ? r.purchaseDate : latest, rows[0]?.purchaseDate || ''),
+    }));
+  }
+
+  private getMaxRisk(rows: InterestRow[]): 'BREACHED' | 'AT_RISK' | 'SAFE' {
+    if (rows.some(r => r.riskCategory === 'BREACHED')) return 'BREACHED';
+    if (rows.some(r => r.riskCategory === 'AT_RISK')) return 'AT_RISK';
+    return 'SAFE';
+  }
+
+  /** The main computed list that the template iterates */
+  get filteredSupplierGroups(): SupplierGroup[] {
+    let groups = this.getAllSupplierGroups();
+
+    // 1. Search filter
+    const query = this.searchQuery().trim().toLowerCase();
+    if (query) {
+      groups = groups.filter(g => g.supplier.toLowerCase().includes(query));
+    }
+
+    // 2. Status filter — filter rows within each group
+    const statusFilter = this.activeStatusFilter();
+    if (statusFilter !== 'ALL') {
+      groups = groups.map(g => ({
+        ...g,
+        rows: g.rows.filter(r => r.status === statusFilter),
+      })).filter(g => g.rows.length > 0);
+    }
+
+    // 3. Risk filter — filter rows within each group
+    const riskFilter = this.activeRiskFilter();
+    if (riskFilter !== 'ALL') {
+      groups = groups.map(g => ({
+        ...g,
+        rows: g.rows.filter(r => r.riskCategory === riskFilter),
+      })).filter(g => g.rows.length > 0);
+    }
+
+    // 4. Sort
+    const sort = this.sortBy();
+    switch (sort) {
+      case 'risk':
+        groups.sort((a, b) => {
+          const riskOrder = { BREACHED: 0, AT_RISK: 1, SAFE: 2 };
+          const diff = riskOrder[a.maxRisk] - riskOrder[b.maxRisk];
+          return diff !== 0 ? diff : (b.totalItc + b.totalInterest) - (a.totalItc + a.totalInterest);
+        });
+        break;
+      case 'amount-desc':
+        groups.sort((a, b) => (b.totalItc + b.totalInterest) - (a.totalItc + a.totalInterest));
+        break;
+      case 'amount-asc':
+        groups.sort((a, b) => (a.totalItc + a.totalInterest) - (b.totalItc + b.totalInterest));
+        break;
+      case 'date-desc':
+        groups.sort((a, b) => b.latestDate.localeCompare(a.latestDate));
+        break;
+      case 'date-asc':
+        groups.sort((a, b) => a.latestDate.localeCompare(b.latestDate));
+        break;
+    }
+
+    return groups;
+  }
+
+  get matchingSupplierCount(): number {
+    return this.filteredSupplierGroups.length;
+  }
+
+  get hasActiveFilters(): boolean {
+    return this.searchQuery().trim() !== '' ||
+      this.activeStatusFilter() !== 'ALL' ||
+      this.activeRiskFilter() !== 'ALL';
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  FILTER TOGGLE ACTIONS
+  // ══════════════════════════════════════════════════════
+
+  toggleStatusFilter(status: StatusFilter): void {
+    this.activeStatusFilter.set(this.activeStatusFilter() === status ? 'ALL' : status);
+  }
+
+  toggleRiskFilter(risk: RiskFilter): void {
+    this.activeRiskFilter.set(this.activeRiskFilter() === risk ? 'ALL' : risk);
+  }
+
+  clearAllFilters(): void {
+    this.searchQuery.set('');
+    this.activeStatusFilter.set('ALL');
+    this.activeRiskFilter.set('ALL');
+    this.sortBy.set('risk');
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  RISK COUNTS (for KPI cards)
+  // ══════════════════════════════════════════════════════
+
   getBreachedCount(): number {
     return this.results().flatMap(r => this.getIssueDetails(r.summary.details))
       .filter(d => d.riskCategory === 'BREACHED').length;
@@ -87,7 +246,7 @@ export class ComplianceViewComponent {
     return total - this.getBreachedCount() - this.getAtRiskCount();
   }
 
-  // Donut chart calculations (stroke-dasharray for each segment)
+  // Donut chart calculations
   getDonutSegment(type: 'breached' | 'at-risk'): string {
     const total = Math.max(1, this.getBreachedCount() + this.getAtRiskCount() + this.getSafeCount());
     const count = type === 'breached' ? this.getBreachedCount() : this.getAtRiskCount();
@@ -97,24 +256,30 @@ export class ComplianceViewComponent {
 
   getDonutOffset(type: 'at-risk'): number {
     const breachedPercent = (this.getBreachedCount() / Math.max(1, this.getBreachedCount() + this.getAtRiskCount() + this.getSafeCount())) * 100;
-    return 25 - breachedPercent; // Offset after breached segment
+    return 25 - breachedPercent;
   }
 
-  // Toggle ledger expansion
-  toggleLedger(ledgerName: string): void {
-    this.expandedLedgers[ledgerName] = !this.expandedLedgers[ledgerName];
+  // ══════════════════════════════════════════════════════
+  //  SUPPLIER EXPANSION
+  // ══════════════════════════════════════════════════════
+
+  toggleSupplier(supplier: string): void {
+    this.expandedSuppliers[supplier] = !this.expandedSuppliers[supplier];
   }
 
-  getGroupedBySupplier(lr: LedgerResult): { supplier: string; rows: typeof lr.summary.details }[] {
-    const issueDetails = this.getIssueDetails(lr.summary.details);
-    const map = new Map<string, typeof lr.summary.details>();
-    for (const row of issueDetails) {
-      const list = map.get(row.supplier) ?? [];
-      list.push(row);
-      map.set(row.supplier, list);
+  isSupplierExpanded(supplier: string): boolean {
+    // Default: expand first 5 suppliers, collapse the rest
+    if (this.expandedSuppliers[supplier] === undefined) {
+      const groups = this.filteredSupplierGroups;
+      const idx = groups.findIndex(g => g.supplier === supplier);
+      return idx < 5;
     }
-    return Array.from(map.entries()).map(([supplier, rows]) => ({ supplier, rows }));
+    return this.expandedSuppliers[supplier];
   }
+
+  // ══════════════════════════════════════════════════════
+  //  FORMATTING HELPERS
+  // ══════════════════════════════════════════════════════
 
   formatDate(d: string | null | undefined): string {
     if (!d) return '—';
@@ -142,7 +307,6 @@ export class ComplianceViewComponent {
     }
   }
 
-  /** Make days human-friendly: '3+ years overdue' or '45 days late' */
   humanizeDays(delayDays: number): string {
     const overBy = delayDays - 180;
     if (overBy <= 0) return 'On time';
@@ -151,7 +315,6 @@ export class ComplianceViewComponent {
     return `${overBy} days late`;
   }
 
-  /** Human-friendly overdue text for deadline */
   humanizeOverdue(daysToDeadline: number): string {
     const over = Math.abs(daysToDeadline);
     if (over >= 730) return `Overdue by ${Math.floor(over / 365)}+ years`;
@@ -160,7 +323,6 @@ export class ComplianceViewComponent {
     return `Overdue by ${over} days`;
   }
 
-  /** Status label for display */
   humanizeStatus(status: string | undefined): { label: string; icon: string } {
     switch (status) {
       case 'PAID_LATE': return { label: 'Paid Late', icon: 'pi pi-clock' };

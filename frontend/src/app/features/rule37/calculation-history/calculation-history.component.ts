@@ -145,4 +145,16 @@ export class CalculationHistoryComponent {
     const diff = new Date(expiresAt).getTime() - Date.now();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   }
+
+  countDistinctSuppliers(run: Rule37RunResponse): number {
+    const suppliers = new Set<string>();
+    run.calculationData?.forEach(lr =>
+      lr.summary.details.forEach(d => suppliers.add(d.supplier))
+    );
+    return Math.max(1, suppliers.size);
+  }
+
+  countTransactions(run: Rule37RunResponse): number {
+    return run.calculationData?.reduce((s, lr) => s + lr.summary.details.length, 0) ?? 0;
+  }
 }
