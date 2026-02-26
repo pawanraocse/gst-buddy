@@ -66,6 +66,155 @@
     animation: fadeInUp 0.4s ease-out;
 }
 
+.animate-fade-in-down {
+    animation: fadeInDown 0.4s var(--ease-default, ease-out);
+}
+
+.animate-slide-up {
+    animation: slideUp 0.5s var(--ease-default, ease-out);
+}
+
 .animation-duration-500 {
     animation-duration: 500ms;
+}
+
+/* ========== New Keyframes (Crystal Motion System) ========== */
+
+/* Skeleton shimmer for loading states */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Subtle vertical float for decorative elements */
+@keyframes float-y {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Scale entrance for badges and status indicators */
+@keyframes scale-in {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Shake for form validation errors */
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+/* Slide-up entrance */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Gradient hue-shift for auth background blobs */
+@keyframes hue-rotate-slow {
+    0% {
+        filter: blur(60px) hue-rotate(0deg);
+    }
+
+    100% {
+        filter: blur(60px) hue-rotate(30deg);
+    }
+}
+
+/* ========== New Utility Classes ========== */
+
+/* Skeleton loading placeholder */
+.skeleton {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--border-radius-md, 0.5rem);
+}
+
+/* Staggered entrance for lists/grids */
+.stagger-enter>* {
+    animation: fadeInUp 0.4s var(--ease-spring, ease-out) both;
+}
+
+.stagger-enter>*:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.stagger-enter>*:nth-child(2) {
+    animation-delay: 0.10s;
+}
+
+.stagger-enter>*:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.stagger-enter>*:nth-child(4) {
+    animation-delay: 0.20s;
+}
+
+.stagger-enter>*:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.stagger-enter>*:nth-child(6) {
+    animation-delay: 0.30s;
+}
+
+/* Scale-in for dynamic elements */
+.animate-scale-in {
+    animation: scale-in 0.3s var(--ease-spring, ease-out);
+}
+
+/* Float animation for decorative elements */
+.animate-float {
+    animation: float-y 3s ease-in-out infinite;
+}
+
+/* Shake on error */
+.animate-shake {
+    animation: shake 0.4s ease;
 }

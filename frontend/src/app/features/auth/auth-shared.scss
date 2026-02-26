@@ -1,42 +1,229 @@
-/* Shared Auth Styles */
+/* ═══════════════════════════════════════════════════════════════════════════
+   🎨 AUTH SHARED STYLES — Split-Panel Layout (Fintech Crystal)
+   ═══════════════════════════════════════════════════════════════════════════ */
 @use '../../../theme.scss' as *;
+@use '../../../animations.scss';
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   📐 SPLIT-PANEL CONTAINER
+   Desktop: 50/50 side-by-side  |  Mobile: stacked vertically
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.auth-page-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-gradient-auth);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Legacy fallback — if older pages use auth-container */
 .auth-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    padding: 1rem;
     background: var(--bg-gradient-auth);
+    overflow: hidden;
+    position: relative;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   🎨 LEFT: BRAND PANEL
+   Gradient background, illustration, headline, trust signal
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.auth-brand-panel {
+    position: relative;
+    width: 50%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    overflow: hidden;
+    padding: var(--space-8, 2rem);
+
+    /* Subtle dot grid pattern overlay */
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, var(--primary-alpha-10, rgba(99, 102, 241, 0.1)) 1px, transparent 1px);
+        background-size: 24px 24px;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+}
+
+.brand-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 400px;
+    padding: var(--space-8, 2rem);
+    animation: fadeInUp 0.6s var(--ease-default, ease-out);
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: var(--space-8, 2rem);
+    font-family: var(--font-display, inherit);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+
+    i {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary-gradient);
+        border-radius: 14px;
+        color: white;
+        font-size: 1.25rem;
+        box-shadow: var(--shadow-glow-primary, 0 8px 20px rgba(99, 102, 241, 0.25));
+    }
+}
+
+/* Illustration placeholder (replaced with real image later) */
+.brand-illustration-slot {
+    width: 280px;
+    height: 280px;
+    margin: var(--space-6, 1.5rem) 0;
+    border-radius: 24px;
+    background: linear-gradient(135deg,
+            var(--primary-alpha-10, rgba(99, 102, 241, 0.1)) 0%,
+            rgba(168, 85, 247, 0.08) 50%,
+            rgba(14, 165, 233, 0.06) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: float-y 4s ease-in-out infinite;
+    border: 2px dashed var(--primary-alpha-20, rgba(99, 102, 241, 0.2));
+
+    /* Decorative icon inside placeholder */
+    &::after {
+        content: '\e930';
+        /* pi-image placeholder */
+        font-family: 'primeicons';
+        font-size: 3rem;
+        color: var(--primary-alpha-30, rgba(99, 102, 241, 0.3));
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 24px;
+    }
+
+    /* When image is loaded, hide placeholder styling */
+    &:has(img[src]) {
+        background: transparent;
+        border: none;
+
+        &::after {
+            display: none;
+        }
+    }
+}
+
+.brand-content h2 {
+    font-family: var(--font-display, inherit);
+    font-size: var(--text-h2, 1.5rem);
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 var(--space-2, 0.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+}
+
+.brand-content>p {
+    font-size: var(--text-body, 1rem);
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-6, 1.5rem);
+    line-height: 1.6;
+}
+
+.trust-signal {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    border-radius: 100px;
+    font-size: var(--text-sm, 0.875rem);
+    font-weight: 500;
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+
+    i {
+        color: var(--success-500, #14b8a6);
+        font-size: 1rem;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   📝 RIGHT: FORM PANEL
+   Subtle background, vertically centered auth card
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.auth-form-panel {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8, 2rem);
+    background: transparent;
+    position: relative;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   🃏 AUTH CARD (Glass)
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .auth-card {
     @include glass-card;
     width: 100%;
     max-width: 450px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(237, 233, 254, 0.45) 50%, rgba(252, 231, 243, 0.4) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     padding: 2.5rem;
     box-shadow:
-        0 20px 25px -5px rgba(0, 0, 0, 0.1),
-        0 10px 10px -5px rgba(0, 0, 0, 0.04),
-        0 0 0 1px rgba(255, 255, 255, 0.6);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+        0 20px 25px -5px rgba(0, 0, 0, 0.08),
+        0 10px 10px -5px rgba(0, 0, 0, 0.03),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+    transition: transform 0.3s var(--ease-default, ease), box-shadow 0.3s ease;
     z-index: 1;
+    position: relative;
+    animation: fadeInUp 0.5s var(--ease-default, ease-out);
 
     &:hover {
         transform: translateY(-2px);
         box-shadow:
-            0 25px 35px -5px rgba(0, 0, 0, 0.12),
-            0 12px 15px -5px rgba(0, 0, 0, 0.06),
-            0 0 0 1px rgba(255, 255, 255, 0.7);
+            0 25px 35px -5px rgba(0, 0, 0, 0.1),
+            0 12px 15px -5px rgba(0, 0, 0, 0.04),
+            0 0 0 1px rgba(255, 255, 255, 0.6);
+    }
+
+    /* Shake on validation error */
+    &.shake {
+        animation: shake 0.4s ease;
     }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    🎨 ANIMATED BACKGROUND DECORATION
-   Gradient blobs that float behind the auth card
-═══════════════════════════════════════════════════════════════════════════ */
+   Gradient blobs that float behind the brand panel
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .bg-decoration {
     position: absolute;
@@ -51,7 +238,8 @@
     border-radius: 50%;
     filter: blur(60px);
     opacity: 0.6;
-    animation: float-blob 20s ease-in-out infinite;
+    animation: float-blob 20s ease-in-out infinite,
+        hue-rotate-slow 15s ease-in-out infinite alternate;
 }
 
 .circle-1 {
@@ -104,7 +292,7 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════
    🎯 AUTH HEADER & BRANDING
-═══════════════════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .auth-title {
     font-family: var(--font-display, inherit);
@@ -156,7 +344,7 @@
 
 /* ═══════════════════════════════════════════════════════════════════════════
    📝 FORM STYLES
-═══════════════════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 .back-to-home {
     display: inline-flex;
@@ -284,9 +472,91 @@
     }
 }
 
+/* Glass card variant for pages using glass-card class directly */
+.glass-card {
+    @include glass-card;
+    width: 100%;
+    max-width: 480px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(237, 233, 254, 0.45) 50%, rgba(252, 231, 243, 0.4) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 2.5rem;
+    box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.08),
+        0 10px 10px -5px rgba(0, 0, 0, 0.03),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+    z-index: 1;
+    position: relative;
+    animation: fadeInUp 0.5s var(--ease-default, ease-out);
+}
+
+/* OTP input styling */
+.otp-input-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.icon-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--primary-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   📱 RESPONSIVE
-═══════════════════════════════════════════════════════════════════════════ */
+   📱 RESPONSIVE — Mobile First
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 991px) {
+
+    .auth-page-container,
+    .auth-container {
+        flex-direction: column;
+    }
+
+    /* Brand panel becomes compact header strip */
+    .auth-brand-panel {
+        width: 100%;
+        padding: var(--space-6, 1.5rem) var(--space-4, 1rem);
+        min-height: auto;
+
+        &::before {
+            background-size: 20px 20px;
+        }
+    }
+
+    .brand-content {
+        padding: var(--space-4, 1rem);
+        max-width: 100%;
+    }
+
+    .brand-illustration-slot {
+        width: 150px;
+        height: 150px;
+        margin: var(--space-3, 0.75rem) 0;
+    }
+
+    .brand-content h2 {
+        font-size: 1.25rem;
+    }
+
+    .brand-content>p {
+        font-size: var(--text-sm, 0.875rem);
+        margin-bottom: var(--space-3, 0.75rem);
+    }
+
+    /* Form panel takes full width */
+    .auth-form-panel {
+        width: 100%;
+        padding: var(--space-4, 1rem);
+        flex: 1;
+    }
+}
 
 @media (max-width: 480px) {
 
@@ -308,5 +578,10 @@
     .circle-3 {
         width: 150px;
         height: 150px;
+    }
+
+    .brand-illustration-slot {
+        width: 120px;
+        height: 120px;
     }
 }

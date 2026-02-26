@@ -2,9 +2,9 @@ export const environment = {
   production: true,
   apiUrl: 'http://localhost:8080', // Gateway URL (update for production)
   cognito: {
-    userPoolId: 'us-east-1_fzyC8nISr',
-    userPoolWebClientId: '4oc1s4ts3a0tee2radrbb508oo',
+    userPoolId: 'us-east-1_by3QPONp6',
+    userPoolWebClientId: '1sdfi8j0tm51nk8f9gscsolnne',
     region: 'us-east-1',
-    domain: 'gst-buddy-dev-dlbfbveg.auth.us-east-1.amazoncognito.com'
+    domain: 'gst-buddy-dev-tgwoncvq.auth.us-east-1.amazoncognito.com'
   }
 };

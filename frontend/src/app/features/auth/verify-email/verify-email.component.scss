@@ -1,21 +1,7 @@
 @use '../auth-shared.scss' as *;
 
-.icon-circle {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: var(--primary-50);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-}
-
+/* OTP input PrimeNG deep overrides */
 .otp-input-container {
-    display: flex;
-    justify-content: center;
-    margin: 1.5rem 0;
-
     ::ng-deep .p-inputotp {
         gap: 0.5rem;
 
@@ -25,7 +11,7 @@
             font-size: 1.5rem;
             text-align: center;
             border-radius: 12px;
-            border: 2px solid var(--surface-200);
+            border: 2px solid var(--surface-200, #e2e8f0);
             background: rgba(255, 255, 255, 0.7);
 
             &:focus {

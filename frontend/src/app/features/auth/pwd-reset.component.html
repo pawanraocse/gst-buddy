@@ -1,0 +1,127 @@
+<div class="auth-page-container">
+
+    <!-- Left: Brand Panel -->
+    <div class="auth-brand-panel">
+        <div class="bg-decoration">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
+        <div class="brand-content">
+            <div class="brand-logo">
+                <i class="pi pi-calculator"></i>
+                <span>GST Buddy</span>
+            </div>
+            <div class="brand-illustration-slot">
+                <img src="assets/images/auth/auth-reset-illustration.png" alt="Password Reset Illustration"
+                    class="w-full h-auto drop-shadow-lg" />
+            </div>
+            <h2>Don't worry, we've got you</h2>
+            <p>Reset your password in two quick steps</p>
+            <div class="trust-signal">
+                <i class="pi pi-shield"></i>
+                <span>Bank-grade security</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Form Panel -->
+    <div class="auth-form-panel">
+        <div class="auth-card">
+            <div class="text-center mb-4">
+                <div class="icon-container mb-3">
+                    <div class="icon-ring">
+                        <i class="pi pi-lock text-3xl text-white"></i>
+                    </div>
+                </div>
+                <h1 class="auth-title">{{ step() === 'email' ? 'Forgot Password' : 'Reset Password' }}</h1>
+            </div>
+
+            <!-- Step 1: Email Input -->
+            @if (step() === 'email') {
+            <form (ngSubmit)="onRequestCode()" class="flex flex-column gap-3">
+                <p class="text-center text-secondary text-sm mb-3">
+                    Enter your email address and we'll send you a verification code to reset your password.
+                </p>
+
+                <div class="flex flex-column gap-2">
+                    <label for="email" class="font-medium text-700">Email</label>
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-envelope text-primary"></i>
+                        <input id="email" type="email" pInputText [(ngModel)]="email" name="email"
+                            placeholder="your&#64;email.com" class="w-full" required />
+                    </span>
+                </div>
+
+                @if (error()) {
+                <p-message severity="error" [text]="error()"></p-message>
+                }
+
+                @if (success()) {
+                <p-message severity="success" [text]="success()"></p-message>
+                }
+
+                <p-button type="submit" label="Send Code" [loading]="loading()" styleClass="w-full p-button-lg"
+                    [disabled]="!email || loading()"></p-button>
+
+                <div class="text-center mt-2">
+                    <a routerLink="/auth/login" class="text-primary no-underline font-medium">
+                        <i class="pi pi-arrow-left mr-1"></i> Back to Login
+                    </a>
+                </div>
+            </form>
+            }
+
+            <!-- Step 2: Reset Password -->
+            @if (step() === 'reset') {
+            <form (ngSubmit)="onResetPassword()" class="flex flex-column gap-3">
+                <p class="text-center text-secondary text-sm mb-3">
+                    Enter the 6-digit code sent to <strong>{{ email }}</strong> and your new password.
+                </p>
+
+                <div class="flex flex-column gap-2">
+                    <label for="code" class="font-medium text-700">Verification Code</label>
+                    <input id="code" type="text" pInputText [(ngModel)]="code" name="code" placeholder="123456"
+                        class="w-full text-center text-2xl" style="letter-spacing: 0.5em;" maxlength="6" required />
+                </div>
+
+                <div class="flex flex-column gap-2">
+                    <label for="newPwd" class="font-medium text-700">New Password</label>
+                    <p-password id="newPwd" [(ngModel)]="newPwd" name="newPwd" [toggleMask]="true" [feedback]="true"
+                        styleClass="w-full" inputStyleClass="w-full" required></p-password>
+                    <small class="text-secondary text-sm">Min 8 characters with uppercase, lowercase, number, and
+                        special
+                        character</small>
+                </div>
+
+                <div class="flex flex-column gap-2">
+                    <label for="confirmPwd" class="font-medium text-700">Confirm Password</label>
+                    <p-password id="confirmPwd" [(ngModel)]="confirmPwd" name="confirmPwd" [toggleMask]="true"
+                        [feedback]="false" styleClass="w-full" inputStyleClass="w-full" required></p-password>
+                </div>
+
+                @if (error()) {
+                <p-message severity="error" [text]="error()"></p-message>
+                }
+
+                @if (success()) {
+                <p-message severity="success" [text]="success()"></p-message>
+                }
+
+                <p-button type="submit" label="Reset Password" [loading]="loading()" styleClass="w-full p-button-lg"
+                    [disabled]="!code || !newPwd || !confirmPwd || loading()"></p-button>
+
+                <div class="flex justify-content-between mt-2">
+                    <a (click)="resendCode()" class="text-primary cursor-pointer no-underline font-medium">
+                        Resend Code
+                    </a>
+                    <a (click)="goBack()" class="text-primary cursor-pointer no-underline font-medium">
+                        Change Email
+                    </a>
+                </div>
+            </form>
+            }
+        </div>
+    </div>
+
+</div>

@@ -1,38 +1,67 @@
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <div class="icon-circle mb-3">
-                <i class="pi pi-envelope text-3xl text-primary-500"></i>
-            </div>
-            <h2>Verify your email</h2>
-            <p>We've sent a verification code to <br><strong>{{ email }}</strong></p>
+<div class="auth-page-container">
+
+    <!-- Left: Brand Panel -->
+    <div class="auth-brand-panel">
+        <div class="bg-decoration">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
         </div>
-
-        <form (submit)="onSubmit()" class="auth-form">
-            <div class="form-field text-center">
-                <label for="code">Enter Verification Code</label>
-                <div class="otp-input-container">
-                    <p-inputotp [(ngModel)]="otp" [length]="6" name="otp" [integerOnly]="true"
-                        [autofocus]="true"></p-inputotp>
-                </div>
+        <div class="brand-content">
+            <div class="brand-logo">
+                <i class="pi pi-calculator"></i>
+                <span>GST Buddy</span>
             </div>
-
-            <div class="auth-actions">
-                <!-- Using standard button since loading state is handled by button directive or manual loader -->
-                <button pButton label="Verify Email" type="submit" [disabled]="!otp || otp.length < 6 || isLoading()"
-                    [loading]="isLoading()"></button>
+            <div class="brand-illustration-slot">
+                <img src="assets/images/auth/auth-verify-illustration.png" alt="Verify Email Illustration"
+                    class="w-full h-auto drop-shadow-lg" />
             </div>
-        </form>
-
-        <div class="auth-footer">
-            <p>Didn't receive the code?
-                <button pButton label="Resend" class="p-button-link p-0 vertical-align-baseline" (click)="resendCode()"
-                    [disabled]="resendTimer > 0"></button>
-                <span *ngIf="resendTimer > 0"> ({{ resendTimer }}s)</span>
-            </p>
-            <div class="mt-3">
-                <a routerLink="/auth/login">Back to Login</a>
+            <h2>Almost there!</h2>
+            <p>We've sent a magic code to your inbox</p>
+            <div class="trust-signal">
+                <i class="pi pi-lock"></i>
+                <span>Your data is encrypted end-to-end</span>
             </div>
         </div>
     </div>
+
+    <!-- Right: Form Panel -->
+    <div class="auth-form-panel">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="icon-circle mb-3">
+                    <i class="pi pi-envelope text-3xl text-primary-500"></i>
+                </div>
+                <h2>Verify your email</h2>
+                <p>We've sent a verification code to <br><strong>{{ email }}</strong></p>
+            </div>
+
+            <form (submit)="onSubmit()" class="auth-form">
+                <div class="form-field text-center">
+                    <label for="code">Enter Verification Code</label>
+                    <div class="otp-input-container">
+                        <p-inputotp [(ngModel)]="otp" [length]="6" name="otp" [integerOnly]="true"
+                            [autofocus]="true"></p-inputotp>
+                    </div>
+                </div>
+
+                <div class="auth-actions">
+                    <button pButton label="Verify Email" type="submit"
+                        [disabled]="!otp || otp.length < 6 || isLoading()" [loading]="isLoading()"></button>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                <p>Didn't receive the code?
+                    <button pButton label="Resend" class="p-button-link p-0 vertical-align-baseline"
+                        (click)="resendCode()" [disabled]="resendTimer > 0"></button>
+                    <span *ngIf="resendTimer > 0"> ({{ resendTimer }}s)</span>
+                </p>
+                <div class="mt-3">
+                    <a routerLink="/auth/login">Back to Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

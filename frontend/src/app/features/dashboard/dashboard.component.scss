@@ -13,11 +13,11 @@
   border-width: 0 0 0 4px;
   /* Left accent border */
   border-style: solid;
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-fast) var(--ease-default);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
   }
 
   &.buddy-status-teal {
@@ -114,28 +114,18 @@
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* Remove local fadeInUp — use global from animations.scss */
 
 /* Verdict Banner */
 .verdict-banner {
   @include glass-card;
   border-width: 0 0 0 4px;
   border-style: solid;
-  transition: transform 0.2s ease;
+  transition: transform var(--duration-fast) var(--ease-default);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
   }
 
   &.verdict-action {
@@ -177,7 +167,7 @@
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s var(--ease-default);
 
   i {
     font-size: 0.85rem;
@@ -185,13 +175,13 @@
 
   &:hover:not(.active) {
     color: var(--text-main);
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--surface-glass, rgba(255, 255, 255, 0.5));
   }
 
   &.active {
     background: white;
     color: var(--primary-600);
-    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-xs);
   }
 }
 

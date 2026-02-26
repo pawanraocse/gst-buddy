@@ -1,13 +1,38 @@
 <div class="auth-page-container">
-    <!-- Animated background elements -->
-    <div class="bg-decoration">
-        <div class="circle circle-1"></div>
-        <div class="circle circle-2"></div>
-        <div class="circle circle-3"></div>
+
+    <!-- Left: Brand Panel -->
+    <div class="auth-brand-panel">
+        <div class="bg-decoration">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
+        <div class="brand-content">
+            <div class="brand-logo">
+                <i class="pi pi-calculator"></i>
+                <span>GST Buddy</span>
+            </div>
+            <div class="brand-illustration-slot">
+                <img src="assets/images/auth/auth-signup-illustration.png" alt="Signup Illustration"
+                    class="w-full h-auto drop-shadow-lg" />
+            </div>
+            <h2>Join the smarter way to handle GST</h2>
+            <p>Create your account in 30 seconds. No credit card required.</p>
+            <div class="trust-signal">
+                <i class="pi pi-check-circle"></i>
+                <span>5 free compliance checks</span>
+            </div>
+        </div>
     </div>
 
-    <div class="animate-slide-up w-full flex justify-content-center" style="max-width: 480px; z-index: 1;">
+    <!-- Right: Form Panel -->
+    <div class="auth-form-panel">
         <div class="glass-card">
+
+            <!-- Back to Home Link -->
+            <a routerLink="/" class="back-to-home">
+                <i class="pi pi-arrow-left"></i> Back to Home
+            </a>
 
             <!-- Header -->
             <div class="text-center mb-5">
@@ -91,6 +116,6 @@
             </form>
 
         </div>
-
     </div>
+
 </div>

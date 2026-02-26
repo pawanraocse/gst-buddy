@@ -22,11 +22,16 @@
 }
 
 .settings-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--surface-glass, rgba(255, 255, 255, 0.7));
     backdrop-filter: blur(8px);
     border-radius: 16px;
     border: 1px solid var(--border-color);
     overflow: hidden;
+    transition: box-shadow var(--duration-fast) var(--ease-default);
+
+    &:hover {
+        box-shadow: var(--shadow-sm);
+    }
 }
 
 .card-header {
@@ -274,15 +279,7 @@
     }
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-
-    100% {
-        background-position: -200% 0;
-    }
-}
+/* Remove local shimmer — use global from animations.scss */
 
 // =====================
 // Credits Usage Bar
@@ -381,11 +378,11 @@
     align-items: center;
     text-align: center;
     gap: 0.5rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-md);
     }
 
     &.plan-featured {
