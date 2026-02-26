@@ -55,25 +55,53 @@
 
   <!-- Tabs: New Calculation / History -->
   <div class="col-12">
-    <div class="flex gap-2 mb-4 border-bottom-1 surface-border pb-3">
-      <button pButton label="New Calculation" icon="pi pi-file-edit" [outlined]="activeTab() !== 'new'"
-        (click)="activeTab.set('new')"></button>
-      <button pButton label="Saved Calculations" icon="pi pi-history" [outlined]="activeTab() !== 'history'"
-        (click)="activeTab.set('history')"></button>
+    <div class="tab-toggle">
+      <button class="tab-pill" [class.active]="activeTab() === 'new'" (click)="activeTab.set('new')">
+        <i class="pi pi-file-edit"></i> New Calculation
+      </button>
+      <button class="tab-pill" [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">
+        <i class="pi pi-history"></i> Saved Calculations
+      </button>
     </div>
 
     @if (activeTab() === 'new') {
     <div>
       <!-- How it works (Collapsible) -->
       <p-panel header="How it works" [toggleable]="true" [collapsed]="true" styleClass="mb-4 howto-panel">
-        <div class="text-sm text-700">
-          <ul class="list-disc list-inside space-y-1 text-600 m-0 pl-0">
-            <li>Upload one or multiple supplier ledgers from Tally or Busy in Excel format</li>
-            <li>The system reads Date, Debit (payments), and Credit (purchases) columns</li>
-            <li>Interest is calculated at 18% per year on invoices unpaid beyond 180 days</li>
-            <li>ITC reversal is computed automatically per Rule 37 of CGST Rules</li>
-            <li>Results are saved for 7 days — download the Excel report anytime</li>
-          </ul>
+        <div class="howto-steps">
+          <div class="howto-step">
+            <div class="step-number">1</div>
+            <div class="step-icon upload"><i class="pi pi-upload"></i></div>
+            <div class="step-body">
+              <h4>Upload Ledger</h4>
+              <p>Upload one or multiple supplier ledgers from Tally or Busy in Excel format.</p>
+            </div>
+          </div>
+          <div class="howto-step">
+            <div class="step-number">2</div>
+            <div class="step-icon process"><i class="pi pi-cog"></i></div>
+            <div class="step-body">
+              <h4>Auto-Analysis</h4>
+              <p>We read Date, Debit (payments), and Credit (purchases) columns. Interest is calculated at 18% per year
+                on invoices unpaid beyond 180 days.</p>
+            </div>
+          </div>
+          <div class="howto-step">
+            <div class="step-number">3</div>
+            <div class="step-icon calculate"><i class="pi pi-calculator"></i></div>
+            <div class="step-body">
+              <h4>ITC Reversal</h4>
+              <p>ITC reversal is computed automatically per Rule 37 of CGST Rules for each unpaid invoice.</p>
+            </div>
+          </div>
+          <div class="howto-step">
+            <div class="step-number">4</div>
+            <div class="step-icon download"><i class="pi pi-download"></i></div>
+            <div class="step-body">
+              <h4>Download Report</h4>
+              <p>Results are saved for 7 days — download the Excel report anytime from the Saved Calculations tab.</p>
+            </div>
+          </div>
         </div>
       </p-panel>
 
