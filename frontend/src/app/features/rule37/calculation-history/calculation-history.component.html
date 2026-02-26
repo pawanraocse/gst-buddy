@@ -21,28 +21,10 @@
     <!-- Viewing a run detail -->
     @if (viewingRun()) {
     <div class="run-detail">
-        <div class="detail-header">
-            <button pButton icon="pi pi-arrow-left" label="Back to History" class="p-button-text"
-                (click)="viewingRun.set(null)"></button>
-            <span class="detail-title">{{ viewingRun()!.filename || 'Calculation' }}</span>
-            <span class="detail-date">{{ formatDate(viewingRun()!.createdAt) }}</span>
-            <div class="detail-export">
-                <button class="export-compact-btn primary"
-                    (click)="downloadExport(viewingRun()!.id, viewingRun()!.filename || 'export', 'issues')"
-                    pTooltip="Only late/unpaid transactions" tooltipPosition="bottom">
-                    <i class="pi pi-exclamation-triangle"></i>
-                    <span>Issues</span>
-                </button>
-                <button class="export-compact-btn secondary"
-                    (click)="downloadExport(viewingRun()!.id, viewingRun()!.filename || 'export', 'complete')"
-                    pTooltip="All transactions including on-time" tooltipPosition="bottom">
-                    <i class="pi pi-file-excel"></i>
-                    <span>Full Report</span>
-                </button>
-            </div>
-        </div>
         <app-compliance-view [results]="normalizeResults(viewingRun()!.calculationData)" [runId]="viewingRun()!.id"
-            [showExportAll]="false" />
+            [filename]="viewingRun()!.filename || 'Calculation #' + viewingRun()!.id" [date]="viewingRun()!.createdAt"
+            [showExportAll]="true" [showBack]="true" (back)="viewingRun.set(null)"
+            (exportAll)="downloadExport(viewingRun()!.id, viewingRun()!.filename || 'export', $event)" />
     </div>
     } @else {
 

@@ -173,8 +173,9 @@
           </div>
         </div>
 
-        <app-compliance-view [results]="results()" [runId]="runId()" [showExportAll]="true"
-          (exportAll)="downloadExport($event)" (exportLedger)="onExportLedger($event)" />
+        <app-compliance-view [results]="results()" [runId]="runId()" [filename]="fileNames().join(', ')"
+          [date]="asOnDate()" [showExportAll]="true" (exportAll)="downloadExport($event)"
+          (exportLedger)="onExportLedger($event)" />
         <div class="buddy-success-card mt-4 p-4">
           <p class="text-700 text-sm m-0">
             <span class="font-semibold">Saved!</span> Your calculation has been saved and will be available in the

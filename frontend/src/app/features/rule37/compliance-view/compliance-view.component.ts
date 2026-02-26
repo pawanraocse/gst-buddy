@@ -45,8 +45,13 @@ interface SupplierGroup {
 export class ComplianceViewComponent {
   results = input.required<LedgerResult[]>();
   runId = input<number | null>(null);
+  filename = input<string>('');
+  date = input<string>('');
   showExportAll = input<boolean>(true);
+  showBack = input<boolean>(false);
+
   exportAll = output<string>();
+  back = output<void>();
   exportLedger = output<{ ledgerName: string; summary: LedgerResult['summary'] }>();
 
   // ── Filter & Search State ──
@@ -57,6 +62,9 @@ export class ComplianceViewComponent {
 
   // Track expanded/collapsed state per supplier
   expandedSuppliers: Record<string, boolean> = {};
+
+  // Quick Metric Filter (Interactive Drill-down)
+  activeMetricFilter = signal<'ALL' | 'ITC' | 'INTEREST'>('ALL');
 
   /** Toggle to show all columns or simplified view */
   showAllColumns = false;
@@ -162,6 +170,20 @@ export class ComplianceViewComponent {
       })).filter(g => g.rows.length > 0);
     }
 
+    // 3. Metric filter (Interactive Drill-down)
+    const metricFilter = this.activeMetricFilter();
+    if (metricFilter === 'ITC') {
+      groups = groups.map(g => ({
+        ...g,
+        rows: g.rows.filter(r => r.itcAmount > 0),
+      })).filter(g => g.rows.length > 0);
+    } else if (metricFilter === 'INTEREST') {
+      groups = groups.map(g => ({
+        ...g,
+        rows: g.rows.filter(r => r.interest > 0),
+      })).filter(g => g.rows.length > 0);
+    }
+
     // 3. Risk filter — filter rows within each group
     const riskFilter = this.activeRiskFilter();
     if (riskFilter !== 'ALL') {
@@ -205,7 +227,8 @@ export class ComplianceViewComponent {
   get hasActiveFilters(): boolean {
     return this.searchQuery().trim() !== '' ||
       this.activeStatusFilter() !== 'ALL' ||
-      this.activeRiskFilter() !== 'ALL';
+      this.activeRiskFilter() !== 'ALL' ||
+      this.activeMetricFilter() !== 'ALL';
   }
 
   // ══════════════════════════════════════════════════════
@@ -220,10 +243,15 @@ export class ComplianceViewComponent {
     this.activeRiskFilter.set(this.activeRiskFilter() === risk ? 'ALL' : risk);
   }
 
+  toggleMetricFilter(metric: 'ITC' | 'INTEREST'): void {
+    this.activeMetricFilter.set(this.activeMetricFilter() === metric ? 'ALL' : metric);
+  }
+
   clearAllFilters(): void {
     this.searchQuery.set('');
     this.activeStatusFilter.set('ALL');
     this.activeRiskFilter.set('ALL');
+    this.activeMetricFilter.set('ALL');
     this.sortBy.set('risk');
   }
 

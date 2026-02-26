@@ -1,72 +1,81 @@
 <div class="compliance-view">
     <!-- ═══════════════════════════════════════════════════════════════════════════
-         🎯 COMPACT SUMMARY STRIP — All KPIs in one row
+         📋 SUMMARY CARD — History Card Layout
     ═══════════════════════════════════════════════════════════════════════════ -->
-    <section class="summary-strip">
-        <!-- Primary metric: Total -->
-        <div class="strip-chip total">
-            <div class="strip-chip-icon total"><i class="pi pi-wallet"></i></div>
-            <div class="strip-chip-content">
-                <span class="strip-chip-label">Total Due</span>
-                <span class="strip-chip-value total">{{ formatCurrency(totalItcReversal + totalInterest) }}</span>
+    <div class="summary-card">
+        <!-- Row 1: File identity + actions (Date & Download on the right) -->
+        <div class="card-header-row">
+            <div class="card-file-identity">
+                @if (showBack()) {
+                <button pButton icon="pi pi-arrow-left" class="p-button-text p-button-rounded mr-2"
+                    pTooltip="Back to History" tooltipPosition="bottom" (click)="back.emit()"></button>
+                }
+                <div class="card-icon">
+                    <i class="pi pi-file-excel"></i>
+                </div>
+                <div class="card-title-block">
+                    <span class="card-filename">{{ filename() || 'Calculation Results' }}</span>
+                </div>
+            </div>
+
+            <div class="card-header-actions" style="display: flex; align-items: center; gap: 1rem;">
+                <span class="card-date" style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">
+                    {{ date() | date:'mediumDate' }}
+                </span>
+
+                @if (showExportAll()) {
+                <div class="detail-export" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button class="export-compact-btn primary" (click)="exportAll.emit('issues')"
+                        pTooltip="Only late/unpaid transactions" tooltipPosition="bottom">
+                        <i class="pi pi-exclamation-triangle"></i>
+                        <span>Issues</span>
+                    </button>
+                    <button class="export-compact-btn secondary" (click)="exportAll.emit('complete')"
+                        pTooltip="All transactions including on-time" tooltipPosition="bottom">
+                        <i class="pi pi-file-excel"></i>
+                        <span>Full Report</span>
+                    </button>
+                </div>
+                }
             </div>
         </div>
 
-        <div class="strip-divider"></div>
-
-        <!-- ITC Reversal -->
-        <div class="strip-chip itc">
-            <div class="strip-chip-icon itc"><i class="pi pi-replay"></i></div>
-            <div class="strip-chip-content">
-                <span class="strip-chip-label">ITC Reversal</span>
-                <span class="strip-chip-value itc">{{ formatCurrency(totalItcReversal) }}</span>
+        <!-- Row 2: Quick stat chips + amounts -->
+        <div class="card-stats-row">
+            <div class="stat-chip suppliers">
+                <i class="pi pi-users"></i>
+                <span class="stat-value">{{ totalLedgerCount }}</span>
+                <span class="stat-label">suppliers</span>
             </div>
-        </div>
-
-        <!-- Interest -->
-        <div class="strip-chip interest">
-            <div class="strip-chip-icon interest"><i class="pi pi-percentage"></i></div>
-            <div class="strip-chip-content">
-                <span class="strip-chip-label">Interest @18%</span>
-                <span class="strip-chip-value interest">{{ formatCurrency(totalInterest) }}</span>
+            <div class="stat-chip transactions">
+                <i class="pi pi-list"></i>
+                <span class="stat-value">{{ totalTransactions }}</span>
+                <span class="stat-label">transactions</span>
             </div>
-        </div>
 
-        <div class="strip-divider"></div>
+            <div class="stat-divider"></div>
 
-        <!-- Suppliers -->
-        <div class="strip-chip suppliers">
-            <div class="strip-chip-icon suppliers"><i class="pi pi-users"></i></div>
-            <div class="strip-chip-content">
-                <span class="strip-chip-value">{{ totalLedgerCount }}</span>
-                <span class="strip-chip-label">Suppliers</span>
+            <div class="stat-amount itc">
+                <span class="stat-amount-label">ITC Reversal</span>
+                <span class="stat-amount-value">{{ formatCurrency(totalItcReversal) }}</span>
             </div>
-        </div>
-
-        <!-- Transactions -->
-        <div class="strip-chip transactions">
-            <div class="strip-chip-icon transactions"><i class="pi pi-list"></i></div>
-            <div class="strip-chip-content">
-                <span class="strip-chip-value">{{ totalTransactions }}</span>
-                <span class="strip-chip-label">Transactions</span>
+            <div class="stat-amount interest">
+                <span class="stat-amount-label">Interest @18%</span>
+                <span class="stat-amount-value">{{ formatCurrency(totalInterest) }}</span>
             </div>
-        </div>
 
-        <div class="strip-divider"></div>
+            <div class="stat-divider"></div>
 
-        <!-- Risk indicators -->
-        <div class="strip-risk">
-            <span class="risk-dot breached" pTooltip="Overdue transactions" tooltipPosition="bottom">
-                <span class="dot"></span> {{ getBreachedCount() }}
-            </span>
-            <span class="risk-dot at-risk" pTooltip="Due soon" tooltipPosition="bottom">
-                <span class="dot"></span> {{ getAtRiskCount() }}
-            </span>
-            <span class="risk-dot safe" pTooltip="On track" tooltipPosition="bottom">
-                <span class="dot"></span> {{ getSafeCount() }}
-            </span>
+            <div class="stat-amount total-due">
+                <span class="stat-amount-label">Total Due</span>
+                <span class="stat-amount-value" style="color: #dc2626; font-size: 1rem">{{
+                    formatCurrency(totalItcReversal + totalInterest) }}</span>
+            </div>
+
+            <div class="stat-divider"></div>
+
         </div>
-    </section>
+    </div>
 
     <!-- ═══════════════════════════════════════════════════════════════════════════
          🔍 FILTER TOOLBAR — Search, Quick Filters, Sort

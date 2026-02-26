@@ -13,204 +13,168 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   🎯 COMPACT SUMMARY STRIP
+   📋 SUMMARY CARD — History Card Layout
 ═══════════════════════════════════════════════════════════════════════════ */
 
-.summary-strip {
-    @include glass-card;
+.summary-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+/* Row 1: File identity + actions */
+.card-header-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem 0.75rem;
     gap: 1rem;
-    padding: 1.25rem 1.75rem;
-    flex-wrap: wrap;
-    position: relative;
-    overflow: visible;
-
-    // Top accent gradient bar
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        border-radius: 16px 16px 0 0;
-        background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
-    }
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.strip-chip {
+.card-file-identity {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.55rem 0.85rem;
-    border-radius: 12px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: default;
-
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.1);
-    }
-
-    &.total {
-        background: linear-gradient(135deg, #fef2f2, #fee2e2);
-    }
-
-    &.itc {
-        background: linear-gradient(135deg, #fffbeb, #fef3c7);
-    }
-
-    &.interest {
-        background: linear-gradient(135deg, #f5f3ff, #ede9fe);
-    }
-
-    &.suppliers {
-        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-    }
-
-    &.transactions {
-        background: linear-gradient(135deg, #eef2ff, #e0e7ff);
-    }
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
 }
 
-.strip-chip-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+.card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 
     i {
-        font-size: 1rem;
+        font-size: 1.25rem;
+        color: #16a34a;
+    }
+}
+
+.card-title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.card-filename {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.card-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
+
+/* Row 2: Quick stat chips + amounts */
+.card-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem 1rem;
+    flex-wrap: wrap;
+}
+
+.stat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+
+    i {
+        font-size: 0.7rem;
     }
 
-    &.total {
-        background: rgba(220, 38, 38, 0.12);
-
-        i {
-            color: #dc2626;
-        }
+    .stat-value {
+        font-weight: 700;
+        color: var(--text-main);
     }
 
-    &.itc {
-        background: rgba(217, 119, 6, 0.12);
-
-        i {
-            color: #d97706;
-        }
-    }
-
-    &.interest {
-        background: rgba(124, 58, 237, 0.12);
-
-        i {
-            color: #7c3aed;
-        }
+    .stat-label {
+        color: var(--text-secondary);
+        font-weight: 500;
     }
 
     &.suppliers {
-        background: rgba(5, 150, 105, 0.12);
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
 
         i {
             color: #059669;
         }
+
+        .stat-value {
+            color: #065f46;
+        }
     }
 
     &.transactions {
-        background: rgba(99, 102, 241, 0.12);
+        background: linear-gradient(135deg, #eef2ff, #e0e7ff);
 
         i {
             color: var(--primary-500);
         }
+
+        .stat-value {
+            color: var(--primary-700);
+        }
     }
 }
 
-.strip-chip-content {
+.stat-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border-color);
+    margin: 0 0.25rem;
+}
+
+.stat-amount {
     display: flex;
     flex-direction: column;
     gap: 0.1rem;
-}
+    padding: 0 0.5rem;
 
-.strip-chip-label {
-    font-size: 0.6rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-secondary);
-}
-
-.strip-chip-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-main);
-    font-variant-numeric: tabular-nums;
-    line-height: 1.2;
-
-    &.total {
-        color: #dc2626;
+    .stat-amount-label {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+        color: var(--text-light);
     }
 
-    &.itc {
+    .stat-amount-value {
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &.itc .stat-amount-value {
         color: #d97706;
     }
 
-    &.interest {
-        color: #7c3aed;
-    }
-}
-
-.strip-divider {
-    width: 1px;
-    height: 42px;
-    background: linear-gradient(180deg, transparent, var(--border-color), transparent);
-    flex-shrink: 0;
-}
-
-.strip-risk {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.risk-dot {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: default;
-
-    .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-    }
-
-    &.breached {
+    &.interest .stat-amount-value {
         color: #dc2626;
-
-        .dot {
-            background: #dc2626;
-        }
-    }
-
-    &.at-risk {
-        color: #d97706;
-
-        .dot {
-            background: #f59e0b;
-        }
-    }
-
-    &.safe {
-        color: #059669;
-
-        .dot {
-            background: #10b981;
-        }
     }
 }
 
