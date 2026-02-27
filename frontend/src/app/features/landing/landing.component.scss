@@ -692,33 +692,37 @@ $gray-900: #111827;
     }
 }
 
-// AI Companion - Hidden for now (empty), repositioned if used
+// AI Companion - Beautifully integrated with the dashboard
 .ai-companion {
     position: absolute;
-    right: 10%;
-    top: -60px;
-    width: 200px;
-    height: 200px;
-    animation: float-bounce 5s ease-in-out infinite;
-    z-index: 8;
-    filter: drop-shadow(0 20px 50px rgba(13, 148, 136, 0.25));
+    right: -15%;
+    top: -120px;
+    width: 380px;
+    height: auto;
+    animation: float-bounce 6s ease-in-out infinite;
+    z-index: 5; // Behind the dashboard
+    filter: drop-shadow(0 30px 60px rgba(99, 102, 241, 0.3));
     pointer-events: none;
-    opacity: 0.9;
+    opacity: 1;
 
     @media (max-width: 1200px) {
-        right: 5%;
-        top: -40px;
-        width: 150px;
-        height: 150px;
+        right: -5%;
+        top: -80px;
+        width: 280px;
     }
 
     @media (max-width: 768px) {
-        display: none;
+        position: relative;
+        right: auto;
+        top: auto;
+        width: 250px;
+        margin: 0 auto 20px auto;
+        display: block; // Show on mobile as well, above the dashboard
     }
 
     img {
         width: 100%;
-        height: 100%;
+        height: auto;
         object-fit: contain;
     }
 }

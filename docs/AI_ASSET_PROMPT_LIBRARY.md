@@ -44,6 +44,7 @@
 **Filename:** `hero-illustration.png`  
 **Dimensions:** 800×600px → Export as WebP (<100KB)  
 **In-App Location:** Landing page, hero section right side (`div.ai-companion`)
+**Output Path:** `frontend/src/assets/images/hero/hero-illustration.png`
 
 **Prompt (Midjourney v6.1):**
 ```
@@ -62,6 +63,7 @@ Clean, modern SaaS product illustration style. Rounded edges on all objects.
 ### 2.2 Dashboard Empty State
 
 **Filename:** `empty-state-illustration.png`  
+**Output Path:** `frontend/src/assets/images/dashboard/empty-state-illustration.png`
 **Dimensions:** 400×300px → WebP (<50KB)  
 **In-App Location:** Dashboard when no calculations have been run
 
@@ -79,6 +81,7 @@ A thought bubble with "?" floats nearby. Modern SaaS empty state illustration.
 ### 2.3 Error State Illustration
 
 **Filename:** `error-state-illustration.png`  
+**Output Path:** `frontend/src/assets/images/dashboard/error-state-illustration.png`
 **Dimensions:** 300×250px → WebP (<40KB)  
 **In-App Location:** Error pages, failed upload states
 
@@ -103,6 +106,7 @@ Clean white background, rounded forms, modern SaaS style. No text.
 ### 3.1 Rule 37 — 180-Day ITC Reversal
 
 **Filename:** `rule-37.png`  
+**Output Path:** `frontend/src/assets/images/landing/icons/rule-37.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D icon of a calendar showing "180" with a clock overlay and a circular 
@@ -114,6 +118,7 @@ rounded edges, clean white background, modern fintech icon style.
 ### 3.2 Rule 36(4) — ITC Matching
 
 **Filename:** `rule-36-4.png`  
+**Output Path:** `frontend/src/assets/images/landing/icons/rule-36-4.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D icon of two documents side by side with connecting dotted lines showing 
@@ -126,6 +131,7 @@ background, rounded soft 3D style.
 ### 3.3 Rule 86B — Credit Restriction
 
 **Filename:** `rule-86b.png`  
+**Output Path:** `frontend/src/assets/images/landing/icons/rule-86b.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D icon of a shield with a percentage meter at 99% and a lock symbol. 
@@ -137,6 +143,7 @@ background, modern SaaS icon.
 ### 3.4 Rule 16(4) — ITC Time Limit
 
 **Filename:** `rule-16-4.png`  
+**Output Path:** `frontend/src/assets/images/landing/icons/rule-16-4.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D icon of an hourglass with a document and clock showing a deadline. 
@@ -148,6 +155,7 @@ Rounded soft edges, clean white background, fintech icon style.
 ### 3.5 GSTR-3B Compliance
 
 **Filename:** `gstr-3b.png`  
+**Output Path:** `frontend/src/assets/images/landing/icons/gstr-3b.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D icon of a filing form/tax return document with a green checkmark badge 
@@ -159,6 +167,7 @@ background, rounded soft 3D style.
 ### 3.6 GSTR-9 Annual Return
 
 **Filename:** `gstr-9.png`  
+**Output Path:** `frontend/src/assets/images/landing/icons/gstr-9.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D icon of an annual report book with a bar chart and year "2025" on the 
@@ -179,6 +188,7 @@ background.
 ### 4.1 Instant Calculation (Bolt)
 
 **Filename:** `smart-calc.png`  
+**Output Path:** `frontend/src/assets/images/landing/features/smart-calc.png`
 **Prompt (DALL·E 3):**
 ```
 A soft 3D isometric icon of a lightning bolt striking a calculator, with small 
@@ -189,6 +199,7 @@ background, rounded edges, SaaS product icon. No text.
 ### 4.2 Peace of Mind Dashboard
 
 **Filename:** `peace-of-mind.png`  
+**Output Path:** `frontend/src/assets/images/landing/features/peace-of-mind.png`
 **Prompt (DALL·E 3):**
 ```
 A soft 3D isometric icon of a dashboard screen showing a large green checkmark 
@@ -199,6 +210,7 @@ rounded edges, modern app icon. No text.
 ### 4.3 Bank-Grade Security
 
 **Filename:** `security.png`  
+**Output Path:** `frontend/src/assets/images/landing/features/security.png`
 **Prompt (DALL·E 3):**
 ```
 A soft 3D isometric icon of a shield with a lock symbol and a cloud inside. 
@@ -209,6 +221,7 @@ rounded soft edges. No text.
 ### 4.4 Always Updated (Auto-Sync)
 
 **Filename:** `auto-sync.png`  
+**Output Path:** `frontend/src/assets/images/landing/features/auto-sync.png`
 **Prompt (DALL·E 3):**
 ```
 A soft 3D isometric icon of two circular arrows forming a sync loop around a 
@@ -219,6 +232,7 @@ rounded 3D style. No text.
 ### 4.5 Report Export
 
 **Filename:** `reports.png`  
+**Output Path:** `frontend/src/assets/images/landing/features/reports.png`
 **Prompt (DALL·E 3):**
 ```
 A soft 3D isometric icon of an Excel spreadsheet with a download arrow. Green 
@@ -238,6 +252,7 @@ rounded edges. No text.
 ### 5.1 Step 1 — Export Ledger
 
 **Filename:** `step-1-export.png`  
+**Output Path:** `frontend/src/assets/images/steps/step-1-export.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D scene: A laptop showing Tally software with an Excel file flying out 
@@ -249,6 +264,7 @@ background, rounded 3D forms, modern SaaS illustration.
 ### 5.2 Step 2 — Upload & Go
 
 **Filename:** `step-2-upload.png`  
+**Output Path:** `frontend/src/assets/images/steps/step-2-upload.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D scene: A hand dragging an Excel file towards a cloud upload portal 
@@ -260,6 +276,7 @@ violet palette. Clean white background, rounded edges.
 ### 5.3 Step 3 — Get Results
 
 **Filename:** `step-3-results.png`  
+**Output Path:** `frontend/src/assets/images/steps/step-3-results.png`
 **Prompt (Midjourney v6.1):**
 ```
 Isometric 3D scene: A floating dashboard card showing "All Clear ✓" with a green 
@@ -362,6 +379,7 @@ modern SaaS style.
 ### 6.2 Pricing Section Dark Gradient
 
 **Filename:** `pricing-bg.webp`  
+**Output Path:** `frontend/src/assets/images/landing/pricing-bg.webp`
 **Dimensions:** 1920×1080 → WebP (<80KB)  
 **In-App Location:** Pricing section background
 
@@ -538,6 +556,7 @@ setting. Camera slowly zooms in. Duration: 5 seconds.
 ### 9.1 Rajesh Kumar (CA Partner, Mumbai)
 
 **Filename:** `avatar-1.png`  
+**Output Path:** `frontend/src/assets/images/landing/avatars/avatar-1.png`
 **Prompt (DALL·E 3):**
 ```
 A friendly illustrated portrait avatar of a middle-aged Indian man with glasses 
@@ -549,6 +568,7 @@ No text.
 ### 9.2 Priya Sharma (Finance Head, Surat)
 
 **Filename:** `avatar-2.png`  
+**Output Path:** `frontend/src/assets/images/landing/avatars/avatar-2.png`
 **Prompt (DALL·E 3):**
 ```
 A friendly illustrated portrait avatar of an Indian woman in her 30s with a 
@@ -560,6 +580,7 @@ No text.
 ### 9.3 Amit Patel (Business Owner, Ahmedabad)
 
 **Filename:** `avatar-3.png`  
+**Output Path:** `frontend/src/assets/images/landing/avatars/avatar-3.png`
 **Prompt (DALL·E 3):**
 ```
 A friendly illustrated portrait avatar of a young Indian man with a casual smile. 
@@ -573,37 +594,37 @@ Circular crop, white background. No text.
 
 | Asset | File | Location in App | Priority |
 |---|---|---|---|
-| Hero illustration | `hero-illustration.png` | Landing hero right side | 🔴 P0 |
-| Rule 37 icon | `rule-37.png` | Landing rules section | 🟡 P1 |
-| Rule 36(4) icon | `rule-36-4.png` | Landing rules section | 🟡 P1 |
-| Rule 86B icon | `rule-86b.png` | Landing rules section | 🟡 P1 |
-| Rule 16(4) icon | `rule-16-4.png` | Landing rules section | 🟡 P1 |
-| GSTR-3B icon | `gstr-3b.png` | Landing rules section | 🟡 P1 |
-| GSTR-9 icon | `gstr-9.png` | Landing rules section | 🟡 P1 |
-| Smart calc icon | `smart-calc.png` | Landing features bento | 🟡 P1 |
-| Peace of mind icon | `peace-of-mind.png` | Landing features bento | 🟡 P1 |
-| Security icon | `security.png` | Landing features bento | 🟡 P1 |
-| Auto-sync icon | `auto-sync.png` | Landing features bento | 🟡 P1 |
-| Reports icon | `reports.png` | Landing features bento | 🟢 P2 |
-| Step 1 illustration | `step-1-export.png` | Landing timeline | 🟡 P1 |
-| Step 2 illustration | `step-2-upload.png` | Landing timeline | 🟡 P1 |
-| Step 3 illustration | `step-3-results.png` | Landing timeline | 🟡 P1 |
+| Hero illustration | `hero-illustration.png` | Landing hero right side | ✅ Done |
+| Rule 37 icon | `rule-37.png` | Landing rules section | ✅ Done |
+| Rule 36(4) icon | `rule-36-4.png` | Landing rules section | ✅ Done |
+| Rule 86B icon | `rule-86b.png` | Landing rules section | ✅ Done |
+| Rule 16(4) icon | `rule-16-4.png` | Landing rules section | ✅ Done |
+| GSTR-3B icon | `gstr-3b.png` | Landing rules section | ✅ Done |
+| GSTR-9 icon | `gstr-9.png` | Landing rules section | ✅ Done |
+| Smart calc icon | `smart-calc.png` | Landing features bento | ✅ Done |
+| Peace of mind icon | `peace-of-mind.png` | Landing features bento | ✅ Done |
+| Security icon | `security.png` | Landing features bento | ✅ Done |
+| Auto-sync icon | `auto-sync.png` | Landing features bento | ✅ Done |
+| Reports icon | `reports.png` | Landing features bento | ✅ Done |
+| Step 1 illustration | `step-1-export.png` | Landing timeline | ✅ Done |
+| Step 2 illustration | `step-2-upload.png` | Landing timeline | ✅ Done |
+| Step 3 illustration | `step-3-results.png` | Landing timeline | ✅ Done |
 | Auth login illustration | `auth-login-illustration.png` | Auth login left panel | ✅ Done |
 | Auth signup illustration | `auth-signup-illustration.png` | Auth signup left panel | ✅ Done |
 | Auth verify illustration | `auth-verify-illustration.png` | Auth verify-email left panel | ✅ Done |
 | Auth reset illustration | `auth-reset-illustration.png` | Auth pwd-reset left panel | ✅ Done |
-| Auth bg pattern | `auth-bg-pattern.svg` | Auth brand panel background | 🟢 P2 |
-| Empty state | `empty-state-illustration.png` | Dashboard empty | 🟡 P1 |
-| Error state | `error-state-illustration.png` | Error pages | 🟢 P2 |
-| Processing loader | `processing-loader.json` | Dashboard processing | 🔴 P0 |
-| Success confetti | `success-confetti.json` | Dashboard verdict | 🟡 P1 |
-| Empty float | `empty-float.json` | Dashboard history empty | 🟢 P2 |
-| Upload active | `upload-active.json` | Document upload hover | 🟢 P2 |
-| Credit deduction | `credit-deduct.json` | Credit wallet badge | 🟢 P2 |
-| Pricing BG | `pricing-bg.webp` | Landing pricing section | 🟢 P2 |
-| Noise texture | `noise-texture.png` | Glass card overlay | 🟢 P2 |
-| Avatar 1 | `avatar-1.png` | Landing testimonials | 🟢 P2 |
-| Avatar 2 | `avatar-2.png` | Landing testimonials | 🟢 P2 |
-| Avatar 3 | `avatar-3.png` | Landing testimonials | 🟢 P2 |
-| Hero video loop | Background WebM | Landing hero (optional) | 🟢 P2 |
-| Product demo | MP4 walkthrough | Landing video modal | 🟢 P2 |
+| Auth bg pattern | `auth-bg-pattern.svg` | Auth brand panel background | ✅ Done |
+| Empty state | `empty-state-illustration.png` | Dashboard empty | ✅ Done |
+| Error state | `error-state-illustration.png` | Error pages | ✅ Done |
+| Processing loader | `processing-loader.json` | Dashboard processing | 🔴 Needs Lottie |
+| Success confetti | `success-confetti.json` | Dashboard verdict | 🟡 Needs Lottie |
+| Empty float | `empty-float.json` | Dashboard history empty | 🟢 Needs Lottie |
+| Upload active | `upload-active.json` | Document upload hover | 🟢 Needs Lottie |
+| Credit deduction | `credit-deduct.json` | Credit wallet badge | 🟢 Needs Lottie |
+| Pricing BG | `pricing-bg.webp` | Landing pricing section | ✅ Done |
+| Noise texture | `noise-texture.svg` | Glass card overlay | ✅ Done |
+| Avatar 1 | `avatar-1.png` | Landing testimonials | ✅ Done |
+| Avatar 2 | `avatar-2.png` | Landing testimonials | ✅ Done |
+| Avatar 3 | `avatar-3.png` | Landing testimonials | ✅ Done |
+| Hero video loop | Background WebM | Landing hero (optional) | 🟢 Needs AfterEffects |
+| Product demo | MP4 walkthrough | Landing video modal | 🟢 Needs ScreenRecording |

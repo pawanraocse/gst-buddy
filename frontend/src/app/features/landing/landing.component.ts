@@ -146,21 +146,21 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
         {
             number: 1,
             icon: 'pi-download',
-            image: 'assets/images/landing/steps/step-1-export.png',
+            image: 'assets/images/steps/step-1-export.png',
             title: 'Export Ledger',
             description: 'Export your party ledger from Tally or Busy. Takes 2 minutes.'
         },
         {
             number: 2,
             icon: 'pi-upload',
-            image: 'assets/images/landing/steps/step-2-upload.png',
+            image: 'assets/images/steps/step-2-upload.png',
             title: 'Upload & Go',
             description: 'Drag & drop your Excel file. We do the rest in seconds.'
         },
         {
             number: 3,
             icon: 'pi-chart-bar',
-            image: 'assets/images/landing/steps/step-3-results.png',
+            image: 'assets/images/steps/step-3-results.png',
             title: 'Get Results',
             description: 'See ITC reversal, interest calculations, and export to Excel.'
         }
