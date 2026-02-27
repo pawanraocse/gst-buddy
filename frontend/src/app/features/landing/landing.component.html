@@ -176,14 +176,12 @@
                 <div #animateOnScroll class="hero-visual"
                     [style.transform]="'perspective(1000px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg)'">
 
-                    <!-- AI Robot Companion -->
-                    <div class="ai-companion">
-                        <img src="assets/images/hero/hero-illustration.png" alt="GST Buddy AI Assistant" loading="eager"
-                            class="w-full h-auto drop-shadow-2xl hero-img-hover">
-                    </div>
-
-                    <!-- Benefit Card (New) -->
+                    <!-- Benefit Card with AI Companion -->
                     <div class="benefit-card glass-card float-animation">
+                        <div class="ai-companion">
+                            <img src="assets/images/hero/hero-illustration.png" alt="GST Buddy AI Assistant"
+                                loading="eager">
+                        </div>
                         <div class="card-header">
                             <span class="label">Potential ITC Savings</span>
                         </div>
@@ -239,15 +237,6 @@
                         </div>
                     </div>
 
-                    <!-- Floating Cards -->
-                    <div class="floating-card card-1">
-                        <i class="pi pi-check-circle"></i>
-                        <p>All Clear ✓</p>
-                    </div>
-                    <div class="floating-card card-2">
-                        <p class="metric">₹2,45,000</p>
-                        <small>ITC Saved This Month</small>
-                    </div>
                 </div>
             </div>
         </section>
@@ -632,11 +621,21 @@
                     @for (testimonial of testimonials; track testimonial.name; let i = $index) {
                     <div class="testimonial-card animate-on-scroll glass-card"
                         [style.animation-delay]="(i * 0.15) + 's'">
-                        <div class="quote-mark">"</div>
+                        <div class="quote-mark">“</div>
                         <p class="quote">{{ testimonial.quote }}</p>
+                        @if (testimonial.savings) {
+                        <div class="savings-badge">
+                            <i class="pi pi-bolt"></i>
+                            <span>{{ testimonial.savings }}</span>
+                        </div>
+                        }
                         <div class="author-info">
                             <div class="avatar">
+                                @if (testimonial.avatar) {
+                                <img [src]="testimonial.avatar" [alt]="testimonial.name" loading="lazy">
+                                } @else {
                                 {{ testimonial.name.charAt(0) }}
+                                }
                             </div>
                             <div class="author-details">
                                 <h5>{{ testimonial.name }}</h5>

@@ -173,6 +173,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             company: 'Kumar & Associates, Mumbai',
             quote: 'GST Buddy saved us 10+ hours every month. Our clients love the professional reports.',
             avatar: 'assets/images/landing/avatars/avatar-1.png',
+            savings: 'Saved ₹2.5L in ITC',
             rating: 5
         },
         {
@@ -181,6 +182,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             company: 'Textile Exports Ltd, Surat',
             quote: 'Finally, no more Excel nightmares! The peace of mind dashboard is exactly what we needed.',
             avatar: 'assets/images/landing/avatars/avatar-2.png',
+            savings: '10+ hrs/month saved',
             rating: 5
         },
         {
@@ -189,6 +191,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             company: 'Patel Trading Co, Ahmedabad',
             quote: 'Rule 37 compliance used to give me sleepless nights. Not anymore!',
             avatar: 'assets/images/landing/avatars/avatar-3.png',
+            savings: 'Zero penalties since joining',
             rating: 5
         }
     ];
