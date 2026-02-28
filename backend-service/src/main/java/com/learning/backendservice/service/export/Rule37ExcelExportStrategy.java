@@ -3,6 +3,11 @@ package com.learning.backendservice.service.export;
 import com.learning.backendservice.domain.rule37.CalculationSummary;
 import com.learning.backendservice.domain.rule37.InterestRow;
 import com.learning.backendservice.domain.rule37.LedgerResult;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -12,18 +17,19 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Exports Rule 37 calculation results to Excel.
- * Port of MVP {@code excelExport.ts}.
+ * All numeric columns use proper Excel number types so formulas (SUM, AVERAGE,
+ * etc.) work.
  */
 @Component
 public class Rule37ExcelExportStrategy implements ExportStrategy {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final int MAX_SHEET_NAME_LENGTH = 31;
 
     @Override
@@ -35,42 +41,19 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
     public byte[] generate(List<LedgerResult> ledgerResults, String filename, String reportType) {
         boolean issuesOnly = !"complete".equalsIgnoreCase(reportType);
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            // Summary sheet first
+
+            // ── Reusable cell styles ──
+            var styles = createStyles(workbook);
+
+            // ── Summary sheet ──
             Sheet summarySheet = workbook.createSheet("Summary");
-            int rowNum = 0;
-            summarySheet.createRow(rowNum++).createCell(0).setCellValue("Ledger Name");
-            summarySheet.getRow(0).createCell(1).setCellValue("Total ITC Reversal");
-            summarySheet.getRow(0).createCell(2).setCellValue("Total Interest");
-            summarySheet.getRow(0).createCell(3).setCellValue("Report Type");
-            for (LedgerResult lr : ledgerResults) {
-                Row row = summarySheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(lr.getLedgerName());
-                row.createCell(1).setCellValue(formatCurrency(lr.getSummary().getTotalItcReversal()));
-                row.createCell(2).setCellValue(formatCurrency(lr.getSummary().getTotalInterest()));
-                row.createCell(3).setCellValue(issuesOnly ? "Issues Only" : "Complete");
-            }
-            rowNum++;
-            Row totalRow = summarySheet.createRow(rowNum);
-            totalRow.createCell(0).setCellValue("GRAND TOTAL");
-            BigDecimal totalItc = ledgerResults.stream()
-                    .map(lr -> lr.getSummary().getTotalItcReversal())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            BigDecimal totalInterest = ledgerResults.stream()
-                    .map(lr -> lr.getSummary().getTotalInterest())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            totalRow.createCell(1).setCellValue(formatCurrency(totalItc));
-            totalRow.createCell(2).setCellValue(formatCurrency(totalInterest));
+            writeSummarySheet(summarySheet, ledgerResults, issuesOnly, styles);
 
-            summarySheet.setColumnWidth(0, 40 * 256);
-            summarySheet.setColumnWidth(1, 20 * 256);
-            summarySheet.setColumnWidth(2, 20 * 256);
-            summarySheet.setColumnWidth(3, 15 * 256);
-
-            // Per-ledger sheets
+            // ── Per-ledger detail sheets ──
             for (LedgerResult lr : ledgerResults) {
                 String sheetName = sanitizeSheetName(lr.getLedgerName());
                 Sheet sheet = workbook.createSheet(sheetName);
-                writeLedgerSheet(sheet, lr.getSummary(), issuesOnly);
+                writeLedgerSheet(sheet, lr.getSummary(), issuesOnly, styles);
             }
 
             workbook.write(out);
@@ -80,7 +63,59 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         }
     }
 
-    private void writeLedgerSheet(Sheet sheet, CalculationSummary summary, boolean issuesOnly) {
+    // ══════════════════════════════════════════════════════
+    // Summary Sheet
+    // ══════════════════════════════════════════════════════
+
+    private void writeSummarySheet(Sheet sheet, List<LedgerResult> ledgerResults,
+            boolean issuesOnly, Styles styles) {
+        int rowNum = 0;
+
+        // Header
+        Row header = sheet.createRow(rowNum++);
+        header.createCell(0).setCellValue("Ledger Name");
+        header.createCell(1).setCellValue("Total ITC Reversal");
+        header.createCell(2).setCellValue("Total Interest");
+        header.createCell(3).setCellValue("Report Type");
+        applyHeaderStyle(header, styles.headerStyle, 4);
+
+        // Data rows
+        for (LedgerResult lr : ledgerResults) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(lr.getLedgerName());
+            setCurrencyCell(row, 1, lr.getSummary().getTotalItcReversal(), styles.currencyStyle);
+            setCurrencyCell(row, 2, lr.getSummary().getTotalInterest(), styles.currencyStyle);
+            row.createCell(3).setCellValue(issuesOnly ? "Issues Only" : "Complete");
+        }
+
+        // Grand Total
+        rowNum++;
+        Row totalRow = sheet.createRow(rowNum);
+        Cell totalLabel = totalRow.createCell(0);
+        totalLabel.setCellValue("GRAND TOTAL");
+        totalLabel.setCellStyle(styles.headerStyle);
+
+        BigDecimal totalItc = ledgerResults.stream()
+                .map(lr -> lr.getSummary().getTotalItcReversal())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalInterest = ledgerResults.stream()
+                .map(lr -> lr.getSummary().getTotalInterest())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        setCurrencyCell(totalRow, 1, totalItc, styles.currencyBoldStyle);
+        setCurrencyCell(totalRow, 2, totalInterest, styles.currencyBoldStyle);
+
+        sheet.setColumnWidth(0, 40 * 256);
+        sheet.setColumnWidth(1, 20 * 256);
+        sheet.setColumnWidth(2, 20 * 256);
+        sheet.setColumnWidth(3, 15 * 256);
+    }
+
+    // ══════════════════════════════════════════════════════
+    // Ledger Detail Sheet
+    // ══════════════════════════════════════════════════════
+
+    private void writeLedgerSheet(Sheet sheet, CalculationSummary summary,
+            boolean issuesOnly, Styles styles) {
         List<InterestRow> rows = summary.getDetails();
         if (issuesOnly) {
             rows = rows.stream()
@@ -91,60 +126,165 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         }
 
         int rowNum = 0;
-        Row headerRow = sheet.createRow(rowNum++);
-        headerRow.createCell(0).setCellValue("Supplier");
-        headerRow.createCell(1).setCellValue("Purchase Date");
-        headerRow.createCell(2).setCellValue("Payment Date");
-        headerRow.createCell(3).setCellValue("Principal Amount");
-        headerRow.createCell(4).setCellValue("Delay Days");
-        headerRow.createCell(5).setCellValue("ITC Amount (18%)");
-        headerRow.createCell(6).setCellValue("Interest (18% p.a.)");
-        headerRow.createCell(7).setCellValue("Status");
-        headerRow.createCell(8).setCellValue("Payment Deadline");
-        headerRow.createCell(9).setCellValue("Risk Category");
-        headerRow.createCell(10).setCellValue("GSTR-3B Period");
 
-        for (InterestRow r : rows) {
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(r.getSupplier());
-            row.createCell(1).setCellValue(formatDate(r.getPurchaseDate()));
-            row.createCell(2).setCellValue(r.getPaymentDate() != null ? formatDate(r.getPaymentDate()) : "Unpaid");
-            row.createCell(3).setCellValue(formatCurrency(r.getPrincipal()));
-            row.createCell(4).setCellValue(r.getDelayDays());
-            row.createCell(5).setCellValue(formatCurrency(r.getItcAmount()));
-            row.createCell(6).setCellValue(formatCurrency(r.getInterest()));
-            row.createCell(7).setCellValue(formatStatus(r.getStatus()));
-            row.createCell(8).setCellValue(formatDate(r.getPaymentDeadline()));
-            row.createCell(9).setCellValue(r.getRiskCategory() != null ? r.getRiskCategory().name() : "");
-            row.createCell(10).setCellValue(r.getGstr3bPeriod() != null ? r.getGstr3bPeriod() : "");
+        // Header
+        Row headerRow = sheet.createRow(rowNum++);
+        String[] headers = { "Supplier", "Purchase Date", "Payment Date", "Principal Amount",
+                "Delay Days", "ITC (18%)", "ITC to Reverse", "Interest (18% p.a.)",
+                "Status", "Payment Deadline", "Risk Category", "GSTR-3B Period" };
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(styles.headerStyle);
         }
 
-        rowNum++;
-        rowNum++;
+        // Data rows — proper types for every column
+        for (InterestRow r : rows) {
+            Row row = sheet.createRow(rowNum++);
+
+            // Col 0: Supplier (text)
+            row.createCell(0).setCellValue(r.getSupplier());
+
+            // Col 1: Purchase Date (date)
+            setDateCell(row, 1, r.getPurchaseDate(), styles.dateStyle);
+
+            // Col 2: Payment Date (date or "Unpaid")
+            if (r.getPaymentDate() != null) {
+                setDateCell(row, 2, r.getPaymentDate(), styles.dateStyle);
+            } else {
+                row.createCell(2).setCellValue("Unpaid");
+            }
+
+            // Col 3: Principal Amount (number)
+            setCurrencyCell(row, 3, r.getPrincipal(), styles.currencyStyle);
+
+            // Col 4: Delay Days (integer)
+            setIntCell(row, 4, r.getDelayDays(), styles.integerStyle);
+
+            // Col 5: ITC (number)
+            setCurrencyCell(row, 5, r.getItcAmount(), styles.currencyStyle);
+
+            // Col 6: ITC to Reverse (number only for UNPAID)
+            if (r.getStatus() == InterestRow.InterestStatus.UNPAID) {
+                setCurrencyCell(row, 6, r.getItcAmount(), styles.currencyStyle);
+            }
+            // else leave cell empty (no value)
+
+            // Col 7: Interest (number)
+            setCurrencyCell(row, 7, r.getInterest(), styles.currencyStyle);
+
+            // Col 8: Status (text)
+            row.createCell(8).setCellValue(formatStatus(r.getStatus()));
+
+            // Col 9: Payment Deadline (date)
+            setDateCell(row, 9, r.getPaymentDeadline(), styles.dateStyle);
+
+            // Col 10: Risk Category (text)
+            row.createCell(10).setCellValue(
+                    r.getRiskCategory() != null ? r.getRiskCategory().name() : "");
+
+            // Col 11: GSTR-3B Period (text)
+            row.createCell(11).setCellValue(
+                    r.getGstr3bPeriod() != null ? r.getGstr3bPeriod() : "");
+        }
+
+        // Total row
+        rowNum += 2;
         Row totalRow = sheet.createRow(rowNum);
-        totalRow.createCell(0).setCellValue("TOTAL");
-        totalRow.createCell(5).setCellValue(formatCurrency(summary.getTotalItcReversal()));
-        totalRow.createCell(6).setCellValue(formatCurrency(summary.getTotalInterest()));
+        Cell totalLabel = totalRow.createCell(0);
+        totalLabel.setCellValue("TOTAL");
+        totalLabel.setCellStyle(styles.headerStyle);
+        setCurrencyCell(totalRow, 6, summary.getTotalItcReversal(), styles.currencyBoldStyle);
+        setCurrencyCell(totalRow, 7, summary.getTotalInterest(), styles.currencyBoldStyle);
 
-        sheet.setColumnWidth(0, 30 * 256);
-        sheet.setColumnWidth(1, 15 * 256);
-        sheet.setColumnWidth(2, 15 * 256);
-        sheet.setColumnWidth(3, 18 * 256);
-        sheet.setColumnWidth(4, 12 * 256);
-        sheet.setColumnWidth(5, 18 * 256);
-        sheet.setColumnWidth(6, 20 * 256);
-        sheet.setColumnWidth(7, 12 * 256);
-        sheet.setColumnWidth(8, 15 * 256);
-        sheet.setColumnWidth(9, 15 * 256);
-        sheet.setColumnWidth(10, 15 * 256);
+        // Column widths
+        int[] widths = { 30, 15, 15, 18, 12, 18, 18, 20, 12, 15, 15, 15 };
+        for (int i = 0; i < widths.length; i++) {
+            sheet.setColumnWidth(i, widths[i] * 256);
+        }
     }
 
-    private static String formatDate(LocalDate date) {
-        return date != null ? date.format(DATE_FORMAT) : "N/A";
+    // ══════════════════════════════════════════════════════
+    // Cell Helpers — write proper Excel types
+    // ══════════════════════════════════════════════════════
+
+    private static void setCurrencyCell(Row row, int col, BigDecimal value, CellStyle style) {
+        Cell cell = row.createCell(col);
+        cell.setCellValue(value != null ? value.doubleValue() : 0.0);
+        cell.setCellStyle(style);
     }
+
+    private static void setDateCell(Row row, int col, LocalDate date, CellStyle style) {
+        if (date == null) {
+            row.createCell(col).setCellValue("N/A");
+            return;
+        }
+        Cell cell = row.createCell(col);
+        cell.setCellValue(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        cell.setCellStyle(style);
+    }
+
+    private static void setIntCell(Row row, int col, int value, CellStyle style) {
+        Cell cell = row.createCell(col);
+        cell.setCellValue(value);
+        cell.setCellStyle(style);
+    }
+
+    private static void applyHeaderStyle(Row row, CellStyle style, int colCount) {
+        for (int i = 0; i < colCount; i++) {
+            Cell cell = row.getCell(i);
+            if (cell != null)
+                cell.setCellStyle(style);
+        }
+    }
+
+    // ══════════════════════════════════════════════════════
+    // Styles
+    // ══════════════════════════════════════════════════════
+
+    private record Styles(CellStyle headerStyle, CellStyle currencyStyle,
+            CellStyle currencyBoldStyle, CellStyle dateStyle, CellStyle integerStyle) {
+    }
+
+    private static Styles createStyles(Workbook workbook) {
+        DataFormat dataFormat = workbook.createDataFormat();
+
+        // Bold font for headers and totals
+        Font boldFont = workbook.createFont();
+        boldFont.setBold(true);
+
+        // Header style
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFont(boldFont);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        // Currency: ₹ #,##0.00
+        CellStyle currencyStyle = workbook.createCellStyle();
+        currencyStyle.setDataFormat(dataFormat.getFormat("#,##0.00"));
+
+        // Currency bold (for totals)
+        CellStyle currencyBoldStyle = workbook.createCellStyle();
+        currencyBoldStyle.setDataFormat(dataFormat.getFormat("#,##0.00"));
+        currencyBoldStyle.setFont(boldFont);
+
+        // Date: dd/MM/yyyy
+        CellStyle dateStyle = workbook.createCellStyle();
+        dateStyle.setDataFormat(dataFormat.getFormat("dd/MM/yyyy"));
+
+        // Integer (delay days)
+        CellStyle integerStyle = workbook.createCellStyle();
+        integerStyle.setDataFormat(dataFormat.getFormat("0"));
+
+        return new Styles(headerStyle, currencyStyle, currencyBoldStyle, dateStyle, integerStyle);
+    }
+
+    // ══════════════════════════════════════════════════════
+    // Text Helpers
+    // ══════════════════════════════════════════════════════
 
     private static String formatStatus(InterestRow.InterestStatus status) {
-        if (status == null) return "";
+        if (status == null)
+            return "";
         return switch (status) {
             case PAID_LATE -> "Paid Late";
             case PAID_ON_TIME -> "Paid on Time";
@@ -152,13 +292,9 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         };
     }
 
-    private static String formatCurrency(BigDecimal amount) {
-        if (amount == null) return "0.00";
-        return amount.toPlainString();
-    }
-
     private static String sanitizeSheetName(String name) {
-        if (name == null || name.isEmpty()) return "Sheet";
+        if (name == null || name.isEmpty())
+            return "Sheet";
         String sanitized = name.replaceAll("[:\\\\/?*\\[\\]]", "_");
         return sanitized.length() > MAX_SHEET_NAME_LENGTH
                 ? sanitized.substring(0, MAX_SHEET_NAME_LENGTH)

@@ -56,7 +56,7 @@
             <div class="stat-divider"></div>
 
             <div class="stat-amount itc">
-                <span class="stat-amount-label">ITC Reversal</span>
+                <span class="stat-amount-label">ITC to Reverse</span>
                 <span class="stat-amount-value">{{ formatCurrency(totalItcReversal) }}</span>
             </div>
             <div class="stat-amount interest">
@@ -212,6 +212,7 @@
                             <th class="col-days">How Late</th>
                             }
                             <th class="col-amount">Invoice Amount</th>
+                            <th class="col-amount">ITC</th>
                             <th class="col-amount">ITC to Reverse</th>
                             <th class="col-amount">Interest</th>
                             @if (showAllColumns) {
@@ -251,6 +252,13 @@
                             }
                             <td class="amount-cell invoice">{{ formatCurrency(row.principal) }}</td>
                             <td class="amount-cell itc">{{ formatCurrency(row.itcAmount) }}</td>
+                            <td class="amount-cell itc-reverse">
+                                @if (row.status === 'UNPAID') {
+                                    {{ formatCurrency(row.itcAmount) }}
+                                } @else {
+                                    <span class="null-value">—</span>
+                                }
+                            </td>
                             <td class="amount-cell interest">{{ formatCurrency(row.interest) }}</td>
                             @if (showAllColumns) {
                             <td>
@@ -260,7 +268,7 @@
                         </tr>
                         @if (row.status === 'PAID_LATE') {
                         <tr class="itc-reclaim-row">
-                            <td [attr.colspan]="showAllColumns ? 9 : 5">
+                            <td [attr.colspan]="showAllColumns ? 10 : 6">
                                 <div class="itc-reclaim-tip">
                                     <i class="pi pi-info-circle"></i>
                                     <span>💡 You paid late — the reversed ITC of <strong>{{
@@ -299,6 +307,12 @@
                             <span class="label">ITC:</span>
                             <span class="value itc">{{ formatCurrency(row.itcAmount) }}</span>
                         </div>
+                        @if (row.status === 'UNPAID') {
+                        <div class="mobile-metric">
+                            <span class="label">ITC to Reverse:</span>
+                            <span class="value itc">{{ formatCurrency(row.itcAmount) }}</span>
+                        </div>
+                        }
                         <div class="mobile-metric">
                             <span class="label">Interest:</span>
                             <span class="value interest">{{ formatCurrency(row.interest) }}</span>
