@@ -1,14 +1,14 @@
-import {Component, inject, signal} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Router, RouterModule} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {CardModule} from 'primeng/card';
-import {ButtonModule} from 'primeng/button';
-import {InputTextModule} from 'primeng/inputtext';
-import {PasswordModule} from 'primeng/password';
-import {MessageModule} from 'primeng/message';
-import {environment} from '../../../environments/environment';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { MessageModule } from 'primeng/message';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-signup-personal',
@@ -20,13 +20,16 @@ import {environment} from '../../../environments/environment';
   templateUrl: './signup-personal.component.html',
   styleUrls: ['./signup.common.scss']
 })
-export class SignupPersonalComponent {
+export class SignupPersonalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   loading = signal(false);
   error = signal<string | null>(null);
+  referralCode = signal<string | null>(null);
+  showReferralInput = signal(false);
 
   signupForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -35,9 +38,39 @@ export class SignupPersonalComponent {
     confirmPassword: ['', Validators.required]
   }, { validators: this.passwordMatchValidator });
 
+  ngOnInit(): void {
+    // Pick up referral code from URL query params (e.g., ?ref=ABC123)
+    const ref = this.route.snapshot.queryParamMap.get('ref');
+    if (ref) {
+      this.referralCode.set(ref);
+    }
+  }
+
   passwordMatchValidator(g: any) {
     return g.get('password')?.value === g.get('confirmPassword')?.value
       ? null : { mismatch: true };
+  }
+
+  onReferralInput(value: string): void {
+    // If user pastes a full URL, extract the ref= query param
+    if (value && value.includes('ref=')) {
+      try {
+        const url = new URL(value);
+        const ref = url.searchParams.get('ref');
+        if (ref) {
+          this.referralCode.set(ref);
+          return;
+        }
+      } catch {
+        // Not a valid URL — check for ref= as plain text
+        const match = value.match(/ref=([A-Za-z0-9]+)/);
+        if (match) {
+          this.referralCode.set(match[1]);
+          return;
+        }
+      }
+    }
+    this.referralCode.set(value || null);
   }
 
   onSubmit() {
@@ -46,11 +79,16 @@ export class SignupPersonalComponent {
     this.loading.set(true);
     this.error.set(null);
 
-    const payload = {
-      name: this.signupForm.value.name,
-      email: this.signupForm.value.email,
-      password: this.signupForm.value.password
+    const payload: Record<string, string | undefined> = {
+      name: this.signupForm.value.name!,
+      email: this.signupForm.value.email!,
+      password: this.signupForm.value.password!
     };
+
+    // Include referral code if present
+    if (this.referralCode()) {
+      payload['referralCode'] = this.referralCode()!;
+    }
 
     this.http.post(`${environment.apiUrl}/auth/api/v1/auth/signup/`, payload)
       .subscribe({
@@ -79,3 +117,4 @@ export class SignupPersonalComponent {
       });
   }
 }
+

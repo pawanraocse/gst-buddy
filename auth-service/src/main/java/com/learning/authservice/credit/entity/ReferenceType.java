@@ -13,7 +13,9 @@ public enum ReferenceType {
     ANALYSIS,
     /** Credits granted by admin (incentive, support). */
     ADMIN_GRANT,
-    /** Promotional credits (campaigns, referrals). */
+    /** Credits granted via the referral system (both referrer and referee). */
+    REFERRAL,
+    /** Promotional credits (campaigns, generic promos). */
     PROMO,
     /** Credits returned after failed analysis or admin action. */
     REFUND

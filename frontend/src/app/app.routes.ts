@@ -43,6 +43,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/settings/account-settings.component').then(m => m.AccountSettingsComponent)
       },
       {
+        path: 'referral',
+        loadComponent: () => import('./features/referral/referral.component').then(m => m.ReferralComponent)
+      },
+      {
         path: 'admin',
         canActivate: [adminGuard],
         children: [

@@ -48,7 +48,7 @@ class SignupControllerTest {
     void signup_Personal_Success() {
         // Arrange
         SignupRequestDto request = new SignupRequestDto(
-                "test@gmail.com", "password123", "Test User", null, null);
+                "test@gmail.com", "password123", "Test User", null, null, null);
 
         SignupResponse serviceResponse = SignupResponse.success(
                 "Signup complete. Please verify your email.",
@@ -74,7 +74,7 @@ class SignupControllerTest {
     void signup_Organization_Success() {
         // Arrange
         SignupRequestDto request = new SignupRequestDto(
-                "admin@acme.com", "password123", "Admin User", "Acme Corp", "STANDARD");
+                "admin@acme.com", "password123", "Admin User", "Acme Corp", "STANDARD", null);
 
         SignupResponse serviceResponse = SignupResponse.success(
                 "Signup complete. Please verify your email.",
@@ -99,7 +99,7 @@ class SignupControllerTest {
     void signup_Failure_ReturnsBadRequest() {
         // Arrange
         SignupRequestDto request = new SignupRequestDto(
-                "existing@gmail.com", "password123", "Test User", null, null);
+                "existing@gmail.com", "password123", "Test User", null, null, null);
         SignupResponse failureResponse = SignupResponse.failure("User already exists");
         when(signupService.signup(any(SignupRequestDto.class))).thenReturn(failureResponse);
 

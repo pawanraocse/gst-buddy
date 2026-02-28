@@ -20,6 +20,7 @@
 | 💳 **[Billing](docs/BILLING.md)** | Payment integration (Planned). |
 | ☁️ **[AWS Deployment](docs/AWS_DEPLOYMENT.md)** | Deployment guides. |
 | 🔧 **[Configuration](docs/CONFIGURATION.md)** | Central configuration reference. |
+| 🤝 **[Referral System](docs/REFERRAL.md)** | Referral codes, credit rewards, signup integration. |
 | 🔍 **[Debugging](docs/DEBUGGING.md)** | Troubleshooting guide. |
 
 ---

@@ -1,6 +1,7 @@
 package com.learning.authservice.auth.service;
 
 import com.learning.authservice.config.CognitoProperties;
+import com.learning.authservice.credit.service.CreditService;
 import com.learning.authservice.dto.UserInfoDto;
 import com.learning.authservice.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,7 +45,8 @@ class AuthServiceImplGetCurrentUserTest {
                 // Note: Not calling props.validate() to avoid throwing during these tests; we
                 // only test getCurrentUser.
                 UserService userService = Mockito.mock(UserService.class);
-                return new AuthServiceImpl(props, req, resp, cognitoIdentityProviderClient, userService);
+                CreditService creditService = Mockito.mock(CreditService.class);
+                return new AuthServiceImpl(props, req, resp, cognitoIdentityProviderClient, userService, creditService);
         }
 
         private DefaultOidcUser oidcUser(String sub, String email, String name) {

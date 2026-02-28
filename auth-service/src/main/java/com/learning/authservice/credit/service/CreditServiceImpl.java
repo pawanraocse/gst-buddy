@@ -116,8 +116,7 @@ public class CreditServiceImpl implements CreditService {
             return getWallet(userId);
         }
 
-        return executeWithOptimisticRetry(() ->
-                consumeCreditsInNewTx(userId, credits, referenceId, idempotencyKey));
+        return executeWithOptimisticRetry(() -> consumeCreditsInNewTx(userId, credits, referenceId, idempotencyKey));
     }
 
     /**
@@ -162,27 +161,18 @@ public class CreditServiceImpl implements CreditService {
     }
 
     private UserCreditWallet createWallet(String userId, String tenantId) {
-        // Find trial plan to auto-grant free credits on first wallet creation
-        var trialPlanOpt = planRepository.findByNameAndIsActiveTrue("trial");
-        int trialCredits = trialPlanOpt.map(Plan::getCredits).orElse(0);
-
+        // Creates a bare wallet with zero credits.
+        // Trial credits are ONLY granted through the explicit grantTrialCredits()
+        // method in the signup pipeline — never auto-granted here.
         var wallet = UserCreditWallet.builder()
                 .userId(userId)
                 .tenantId(tenantId)
-                .totalCredits(trialCredits)
-                .hasUsedTrial(trialCredits > 0)
+                .totalCredits(0)
+                .hasUsedTrial(false)
                 .build();
         wallet = walletRepository.save(wallet);
 
-        // Record the trial grant transaction
-        if (trialCredits > 0) {
-            String idempotencyKey = "trial-" + userId;
-            recordTransaction(wallet, TransactionType.GRANT, trialCredits,
-                    ReferenceType.TRIAL, trialPlanOpt.get().getName(), idempotencyKey,
-                    "Welcome! " + trialCredits + " free trial credits");
-            log.info("Auto-granted {} trial credits to new user {}", trialCredits, userId);
-        }
-
+        log.debug("Created new empty wallet for userId={}, tenantId={}", userId, tenantId);
         return wallet;
     }
 
@@ -236,5 +226,57 @@ public class CreditServiceImpl implements CreditService {
                 log.warn("Optimistic lock conflict, retry {}/{}", attempts, MAX_RETRIES);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void migrateWallet(String email, String cognitoUserId) {
+        if (email == null || cognitoUserId == null || email.equals(cognitoUserId)) {
+            return; // Nothing to migrate
+        }
+
+        String tenantId = resolveTenantId();
+        var emailWallet = walletRepository.findByUserIdAndTenantId(email, tenantId);
+
+        if (emailWallet.isEmpty()) {
+            return; // No email-based wallet to migrate
+        }
+
+        var sourceWallet = emailWallet.get();
+        int emailCredits = sourceWallet.getRemainingCredits();
+
+        if (emailCredits <= 0) {
+            // No credits to migrate, just clean up
+            log.info("Wallet migration: email={} has 0 credits, deleting stale wallet", email);
+            walletRepository.delete(sourceWallet);
+            return;
+        }
+
+        // Get or create the UUID-based wallet
+        var targetWallet = getOrCreateWallet(cognitoUserId);
+
+        // Transfer credits
+        targetWallet.addCredits(emailCredits);
+
+        // Carry over trial flag
+        if (Boolean.TRUE.equals(sourceWallet.getHasUsedTrial())) {
+            targetWallet.setHasUsedTrial(true);
+        }
+
+        walletRepository.save(targetWallet);
+
+        // Reassign transactions from email userId to Cognito UUID
+        var emailTransactions = transactionRepository.findByUserIdOrderByCreatedAtDesc(email);
+        for (var txn : emailTransactions) {
+            txn.setUserId(cognitoUserId);
+        }
+        transactionRepository.saveAll(emailTransactions);
+
+        // Delete the stale email-based wallet
+        walletRepository.delete(sourceWallet);
+
+        log.info("Wallet migration: transferred {} credits from email={} to cognitoUserId={}, " +
+                "reassigned {} transactions",
+                emailCredits, email, cognitoUserId, emailTransactions.size());
     }
 }

@@ -48,6 +48,7 @@ public class AuthServiceImpl implements AuthService {
         private final HttpServletResponse response;
         private final CognitoIdentityProviderClient cognitoClient;
         private final com.learning.authservice.user.service.UserService userService;
+        private final com.learning.authservice.credit.service.CreditService creditService;
 
         @Override
         @Transactional
@@ -63,6 +64,14 @@ public class AuthServiceImpl implements AuthService {
                 String name = request.getHeader("X-Username");
 
                 userService.upsertOnLogin(userId, email, name, "COGNITO");
+
+                // Migrate email-based wallet (from signup) to UUID-based wallet (post-login)
+                try {
+                        creditService.migrateWallet(email, userId);
+                } catch (Exception e) {
+                        log.warn("Wallet migration failed for email={}, userId={}: {}",
+                                        email, userId, e.getMessage());
+                }
 
                 String role = "viewer";
 

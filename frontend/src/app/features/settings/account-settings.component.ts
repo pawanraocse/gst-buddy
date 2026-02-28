@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CreditApiService, WalletDto, PlanDto } from '../../core/services/credit-api.service';
+import { ReferralApiService } from '../../core/services/referral-api.service';
 
 @Component({
   selector: 'app-account-settings',
@@ -28,6 +29,7 @@ export class AccountSettingsComponent implements OnInit {
   private router = inject(Router);
   private messageService = inject(MessageService);
   private creditApi = inject(CreditApiService);
+  private referralApi = inject(ReferralApiService);
 
   deleting = signal(false);
   showDeleteDialog = false;
@@ -46,10 +48,36 @@ export class AccountSettingsComponent implements OnInit {
     beta_features: false
   };
 
+  // Referral
+  referralCode = signal<string | null>(null);
+  referralLink = signal<string | null>(null);
+  referralCount = signal(0);
+  referralCreditsEarned = signal(0);
+  referralRewardPerReferral = signal(2);
+  referralLoaded = signal(false);
+  referralError = signal(false);
+  linkCopied = signal(false);
+
   ngOnInit(): void {
     this.creditApi.getWallet().subscribe({
       next: (w) => { this.wallet.set(w); this.walletLoading.set(false); },
       error: () => { this.walletLoading.set(false); }
+    });
+    this.referralApi.getReferralCode().subscribe({
+      next: (r) => {
+        this.referralCode.set(r.referralCode);
+        this.referralLink.set(r.referralLink);
+        this.referralLoaded.set(true);
+      },
+      error: () => { this.referralError.set(true); }
+    });
+    this.referralApi.getReferralStats().subscribe({
+      next: (s) => {
+        this.referralCount.set(s.totalReferrals);
+        this.referralCreditsEarned.set(s.totalCreditsEarned);
+        this.referralRewardPerReferral.set(s.rewardPerReferral);
+      },
+      error: () => { }
     });
   }
 
@@ -89,5 +117,24 @@ export class AccountSettingsComponent implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete account.' });
       }
     });
+  }
+
+  copyReferralLink(): void {
+    const link = this.referralLink();
+    if (link) {
+      navigator.clipboard.writeText(link).then(() => {
+        this.linkCopied.set(true);
+        this.messageService.add({ severity: 'success', summary: 'Copied!', detail: 'Referral link copied to clipboard', life: 2000 });
+        setTimeout(() => this.linkCopied.set(false), 2000);
+      });
+    }
+  }
+
+  shareWhatsApp(): void {
+    const link = this.referralLink();
+    if (link) {
+      const msg = encodeURIComponent(`Hey! Try GST Buddy for Rule 37 compliance checks. Sign up with my link and we both get bonus credits: ${link}`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
   }
 }

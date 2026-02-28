@@ -58,4 +58,15 @@ public interface CreditService {
      * if not.
      */
     void validateSufficientCredits(String userId, int requiredCredits);
+
+    /**
+     * Migrate credits from an email-based wallet to a UUID-based wallet.
+     * Called on first login to consolidate wallets created during signup
+     * (which use email as userId) with the actual Cognito UUID.
+     * Idempotent: no-op if no email-based wallet exists.
+     *
+     * @param email         the email used as userId during signup
+     * @param cognitoUserId the actual Cognito UUID used post-login
+     */
+    void migrateWallet(String email, String cognitoUserId);
 }

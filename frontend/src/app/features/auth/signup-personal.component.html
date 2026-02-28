@@ -49,6 +49,14 @@
             </div>
 
             <!-- Messages -->
+            @if (referralCode()) {
+            <div class="flex align-items-center gap-2 mb-3 p-3 border-round-lg surface-100 animate-fade-in"
+                style="border-left: 3px solid var(--primary-color);">
+                <i class="pi pi-gift text-primary text-xl"></i>
+                <span class="text-700 font-medium">You've been referred by a friend! Both of you will receive bonus
+                    credits 🎉</span>
+            </div>
+            }
             @if (error()) {
             <p-message severity="error" [text]="error()!" styleClass="w-full mb-4 animate-fade-in"></p-message>
             }
@@ -101,6 +109,34 @@
                     <small class="text-red-500 font-medium animate-fade-in">
                         <i class="pi pi-exclamation-circle mr-1"></i> Passwords do not match
                     </small>
+                    }
+                </div>
+
+                <!-- Referral Code -->
+                <div class="flex flex-column gap-2">
+                    @if (!referralCode()) {
+                    <a href="javascript:void(0)" class="text-primary font-medium text-sm no-underline hover:underline"
+                        (click)="showReferralInput.set(!showReferralInput())">
+                        <i class="pi pi-gift mr-1"></i>Have a referral code?
+                    </a>
+                    }
+                    @if (referralCode() || showReferralInput()) {
+                    <label for="referralCode" class="font-semibold text-700">
+                        <i class="pi pi-gift mr-1 text-primary"></i>Referral Code
+                    </label>
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-tag text-primary"></i>
+                        <input pInputText id="referralCode" [value]="referralCode() || ''"
+                            (input)="onReferralInput($any($event.target).value)" class="w-full"
+                            placeholder="Enter code, e.g. ABC12345" />
+                    </span>
+                    <small class="text-500">Enter just the referral code (not the full URL). You can edit it until you
+                        sign up.</small>
+                    @if (referralCode()) {
+                    <small class="text-green-600 font-medium">
+                        <i class="pi pi-check-circle mr-1"></i>Referral code: {{ referralCode() }}
+                    </small>
+                    }
                     }
                 </div>
 

@@ -26,6 +26,9 @@ public class SignupContext {
     private String companyName;
     private String tier;
 
+    // Referral
+    private String referralCode;
+
     // SSO-specific
     private String cognitoUserId;
 
@@ -82,6 +85,11 @@ public class SignupContext {
 
         public Builder tier(String tier) {
             ctx.tier = tier;
+            return this;
+        }
+
+        public Builder referralCode(String referralCode) {
+            ctx.referralCode = referralCode;
             return this;
         }
 
@@ -211,5 +219,13 @@ public class SignupContext {
 
     public void setEmailSent(boolean emailSent) {
         this.emailSent = emailSent;
+    }
+
+    public String getReferralCode() {
+        return referralCode;
+    }
+
+    public void setReferralCode(String referralCode) {
+        this.referralCode = referralCode;
     }
 }

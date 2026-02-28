@@ -76,6 +76,7 @@ public class SignupServiceImpl implements SignupService {
                     .name(request.name())
                     .companyName(request.companyName())
                     .tier(request.tier())
+                    .referralCode(request.referralCode())
                     .signupType(SignupType.ORGANIZATION)
                     .build();
         } else {
@@ -83,6 +84,7 @@ public class SignupServiceImpl implements SignupService {
                     .email(request.email())
                     .password(request.password())
                     .name(request.name())
+                    .referralCode(request.referralCode())
                     .signupType(SignupType.PERSONAL)
                     .build();
         }

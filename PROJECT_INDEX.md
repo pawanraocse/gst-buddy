@@ -87,6 +87,8 @@ User → Angular SPA (Amplify Auth)
 | `/plans` | GET | Available pricing plans |
 | `/payments/razorpay/order` | POST | Create Razorpay order |
 | `/payments/razorpay/webhook` | POST | Razorpay webhook handler |
+| `/referral/code` | GET | Get/generate referral code + link |
+| `/referral/stats` | GET | Referral stats (total, credits) |
 
 ### Admin API (`/auth/api/v1/admin/`) — requires super-admin role
 
@@ -141,6 +143,7 @@ User → Angular SPA (Amplify Auth)
 - `plans` — credit pricing plans (trial: 2 credits/₹0, pro: 5/₹1000, ultra: 30/₹3000)
 - `user_credit_wallets` — per-user credit balance with optimistic locking
 - `credit_transactions` — immutable credit transaction ledger
+- `referrals` — referral codes and conversion tracking for credit rewards
 
 ### Backend Service Tables
 - `rule37_calculation_runs` — Rule 37 results (JSONB for LedgerResult[], auto-expiry via RetentionScheduler)
@@ -163,6 +166,8 @@ User → Angular SPA (Amplify Auth)
 | `RAZORPAY_KEY_SECRET` | Auth | .env |
 | `RAZORPAY_WEBHOOK_SECRET` | Auth | .env |
 | `AWS_REGION` | Auth, Lambdas | .env / SSM |
+| `APP_REFERRAL_REWARD_CREDITS` | Auth | .env (default: 2) |
+| `APP_REFERRAL_BASE_URL` | Auth | .env (default: localhost) |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | All services | docker-compose |
 | `APP_RETENTION_DAYS` | Backend | .env (default: 7) |
 

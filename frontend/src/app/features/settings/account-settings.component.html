@@ -94,6 +94,76 @@
     </div>
 </div>
 
+<!-- Refer & Earn Section -->
+<div class="settings-card" id="referral">
+    <div class="card-header">
+        <i class="pi pi-gift"></i>
+        <h2>Refer & Earn</h2>
+    </div>
+    <div class="card-content">
+        <p class="text-600 mb-3">Share your referral link with friends. When they sign up, both of you get bonus
+            credits!</p>
+
+        @if (referralLoaded()) {
+        <!-- Referral Code -->
+        <div class="surface-100 border-round-lg p-3 mb-3" style="text-align: center;">
+            <span class="text-xs text-500 font-medium">Your Referral Code</span>
+            <div class="text-2xl font-bold text-900 mt-1" style="letter-spacing: 0.15em;">{{ referralCode() }}</div>
+        </div>
+
+        <!-- Copy Link -->
+        <div class="flex align-items-center gap-2 mb-3">
+            <input pInputText [value]="referralLink() || ''" class="w-full text-sm" readonly
+                style="font-family: monospace;" />
+            <button pButton type="button" [icon]="linkCopied() ? 'pi pi-check' : 'pi pi-copy'"
+                [class]="linkCopied() ? 'p-button-success' : 'p-button-primary'" (click)="copyReferralLink()"
+                pTooltip="Copy referral link">
+            </button>
+        </div>
+
+        <!-- Share Buttons -->
+        <div class="flex gap-2 mb-4">
+            <button pButton type="button" icon="pi pi-copy" label="Copy Link"
+                [class]="linkCopied() ? 'p-button-success p-button-sm' : 'p-button-primary p-button-sm'"
+                (click)="copyReferralLink()">
+            </button>
+            <button pButton type="button" icon="pi pi-whatsapp" label="WhatsApp" class="p-button-success p-button-sm"
+                (click)="shareWhatsApp()">
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="flex gap-3 mb-3">
+            <div class="flex-1 surface-100 border-round-lg p-3 text-center">
+                <div class="text-xl font-bold" style="color: #10b981;">{{ referralCount() }}</div>
+                <div class="text-xs text-600 mt-1">Friends Referred</div>
+            </div>
+            <div class="flex-1 surface-100 border-round-lg p-3 text-center">
+                <div class="text-xl font-bold" style="color: #8b5cf6;">+{{ referralCreditsEarned() }}</div>
+                <div class="text-xs text-600 mt-1">Credits Earned</div>
+            </div>
+            <div class="flex-1 surface-100 border-round-lg p-3 text-center">
+                <div class="text-xl font-bold text-primary">{{ referralRewardPerReferral() }}</div>
+                <div class="text-xs text-600 mt-1">Per Referral</div>
+            </div>
+        </div>
+
+        <p class="text-xs text-500 m-0"><i class="pi pi-info-circle mr-1"></i>Each successful referral earns {{
+            referralRewardPerReferral() }} credits for both you and your friend.</p>
+        } @else if (referralError()) {
+        <div class="surface-100 border-round-lg p-3 text-center">
+            <i class="pi pi-info-circle text-500 text-xl mb-2"></i>
+            <p class="text-600 text-sm m-0">Referral feature will be available once the service is fully deployed.</p>
+        </div>
+        } @else {
+        <div class="flex align-items-center gap-2 text-600">
+            <i class="pi pi-spin pi-spinner"></i>
+            <span>Loading referral info...</span>
+        </div>
+        }
+    </div>
+</div>
+
 <!-- Preferences Section -->
 <div class="settings-card">
     <div class="card-header">

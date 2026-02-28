@@ -57,9 +57,14 @@ public class SecurityConfig {
                                                                 // Configuration endpoints (Public)
                                                                 "/api/config/**",
 
-                                                                // Credit system (plans are public, credits use gateway JWT)
+                                                                // Credit system (plans are public, credits use gateway
+                                                                // JWT)
                                                                 "/auth/api/v1/plans",
-                                                                "/auth/api/v1/credits/**")
+                                                                "/auth/api/v1/credits/**",
+
+                                                                // Referral system (uses gateway JWT filter for
+                                                                // X-User-Id)
+                                                                "/auth/api/v1/referral/**")
                                                 .permitAll()
                                                 // Allow API key authenticated requests (validated by
                                                 // ApiKeyAuthenticationFilter)

@@ -396,3 +396,31 @@ ON CONFLICT (tenant_id, user_id, role_id) DO NOTHING;
 -- System Admin: Seeded with super-admin role; bootstrap script links Cognito sub
 -- ============================================================================
 
+-- ============================================================================
+-- 18. REFERRALS TABLE (Referral tracking for credit rewards)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS referrals (
+    id              BIGSERIAL PRIMARY KEY,
+    referrer_user_id VARCHAR(255) NOT NULL,
+    referee_user_id  VARCHAR(255),
+    tenant_id       VARCHAR(64) NOT NULL DEFAULT 'default',
+    referral_code   VARCHAR(20) NOT NULL,
+    status          VARCHAR(20) NOT NULL DEFAULT 'ACTIVE'
+                    CHECK (status IN ('ACTIVE', 'CONVERTED', 'EXPIRED')),
+    converted_at    TIMESTAMPTZ,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_referrals_code ON referrals(referral_code);
+CREATE INDEX idx_referrals_referrer ON referrals(referrer_user_id);
+CREATE INDEX idx_referrals_tenant ON referrals(tenant_id);
+
+COMMENT ON TABLE referrals IS 'Tracks referral codes and successful conversions for credit rewards';
+COMMENT ON COLUMN referrals.referral_code IS 'Reusable code per user; each successful signup creates a new row';
+COMMENT ON COLUMN referrals.referee_user_id IS 'NULL for the seed row (code generation); populated on conversion';
+
+CREATE TRIGGER update_referrals_updated_at
+BEFORE UPDATE ON referrals
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();

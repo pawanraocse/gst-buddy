@@ -4,6 +4,7 @@ import com.learning.authservice.config.CognitoProperties;
 import com.learning.authservice.auth.dto.AuthRequestDto;
 import com.learning.authservice.auth.dto.AuthResponseDto;
 import com.learning.authservice.exception.AuthLoginException;
+import com.learning.authservice.credit.service.CreditService;
 import com.learning.authservice.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,6 +49,9 @@ class AuthServiceImplLoginTest {
         @Mock
         private HttpServletResponse response;
 
+        @Mock
+        private CreditService creditService;
+
         private AuthServiceImpl authService;
 
         @BeforeEach
@@ -58,7 +62,7 @@ class AuthServiceImplLoginTest {
                 props.setDomain("test.auth.us-east-1.amazoncognito.com");
                 props.setRegion("us-east-1");
 
-                authService = new AuthServiceImpl(props, request, response, cognitoClient, userService);
+                authService = new AuthServiceImpl(props, request, response, cognitoClient, userService, creditService);
         }
 
         @Test

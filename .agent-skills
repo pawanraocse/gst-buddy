@@ -103,6 +103,7 @@ When you (the agent) need to read large datasets or long logs, **you must not re
 ### Auth Service Reusable Patterns
 - Signup pipeline: `SignupAction` interface → `SignupPipeline` executor (add new actions here)
 - Credit system: `CreditService` for wallet operations (grant, consume, validate)
+- Referral system: `ReferralService` for referral codes, stats, and credit rewards (configurable via `ReferralProperties`)
 - Email: `EmailService` interface → `SesEmailService` (prod) / `DevEmailService` (local)
 
 ### Backend Service Reusable Patterns
