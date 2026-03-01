@@ -145,7 +145,7 @@ ENVIRONMENT=prod ./scripts/bootstrap-system-admin.sh
 | `AUTH_SERVICE_URL` | `http://localhost:8081/auth` | Auth service base URL |
 | `INTERNAL_API_KEY` | `dev-internal-key-change-me` | Bootstrap endpoint auth key |
 | `ADMIN_EMAIL` | `system-admin@gst-buddy.local` | Admin account email |
-| `ADMIN_PASSWORD` | `Admin@123456` | Initial password |
+| `ADMIN_PASSWORD` | `Admin@12345678` | Initial password |
 
 ---
 

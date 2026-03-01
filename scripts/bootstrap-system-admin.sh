@@ -65,7 +65,7 @@ if [ -z "$ADMIN_EMAIL" ]; then
 fi
 
 if [ -z "$ADMIN_PASSWORD" ]; then
-    read -s -p "Enter Admin Password (min 8 chars, upper+lower+number+symbol): " ADMIN_PASSWORD
+    read -s -p "Enter Admin Password (min 12 chars, upper+lower+number+symbol): " ADMIN_PASSWORD
     echo ""
     if [ -z "$ADMIN_PASSWORD" ]; then echo "Password cannot be empty. Exiting."; exit 1; fi
 fi
