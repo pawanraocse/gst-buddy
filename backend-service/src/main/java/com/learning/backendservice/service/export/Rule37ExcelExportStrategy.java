@@ -208,9 +208,19 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
     // Cell Helpers — write proper Excel types
     // ══════════════════════════════════════════════════════
 
-    private static void setCurrencyCell(Row row, int col, BigDecimal value, CellStyle style) {
+    private static void setCurrencyCell(Row row, int col, Object value, CellStyle style) {
         Cell cell = row.createCell(col);
-        cell.setCellValue(value != null ? value.doubleValue() : 0.0);
+        if (value instanceof Number n) {
+            cell.setCellValue(n.doubleValue());
+        } else if (value instanceof String s) {
+            try {
+                cell.setCellValue(Double.parseDouble(s));
+            } catch (NumberFormatException e) {
+                cell.setCellValue(0.0);
+            }
+        } else {
+            cell.setCellValue(0.0);
+        }
         cell.setCellStyle(style);
     }
 
