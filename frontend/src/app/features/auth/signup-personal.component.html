@@ -83,7 +83,7 @@
                 <div class="flex flex-column gap-2">
                     <label for="password" class="font-semibold text-700">Password</label>
                     <p-password id="password" formControlName="password" [toggleMask]="true" styleClass="w-full"
-                        inputStyleClass="w-full p-inputtext-lg" placeholder="Min 8 chars">
+                        inputStyleClass="w-full p-inputtext-lg" placeholder="Min 12 chars">
                         <!-- Password Suggestions Template -->
                         <ng-template pTemplate="header">
                             <div class="font-semibold text-sm mb-2">Password Requirements</div>
@@ -93,7 +93,7 @@
                                 <li>At least one lowercase</li>
                                 <li>At least one uppercase</li>
                                 <li>At least one numeric</li>
-                                <li>Minimum 8 characters</li>
+                                <li>Minimum 12 characters</li>
                             </ul>
                         </ng-template>
                     </p-password>
