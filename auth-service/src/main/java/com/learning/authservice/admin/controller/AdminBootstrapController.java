@@ -41,6 +41,18 @@ public class AdminBootstrapController {
         return ResponseEntity.ok(admin);
     }
 
+    @PostMapping("/new-super-admin")
+    public ResponseEntity<AdminUserDetailDto> createNewSuperAdmin(
+            @Valid @RequestBody BootstrapRequest request,
+            @RequestHeader(value = INTERNAL_API_KEY_HEADER, required = false) String providedKey) {
+
+        requireInternalApiKey(providedKey);
+
+        AdminUserDetailDto admin = adminUserService.createSuperAdmin(
+                request.cognitoSub(), request.email());
+        return ResponseEntity.ok(admin);
+    }
+
     private void requireInternalApiKey(String provided) {
         if (internalApiKey == null || internalApiKey.isBlank()) {
             log.warn("Internal API key not configured — bootstrap endpoint is open in dev mode");

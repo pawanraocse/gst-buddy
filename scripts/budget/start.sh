@@ -70,6 +70,9 @@ export COGNITO_LOGOUT_REDIRECT_URL=$(aws ssm get-parameter --name "/${PROJECT_NA
 export FRONTEND_URL=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/frontend/url" --query 'Parameter.Value' --output text --region "$AWS_REGION")
 export CORS_ALLOWED_ORIGINS="${FRONTEND_URL},http://localhost:4200"
 
+# Internal Security
+export INTERNAL_API_KEY=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/api/internal_key" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
+
 log_success "Configuration loaded from SSM"
 echo ""
 echo "📦 Configuration:"

@@ -44,7 +44,7 @@ Services available at:
 
 ### Step 3: Create System Admin
 ```bash
-./scripts/bootstrap-system-admin.sh your-admin@email.com "YourPassword123!"
+ENVIRONMENT=local ./scripts/bootstrap-system-admin.sh your-admin@email.com "YourPassword123!"
 ```
 
 ### Step 4: Test the Flow

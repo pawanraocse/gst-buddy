@@ -14,37 +14,45 @@ fi
 # Configuration
 REGION="${AWS_REGION:-us-east-1}"
 PROJECT_NAME="${PROJECT_NAME:-gst-buddy}"
-ENVIRONMENT="${ENVIRONMENT:-dev}"
+ENVIRONMENT="${ENVIRONMENT:-budget}"
 ENV="${ENV:-local}"
 AUTH_SERVICE_URL="${AUTH_SERVICE_URL:-http://localhost:8081}"
 INTERNAL_API_KEY="${INTERNAL_API_KEY:-}"
 
-SEEDED_EMAIL="system-admin@gst-buddy.local"
-POSTGRES_CONTAINER="gst-buddy-postgres-${ENV}"
-DB_NAME="${POSTGRES_DB_NAME:-gstbuddy}"
-DB_USER="${POSTGRES_USER:-postgres}"
-
 echo "================================================================"
 echo "   GST Buddy - System Admin Bootstrap"
 echo "================================================================"
-echo "Creates a Super Admin user in Cognito and links it to the"
-echo "seeded system-admin row in the database."
+echo "Creates a Super Admin user in Cognito and links it via API."
 echo ""
 echo "Environment: $ENVIRONMENT | Region: $REGION"
 echo ""
 
 # ── 1. Detect User Pool ID ──────────────────────────────────────
-USER_POOL_ID=$(aws ssm get-parameter \
-    --name "/$PROJECT_NAME/$ENVIRONMENT/cognito/user_pool_id" \
-    --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+if [ "$ENVIRONMENT" != "local" ]; then
+    echo "Fetching configuration from AWS SSM for $ENVIRONMENT environment..."
+    USER_POOL_ID=$(aws ssm get-parameter \
+        --name "/$PROJECT_NAME/$ENVIRONMENT/cognito/user_pool_id" \
+        --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+        
+    AUTH_SERVICE_URL=$(aws ssm get-parameter \
+        --name "/$PROJECT_NAME/$ENVIRONMENT/api/url" \
+        --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+        
+    INTERNAL_API_KEY=$(aws ssm get-parameter \
+        --name "/$PROJECT_NAME/$ENVIRONMENT/api/internal_key" \
+        --with-decryption \
+        --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+else
+    USER_POOL_ID="${COGNITO_USER_POOL_ID:-}"
+fi
 
 if [ -z "$USER_POOL_ID" ]; then
-    echo "Could not find User Pool ID in SSM."
-    echo "  Expected: /$PROJECT_NAME/$ENVIRONMENT/cognito/user_pool_id"
+    echo "Could not find User Pool ID in SSM or env."
     read -p "  Enter User Pool ID manually: " USER_POOL_ID
     if [ -z "$USER_POOL_ID" ]; then echo "Exiting."; exit 1; fi
 fi
 echo "User Pool: $USER_POOL_ID"
+echo "Auth URL:  $AUTH_SERVICE_URL"
 echo ""
 
 # ── 2. Collect Credentials ──────────────────────────────────────
@@ -64,7 +72,7 @@ fi
 
 # ── 3. Create or Update Cognito User ────────────────────────────
 echo ""
-echo "Step 1/5: Creating Cognito user..."
+echo "Step 1/4: Creating Cognito user..."
 if aws cognito-idp admin-get-user \
     --user-pool-id "$USER_POOL_ID" \
     --username "$ADMIN_EMAIL" \
@@ -80,7 +88,7 @@ else
     echo "  User created."
 fi
 
-echo "Step 2/5: Setting permanent password..."
+echo "Step 2/4: Setting permanent password..."
 aws cognito-idp admin-set-user-password \
     --user-pool-id "$USER_POOL_ID" \
     --username "$ADMIN_EMAIL" \
@@ -88,13 +96,14 @@ aws cognito-idp admin-set-user-password \
     --permanent \
     --region "$REGION"
 
-echo "Step 3/5: Assigning super-admin attributes..."
+echo "Step 3/4: Assigning super-admin attributes..."
 aws cognito-idp admin-update-user-attributes \
     --user-pool-id "$USER_POOL_ID" \
     --username "$ADMIN_EMAIL" \
     --user-attributes \
         Name="custom:role",Value="super-admin" \
         Name="custom:tenantId",Value="default" \
+        Name="email_verified",Value="true" \
     --region "$REGION"
 
 aws cognito-idp admin-add-user-to-group \
@@ -117,64 +126,25 @@ if [ -z "$COGNITO_SUB" ]; then
 fi
 echo "  Cognito Sub: $COGNITO_SUB"
 
-# ── 5. Update DB Placeholder Email ──────────────────────────────
-echo "Step 4/5: Preparing database placeholder..."
+# ── 5. Link to Database via Bootstrap Endpoint ──────────────────
+echo "Step 4/4: Linking Cognito user to database via API..."
 
-if docker ps --format '{{.Names}}' | grep -q "^${POSTGRES_CONTAINER}$"; then
-    PLACEHOLDER_EXISTS=$(docker exec "$POSTGRES_CONTAINER" \
-        psql -U "$DB_USER" -d "$DB_NAME" -tAc \
-        "SELECT COUNT(*) FROM users WHERE user_id = 'SYSTEM_ADMIN_PLACEHOLDER';" 2>/dev/null || echo "0")
-
-    if [ "$PLACEHOLDER_EXISTS" = "1" ] && [ "$ADMIN_EMAIL" != "$SEEDED_EMAIL" ]; then
-        docker exec "$POSTGRES_CONTAINER" \
-            psql -U "$DB_USER" -d "$DB_NAME" -c \
-            "UPDATE users SET email = '${ADMIN_EMAIL}' WHERE user_id = 'SYSTEM_ADMIN_PLACEHOLDER';" > /dev/null
-        echo "  Updated placeholder email: $SEEDED_EMAIL -> $ADMIN_EMAIL"
-    elif [ "$PLACEHOLDER_EXISTS" = "1" ]; then
-        echo "  Placeholder email already matches."
-    else
-        ALREADY_LINKED=$(docker exec "$POSTGRES_CONTAINER" \
-            psql -U "$DB_USER" -d "$DB_NAME" -tAc \
-            "SELECT COUNT(*) FROM users WHERE user_id = '${COGNITO_SUB}';" 2>/dev/null || echo "0")
-        if [ "$ALREADY_LINKED" = "1" ]; then
-            echo "  Admin already linked (user_id = Cognito sub). Skipping bootstrap."
-            echo ""
-            echo "================================================================"
-            echo "System Admin Already Configured!"
-            echo "  Email:       $ADMIN_EMAIL"
-            echo "  Cognito Sub: $COGNITO_SUB"
-            echo "  Login at:    http://localhost:4200"
-            echo "================================================================"
-            exit 0
-        else
-            echo "  WARNING: No placeholder row found and user not yet linked."
-            echo "  The bootstrap endpoint may fail. User will be linked on first login."
-        fi
-    fi
-else
-    echo "  WARNING: Postgres container '$POSTGRES_CONTAINER' not running."
-    echo "  Skipping DB email update — bootstrap endpoint will attempt direct match."
-fi
-
-# ── 6. Link to Database via Bootstrap Endpoint ──────────────────
-echo "Step 5/5: Linking Cognito user to database..."
-
-HTTP_CODE=$(curl -s -o /tmp/bootstrap_response.json -w "%{http_code}" -X POST \
-    "${AUTH_SERVICE_URL}/auth/api/v1/admin/bootstrap" \
+HTTP_CODE=$(curl -s -w "%{http_code}" -X POST \
+    "${AUTH_SERVICE_URL}/auth/api/v1/admin/bootstrap/new-super-admin" \
     -H "Content-Type: application/json" \
     -H "X-Internal-Api-Key: ${INTERNAL_API_KEY}" \
-    -d "{\"cognitoSub\": \"${COGNITO_SUB}\", \"email\": \"${ADMIN_EMAIL}\"}")
+    -d "{\"cognitoSub\": \"${COGNITO_SUB}\", \"email\": \"${ADMIN_EMAIL}\"}" \
+    -o /tmp/bootstrap_response.json)
 
 if [ "$HTTP_CODE" = "200" ]; then
     echo "  Database linked successfully."
 elif [ "$HTTP_CODE" = "000" ]; then
     echo "  WARNING: Auth service not reachable at $AUTH_SERVICE_URL"
-    echo "  The user will be linked on first login via upsertOnLogin."
+    echo "  Ensure your backend is running."
 else
     BODY=$(cat /tmp/bootstrap_response.json 2>/dev/null || echo "no response body")
-    echo "  WARNING: Bootstrap returned HTTP $HTTP_CODE"
+    echo "  ERROR: Bootstrap returned HTTP $HTTP_CODE"
     echo "  Response: $BODY"
-    echo "  The user will be linked on first login via upsertOnLogin."
 fi
 
 rm -f /tmp/bootstrap_response.json
@@ -185,5 +155,9 @@ echo "System Admin Created Successfully!"
 echo "  Email:       $ADMIN_EMAIL"
 echo "  Cognito Sub: $COGNITO_SUB"
 echo "  Role:        super-admin"
-echo "  Login at:    http://localhost:4200"
+if [ "$ENVIRONMENT" != "local" ]; then
+    echo "  Login at:    ${AUTH_SERVICE_URL}"
+else
+    echo "  Login at:    http://localhost:4200"
+fi
 echo "================================================================"

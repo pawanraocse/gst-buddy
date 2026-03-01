@@ -158,6 +158,7 @@ services:
       MANAGEMENT_ENDPOINTS_WEB_BASE_PATH: /actuator
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT:-6379}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dev-internal-key-change-me}
     depends_on:
       eureka-server:
         condition: service_healthy

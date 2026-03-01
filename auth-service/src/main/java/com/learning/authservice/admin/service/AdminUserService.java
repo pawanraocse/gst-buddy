@@ -138,6 +138,41 @@ public class AdminUserService {
         return toDetailDto(admin);
     }
 
+    /**
+     * Create a new Super Admin directly from a Cognito sub without requiring a
+     * placeholder.
+     */
+    @Transactional
+    public AdminUserDetailDto createSuperAdmin(String cognitoSub, String email) {
+        if (userRepository.existsById(cognitoSub)) {
+            log.info("Super admin already exists with sub {}", cognitoSub);
+            return toDetailDto(userRepository.findById(cognitoSub).orElseThrow());
+        }
+
+        User admin = User.builder()
+                .userId(cognitoSub)
+                .tenantId("default")
+                .email(email)
+                .name("Super Admin")
+                .status("ACTIVE")
+                .source("COGNITO")
+                .firstLoginAt(Instant.now())
+                .lastLoginAt(Instant.now())
+                .build();
+        userRepository.save(admin);
+
+        UserRole newRole = UserRole.builder()
+                .userId(cognitoSub)
+                .tenantId("default")
+                .roleId("super-admin")
+                .assignedBy("SYSTEM_BOOTSTRAP")
+                .build();
+        userRoleRepository.save(newRole);
+
+        log.info("New Super Admin manually created: email={}, cognitoSub={}", email, cognitoSub);
+        return toDetailDto(admin);
+    }
+
     private User requireUser(String userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found: " + userId));

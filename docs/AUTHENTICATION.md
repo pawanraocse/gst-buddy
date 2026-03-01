@@ -53,9 +53,9 @@ Services load Cognito configuration from AWS Systems Manager (SSM) Parameter Sto
 
 The platform ships with a seeded `super-admin` role in the database. To create the actual admin user:
 
-1. Run `scripts/bootstrap-system-admin.sh` (requires AWS CLI configured).
+1. Run `scripts/bootstrap-system-admin.sh` (prefix with `ENVIRONMENT=local` or `ENVIRONMENT=budget` if needed).
 2. The script creates a Cognito user with `custom:role=super-admin`.
-3. It calls `POST /auth/api/v1/admin/bootstrap` to link the Cognito `sub` to the seeded DB record.
+3. It securely calls `POST /auth/api/v1/admin/bootstrap/new-super-admin` to directly instantiate the Cognito `sub` in the database.
 4. After bootstrap, the admin can log in and access `/app/admin/*` routes.
 
 See [Admin Panel documentation](ADMIN_PANEL.md) for full details on the RBAC model, API endpoints, and frontend pages.
@@ -72,6 +72,6 @@ JWT (custom:role) → Frontend adminGuard → Gateway (X-User-Id) → @RequirePe
 - **Backend**: `AuthorizationAspect` resolves the user's effective permissions from the database and enforces `@RequirePermission(resource, action)` on each controller method.
 
 ## Testing
-- **Local Development**: Use `scripts/bootstrap-system-admin.sh` to create the admin user in Cognito and link it to the database.
+- **Local Development**: Use `ENVIRONMENT=local scripts/bootstrap-system-admin.sh` to securely create the admin user in Cognito and link it to the local Postgres database.
 - **Postman**: Obtain a JWT from Cognito (via AWS CLI or helper script) and send it in the `Authorization` header.
 - **Admin Access**: After bootstrap, log in with the admin credentials and navigate to `/app/admin/dashboard`.

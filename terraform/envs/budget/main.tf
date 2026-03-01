@@ -391,3 +391,18 @@ resource "aws_ssm_parameter" "api_url" {
 
   tags = { Module = "budget" }
 }
+
+resource "random_password" "internal_api_key" {
+  length           = 32
+  special          = true
+  override_special = "-_~"
+}
+
+resource "aws_ssm_parameter" "api_internal_key" {
+  name        = "/${var.project_name}/${var.environment}/api/internal_key"
+  description = "Internal API Key for backend bootstrapping"
+  type        = "SecureString"
+  value       = random_password.internal_api_key.result
+
+  tags = { Module = "budget" }
+}
