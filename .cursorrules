@@ -1,267 +1,109 @@
 # ═══════════════════════════════════════════════════════════════
-# CURSOR AGENT — SENIOR ARCHITECT OPERATING RULES
-# Version: 2.0 | Enforced on every session, every file, every task
+# CURSOR AGENT — OPERATING RULES
+# Version: 3.0 | Enforced on every session, every file, every task
 # ═══════════════════════════════════════════════════════════════
 
-## ── BOOT SEQUENCE ────────────────────────────────────────────
-# Run every session before responding to any prompt.
+## PERSISTENT MEMORY SYSTEM — MANDATORY FOR EVERY SESSION
 
-BOOT:
-  1. Read ALL `.md` files in the project root (README, CHANGELOG, ADRs)
-  2. Read `PROJECT_INDEX.md` → architectural map; create if missing (see §Deliverables)
-  3. Read `.agent-skills`    → project rules;     create if missing (see §Deliverables)
-  4. Scan the full directory tree: every module, layer, and dependency
-  5. Identify the active tech stack, language version, test framework, and lint config
-  6. Only after steps 1–5 may you respond
+### 0. Boot Sequence (run FIRST before any task)
+At the start of EVERY session you MUST:
+1. READ  → `.memory/AGENT_MEMORY.md`   (long-term project memory)
+2. READ  → `.memory/SESSION_LOG.md`    (last 5 session summaries)
+3. READ  → `.memory/DECISIONS.md`      (architectural & design decisions)
+4. READ  → `.memory/TECH_CONTEXT.md`   (stack, conventions, constraints)
+5. READ  → `.memory/PATTERNS.md`       (established code patterns)
+6. CONFIRM in your first reply: "✅ Memory loaded — [N] decisions, last session: [DATE]"
 
----
-
-## ── CORE IDENTITY ────────────────────────────────────────────
-
-You are a **Senior Software Architect** with ownership over quality,
-consistency, and long-term health of this codebase.
-
-Rules, in priority order:
-  1. Never break the build
-  2. Never silently deviate from these rules — flag conflicts and propose alternatives
-  3. Match existing style of the file you are editing
-  4. Reuse existing components and patterns before creating new ones
-  5. Every output is production-grade — no placeholders, no TODOs without dates
+If any file is missing, CREATE it using the schemas defined below,
+then continue. Never skip this step. Never assume state from prior messages alone.
 
 ---
 
-## ── MANDATORY DELIVERABLES ───────────────────────────────────
-
-### `PROJECT_INDEX.md`  (create + keep current)
-Sections required:
-  - Project purpose and tech stack (language version, runtime, key libs)
-  - Full module/folder map with one-line responsibility per entry
-  - Data-flow diagram (request → processing → response, or equivalent)
-  - All environment variables with type, default, and purpose
-  - External integrations and third-party SDKs
-  - Key architectural decisions and their rationale
-  - Known constraints and tech debt (tagged with date introduced)
-
-### `.agent-skills`  (create + keep current)
-Sections required:
-  - Language version + toolchain commands (install, build, test, lint, format)
-  - Framework-specific patterns enforced in this project
-  - Naming conventions: files, classes, functions, constants, test files
-  - Component/module reuse catalogue (list existing utilities to reach for first)
-  - Testing framework, file locations, and fixture conventions
-  - CI/CD pipeline summary and required passing gates
-  - Project-specific gotchas and non-obvious rules
+### 1. Core Principles
+- Memory files are THE source of truth across sessions.
+- Every meaningful action must be reflected in memory BEFORE the session ends.
+- Decisions made here override anything in your general training.
+- If memory conflicts with a user instruction, FLAG the conflict; do not silently override.
 
 ---
 
-## ── PROMPT IMPROVEMENT PROTOCOL ─────────────────────────────
-# Applied to EVERY user request before writing a single line of code.
-
-STEP A — Rewrite the prompt:
-  Produce a precise technical request that includes:
-  - Affected modules / layers
-  - Expected inputs, outputs, and side effects
-  - Constraints derived from the current architecture
-
-STEP B — Identify style & reuse targets:
-  - Which existing components, hooks, utilities, or patterns apply?
-  - Which files will be edited vs. created?
-  - What is the current convention for this type of change?
-
-STEP C — Ask clarifying questions if ANY of the following are unknown:
-  - Which module owns the new logic
-  - Whether the API contract or data model changes
-  - Whether the change is additive or modifies existing behaviour
-  - Performance, accessibility, or security implications
-  - Target platform / environment differences
-
-  Format:
-  ```
-  🔍 CLARIFYING QUESTIONS
-  Q1. [question] → unlocks: [decision]
-  Q2. [question] → unlocks: [decision]
-  ```
-  Wait for answers before proceeding.
+### 2. During the Session — Continuous Tracking
+While working, maintain a running mental note of:
+- [ ] What files were created / modified / deleted
+- [ ] What decisions were made and WHY (not just what)
+- [ ] What was attempted but failed, and why
+- [ ] Any open questions or blockers raised
+- [ ] Dependencies added or removed
+- [ ] Patterns established that should be reused
 
 ---
 
-## ── CODING STANDARDS (NON-NEGOTIABLE) ───────────────────────
-
-### SOLID — enforced on every class, module, and function
-  S — Single Responsibility : one purpose per unit; split if it does two things
-  O — Open / Closed         : extend via abstraction; never patch working logic
-  L — Liskov Substitution   : subtypes are safe drop-in replacements
-  I — Interface Segregation : narrow interfaces; no fat contracts
-  D — Dependency Inversion  : inject dependencies; depend on abstractions
-
-### Style & Safety
-  - Modern syntax only — use latest stable features of the project's language
-  - Strict typing everywhere: typed interfaces/DTOs, no `any`, no untyped dicts
-  - Pure functions by default — side effects must be explicit and isolated
-  - Immutable data structures preferred; mutation must be documented
-  - No hardcoded secrets, URLs, ports, or env-specific values — use config layer
-  - Self-documenting names; public APIs require JSDoc / docstrings with param types
-  - Error handling is never optional: every async path, every external call
-  - Accessibility (a11y) compliance for all UI components (WCAG 2.1 AA minimum)
-
-### Reuse Before Create
-  Before adding a new component, utility, hook, or service:
-  1. Search the codebase for an existing equivalent
-  2. Consider extending an existing abstraction (Open/Closed)
-  3. Only create new if truly no overlap exists — document the decision
-
-### Naming Conventions  (infer from codebase; override with .agent-skills)
-  - Files    : kebab-case (unless framework mandates otherwise)
-  - Classes  : PascalCase
-  - Functions: camelCase — verb-noun form (`fetchUser`, `validateInput`)
-  - Constants: UPPER_SNAKE_CASE
-  - Types/Interfaces: PascalCase, prefixed `I` for interfaces only if existing codebase does
-  - Test files: `[module].test.ts` or `[module].spec.ts` — match existing pattern
+### 3. End-of-Session Write-Back (MANDATORY)
+Before ending ANY session or handing off to another agent:
+1. APPEND to `.memory/SESSION_LOG.md` → new session summary block
+2. UPDATE `.memory/AGENT_MEMORY.md`   → merge new facts, remove stale ones
+3. APPEND to `.memory/DECISIONS.md`   → any new architectural decisions
+4. UPDATE `.memory/TECH_CONTEXT.md`   → if stack/conventions changed
+5. UPDATE `.memory/TODO.md`           → carry-forward tasks, close completed ones
+6. UPDATE `.memory/PATTERNS.md`       → if new code patterns were established
+7. CONFIRM: "✅ Memory persisted — session [DATE] written."
 
 ---
 
-## ── TASK EXECUTION FLOW ──────────────────────────────────────
-
-### STEP 1 — Decompose
-Break every request into atomic subtasks before writing code:
-```
-TASK PLAN
-├── Context : files affected, existing components reused
-├── Subtask 1: [Layer] — what, why, which existing pattern applies
-├── Subtask 2: [Layer] — what, why, which existing pattern applies
-├── Subtask 3: Unit tests for Subtask 1
-├── Subtask 4: Integration test for the full flow
-├── Subtask 5: Update PROJECT_INDEX.md (if architecture changed)
-└── Subtask 6: Update .agent-skills   (if new convention introduced)
-```
-
-### STEP 2 — Approval Gate
-Stop and wait for explicit approval before proceeding if the plan includes:
-  - New service, module, package, or dependency
-  - Database schema change
-  - Breaking API or contract change
-  - Auth / security logic change
-  - Removal or replacement of an existing dependency
-  - Architectural pattern change
-  - Performance-critical algorithm change
-
-  Approval request format:
-  ```
-  🏗️ APPROVAL REQUIRED
-  Change     : [what you want to do]
-  Reason     : [why it is necessary]
-  Impact     : [files, tests, contracts affected]
-  Reuse check: [what existing code was considered first]
-  Alternatives: [2 options considered and rejected — with reasons]
-  Rollback   : [how to undo if it fails]
-  ```
-
-### STEP 3 — Implement
-  - One subtask at a time — each must leave the build green
-  - Do not refactor unrelated code in the same change
-  - Match the code style of the file being edited
-  - Use existing utilities/components wherever identified in Step B
-  - Prefer composition over inheritance
-  - Keep functions under 30 lines; extract if longer
-  - No commented-out code in final output
-
-### STEP 4 — Test & Verify  (required for every subtask)
-```
-VERIFICATION PLAN — Subtask N: [name]
-├── Unit
-│   ├── Happy path  : [scenario + expected output]
-│   ├── Edge cases  : [boundary values, empty inputs, max values]
-│   └── Failure path: [error conditions, rejected promises, thrown exceptions]
-├── Integration     : [end-to-end scenario through real layers]
-├── Snapshot/Visual : [if UI component — include render test]
-├── Manual          : [exact steps + expected output]
-└── Regression      : confirm full test suite still passes
-```
-
-  Test quality rules:
-  - Tests are documentation — test names must read as sentences
-  - One assertion concept per test (multiple `expect` allowed if they validate one idea)
-  - No testing implementation details — test observable behaviour
-  - Mock at the boundary (network, DB, file system) — never mock the unit under test
-  - Minimum coverage targets: 80% unit, 70% integration (adjust in .agent-skills)
-
-### STEP 5 — Close
-  - Update JSDoc/docstrings for all changed public APIs
-  - Update `PROJECT_INDEX.md` if architecture changed
-  - Update `.agent-skills` if a new convention was introduced
-  - Tag introduced tech debt: `// TODO([YYYY-MM-DD]): description`
-  - Run lint + type-check + full test suite and confirm green
+### 4. Memory Hygiene Rules
+- AGENT_MEMORY.md must never exceed 500 lines → summarise/prune oldest entries.
+- SESSION_LOG.md keeps only the last 10 sessions → rotate oldest out.
+- Every entry must have: date, author (agent/human), and a confidence tag [HIGH|MED|LOW].
+- Tag deprecated info as `~~strikethrough~~` rather than deleting, for 1 session.
+- NEVER store secrets, tokens, or PII in memory files.
 
 ---
 
-## ── PROGRAMMATIC TOOL CALLING (TOKEN OPTIMIZATION) ────────────
-# When you (the AI agent) need to read large datasets, query databases, or analyze logs:
-1. **Never read raw dumps**: DO NOT dump 100,000+ token outputs into your context window (like `cat spring.log` or raw `SELECT *` without limits).
-2. **Use the Toolkit**: Run `/Users/pawan.yadav/prototype/gst-buddy/scripts/ai-toolkit/cli.sh help` to see available local shortcuts.
-3. **Write Orchestration Scripts**: If a task requires scanning thousands of lines to find a single answer, write a local `orchestrate.py` or `.js` script that uses the CLI/subprocess, parses the large output, and prints **ONLY the summarized 1-2 sentence answer** to stdout.
+### 5. Inter-Agent Handoff Protocol
+When another agent (Claude, GPT, Gemini, etc.) picks up this project:
+1. It MUST read all `.memory/` files first (same boot sequence).
+2. It MUST append a handoff note to SESSION_LOG.md identifying itself.
+3. It MUST NOT contradict existing DECISIONS.md without explicitly flagging
+   a "DECISION REVISION" and explaining the reason.
+4. Conflicts between agents are resolved by: latest human-approved decision wins.
 
 ---
 
-## ── DEFINITION OF DONE ───────────────────────────────────────
-A task is complete only when ALL boxes are checked:
+## ── TOKEN OPTIMIZATION & AGENT BEHAVIOR (CRITICAL) ────────────
 
-  - [ ] Requirement correctly implemented per rewritten prompt
-  - [ ] Existing components and patterns reused where applicable
-  - [ ] All edge cases and error paths handled
-  - [ ] Unit tests written — happy path, edge cases, failure paths
-  - [ ] Integration tests written where applicable
-  - [ ] Snapshot/visual tests written for UI changes
-  - [ ] Zero lint errors, zero type errors
-  - [ ] Full test suite passes — no regressions
-  - [ ] No hardcoded secrets, URLs, or environment-specific values
-  - [ ] All public APIs have JSDoc / docstrings
-  - [ ] No commented-out code
-  - [ ] `PROJECT_INDEX.md` updated if architecture changed
-  - [ ] `.agent-skills` updated if new conventions introduced
-  - [ ] Tech debt flagged with date if intentionally deferred
+### 1. Token-Efficient Code Generation
+- **Never rewrite an entire file** if the changes are localized to a few lines.
+- **Output format:** Use precise Search/Replace blocks or Unified Diffs. Only output the exact lines of code that need changing, with just enough context (2-3 lines before/after) to locate the swap.
+- Do not repeat unchanged boilerplate code.
 
----
+### 2. Context Curation & Discovery
+- **Never read massive raw files** (>300 lines) or raw logs directly into your context window.
+- **Use the AST/Skeleton pattern:** Before diving into large files, use `grep`, or custom skeleton scripts to extract class names, function signatures, and types first.
+- **Prioritize reuse:** Check `common-infra` or `common-dto` (or equivalent shared modules) using CLI searches before implementing new utilities.
+- **Use the AI Toolkit:** Run `scripts/ai-toolkit/cli.sh help` to see available local shortcuts.
 
-## ── PROACTIVE CODE REVIEW ────────────────────────────────────
-After every task, scan touched files and report observations:
+### 3. Mandatory Autonomous Verification
+- **You are not done after writing code.** You must autonomously run the local linter (e.g., `./mvnw checkstyle:check`, `npm run lint`) and the relevant unit tests.
+- If builds or tests fail, **read the error logs and fix the code autonomously**.
+- Only confirm completion with the user when the build is 100% green.
 
-```
-💡 SUGGESTION [Low | Medium | High]
-File       : [path]
-Observation: [what was noticed]
-Recommendation: [what to do and why]
-Priority   : [why now vs. later]
-```
-
-Always scan for:
-  - SOLID violations in files touched
-  - N+1 queries or unnecessary re-renders
-  - Missing input validation or sanitisation
-  - Security surface: injection, auth bypass, data exposure
-  - Accessibility issues in UI components
-  - Growing modules that need splitting (>300 lines is a signal)
-  - Duplicate logic that should be extracted to a shared utility
-  - Missing error boundaries or unhandled promise rejections
-  - Dependencies imported but available via existing project utilities
-
-Suggestions are non-blocking — do not fix unless asked.
+### 4. Mandatory Pre-Flight Plans (For New Features)
+- For any significant feature request, you must first output a `[PLAN]`.
+- The plan must list: files to touch, functions to modify, and existing components to reuse.
+- You must actively await the user's approval of the `[PLAN]` before writing the code.
 
 ---
 
-## ── CONFLICT RESOLUTION ──────────────────────────────────────
-If a user instruction conflicts with any rule above:
-  1. Do NOT silently deviate
-  2. Flag the conflict explicitly
-  3. Propose a compliant alternative
-  4. Await explicit override before proceeding
+## ── DETAILED RULES & INDEX MAINTENANCE ──────────────────────
+All coding standards, naming conventions, SOLID principles, module maps,
+dependency tables, testing conventions, and reuse catalogues are defined in:
+  → `.agent-skills`          (READ this file for all project-specific conventions)
+  → `.memory/PATTERNS.md`    (READ this for established code patterns)
 
----
-
-## ── OUTPUT FORMAT STANDARDS ─────────────────────────────────
-  - Lead every response with the rewritten prompt summary (1–3 lines)
-  - Use fenced code blocks with language identifier on all code
-  - Separate distinct files with a clear header: `### 📄 path/to/file.ts`
-  - End every implementation response with:
-    - Updated TASK PLAN showing ✅ completed and ⏳ remaining subtasks
-    - VERIFICATION PLAN for the subtask just completed
-    - Any SUGGESTIONS discovered during the change
+**STRICT MAINTENANCE RULES:**
+- If you introduce a NEW convention, dependency, reusable utility, or naming pattern,
+  you MUST update `.agent-skills` BEFORE confirming task completion.
+- If you establish a NEW code pattern (e.g., a new Strategy, Pipeline, or module structure),
+  you MUST update `.memory/PATTERNS.md` BEFORE confirming task completion.
+- Treat stale indexes as a BUG. An outdated `.agent-skills` leads to hallucinated patterns.
+- Use `scripts/ai-toolkit/get-skeleton.sh <path>` to explore large files without reading them fully.
