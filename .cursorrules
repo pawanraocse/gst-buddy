@@ -7,12 +7,13 @@
 
 ### 0. Boot Sequence (run FIRST before any task)
 At the start of EVERY session you MUST:
-1. READ  → `.memory/AGENT_MEMORY.md`   (long-term project memory)
-2. READ  → `.memory/SESSION_LOG.md`    (last 5 session summaries)
-3. READ  → `.memory/DECISIONS.md`      (architectural & design decisions)
-4. READ  → `.memory/TECH_CONTEXT.md`   (stack, conventions, constraints)
-5. READ  → `.memory/PATTERNS.md`       (established code patterns)
-6. CONFIRM in your first reply: "✅ Memory loaded — [N] decisions, last session: [DATE]"
+1. READ  → `AGENTS.md`                 (master context — architecture, conventions, current state)
+2. READ  → `.memory/AGENT_MEMORY.md`   (long-term project memory + gotchas)
+3. READ  → `.memory/SESSION_LOG.md`    (last 5 session summaries)
+4. READ  → `.memory/DECISIONS.md`      (architectural & design decisions)
+5. READ  → `.memory/TECH_CONTEXT.md`   (stack, conventions, constraints)
+6. READ  → `.memory/PATTERNS.md`       (established code patterns)
+7. CONFIRM in your first reply: "✅ Memory loaded — [N] decisions, last session: [DATE]"
 
 If any file is missing, CREATE it using the schemas defined below,
 then continue. Never skip this step. Never assume state from prior messages alone.
@@ -46,7 +47,8 @@ Before ending ANY session or handing off to another agent:
 4. UPDATE `.memory/TECH_CONTEXT.md`   → if stack/conventions changed
 5. UPDATE `.memory/TODO.md`           → carry-forward tasks, close completed ones
 6. UPDATE `.memory/PATTERNS.md`       → if new code patterns were established
-7. CONFIRM: "✅ Memory persisted — session [DATE] written."
+7. UPDATE `AGENTS.md`                 → if architecture, modules, or current state changed
+8. CONFIRM: "✅ Memory persisted — session [DATE] written."
 
 ---
 
