@@ -1,43 +1,51 @@
 # AGENT_MEMORY
 _Source of truth for long-term project knowledge._
-_Last updated: 2026-03-03 | Updated by: Antigravity_
+_Last updated: 2026-03-07 | Updated by: Antigravity_
 
 ---
 
 ## Project Identity
-- **Name:** gst-buddy
-- **Type:** GST management software
-- **Owner:** [team or person]
-- **Repo:** [repo URL or path]
-- **Status:** [alpha / beta / production]
+- **Name:** gst-buddy (GST Buddy)
+- **Type:** Multi-tenant SaaS for Indian GST compliance (Rule 37 ITC reversals)
+- **Owner:** Pawan Yadav
+- **Repo:** `~/prototype/gst-buddy`
+- **Status:** Beta — Budget env deployed, Production scaffold ready
 
 ## Architecture Overview
-- Fully decoupled foundation for multi-tenant SaaS.
-- Database-per-tenant isolation strategy.
-- Terraform-managed infrastructure across environments.
+- Microservices: Gateway (8080) → Auth (8081) / Backend (8082), Eureka (8761)
+- Shared PostgreSQL database, `tenant_id` discriminator (NOT database-per-tenant)
+- AWS Cognito for identity, Razorpay for payments (INR)
+- Gateway validates JWTs, injects `X-Tenant-Id`/`X-User-Id` headers — downstream trusts headers
+- Terraform-managed infrastructure (12 modules)
+- Budget = EC2 + Docker Compose + CloudFront; Production = ECS Fargate + ALB
 
 ## Key Modules & Responsibilities
-| Module | Path | Responsibility | Owner |
-|--------|------|----------------|-------|
-| Gateway | gateway-service/ | API Gateway, Routing | |
-| Auth | auth-service/ | Authentication, Cognito Integration | |
-| Backend | backend-service/ | Domain Logic, Tenant routing | |
-| Frontend | frontend/ | Angular SPA | |
+| Module | Path | Port | Responsibility |
+|--------|------|------|----------------|
+| Gateway | `gateway-service/` | 8080 | JWT validation, Eureka routing, rate limiting, circuit breakers, header enrichment |
+| Auth | `auth-service/` | 8081 | Cognito integration, signup pipeline, RBAC, credits, Razorpay, invitations, referrals, admin panel API |
+| Backend | `backend-service/` | 8082 | Rule 37 engine, Excel upload/export, credit consumption |
+| Eureka | `eureka-server/` | 8761 | Service discovery |
+| Common DTO | `common-dto/` | — | Shared DTOs, enums, constants |
+| Common Infra | `common-infra/` | — | TenantFilter, caching, `@RequirePermission`, distributed locking |
+| Frontend | `frontend/` | 4200 | Angular 21 SPA, PrimeNG, AWS Amplify auth |
 
-## Established Patterns & Conventions
-- Uses Spring Boot 3.5.9 and Java 21, along with Angular 21.
-
-## Known Constraints & Non-Negotiables
-- Strict decoupling: business logic separate from infrastructure tasks.
-
-## External Dependencies (critical ones only)
-| Package | Version | Why used | Risk |
-|---------|---------|----------|------|
-| ...     | ...     | ...      | ...  |
+## Key Reference Files
+- `AGENTS.md` — Full agent context (architecture + conventions + state)
+- `PROJECT_INDEX.md` — API endpoints, DB schema, env vars
+- `HLD.md` — Architecture diagram, doc links
+- `project.config` — Central naming/config
+- `scripts/README.md` — All scripts documented
 
 ## Gotchas & Hard-Won Lessons
-- [Date] [CONFIDENCE] — [lesson learned]
-- ...
+- 2026-03-07 [HIGH] — Gateway `SecurityConfig.java` AND auth-service `SecurityConfiguration.java` BOTH need updating when adding public/internal endpoints. Missing either causes 401.
+- 2026-03-07 [HIGH] — Spring Security `requestMatchers("/path")` does NOT match sub-paths. Use `/path/**` for wildcard matching.
+- 2026-03-07 [MEDIUM] — The Cognito PostConfirmation Lambda creates a user record in the DB on first login, but does NOT assign roles. Admin roles must be assigned via the bootstrap script/API.
+- 2026-03-07 [MEDIUM] — Gateway routes: `/auth/**` preserves host header; `/auth-service/**` rewrites path. Use `/auth/api/v1/...` for API calls through gateway.
+- 2026-03-07 [LOW] — Budget RDS is in a private subnet. Access via SSH tunnel through EC2 bastion only.
 
-## Active Context (current sprint / focus)
-- Setup persistent memory system
+## Active Context
+- Budget environment deployed and operational
+- Admin user bootstrapped: `pawan.weblink@gmail.com` (super-admin)
+- Bootstrap script hardened with DB fallback
+- DB tunnel scripts + aliases created
