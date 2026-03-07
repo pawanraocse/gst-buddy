@@ -1,6 +1,6 @@
 # Project Scripts Documentation
 
-This directory contains all utility scripts for building, deploying, and managing the AWS Infrastructure project.
+All utility scripts for building, deploying, and managing GST Buddy across environments.
 
 ---
 
@@ -8,161 +8,143 @@ This directory contains all utility scripts for building, deploying, and managin
 
 ```
 scripts/
-├── README.md              # This file
-├── build/
-│   └── build-all.sh      # Build Maven services + Docker images
-├── local/                # Terraform deployment scripts (previously in terraform/)
-│   ├── deploy.sh         # Deploy Cognito resources to AWS
-│   ├── destroy.sh        # Destroy Cognito resources
-│   └── delete-ssm.sh     # Delete Cognito parameters from SSM
-├── identity/             # Identity helpers
-│   ├── setup-ssm-secrets.sh
-│   └── export-ssm-secrets.sh
+├── README.md                      # This file
+├── bootstrap-system-admin.sh      # Create a super-admin user (any env)
+├── budget/
+│   ├── deploy.sh                  # Full budget deployment (Terraform + EC2)
+│   ├── destroy.sh                 # Tear down budget infrastructure
+│   ├── manage.sh                  # Manage budget services (restart, logs)
+│   ├── start.sh                   # Start services on EC2 (Docker Compose)
+│   └── db-tunnel.sh               # SSH tunnel to budget RDS (pgAdmin)
+├── production/
+│   ├── deploy.sh                  # Full production deployment (ECS)
+│   ├── destroy.sh                 # Tear down production infrastructure
+│   ├── push-ecr.sh                # Push Docker images to ECR
+│   └── db-tunnel.sh               # SSH tunnel to production RDS (pgAdmin)
+├── local/
+│   ├── deploy.sh                  # Deploy Cognito for local dev
+│   ├── destroy.sh                 # Destroy local Cognito
+│   ├── import-ssm.sh              # Import SSM parameters
+│   └── delete-ssm.sh              # Delete SSM parameters
 ├── env/
-│   └── export-envs.sh    # Export environment variables from multiple .env files
-
+│   └── export-envs.sh             # Export env vars from .env files
+├── testing/
+│   ├── test-api-key.sh            # Test API key auth
+│   └── test-spawn-project.sh      # Test project creation
+└── ai-toolkit/
+    ├── cli.sh                     # AI toolkit CLI
+    ├── filter-logs.sh             # Filter logs
+    └── query-db.sh                # Query DB helper
 ```
 
 ---
 
-## 🏗️ Build Scripts
+## 🚀 Deployment Workflows
 
-### `build/build-all.sh`
+### Budget Environment (EC2 + Docker Compose, ~$30-40/month)
 
-Builds all Maven microservices and creates Docker images.
-
-**Usage:**
 ```bash
-./scripts/build/build-all.sh
+# 1. Deploy infrastructure + services
+./scripts/budget/deploy.sh
+
+# 2. Bootstrap super-admin user
+./scripts/bootstrap-system-admin.sh "your-email@example.com" "YourPassword123!"
+
+# 3. (Optional) Connect to DB
+sshgstbudget   # alias, or: ./scripts/budget/db-tunnel.sh
 ```
 
-**What it does:**
-1. Runs `mvn clean package -DskipTests`
-2. Builds Docker images for:
-   - eureka-server
-   - auth-service
-   - backend-service
-   - gateway-service (when ready)
+### Production Environment (ECS + Fargate, ~$150/month)
 
-**Prerequisites:**
-- Maven installed
-- Docker installed and running
-
----
-
-## ☁️ Terraform Scripts
-
-All terraform scripts use the `personal` AWS profile by default for safety.
-
-### `local/deploy.sh`
-
-Deploys AWS Cognito resources including Lambda trigger.
-
-**Usage:**
 ```bash
+# 1. Deploy infrastructure + build + push to ECS
+./scripts/production/deploy.sh
+
+# 2. Bootstrap super-admin user
+./scripts/bootstrap-system-admin.sh "your-email@example.com" "YourPassword123!" production
+
+# 3. (Optional) Connect to DB
+sshgstprod   # alias, or: ./scripts/production/db-tunnel.sh
+```
+
+### Local Development
+
+```bash
+# 1. Deploy Cognito to AWS
 ./scripts/local/deploy.sh
-```
 
-**What it does:**
-1. Validates AWS credentials (personal profile)
-2. Initializes Terraform
-3. Validates and formats configuration
-4. Creates execution plan
-5. Prompts for confirmation
-6. Applies changes
-7. Exports outputs to SSM Parameter Store
-8. Saves configuration to `cognito-config.env`
+# 2. Load environment variables
+source ./scripts/env/export-envs.sh
 
-**Environment Variables:**
-- `AWS_PROFILE` - defaults to `personal`
-- `AWS_REGION` - defaults to value in terraform.tfvars
-
-**Output:**
-- Creates 23 AWS resources
-- SSM parameters in `/gst-buddy-lite/dev/cognito/*`
-- Local file: `terraform/cognito-config.env`
-
----
-
-### `local/destroy.sh`
-
-Safely destroys all Cognito resources.
-
-**Usage:**
-```bash
-./scripts/local/destroy.sh
-```
-
-**What it does:**
-1. Validates AWS credentials
-2. Shows destroy plan
-3. Requires double confirmation
-4. Destroys all Terraform-managed resources
-5. Cleans up local files
-
-**Safety Features:**
-- Double confirmation required
-- Additional confirmation for production
-- Shows what will be destroyed before proceeding
-
-⚠️ **WARNING:** This is destructive and cannot be undone!
-
----
-
-### `identity/export-ssm-secrets.sh`
-
-Exports Cognito configuration to AWS SSM Parameter Store.
-
-**Usage:**
-```bash
-./scripts/identity/export-ssm-secrets.sh
-```
-
-**Prerequisites:**
-- `cognito-config.env` file must exist in `terraform/` directory
-
-**What it does:**
-- Reads `terraform/cognito-config.env`
-- Validates all required variables
-- Creates/updates SSM parameters
-- Uses SecureString for client_secret
-
-**SSM Parameters Created:**
-```
-/gst-buddy-lite/dev/cognito/user_pool_id
-/gst-buddy-lite/dev/cognito/client_id
-/gst-buddy-lite/dev/cognito/client_secret (SecureString)
-/gst-buddy-lite/dev/cognito/issuer_uri
-/gst-buddy-lite/dev/cognito/jwks_uri
-/gst-buddy-lite/dev/cognito/domain
-/gst-buddy-lite/dev/cognito/hosted_ui_url
-/gst-buddy-lite/dev/cognito/branding_id
-/gst-buddy-lite/dev/cognito/callback_url
-/gst-buddy-lite/dev/cognito/logout_redirect_url
-/gst-buddy-lite/dev/aws/region
+# 3. Start services
+docker-compose up -d
 ```
 
 ---
 
-### `local/delete-ssm.sh`
+## 👤 Bootstrap System Admin
 
-Deletes Cognito SSM parameters from AWS.
+Creates a super-admin user in Cognito and links it to the database.
 
 **Usage:**
 ```bash
-./scripts/local/delete-ssm.sh
+./scripts/bootstrap-system-admin.sh <email> <password> [environment]
 ```
 
-**Environment Variables:**
-- `TF_VAR_project_name` - defaults to `gst-buddy-lite`
-- `TF_VAR_environment` - defaults to `dev`
-- `AWS_REGION` - defaults to `us-east-1`
-- `AWS_PROFILE` - defaults to `personal`
+| Arg | Description | Default |
+|---|---|---|
+| `email` | Admin email address | interactive prompt |
+| `password` | Admin password (upper+lower+number+symbol) | interactive prompt |
+| `environment` | `budget`, `production`, or `local` | `budget` |
 
 **What it does:**
-- Validates AWS credentials
-- Deletes all Cognito-related SSM parameters
-- Skips parameters that don't exist (no error)
+1. Creates (or updates) user in Cognito
+2. Sets permanent password
+3. Assigns `super-admin` role + `admin` group in Cognito
+4. Links to database via API (primary) or direct DB insert (fallback)
+5. Cleans up `SYSTEM_ADMIN_PLACEHOLDER` seeded record
+
+**Fallback mechanism:** If the API call fails (service down, auth issue, etc.), the script automatically SSHs into EC2 and inserts the user, role, and credit wallet directly into RDS.
+
+---
+
+## 🔗 DB Tunnel Scripts
+
+Open an SSH tunnel to RDS for use with pgAdmin, DBeaver, TablePlus, or any DB client.
+
+### Budget
+
+```bash
+./scripts/budget/db-tunnel.sh [port]    # default: 5433
+# or use the alias:
+sshgstbudget
+```
+
+### Production
+
+```bash
+./scripts/production/db-tunnel.sh [port]  # default: 5434
+# or use the alias:
+sshgstprod
+```
+
+**Connect your DB client to:**
+
+| Setting | Budget | Production |
+|---|---|---|
+| Host | `localhost` | `localhost` |
+| Port | `5433` | `5434` |
+| Database | auto-displayed | auto-displayed |
+| Username | auto-displayed | auto-displayed |
+| Password | auto-displayed | auto-displayed |
+
+All connection details are fetched from SSM and printed when the tunnel opens.
+
+**Shell aliases** (added to `~/.zshrc`):
+```bash
+alias sshgstbudget='~/prototype/gst-buddy/scripts/budget/db-tunnel.sh'
+alias sshgstprod='~/prototype/gst-buddy/scripts/production/db-tunnel.sh'
+```
 
 ---
 
@@ -170,142 +152,44 @@ Deletes Cognito SSM parameters from AWS.
 
 ### `env/export-envs.sh`
 
-Exports environment variables from multiple .env files.
+Exports environment variables from `.env` files to the current shell.
 
-**Usage:**
 ```bash
 source ./scripts/env/export-envs.sh
-```
-
-**Note:** Must use `source` to export variables to current shell.
-
-**What it loads:**
-1. Root `.env` (if exists)
-2. `auth-service/.env` (if exists)
-3. `terraform/cognito-config.env` (if exists)
-
-**Example:**
-```bash
-# Load all environment variables
-source ./scripts/env/export-envs.sh
-
-# Verify variables are loaded
-echo $COGNITO_USER_POOL_ID
-echo $COGNITO_CLIENT_ID
-```
-
----
-
-## 🚀 Quick Start Examples
-
-### Initial Setup
-
-```bash
-# 1. Deploy Cognito infrastructure
-./scripts/local/deploy.sh
-
-# 2. Build all services
-./scripts/build/build-all.sh
-
-# 3. Load environment variables
-source ./scripts/env/export-envs.sh
-
-# 4. Start services
-docker-compose up -d
-```
-
-### Daily Development
-
-```bash
-# Build and restart a service
-./scripts/build/build-all.sh
-docker-compose restart backend-service
-
-# Check Cognito configuration
-aws ssm get-parameters-by-path \
-  --path "/gst-buddy-lite/dev/cognito" \
-  --profile personal \
-  --region us-east-1
-```
-
-### Cleanup
-
-```bash
-# Stop services
-docker-compose down
-
-# Destroy infrastructure
-./scripts/local/destroy.sh
 ```
 
 ---
 
 ## 🔐 Security Notes
 
-1. **AWS Profile:** All terraform scripts use `personal` profile by default to prevent accidental changes to work resources.
-
-2. **Sensitive Data:** Never commit:
-   - `cognito-config.env`
-   - `.env` files
-   - SSM parameter values
-
-3. **SSM Parameters:** Client secret is stored as `SecureString` type in SSM.
-
----
-
-## 📝 Script Conventions
-
-All scripts follow these conventions:
-
-- **Shebang:** `#!/bin/bash`
-- **Error handling:** `set -euo pipefail`
-- **Logging:** Colored output (GREEN=info, YELLOW=warn, RED=error)
-- **AWS Profile:** Defaults to `personal`
-- **Confirmation:** Destructive operations require user confirmation
+1. **AWS Profiles:** Budget uses `personal`, production uses `production`
+2. **Never commit:** `.env`, `cognito-config.env`, SSM parameter values
+3. **SSM Parameters:** Secrets stored as `SecureString` type
+4. **DB passwords:** Stored in AWS Secrets Manager, fetched dynamically by scripts
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Issue: "AWS credentials not configured"
+### Bootstrap admin can't access admin panel (500 error)
+The user exists in Cognito but has no `super-admin` role in the database. Re-run the bootstrap script — it will use the DB fallback to fix it:
+```bash
+./scripts/bootstrap-system-admin.sh "admin@example.com" "password"
+```
 
-**Solution:**
+### DB tunnel won't connect
+- Ensure EC2 instance is running: `aws ec2 describe-instances`
+- Check SSH key exists: `ls ~/.ssh/id_rsa_personal`
+- Verify security group allows SSH (port 22)
+
+### AWS credentials error
 ```bash
 aws configure --profile personal
-# OR
+# or
 export AWS_PROFILE=personal
 ```
 
-### Issue: "Command not found: terraform"
-
-**Solution:**
-```bash
-brew install terraform
-# OR download from terraform.io
-```
-
-### Issue: "SSM parameter not found"
-
-**Solution:**
-```bash
-# Check if parameters exist
-aws ssm describe-parameters \
-  --filters "Key=Name,Values=/gst-buddy-lite/" \
-  --profile personal
-
-# Re-run deploy to create them
-./scripts/local/deploy.sh
-```
-
 ---
 
-## 📚 Additional Resources
-
-- [Terraform README](../terraform/README.md) - Detailed Terraform documentation
-- [Docker Compose](../docker-compose.yml) - Service orchestration
-- [HLD](../HLD.md) - High-level design documentation
-
----
-
-**Last Updated:** 2025-11-25  
+**Last Updated:** 2026-03-07
 **Maintained By:** DevOps Team

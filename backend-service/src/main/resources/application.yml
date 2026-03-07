@@ -113,7 +113,7 @@ management:
 
   # Distributed Tracing (OpenTelemetry)
   tracing:
-    enabled: ${TRACING_ENABLED:true}
+    enabled: ${TRACING_ENABLED:false}
     sampling:
       probability: ${TRACING_PROBABILITY:1.0}
 

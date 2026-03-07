@@ -42,4 +42,4 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch, resource]
-      exporters: [awsxray, debug]
+      exporters: [debug]

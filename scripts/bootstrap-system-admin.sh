@@ -14,7 +14,7 @@ fi
 # Configuration
 REGION="${AWS_REGION:-us-east-1}"
 PROJECT_NAME="${PROJECT_NAME:-gst-buddy}"
-ENVIRONMENT="${ENVIRONMENT:-budget}"
+ENVIRONMENT="${3:-${ENVIRONMENT:-budget}}"
 ENV="${ENV:-local}"
 AUTH_SERVICE_URL="${AUTH_SERVICE_URL:-http://localhost:8081}"
 INTERNAL_API_KEY="${INTERNAL_API_KEY:-}"
@@ -127,31 +127,119 @@ fi
 echo "  Cognito Sub: $COGNITO_SUB"
 
 # ── 5. Link to Database via Bootstrap Endpoint ──────────────────
-echo "Step 4/4: Linking Cognito user to database via API..."
+echo "Step 4/4: Linking Cognito user to database..."
 
+API_LINKED=false
+
+# For budget/remote envs, route through gateway: /auth/api/v1/...
+# For local, call auth-service directly: /api/v1/...
+if [ "$ENVIRONMENT" != "local" ]; then
+    BOOTSTRAP_URL="${AUTH_SERVICE_URL}/auth/api/v1/admin/bootstrap/new-super-admin"
+else
+    BOOTSTRAP_URL="${AUTH_SERVICE_URL}/api/v1/admin/bootstrap/new-super-admin"
+fi
+
+echo "  Trying API: $BOOTSTRAP_URL"
 HTTP_CODE=$(curl -s -w "%{http_code}" -X POST \
-    "${AUTH_SERVICE_URL}/auth/api/v1/admin/bootstrap/new-super-admin" \
+    "${BOOTSTRAP_URL}" \
     -H "Content-Type: application/json" \
     -H "X-Internal-Api-Key: ${INTERNAL_API_KEY}" \
     -d "{\"cognitoSub\": \"${COGNITO_SUB}\", \"email\": \"${ADMIN_EMAIL}\"}" \
-    -o /tmp/bootstrap_response.json)
+    -o /tmp/bootstrap_response.json 2>/dev/null || echo "000")
 
 if [ "$HTTP_CODE" = "200" ]; then
-    echo "  Database linked successfully."
-elif [ "$HTTP_CODE" = "000" ]; then
-    echo "  WARNING: Auth service not reachable at $AUTH_SERVICE_URL"
-    echo "  Ensure your backend is running."
+    echo "  ✅ Database linked via API."
+    API_LINKED=true
 else
-    BODY=$(cat /tmp/bootstrap_response.json 2>/dev/null || echo "no response body")
-    echo "  ERROR: Bootstrap returned HTTP $HTTP_CODE"
-    echo "  Response: $BODY"
+    echo "  ⚠️  API returned HTTP $HTTP_CODE — falling back to direct DB insert."
 fi
 
 rm -f /tmp/bootstrap_response.json
 
+# ── 5b. Fallback: Direct DB insert via SSH to EC2 ───────────────
+if [ "$API_LINKED" = "false" ] && [ "$ENVIRONMENT" != "local" ]; then
+    echo ""
+    echo "  Attempting direct DB bootstrap via EC2..."
+
+    # Fetch DB + EC2 connection details from SSM
+    EC2_IP=$(aws ssm get-parameter \
+        --name "/$PROJECT_NAME/$ENVIRONMENT/ec2/public_ip" \
+        --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+
+    DB_HOST=$(aws ssm get-parameter \
+        --name "/$PROJECT_NAME/$ENVIRONMENT/rds/endpoint" \
+        --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+
+    DB_NAME=$(aws ssm get-parameter \
+        --name "/$PROJECT_NAME/$ENVIRONMENT/rds/database" \
+        --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+
+    DB_USER=$(aws ssm get-parameter \
+        --name "/$PROJECT_NAME/$ENVIRONMENT/rds/username" \
+        --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+
+    SECRET_ARN=$(aws ssm get-parameter \
+        --name "/$PROJECT_NAME/$ENVIRONMENT/rds/secret_arn" \
+        --query "Parameter.Value" --output text --region "$REGION" 2>/dev/null || echo "")
+
+    DB_PASSWORD=$(aws secretsmanager get-secret-value \
+        --secret-id "$SECRET_ARN" --query 'SecretString' --output text \
+        --region "$REGION" 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin)['password'])" 2>/dev/null || echo "")
+
+    # Auto-detect SSH key
+    SSH_KEY="${SSH_KEY:-}"
+    if [ -z "$SSH_KEY" ]; then
+        for key in ~/.ssh/id_rsa_personal ~/.ssh/pawankeys ~/.ssh/id_rsa ~/.ssh/id_ed25519; do
+            if [ -f "$key" ]; then SSH_KEY="$key"; break; fi
+        done
+    fi
+
+    if [ -z "$EC2_IP" ] || [ -z "$DB_HOST" ] || [ -z "$DB_PASSWORD" ] || [ -z "$SSH_KEY" ]; then
+        echo "  ❌ Cannot fallback: missing EC2_IP, DB details, or SSH key."
+        echo "     EC2_IP=$EC2_IP DB_HOST=$DB_HOST SSH_KEY=$SSH_KEY"
+        echo "     You may need to manually insert the user and role into the database."
+    else
+        echo "  EC2: $EC2_IP | DB: $DB_HOST/$DB_NAME"
+
+        ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i "$SSH_KEY" ec2-user@"$EC2_IP" \
+            "PGPASSWORD='$DB_PASSWORD' psql -h '$DB_HOST' -U '$DB_USER' -d '$DB_NAME' -c \"
+                -- Insert user if not exists
+                INSERT INTO users (user_id, tenant_id, email, name, status, source, first_login_at, last_login_at, created_at, updated_at)
+                VALUES ('$COGNITO_SUB', 'default', '$ADMIN_EMAIL', 'Super Admin', 'ACTIVE', 'COGNITO', NOW(), NOW(), NOW(), NOW())
+                ON CONFLICT (user_id) DO UPDATE SET name = 'Super Admin', status = 'ACTIVE', updated_at = NOW();
+
+                -- Assign super-admin role if not exists
+                INSERT INTO user_roles (tenant_id, user_id, role_id, assigned_by)
+                VALUES ('default', '$COGNITO_SUB', 'super-admin', 'SYSTEM_BOOTSTRAP')
+                ON CONFLICT DO NOTHING;
+
+                -- Ensure credit wallet exists
+                INSERT INTO user_credit_wallets (user_id, tenant_id, total_credits, consumed_credits, has_used_trial, version, created_at, updated_at)
+                VALUES ('$COGNITO_SUB', 'default', 0, 0, false, 0, NOW(), NOW())
+                ON CONFLICT DO NOTHING;
+
+                -- Clean up seeded placeholder (no longer needed)
+                DELETE FROM user_roles WHERE user_id = 'SYSTEM_ADMIN_PLACEHOLDER';
+                DELETE FROM user_credit_wallets WHERE user_id = 'SYSTEM_ADMIN_PLACEHOLDER';
+                DELETE FROM users WHERE user_id = 'SYSTEM_ADMIN_PLACEHOLDER';
+            \"" 2>/dev/null
+
+        if [ $? -eq 0 ]; then
+            echo "  ✅ Database linked via direct DB insert."
+            API_LINKED=true
+        else
+            echo "  ❌ Direct DB insert failed. Check SSH/DB connectivity."
+        fi
+    fi
+fi
+
 echo ""
 echo "================================================================"
-echo "System Admin Created Successfully!"
+if [ "$API_LINKED" = "true" ]; then
+    echo "✅ System Admin Created Successfully!"
+else
+    echo "⚠️  System Admin Created (Cognito OK, DB linking needs attention)"
+fi
 echo "  Email:       $ADMIN_EMAIL"
 echo "  Cognito Sub: $COGNITO_SUB"
 echo "  Role:        super-admin"

@@ -85,7 +85,7 @@ public class SecurityConfiguration {
                                                 // Internal endpoints require X-Internal-Api-Key header
                                                 .requestMatchers("/internal/**",
                                                                 "/api/v1/credits/grant",
-                                                                "/api/v1/admin/bootstrap")
+                                                                "/api/v1/admin/bootstrap/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2

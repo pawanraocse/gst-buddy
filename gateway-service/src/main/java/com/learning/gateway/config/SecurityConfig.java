@@ -64,7 +64,11 @@ public class SecurityConfig {
 
                                                                 // Referral system (uses gateway JWT filter for
                                                                 // X-User-Id)
-                                                                "/auth/api/v1/referral/**")
+                                                                "/auth/api/v1/referral/**",
+
+                                                                // Bootstrap endpoint (protected by X-Internal-Api-Key,
+                                                                // not JWT)
+                                                                "/auth/api/v1/admin/bootstrap/**")
                                                 .permitAll()
                                                 // Allow API key authenticated requests (validated by
                                                 // ApiKeyAuthenticationFilter)
