@@ -360,12 +360,12 @@ class LedgerExcelParserTest {
 
             List<LedgerEntry> entries = parse(toBytes(wb), "test.xlsx");
 
-            // Opening Balance row has "opening" in col A → skipped
-            // But it won't match because "opening" is checked against col A, not col B.
-            // In real data, col A is the date, and "By" is col B. Let's verify it's actually parsed.
-            // The opening balance row has a valid date (45017) and credit (84887), so it will be parsed.
-            // Only rows where col A starts with "opening/total/closing" are skipped.
-            assertThat(entries).hasSize(2);
+            // Row 2 has "Opening Balance" in the description column (col C).
+            // isNonTransactionRow() scans ALL columns, so this row is now correctly filtered.
+            // Only the genuine payment row (row 3) should survive.
+            assertThat(entries).hasSize(1);
+            assertThat(entries.get(0).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PAYMENT);
+            assertThat(entries.get(0).getAmount()).isEqualTo(10000.0);
         }
 
         @Test

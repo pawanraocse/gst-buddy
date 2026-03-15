@@ -1,5 +1,28 @@
 <div class="compliance-view">
     <!-- ═══════════════════════════════════════════════════════════════════════════
+         📁 PER-FILE LEDGER TABS — shown when multiple files are uploaded
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    @if (results().length > 1) {
+    <nav class="ledger-tab-bar">
+        <button class="ledger-tab" [class.active]="selectedLedgerIndex() === -1" (click)="selectLedger(-1)">
+            <i class="pi pi-th-large"></i>
+            <span>All Files</span>
+            <span class="ledger-tab-count">{{ results().length }}</span>
+        </button>
+        @for (lr of results(); track lr.ledgerName; let i = $index) {
+        <button class="ledger-tab" [class.active]="selectedLedgerIndex() === i" (click)="selectLedger(i)">
+            <i class="pi pi-file-excel"></i>
+            <span class="ledger-tab-name">{{ lr.ledgerName }}</span>
+            @if (lr.summary.totalItcReversal > 0 || lr.summary.totalInterest > 0) {
+            <span class="ledger-tab-badge danger">⚠</span>
+            } @else {
+            <span class="ledger-tab-badge ok">✓</span>
+            }
+        </button>
+        }
+    </nav>
+    }
+    <!-- ═══════════════════════════════════════════════════════════════════════════
          📋 SUMMARY CARD — History Card Layout
     ═══════════════════════════════════════════════════════════════════════════ -->
     <div class="summary-card">
@@ -14,7 +37,11 @@
                     <i class="pi pi-file-excel"></i>
                 </div>
                 <div class="card-title-block">
-                    <span class="card-filename">{{ filename() || 'Calculation Results' }}</span>
+                    <span class="card-filename">
+                        {{ selectedLedgerIndex() >= 0 && results()[selectedLedgerIndex()]
+                            ? results()[selectedLedgerIndex()].ledgerName
+                            : (filename() || 'Calculation Results') }}
+                    </span>
                 </div>
             </div>
 
@@ -58,18 +85,18 @@
             <div class="stat-divider"></div>
 
             <div class="stat-amount itc">
-                <span class="stat-amount-label">ITC to Reverse</span>
+                <span class="stat-amount-label">Est. ITC Reversal</span>
                 <span class="stat-amount-value">{{ formatCurrency(totalItcReversal) }}</span>
             </div>
             <div class="stat-amount interest">
-                <span class="stat-amount-label">Interest @18%</span>
+                <span class="stat-amount-label">Est. Interest</span>
                 <span class="stat-amount-value">{{ formatCurrency(totalInterest) }}</span>
             </div>
 
             <div class="stat-divider"></div>
 
             <div class="stat-amount total-due">
-                <span class="stat-amount-label">Total Due</span>
+                <span class="stat-amount-label">Est. Total</span>
                 <span class="stat-amount-value" style="color: #dc2626; font-size: 1rem">{{
                     formatCurrency(totalItcReversal + totalInterest) }}</span>
             </div>
@@ -215,9 +242,9 @@
                             <th class="col-days">How Late</th>
                             }
                             <th class="col-amount">Invoice Value</th>
-                            <th class="col-amount">ITC</th>
-                            <th class="col-amount">ITC to Reverse</th>
-                            <th class="col-amount">Interest</th>
+                            <th class="col-amount">Est. ITC</th>
+                            <th class="col-amount">Est. Reversal</th>
+                            <th class="col-amount">Est. Interest</th>
                             @if (showAllColumns) {
                             <th class="col-gstr">File In</th>
                             }
@@ -296,9 +323,9 @@
                             <td [attr.colspan]="showAllColumns ? 10 : 6">
                                 <div class="itc-reclaim-tip">
                                     <i class="pi pi-info-circle"></i>
-                                    <span>💡 You paid {{ row.originalInvoiceValue && row.originalInvoiceValue !== row.principal ? 'a portion of this invoice' : 'this invoice' }} late — the reversed ITC of <strong>{{
+                                    <span>💡 You paid {{ row.originalInvoiceValue && row.originalInvoiceValue !== row.principal ? 'a portion of this invoice' : 'this invoice' }} late — the estimated reversed ITC of <strong>{{
                                             formatCurrency(row.itcAmount) }}</strong>
-                                        can be re-claimed when you file GSTR-3B {{ row.gstr3bPeriod ? 'for' : '' }} <strong>{{ row.gstr3bPeriod || 'in the relevant month' }}</strong>.</span>
+                                        may be re-claimed when you file GSTR-3B {{ row.gstr3bPeriod ? 'for' : '' }} <strong>{{ row.gstr3bPeriod || 'in the relevant month' }}</strong>. Verify with your CA.</span>
                                 </div>
                             </td>
                         </tr>
@@ -367,12 +394,16 @@
 <!-- ═══════════════════════════════════════════════════════════════════════════
          ⚖️ LEGAL DISCLAIMER
     ═══════════════════════════════════════════════════════════════════════════ -->
-<p-panel header="⚖️ Legal Disclaimer" [toggleable]="true" [collapsed]="true" styleClass="disclaimer-panel mt-4">
+<p-panel header="⚖️ Disclaimer & Scope" [toggleable]="true" [collapsed]="true" styleClass="disclaimer-panel mt-4">
     <p class="text-sm text-600 m-0">
-        This calculation is for informational purposes only and does not constitute
-        legal or tax advice. Figures are computed based on Rule 37 of the CGST Rules,
-        2017. Consult a qualified CA/tax professional before filing GSTR-3B.
-        Interest calculations use 18% p.a. as per Section 50 of the CGST Act.
+        This calculation provides <strong>estimates</strong> for informational purposes only and
+        does not constitute legal or tax advice. ITC reversal is estimated assuming
+        <strong>18% GST on tax-inclusive invoice amounts</strong>.
+        Interest estimates use 18% p.a. as per Section 50 of the CGST Act with assumed
+        ITC availment on the 20th of the month following the invoice.
+        Actual liability depends on your specific ITC availment and return filing dates.
+        Reverse charge (RCM), cess, exempt, and nil-rated supplies are not supported.
+        Consult a qualified CA/tax professional before filing GSTR-3B.
     </p>
 </p-panel>
 </div>

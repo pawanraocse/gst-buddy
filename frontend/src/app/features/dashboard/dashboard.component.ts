@@ -54,27 +54,46 @@ export class DashboardComponent implements OnInit {
   isProcessing = signal(false);
   error = signal<string | null>(null);
   fileNames = signal<string[]>([]);
+  scopeConfirmed = signal(false);
 
-  actionCount = computed(() => {
+  // At-risk KPIs
+  atRiskCount = computed(() => {
+    return this.results().reduce((s, x) => s + (x.summary.atRiskCount ?? 0), 0);
+  });
+
+  atRiskAmount = computed(() => {
+    return this.results().reduce((s, x) => s + (x.summary.atRiskAmount ?? 0), 0);
+  });
+
+  /**
+   * 3-state banner: 'clear' | 'watchlist' | 'action'
+   * - action: breached invoices exist (ITC reversal or interest > 0)
+   * - watchlist: no breaches but at-risk invoices (150–180 days)
+   * - clear: no issues at all
+   */
+  bannerState = computed<'clear' | 'watchlist' | 'action'>(() => {
     const r = this.results();
-    if (r.length === 0) return 0;
+    if (r.length === 0) return 'clear';
     const totalItc = r.reduce((s, x) => s + x.summary.totalItcReversal, 0);
     const totalInterest = r.reduce((s, x) => s + x.summary.totalInterest, 0);
-    return totalItc > 0 || totalInterest > 0 ? 1 : 0;
+    if (totalItc > 0 || totalInterest > 0) return 'action';
+    if (this.atRiskCount() > 0) return 'watchlist';
+    return 'clear';
   });
 
   statusMessage = computed(() => {
-    const n = this.actionCount();
-    if (n === 0 && this.results().length > 0) return 'You are all clear';
-    if (n === 0) return '';
-    if (n === 1) return '1 Action Pending';
-    return `${n} Actions Pending`;
+    const state = this.bannerState();
+    if (this.results().length === 0) return '';
+    if (state === 'clear') return 'All Clear — No estimated liability';
+    if (state === 'watchlist') return `Watchlist — ${this.atRiskCount()} invoice(s) due soon`;
+    return 'Action Needed';
   });
 
   statusSeverity = computed(() => {
-    const n = this.actionCount();
-    if (n === 0) return 'teal';
-    return 'amber';
+    const state = this.bannerState();
+    if (state === 'action') return 'red';
+    if (state === 'watchlist') return 'amber';
+    return 'teal';
   });
 
   // KPI Summary computed values
@@ -176,17 +195,18 @@ export class DashboardComponent implements OnInit {
   }
 
   downloadExport(reportType: string = 'issues') {
-    const rt = (reportType === 'complete' ? 'complete' : 'issues') as 'issues' | 'complete';
+    const rt = (['issues', 'complete', 'gstr3b'].includes(reportType) ? reportType : 'issues') as 'issues' | 'complete' | 'gstr3b';
     const id = this.runId();
     const r = this.results();
     if (!id || r.length === 0) return;
     const filename = r.length === 1 ? r[0].ledgerName : `${r.length} files`;
+    const suffix = rt === 'gstr3b' ? '_GSTR3B_Summary' : '_Interest_Calculation';
     this.api.exportRun(id, rt).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = filename + '_Interest_Calculation.xlsx';
+        a.download = filename + suffix + '.xlsx';
         a.click();
         URL.revokeObjectURL(url);
       },

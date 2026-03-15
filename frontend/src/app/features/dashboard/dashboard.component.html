@@ -27,24 +27,28 @@
     </div>
   </div>
 
-  <!-- Status Banner (Peace of Mind) -->
+  <!-- Status Banner (3-state) -->
   @if (statusMessage()) {
   <div class="col-12 mb-4">
     <div class="buddy-status-card p-4 border-round-xl"
-      [ngClass]="statusSeverity() === 'teal' ? 'buddy-status-teal' : 'buddy-status-amber'">
+      [ngClass]="{'buddy-status-teal': statusSeverity() === 'teal', 'buddy-status-amber': statusSeverity() === 'amber', 'buddy-status-red': statusSeverity() === 'red'}">
       <div class="flex align-items-center gap-3">
         @if (statusSeverity() === 'teal') {
         <i class="pi pi-check-circle text-4xl"></i>
-        } @else {
+        } @else if (statusSeverity() === 'amber') {
         <i class="pi pi-exclamation-triangle text-4xl"></i>
+        } @else {
+        <i class="pi pi-exclamation-circle text-4xl"></i>
         }
         <div>
           <h2 class="text-2xl font-bold m-0">{{ statusMessage() }}</h2>
           <p class="text-600 m-0 mt-1">
-            @if (statusSeverity() === 'teal') {
-            No ITC reversal or interest payable for the uploaded ledgers.
+            @if (bannerState() === 'clear') {
+            No estimated ITC reversal or interest for the uploaded ledgers.
+            } @else if (bannerState() === 'watchlist') {
+            Some invoices are approaching the 180-day payment deadline. Review below.
             } @else {
-            Review the details below for ITC reversal and interest amounts.
+            Review the details below for estimated ITC reversal and interest amounts.
             }
           </p>
         </div>
@@ -82,16 +86,15 @@
             <div class="step-icon process"><i class="pi pi-cog"></i></div>
             <div class="step-body">
               <h4>Auto-Analysis</h4>
-              <p>We read Date, Debit (payments), and Credit (purchases) columns. Interest is calculated at 18% per year
-                on invoices unpaid beyond 180 days.</p>
+              <p>We read Date, Debit (payments), and Credit (purchases) columns. Estimates assume <strong>18% GST tax-inclusive</strong> amounts and FIFO purchase-payment matching.</p>
             </div>
           </div>
           <div class="howto-step">
             <div class="step-number">3</div>
             <div class="step-icon calculate"><i class="pi pi-calculator"></i></div>
             <div class="step-body">
-              <h4>ITC Reversal</h4>
-              <p>ITC reversal is computed automatically per Rule 37 of CGST Rules for each unpaid invoice.</p>
+              <h4>Estimated ITC Reversal</h4>
+              <p>Estimated ITC reversal is computed per Rule 37 of CGST Rules for invoices unpaid beyond 180 days. Interest estimated at 18% p.a.</p>
             </div>
           </div>
           <div class="howto-step">
@@ -118,9 +121,45 @@
         <p class="text-sm text-500 mt-2 m-0">Invoices unpaid beyond 180 days from this date will be flagged</p>
       </div>
 
+      <!-- Scope Declaration (GST-009 + GST-010) -->
+      <div class="surface-50 border-1 surface-border border-round p-4 mb-4">
+        <div class="flex align-items-center gap-2 mb-3">
+          <i class="pi pi-info-circle text-primary"></i>
+          <span class="font-semibold text-800">Supported Inputs & Scope</span>
+        </div>
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <div class="flex flex-column gap-2 text-sm">
+              <span class="text-green-600"><i class="pi pi-check mr-1"></i> Tally / Busy creditor ledger (Excel)</span>
+              <span class="text-green-600"><i class="pi pi-check mr-1"></i> Tax-inclusive amounts at 18% GST</span>
+              <span class="text-green-600"><i class="pi pi-check mr-1"></i> FIFO purchase-payment matching</span>
+            </div>
+          </div>
+          <div class="col-12 md:col-6">
+            <div class="flex flex-column gap-2 text-sm">
+              <span class="text-500"><i class="pi pi-times mr-1"></i> Reverse charge (RCM) not supported</span>
+              <span class="text-500"><i class="pi pi-times mr-1"></i> Cess / exempt / nil-rated not supported</span>
+              <span class="text-500"><i class="pi pi-times mr-1"></i> Mixed GST rates not supported</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 pt-3 border-top-1 surface-border">
+          <label class="flex align-items-start gap-2 cursor-pointer">
+            <input type="checkbox" [checked]="scopeConfirmed()" (change)="scopeConfirmed.set(!scopeConfirmed())"
+              class="mt-1" />
+            <span class="text-sm text-700">I confirm the uploaded ledger(s) contain <strong>tax-inclusive amounts at 18% GST</strong>, do not include reverse charge entries, and represent standard B2B supplier creditor ledgers.</span>
+          </label>
+        </div>
+      </div>
+
       <!-- Document Upload -->
       <div class="surface-50 border-1 surface-border border-round p-4 mb-4">
-        <app-document-upload [disabled]="isProcessing()" (filesSelected)="onFilesSelected($event)" />
+        <app-document-upload [disabled]="isProcessing() || !scopeConfirmed()" (filesSelected)="onFilesSelected($event)" />
+        @if (!scopeConfirmed() && !isProcessing()) {
+        <p class="text-sm text-orange-500 text-center mt-2 m-0">
+          <i class="pi pi-lock mr-1"></i> Please confirm the scope declaration above to enable upload
+        </p>
+        }
         @if (fileNames().length > 0 && !error()) {
         <div class="mt-3 text-sm text-green-600 font-medium text-center">
           <p class="m-0">{{ fileNames().length }} file(s) uploaded</p>
@@ -146,27 +185,37 @@
       <!-- Results -->
       @if (results().length > 0 && !isProcessing()) {
       <div class="mt-6 pt-6 border-top-1 surface-border">
-        <!-- Verdict Banner -->
+        <!-- Verdict Banner (3-state: action / watchlist / clear) -->
         <div class="verdict-banner mb-4 p-4 border-round-xl"
-          [ngClass]="totalItcReversal() + totalInterest() > 0 ? 'verdict-action' : 'verdict-clear'">
+          [ngClass]="{'verdict-action': bannerState() === 'action', 'verdict-watchlist': bannerState() === 'watchlist', 'verdict-clear': bannerState() === 'clear'}">
           <div class="flex align-items-center gap-3">
-            @if (totalItcReversal() + totalInterest() > 0) {
-            <i class="pi pi-exclamation-circle text-3xl" style="color: #d97706;"></i>
+            @if (bannerState() === 'action') {
+            <i class="pi pi-exclamation-circle text-3xl" style="color: #dc2626;"></i>
             <div>
               <h3 class="text-xl font-bold text-900 m-0">
-                Action Needed — {{ formatCurrency(totalItcReversal() + totalInterest()) }} total liability
+                Action Needed — {{ formatCurrency(totalItcReversal() + totalInterest()) }} estimated total
               </h3>
               <p class="text-600 text-sm m-0 mt-1">
-                {{ formatCurrency(totalItcReversal()) }} ITC to reverse + {{ formatCurrency(totalInterest()) }} interest
+                {{ formatCurrency(totalItcReversal()) }} est. ITC reversal + {{ formatCurrency(totalInterest()) }} est. interest
                 across {{ filesProcessed() }} file(s)
+              </p>
+            </div>
+            } @else if (bannerState() === 'watchlist') {
+            <i class="pi pi-exclamation-triangle text-3xl" style="color: #d97706;"></i>
+            <div>
+              <h3 class="text-xl font-bold text-900 m-0">
+                Watchlist — {{ atRiskCount() }} invoice(s) approaching 180-day deadline
+              </h3>
+              <p class="text-600 text-sm m-0 mt-1">
+                {{ formatCurrency(atRiskAmount()) }} in payments due soon. No reversal yet, but action recommended.
               </p>
             </div>
             } @else {
             <i class="pi pi-check-circle text-3xl" style="color: #16a34a;"></i>
             <div>
-              <h3 class="text-xl font-bold text-900 m-0">All Clear — No liability found</h3>
+              <h3 class="text-xl font-bold text-900 m-0">All Clear — No estimated liability</h3>
               <p class="text-600 text-sm m-0 mt-1">
-                All payments are within the 180-day window. No action needed.
+                All payments are within the 180-day window. No action currently needed.
               </p>
             </div>
             }

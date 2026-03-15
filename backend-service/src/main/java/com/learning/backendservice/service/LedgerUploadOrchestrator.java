@@ -191,18 +191,33 @@ public class LedgerUploadOrchestrator {
         return UploadResult.CalculationSummaryDto.builder()
                 .totalInterest(s.getTotalInterest())
                 .totalItcReversal(s.getTotalItcReversal())
+                .atRiskCount(s.getAtRiskCount())
+                .atRiskAmount(s.getAtRiskAmount())
+                .breachedCount(s.getBreachedCount())
+                .calculationDate(s.getCalculationDate() != null
+                        ? s.getCalculationDate().toString() : null)
                 .details(s.getDetails().stream()
                         .map(r -> UploadResult.InterestRowDto.builder()
                                 .supplier(r.getSupplier())
+                                .invoiceNumber(r.getInvoiceNumber())
                                 .purchaseDate(r.getPurchaseDate() != null
                                         ? r.getPurchaseDate().toString() : null)
                                 .paymentDate(r.getPaymentDate() != null
-                                        ? r.getPaymentDate().toString() : "Unpaid")
+                                        ? r.getPaymentDate().toString() : null)
+                                .originalInvoiceValue(r.getOriginalInvoiceValue())
                                 .principal(r.getPrincipal())
                                 .delayDays(r.getDelayDays())
                                 .itcAmount(r.getItcAmount())
                                 .interest(r.getInterest())
                                 .status(r.getStatus().name())
+                                .paymentDeadline(r.getPaymentDeadline() != null
+                                        ? r.getPaymentDeadline().toString() : null)
+                                .riskCategory(r.getRiskCategory() != null
+                                        ? r.getRiskCategory().name() : null)
+                                .gstr3bPeriod(r.getGstr3bPeriod())
+                                .daysToDeadline(r.getDaysToDeadline())
+                                .itcAvailmentDate(r.getItcAvailmentDate() != null
+                                        ? r.getItcAvailmentDate().toString() : null)
                                 .build())
                         .toList())
                 .build();

@@ -49,6 +49,14 @@ public class UploadResult {
         private BigDecimal totalInterest;
         private BigDecimal totalItcReversal;
         private List<InterestRowDto> details;
+        // Production enhancements — match saved-run shape
+        @Builder.Default
+        private int atRiskCount = 0;
+        @Builder.Default
+        private BigDecimal atRiskAmount = BigDecimal.ZERO;
+        @Builder.Default
+        private int breachedCount = 0;
+        private String calculationDate;
     }
 
     @Data
@@ -57,13 +65,21 @@ public class UploadResult {
     @AllArgsConstructor
     public static class InterestRowDto {
         private String supplier;
+        private String invoiceNumber;
         private String purchaseDate;
         private String paymentDate;
+        private BigDecimal originalInvoiceValue;
         private BigDecimal principal;
         private int delayDays;
         private BigDecimal itcAmount;
         private BigDecimal interest;
         private String status;
+        // Production enhancements — match saved-run shape
+        private String paymentDeadline;
+        private String riskCategory;
+        private String gstr3bPeriod;
+        private int daysToDeadline;
+        private String itcAvailmentDate;
     }
 
     @Data

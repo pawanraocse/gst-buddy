@@ -57,9 +57,9 @@ export class Rule37ApiService {
 
   /**
    * Export run to Excel (returns blob).
-   * @param reportType 'issues' (default) or 'complete'
+   * @param reportType 'issues' (default), 'complete', or 'gstr3b'
    */
-  exportRun(id: number, reportType: 'issues' | 'complete' = 'issues'): Observable<Blob> {
+  exportRun(id: number, reportType: 'issues' | 'complete' | 'gstr3b' = 'issues'): Observable<Blob> {
     const params = new HttpParams().set('reportType', reportType);
     return this.http.get(`${BACKEND_BASE}/api/v1/rule37/runs/${id}/export`, {
       responseType: 'blob',

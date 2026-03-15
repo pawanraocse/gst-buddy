@@ -281,10 +281,8 @@ public class LedgerExcelParser implements LedgerParser {
                 Row dataRow = sheet.getRow(r);
                 if (dataRow == null) continue;
 
-                // Skip sub-summary/total rows (often at end of section)
-                String cellAValue = getCellStringValue(dataRow.getCell(0)).trim().toLowerCase(Locale.ROOT);
-                if (cellAValue.startsWith("total") || cellAValue.startsWith("closing")
-                        || cellAValue.startsWith("opening")) {
+                // Skip sub-summary/total rows and non-transaction rows
+                if (isNonTransactionRow(dataRow)) {
                     continue;
                 }
 
@@ -357,6 +355,7 @@ public class LedgerExcelParser implements LedgerParser {
 
             LocalDate date = parseExcelDate(getCellValue(row, 0));
             if (date == null) continue;
+            if (isNonTransactionRow(row)) continue;
 
             double debit = parseDouble(getCellValue(row, 1));
             double credit = parseDouble(getCellValue(row, 2));
@@ -392,6 +391,7 @@ public class LedgerExcelParser implements LedgerParser {
             String dateVal = getCellValue(row, dateIndex);
             LocalDate date = parseExcelDate(dateVal);
             if (date == null) continue;
+            if (isNonTransactionRow(row)) continue;
 
             double debit = debitIndex >= 0 ? parseDouble(getCellValue(row, debitIndex)) : 0;
             double credit = creditIndex >= 0 ? parseDouble(getCellValue(row, creditIndex)) : 0;
@@ -466,6 +466,53 @@ public class LedgerExcelParser implements LedgerParser {
             vals.add(getCellStringValue(row.getCell(c)));
         }
         return String.join(", ", vals);
+    }
+
+    /**
+     * Checks whether a row is a non-transaction summary row (opening balance, closing balance,
+     * totals, brought forward, etc.).
+     *
+     * <p>Scans ALL cells in the row (not just column A) because Tally/Busy exports may
+     * place these labels in the Particulars, Narration, or other columns.
+     */
+    private boolean isNonTransactionRow(Row row) {
+        if (row == null) return true;
+        for (int c = 0; c < row.getLastCellNum(); c++) {
+            Cell cell = row.getCell(c);
+            if (cell == null) continue;
+            String val = getCellStringValue(cell).trim().toLowerCase(Locale.ROOT);
+            if (val.isEmpty()) continue;
+            // Check for common non-transaction markers
+            if (val.startsWith("opening")
+                    || val.startsWith("closing")
+                    || val.startsWith("total")
+                    || val.startsWith("grand total")
+                    || val.equals("op. bal")
+                    || val.equals("cl. bal")
+                    || val.equals("op bal")
+                    || val.equals("cl bal")
+                    || val.startsWith("opening balance")
+                    || val.startsWith("closing balance")
+                    || val.startsWith("carried forward")
+                    || val.startsWith("brought forward")
+                    || val.startsWith("b/f")
+                    || val.startsWith("c/f")
+                    || val.startsWith("bal b/d")
+                    || val.startsWith("bal c/d")
+                    || val.startsWith("balance b/d")
+                    || val.startsWith("balance c/d")
+                    || val.startsWith("balance b/f")
+                    || val.startsWith("balance c/f")
+                    || val.startsWith("op. balance")
+                    || val.startsWith("cl. balance")
+                    || val.equals("b/d")
+                    || val.equals("c/d")
+                    || val.equals("b/f")
+                    || val.equals("c/f")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ═══════════════════════════════════════════════════════════════

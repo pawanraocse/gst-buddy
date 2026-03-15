@@ -28,6 +28,9 @@ public class CalculationSummary {
     private int breachedCount;
     private LocalDate calculationDate;
 
-    public static final String DISCLAIMER = "Interest calculated from invoice date. Per Section 50 + Rule 88B, actual interest "
-            + "depends on ITC availment and utilization dates. Consult CA for precise liability.";
+    public static final String DISCLAIMER = "Estimated calculations based on uploaded ledger data. "
+            + "ITC reversal estimates assume 18% GST rate on tax-inclusive amounts. "
+            + "Interest estimates use 18% p.a. as per Section 50 of the CGST Act with assumed availment dates. "
+            + "Actual liability depends on ITC availment and utilization dates. "
+            + "Consult a qualified CA/tax professional before filing GSTR-3B.";
 }

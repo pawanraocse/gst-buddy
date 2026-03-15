@@ -86,13 +86,14 @@ export class CalculationHistoryComponent {
   }
 
   downloadExport(id: number, filename: string, reportType: string = 'issues') {
-    const rt = (reportType === 'complete' ? 'complete' : 'issues') as 'issues' | 'complete';
+    const rt = (['issues', 'complete', 'gstr3b'].includes(reportType) ? reportType : 'issues') as 'issues' | 'complete' | 'gstr3b';
+    const suffix = rt === 'gstr3b' ? '_GSTR3B_Summary' : '_Interest_Calculation';
     this.api.exportRun(id, rt).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = (filename || 'export') + '_Interest_Calculation.xlsx';
+        a.download = (filename || 'export') + suffix + '.xlsx';
         a.click();
         URL.revokeObjectURL(url);
       },

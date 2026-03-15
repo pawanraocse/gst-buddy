@@ -66,6 +66,25 @@ export class ComplianceViewComponent {
   // Quick Metric Filter (Interactive Drill-down)
   activeMetricFilter = signal<'ALL' | 'ITC' | 'INTEREST'>('ALL');
 
+  /** Per-file ledger tab: -1 = All Files, 0..N = individual ledger */
+  selectedLedgerIndex = signal(-1);
+
+  /** The currently active ledger(s) based on tab selection */
+  get activeResults() {
+    const idx = this.selectedLedgerIndex();
+    const all = this.results();
+    return idx === -1 || all.length <= 1 ? all : [all[idx]];
+  }
+
+  /** Switch to a different ledger tab and reset filters */
+  selectLedger(idx: number) {
+    this.selectedLedgerIndex.set(idx);
+    this.searchQuery.set('');
+    this.activeStatusFilter.set('ALL');
+    this.activeRiskFilter.set('ALL');
+    this.expandedSuppliers = {};
+  }
+
   /** Toggle to show all columns or simplified view */
   showAllColumns = false;
 
@@ -96,23 +115,23 @@ export class ComplianceViewComponent {
   // ══════════════════════════════════════════════════════
 
   get totalItcReversal(): number {
-    return this.results().reduce((s, r) => s + r.summary.totalItcReversal, 0);
+    return this.activeResults.reduce((s, r) => s + r.summary.totalItcReversal, 0);
   }
 
   get totalInterest(): number {
-    return this.results().reduce((s, r) => s + r.summary.totalInterest, 0);
+    return this.activeResults.reduce((s, r) => s + r.summary.totalInterest, 0);
   }
 
   get totalLedgerCount(): number {
     const suppliers = new Set<string>();
-    this.results().forEach(lr =>
+    this.activeResults.forEach(lr =>
       lr.summary.details.forEach(d => suppliers.add(d.supplier))
     );
     return Math.max(1, suppliers.size);
   }
 
   get totalTransactions(): number {
-    return this.results().reduce((s, r) => s + r.summary.details.length, 0);
+    return this.activeResults.reduce((s, r) => s + r.summary.details.length, 0);
   }
 
   // ══════════════════════════════════════════════════════
@@ -127,10 +146,10 @@ export class ComplianceViewComponent {
     );
   }
 
-  /** Build all supplier groups from all ledger results */
+  /** Build supplier groups from active (tab-scoped) results */
   private getAllSupplierGroups(): SupplierGroup[] {
     const map = new Map<string, InterestRow[]>();
-    for (const lr of this.results()) {
+    for (const lr of this.activeResults) {
       const issueDetails = this.getIssueDetails(lr.summary.details);
       for (const row of issueDetails) {
         const list = map.get(row.supplier) ?? [];
