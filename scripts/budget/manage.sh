@@ -2,7 +2,7 @@
 set -e
 
 # Configuration
-PROJECT="saas-factory"
+PROJECT="gst-buddy"
 ENVIRONMENT="budget"
 REGION="us-east-1"
 BASTION_USER="ec2-user"

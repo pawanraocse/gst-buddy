@@ -208,7 +208,7 @@ module "amplify" {
         preBuild:
           commands:
             - cd frontend
-            - npm ci
+            - npm install
             - node scripts/generate-env.js
         build:
           commands:
