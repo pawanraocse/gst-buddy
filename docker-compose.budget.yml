@@ -55,7 +55,7 @@ services:
       service: gateway-service
     restart: unless-stopped
     # Bypass entrypoint that fetches from wrong SSM path
-    entrypoint: ["java", "-Xmx160m", "-Xms96m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-jar", "/app/app.jar"]
+    entrypoint: ["java", "-Xmx256m", "-Xms128m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-jar", "/app/app.jar"]
     environment:
       SPRING_APPLICATION_NAME: gateway-service
       SERVER_PORT: 8080
@@ -89,7 +89,7 @@ services:
       service: backend-service
     restart: unless-stopped
     # Optimized JVM for t3.small
-    entrypoint: ["java", "-Xmx192m", "-Xms128m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-jar", "/app/app.jar"]
+    entrypoint: ["java", "-Xmx512m", "-Xms256m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-jar", "/app/app.jar"]
     environment:
       SPRING_APPLICATION_NAME: backend-service
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
@@ -123,7 +123,7 @@ services:
       service: auth-service
     restart: unless-stopped
     # Optimized JVM for t3.small
-    entrypoint: ["java", "-Xmx192m", "-Xms128m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-jar", "/app/app.jar"]
+    entrypoint: ["java", "-Xmx256m", "-Xms128m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-jar", "/app/app.jar"]
     environment:
       SPRING_APPLICATION_NAME: auth-service
       SPRING_PROFILES_ACTIVE: ${AUTH_PROFILE:-}
