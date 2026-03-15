@@ -11,6 +11,13 @@ if [ -f "$PROJECT_ROOT/.env" ]; then
     set +a
 fi
 
+# Load cognito-config.env from terraform if it exists
+if [ -f "$PROJECT_ROOT/terraform/cognito-config.env" ]; then
+    set -a
+    source "$PROJECT_ROOT/terraform/cognito-config.env"
+    set +a
+fi
+
 # Configuration
 REGION="${AWS_REGION:-us-east-1}"
 PROJECT_NAME="${PROJECT_NAME:-gst-buddy}"
@@ -131,13 +138,9 @@ echo "Step 4/4: Linking Cognito user to database..."
 
 API_LINKED=false
 
-# For budget/remote envs, route through gateway: /auth/api/v1/...
-# For local, call auth-service directly: /api/v1/...
-if [ "$ENVIRONMENT" != "local" ]; then
-    BOOTSTRAP_URL="${AUTH_SERVICE_URL}/auth/api/v1/admin/bootstrap/new-super-admin"
-else
-    BOOTSTRAP_URL="${AUTH_SERVICE_URL}/api/v1/admin/bootstrap/new-super-admin"
-fi
+# Both local and remote environments use the /auth prefix 
+# because auth-service server.servlet.context-path is /auth
+BOOTSTRAP_URL="${AUTH_SERVICE_URL}/auth/api/v1/admin/bootstrap/new-super-admin"
 
 echo "  Trying API: $BOOTSTRAP_URL"
 HTTP_CODE=$(curl -s -w "%{http_code}" -X POST \

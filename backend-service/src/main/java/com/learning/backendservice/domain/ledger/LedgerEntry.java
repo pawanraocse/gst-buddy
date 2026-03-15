@@ -18,6 +18,7 @@ import java.time.LocalDate;
 public class LedgerEntry {
 
     private LocalDate date;
+    private String invoiceNumber;
     private LedgerEntryType entryType;
     private String supplier;
     private double amount;

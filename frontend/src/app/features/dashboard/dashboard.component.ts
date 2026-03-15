@@ -30,7 +30,7 @@ import { MessageService } from 'primeng/api';
     DocumentUploadComponent,
     ComplianceViewComponent,
     CalculationHistoryComponent,
-    PanelModule,
+    PanelModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],

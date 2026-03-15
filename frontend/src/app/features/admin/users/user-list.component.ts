@@ -44,31 +44,31 @@ import { ToastModule } from 'primeng/toast';
             <td>{{ invite.invitedBy }}</td>
             <td>{{ invite.expiresAt | date:'medium' }}</td>
             <td>
-              <p-button 
+              <p-button
                 *ngIf="invite.status === 'PENDING'"
-                icon="pi pi-refresh" 
-                severity="info" 
-                [rounded]="true" 
-                [text]="true" 
+                icon="pi pi-refresh"
+                severity="info"
+                [rounded]="true"
+                [text]="true"
                 pTooltip="Resend Invitation"
                 (onClick)="resendInvitation(invite.id)"
                 class="mr-2">
               </p-button>
-              <p-button 
+              <p-button
                 *ngIf="invite.status === 'PENDING'"
-                icon="pi pi-trash" 
-                severity="danger" 
-                [rounded]="true" 
-                [text]="true" 
+                icon="pi pi-trash"
+                severity="danger"
+                [rounded]="true"
+                [text]="true"
                 pTooltip="Revoke Invitation"
                 (onClick)="revokeInvitation(invite.id)">
               </p-button>
-              <p-button 
+              <p-button
                 *ngIf="invite.status === 'ACCEPTED'"
-                icon="pi pi-pencil" 
-                severity="secondary" 
-                [rounded]="true" 
-                [text]="true" 
+                icon="pi pi-pencil"
+                severity="secondary"
+                [rounded]="true"
+                [text]="true"
                 pTooltip="Edit Role"
                 (onClick)="openEditDialog(invite)"
                 class="mr-2">
@@ -131,8 +131,8 @@ export class UserListComponent implements OnInit {
     // But for ACCEPTED users, we might need the actual User ID.
     // The current InvitationResponse might not have userId if it's just invitation data.
     // However, if status is ACCEPTED, we assume the system can link it.
-    // Wait, InvitationResponse has 'id' (invitation ID). 
-    // We need to pass userId. 
+    // Wait, InvitationResponse has 'id' (invitation ID).
+    // We need to pass userId.
     // If the list is mixed (invitations and users), we need a unified model.
     // For now, let's assume for ACCEPTED status, we can use the email to look up or if we have userId.
     // Looking at InvitationResponse interface: id, tenantId, email, roleId, status...

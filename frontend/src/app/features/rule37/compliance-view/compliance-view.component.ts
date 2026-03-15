@@ -82,6 +82,12 @@ export class ComplianceViewComponent {
       icon: 'pi pi-list',
       command: () => this.exportAll.emit('complete'),
       tooltip: 'Export all transactions including on-time payments'
+    },
+    {
+      label: 'GSTR-3B Summary',
+      icon: 'pi pi-file-export',
+      command: () => this.exportAll.emit('gstr3b'),
+      tooltip: 'Export GSTR-3B Table 4(B)(2) Reversal Summary'
     }
   ];
 
@@ -362,5 +368,12 @@ export class ComplianceViewComponent {
 
   toggleColumns(): void {
     this.showAllColumns = !this.showAllColumns;
+  }
+
+  getInterestTooltip(row: InterestRow): string {
+    if (!row.itcAvailmentDate) return 'Interest calculated at 18% p.a. (Sec 50)';
+    const startDate = this.formatDate(row.itcAvailmentDate);
+    const endDate = row.paymentDate ? this.formatDate(row.paymentDate) : 'Today';
+    return `Interest calculated from ${startDate} (Estimated Availment) to ${endDate} (Reversal) as per Sec 50 of CGST Act.`;
   }
 }

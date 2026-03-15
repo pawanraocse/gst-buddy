@@ -40,4 +40,8 @@ public interface ExportStrategy {
      * Returns the file extension (e.g. xlsx).
      */
     String getFileExtension();
+    /**
+     * Returns true if this strategy supports the given format and report type combinations.
+     */
+    boolean supports(String format, String reportType);
 }

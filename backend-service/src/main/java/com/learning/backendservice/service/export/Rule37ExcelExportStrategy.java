@@ -33,6 +33,11 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
     private static final int MAX_SHEET_NAME_LENGTH = 31;
 
     @Override
+    public boolean supports(String format, String reportType) {
+        return "excel".equalsIgnoreCase(format) && !"gstr3b".equalsIgnoreCase(reportType);
+    }
+
+    @Override
     public byte[] generate(List<LedgerResult> ledgerResults, String filename) {
         return generate(ledgerResults, filename, "issues");
     }

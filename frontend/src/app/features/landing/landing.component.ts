@@ -39,6 +39,9 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
     // New: Active section for navbar
     activeSection = signal('hero');
 
+    // Pricing selection
+    selectedPlan = signal('Pro');
+
     // Typewriter
     typewriterText = '';
     private typewriterFullText = 'Handled by a Friend.';
@@ -171,7 +174,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             name: 'Rajesh Kumar',
             title: 'CA Partner',
             company: 'Kumar & Associates, Mumbai',
-            quote: 'GST Buddy saved us 10+ hours every month. Our clients love the professional reports.',
+            quote: 'Gstbuddies saved us 10+ hours every month. Our clients love the professional reports.',
             avatar: 'assets/images/landing/avatars/avatar-1.png',
             savings: 'Saved ₹2.5L in ITC',
             rating: 5
@@ -198,12 +201,12 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
 
     faqs: FAQ[] = [
         {
-            question: 'What GST rules does GST Buddy support?',
+            question: 'What GST rules does Gstbuddies support?',
             answer: 'We currently support <strong>Rule 37 (180-day ITC reversal)</strong> with Rule 36(4), 86B, 16(4), and GSTR-9 reconciliation coming soon. We add new rules automatically as CBIC releases notifications.',
             helpfulCount: 42
         },
         {
-            question: 'Is GST Buddy free to try?',
+            question: 'Is Gstbuddies free to try?',
             answer: 'Yes! Sign up for free and get <strong>5 full compliance checks</strong> at no cost — no credit card required. Try before you buy.',
             helpfulCount: 38
         },
@@ -214,7 +217,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
         },
         {
             question: 'How is this different from other GST tools?',
-            answer: 'Unlike fragmented tools that make you run separate checks for each rule, GST Buddy provides a <strong>unified dashboard</strong>. One upload, all rules checked. Plus our premium UI makes compliance actually pleasant.',
+            answer: 'Unlike fragmented tools that make you run separate checks for each rule, Gstbuddies provides a <strong>unified dashboard</strong>. One upload, all rules checked. Plus our premium UI makes compliance actually pleasant.',
             helpfulCount: 56
         },
         {
@@ -247,9 +250,9 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             name: 'Trial',
             tagline: 'Try it free',
             price: 0,
-            credits: 2,
+            credits: 1,
             features: [
-                { text: '2 ledger analyses', included: true },
+                { text: '1 ledger analysis', included: true },
                 { text: 'Rule 37 support', included: true },
                 { text: 'Excel export', included: true },
                 { text: 'Priority support', included: false }
@@ -259,25 +262,25 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
         },
         {
             name: 'Pro',
-            tagline: '5 ledger analyses',
-            price: 1000,
-            credits: 5,
+            tagline: 'For small stores',
+            price: 149,
+            credits: 2,
             features: [
-                { text: '5 ledger analyses', included: true },
+                { text: '2 ledger analyses', included: true },
                 { text: 'All GST rules', included: true },
-                { text: 'Priority email support', included: true },
-                { text: 'Custom reports', included: true }
+                { text: 'Email support', included: true },
+                { text: 'Basic reports', included: true }
             ],
             cta: 'Buy Credits',
             isPopular: true
         },
         {
             name: 'Ultra',
-            tagline: '30 ledger analyses',
-            price: 3000,
-            credits: 30,
+            tagline: 'Best value for frequent use',
+            price: 999,
+            credits: 20,
             features: [
-                { text: '30 ledger analyses', included: true },
+                { text: '20 ledger analyses', included: true },
                 { text: 'All GST rules', included: true },
                 { text: 'Priority support', included: true },
                 { text: 'Best value per credit', included: true }

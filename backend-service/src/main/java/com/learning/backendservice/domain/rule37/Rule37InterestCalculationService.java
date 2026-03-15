@@ -64,13 +64,13 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
         entries.stream()
                 .sorted(Comparator.comparing(LedgerEntry::getDate))
                 .forEach(entry -> {
-                    var map = entry.getEntryType() == LedgerEntry.LedgerEntryType.PURCHASE
-                            ? purchases
-                            : payments;
-                    map.computeIfAbsent(entry.getSupplier(), k -> new ArrayList<>())
-                            .add(new MutableLedgerItem(entry.getDate(),
-                                    BigDecimal.valueOf(entry.getAmount())));
-                });
+            var map = entry.getEntryType() == LedgerEntry.LedgerEntryType.PURCHASE
+                    ? purchases
+                    : payments;
+            map.computeIfAbsent(entry.getSupplier(), k -> new ArrayList<>())
+                    .add(new MutableLedgerItem(entry.getDate(),
+                            BigDecimal.valueOf(entry.getAmount()), entry.getInvoiceNumber()));
+        });
 
         return new SupplierQueues(purchases, payments);
     }
@@ -98,14 +98,17 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
             var payment = payments.getFirst();
             BigDecimal matched = purchase.amount().min(payment.amount());
             int delayDays = daysBetween(purchase.date(), payment.date());
+            LocalDate itcAvailmentDate = calculateItcAvailmentDate(purchase.date());
+            int interestDays = Math.max(0, daysBetween(itcAvailmentDate, payment.date()));
 
             if (delayDays > DAYS_THRESHOLD) {
                 results.add(createInterestRow(supplier, purchase.date(), payment.date(),
-                        matched, delayDays, InterestRow.InterestStatus.PAID_LATE, asOnDate));
+                        matched, purchase.originalAmount(), delayDays, interestDays, InterestRow.InterestStatus.PAID_LATE, 
+                        purchase.invoiceNumber(), itcAvailmentDate, asOnDate));
             } else {
                 // On-time payment — no interest/ITC but included for complete report
                 results.add(createOnTimeRow(supplier, purchase.date(), payment.date(),
-                        matched, delayDays, asOnDate));
+                        matched, purchase.originalAmount(), delayDays, purchase.invoiceNumber(), asOnDate));
             }
 
             purchase.reduceBy(matched);
@@ -122,33 +125,37 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
 
         for (MutableLedgerItem purchase : purchases) {
             int days = daysBetween(purchase.date(), asOnDate);
+            LocalDate itcAvailmentDate = calculateItcAvailmentDate(purchase.date());
+            int interestDays = Math.max(0, daysBetween(itcAvailmentDate, asOnDate));
 
             if (days > DAYS_THRESHOLD) {
                 results.add(createInterestRow(
-                        supplier, purchase.date(), null, purchase.amount(),
-                        days, InterestRow.InterestStatus.UNPAID, asOnDate));
+                        supplier, purchase.date(), null, purchase.amount(), purchase.originalAmount(),
+                        days, interestDays, InterestRow.InterestStatus.UNPAID, purchase.invoiceNumber(), itcAvailmentDate, asOnDate));
             } else if (days > AT_RISK_THRESHOLD) {
                 results.add(createAtRiskRow(
-                        supplier, purchase.date(), purchase.amount(), days, asOnDate));
+                        supplier, purchase.date(), purchase.amount(), purchase.originalAmount(), days, purchase.invoiceNumber(), asOnDate));
             } else {
                 // Safe unpaid — within 180 days, included for complete report
                 results.add(createSafeUnpaidRow(
-                        supplier, purchase.date(), purchase.amount(), days, asOnDate));
+                        supplier, purchase.date(), purchase.amount(), purchase.originalAmount(), days, purchase.invoiceNumber(), asOnDate));
             }
         }
     }
 
     private InterestRow createInterestRow(String supplier, LocalDate purchaseDate,
-            LocalDate paymentDate, BigDecimal principal, int delayDays,
-            InterestRow.InterestStatus status, LocalDate asOnDate) {
+            LocalDate paymentDate, BigDecimal principal, BigDecimal originalAmount, int delayDays, int interestDays,
+            InterestRow.InterestStatus status, String invoiceNumber, LocalDate itcAvailmentDate, LocalDate asOnDate) {
 
         LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
-        var itcInterest = computeItcAndInterest(principal, delayDays);
+        var itcInterest = computeItcAndInterest(principal, interestDays);
 
         return InterestRow.builder()
                 .supplier(supplier)
+                .invoiceNumber(invoiceNumber)
                 .purchaseDate(purchaseDate)
                 .paymentDate(paymentDate)
+                .originalInvoiceValue(originalAmount.setScale(SCALE, RM))
                 .principal(principal.setScale(SCALE, RM))
                 .delayDays(delayDays)
                 .itcAmount(itcInterest.itcAmount())
@@ -158,19 +165,21 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .riskCategory(categorizeRisk(delayDays))
                 .gstr3bPeriod(formatGstr3bPeriod(deadline))
                 .daysToDeadline(daysBetween(asOnDate, deadline))
-                .itcAvailmentDate(null)
+                .itcAvailmentDate(itcAvailmentDate)
                 .build();
     }
 
     private InterestRow createAtRiskRow(String supplier, LocalDate purchaseDate,
-            BigDecimal principal, int delayDays, LocalDate asOnDate) {
+            BigDecimal principal, BigDecimal originalAmount, int delayDays, String invoiceNumber, LocalDate asOnDate) {
 
         LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
 
         return InterestRow.builder()
                 .supplier(supplier)
+                .invoiceNumber(invoiceNumber)
                 .purchaseDate(purchaseDate)
                 .paymentDate(null)
+                .originalInvoiceValue(originalAmount.setScale(SCALE, RM))
                 .principal(principal.setScale(SCALE, RM))
                 .delayDays(delayDays)
                 .itcAmount(BigDecimal.ZERO)
@@ -185,14 +194,16 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
     }
 
     private InterestRow createOnTimeRow(String supplier, LocalDate purchaseDate,
-            LocalDate paymentDate, BigDecimal principal, int delayDays, LocalDate asOnDate) {
+            LocalDate paymentDate, BigDecimal principal, BigDecimal originalAmount, int delayDays, String invoiceNumber, LocalDate asOnDate) {
 
         LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
 
         return InterestRow.builder()
                 .supplier(supplier)
+                .invoiceNumber(invoiceNumber)
                 .purchaseDate(purchaseDate)
                 .paymentDate(paymentDate)
+                .originalInvoiceValue(originalAmount.setScale(SCALE, RM))
                 .principal(principal.setScale(SCALE, RM))
                 .delayDays(delayDays)
                 .itcAmount(BigDecimal.ZERO)
@@ -207,14 +218,16 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
     }
 
     private InterestRow createSafeUnpaidRow(String supplier, LocalDate purchaseDate,
-            BigDecimal principal, int delayDays, LocalDate asOnDate) {
+            BigDecimal principal, BigDecimal originalAmount, int delayDays, String invoiceNumber, LocalDate asOnDate) {
 
         LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
 
         return InterestRow.builder()
                 .supplier(supplier)
+                .invoiceNumber(invoiceNumber)
                 .purchaseDate(purchaseDate)
                 .paymentDate(null)
+                .originalInvoiceValue(originalAmount.setScale(SCALE, RM))
                 .principal(principal.setScale(SCALE, RM))
                 .delayDays(delayDays)
                 .itcAmount(BigDecimal.ZERO)
@@ -261,11 +274,11 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .build();
     }
 
-    private static ItcInterest computeItcAndInterest(BigDecimal principal, int delayDays) {
+    private static ItcInterest computeItcAndInterest(BigDecimal principal, int interestDays) {
         BigDecimal itcAmount = principal.multiply(ITC_NUMERATOR, MC)
                 .divide(ITC_DENOMINATOR, SCALE, RM);
         BigDecimal interest = itcAmount.multiply(INTEREST_RATE, MC)
-                .multiply(BigDecimal.valueOf(delayDays), MC)
+                .multiply(BigDecimal.valueOf(interestDays), MC)
                 .divide(DAYS_IN_YEAR, SCALE, RM);
         return new ItcInterest(itcAmount, interest);
     }
@@ -288,6 +301,11 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
         return (int) ChronoUnit.DAYS.between(from, to);
     }
 
+    private static LocalDate calculateItcAvailmentDate(LocalDate purchaseDate) {
+        // As per GST rules, ITC is typically availed in GSTR-3B filed on the 20th of the subsequent month
+        return purchaseDate.plusMonths(1).withDayOfMonth(20);
+    }
+
     private record ItcInterest(BigDecimal itcAmount, BigDecimal interest) {
     }
 
@@ -298,11 +316,15 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
 
     private static final class MutableLedgerItem {
         private final LocalDate date;
+        private final BigDecimal originalAmount;
+        private final String invoiceNumber;
         private BigDecimal amount;
 
-        MutableLedgerItem(LocalDate date, BigDecimal amount) {
+        MutableLedgerItem(LocalDate date, BigDecimal amount, String invoiceNumber) {
             this.date = date;
             this.amount = amount;
+            this.originalAmount = amount;
+            this.invoiceNumber = invoiceNumber;
         }
 
         LocalDate date() {
@@ -311,6 +333,14 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
 
         BigDecimal amount() {
             return amount;
+        }
+
+        BigDecimal originalAmount() {
+            return originalAmount;
+        }
+
+        String invoiceNumber() {
+            return invoiceNumber;
         }
 
         void reduceBy(BigDecimal value) {

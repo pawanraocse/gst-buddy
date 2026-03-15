@@ -1,4 +1,4 @@
-<!-- Landing Page - GST Buddy v2 — Award-Winning Design -->
+<!-- Landing Page - Gstbuddies v2 — Award-Winning Design -->
 <div class="landing-page" [class.loaded]="!isLoading()">
 
     <!-- ============================================
@@ -11,7 +11,7 @@
                 <i class="pi pi-calculator"></i>
             </div>
             <div class="loading-text">
-                <span class="char" *ngFor="let char of 'GST Buddy'.split(''); let i = index"
+                <span class="char" *ngFor="let char of 'Gstbuddies'.split(''); let i = index"
                     [style.animation-delay]="(i * 0.03) + 's'">{{ char }}</span>
             </div>
             <div class="progress-bar">
@@ -28,8 +28,8 @@
         <div class="nav-container">
             <!-- Logo -->
             <a routerLink="/" class="logo">
-                <i class="pi pi-calculator"></i>
-                <span>GST Buddy</span>
+                <i class="pi pi-calculator" [style.fontSize.px]="24"></i>
+                <span>Gstbuddies</span>
             </a>
 
             <!-- Desktop Navigation -->
@@ -110,7 +110,7 @@
 
                     <!-- Subheadline -->
                     <p class="hero-subtitle">
-                        Upload your <mark>Tally ledger</mark>. We handle
+                        Upload your <mark>Creditors ledger</mark>. We handle
                         <mark>Rule 37 calculations</mark> in seconds—so you can
                         <strong>stop worrying</strong> and <strong>start growing</strong>.
                     </p>
@@ -147,7 +147,7 @@
                         </div>
                         <div class="signal">
                             <i class="pi pi-check-circle"></i>
-                            <span>5 free compliance checks</span>
+                            <span>1 free compliance checks</span>
                         </div>
                     </div>
 
@@ -301,13 +301,13 @@
         </section>
 
         <!-- ============================================
-             6. COMPARISON TABLE - GST BUDDY VS OTHERS
+             6. COMPARISON TABLE - GSTBUDDIES VS OTHERS
              ============================================ -->
         <section id="comparison" class="comparison-section">
             <div class="section-container">
                 <div class="section-header animate-on-scroll">
                     <span class="section-label">The Difference</span>
-                    <h2>GST Buddy vs. Other Tools</h2>
+                    <h2>Gstbuddies vs. Other Tools</h2>
                     <p>See why businesses are switching to a unified solution.</p>
                 </div>
 
@@ -319,7 +319,7 @@
                                 <th class="highlight-col">
                                     <div class="col-header">
                                         <i class="pi pi-star-fill"></i>
-                                        <span>GST Buddy</span>
+                                        <span>Gstbuddies</span>
                                     </div>
                                 </th>
                                 <th>Other Tools</th>
@@ -536,8 +536,8 @@
                                     <p><strong>If unpaid after 180 days:</strong></p>
                                     <ul>
                                         <li>Reverse the ITC you claimed</li>
-                                        <li>Pay 18% interest on reversed amount</li>
-                                        <li>File GSTR-3B amendment</li>
+                                        <li>Pay 18% interest on reversed amount if reversed afetr 180 days</li>
+                                        <li>Interest will be calculated from date of invoice</li>
                                     </ul>
                                 </div>
                             </div>
@@ -561,7 +561,7 @@
 
                             <div class="solution-block">
                                 <h4><i class="pi pi-check-circle"></i> Our Solution</h4>
-                                <p>GST Buddy automates this entirely. Upload your ledger, and we calculate:</p>
+                                <p>Gstbuddies automates this entirely. Upload your ledger, and we calculate:</p>
                                 <ul class="checkmark-list">
                                     <li>Exactly which invoices crossed 180 days</li>
                                     <li>How much ITC to reverse</li>
@@ -625,7 +625,7 @@
                         <p class="quote">{{ testimonial.quote }}</p>
                         @if (testimonial.savings) {
                         <div class="savings-badge">
-                            <i class="pi pi-bolt"></i>
+                            <i class="pi pi-bolt mr-2" [style.fontSize.px]="14"></i>
                             <span>{{ testimonial.savings }}</span>
                         </div>
                         }
@@ -683,9 +683,12 @@
 
                 <div class="pricing-grid">
                     @for (plan of pricingPlans(); track plan.name) {
-                    <div class="pricing-card animate-on-scroll" [class.popular]="plan.isPopular">
-                        @if (plan.isPopular) {
-                        <div class="popular-badge">Best Value</div>
+                    <div class="pricing-card animate-on-scroll"
+                         [class.popular]="selectedPlan() === plan.name"
+                         (click)="selectedPlan.set(plan.name)"
+                         style="cursor: pointer;">
+                        @if (selectedPlan() === plan.name) {
+                        <div class="popular-badge">Selected Plan</div>
                         }
                         <div class="card-header">
                             <h3>{{ plan.name }}</h3>
@@ -713,7 +716,7 @@
                             }
                         </ul>
                         <a [routerLink]="'/auth/signup/personal'">
-                            <button pButton [class]="plan.isPopular ? 'cta-primary glowing-button' : 'cta-secondary'"
+                            <button pButton [class]="selectedPlan() === plan.name ? 'cta-primary glowing-button' : 'cta-secondary'"
                                 pRipple>
                                 {{ plan.cta }}
                             </button>
@@ -772,7 +775,7 @@
                 <!-- CTA -->
                 <div class="faq-cta animate-on-scroll">
                     <p>Can't find what you're looking for?</p>
-                    <a href="mailto:support&#64;gstbuddy.in">
+                    <a href="mailto:support&#64;gstbuddies.com">
                         <button pButton class="cta-secondary" pRipple>
                             <i class="pi pi-envelope"></i>
                             Email Support
@@ -802,13 +805,13 @@
 
                 <h2 class="animate-on-scroll">Ready to Stop Worrying About GST Compliance?</h2>
                 <p class="subtitle animate-on-scroll">
-                    Join <strong>500+</strong> businesses who trust GST Buddy.
+                    Join <strong>500+</strong> businesses who trust Gstbuddies.
                 </p>
 
                 <div class="cta-buttons animate-on-scroll">
                     <a routerLink="/auth/signup/personal">
                         <button pButton class="cta-primary mega-button" pRipple>
-                            <span>Get Started Free</span>
+                            <span>Get Started for Free</span>
                             <i class="pi pi-arrow-right"></i>
                         </button>
                     </a>
@@ -844,7 +847,7 @@
                 <div class="footer-brand">
                     <a routerLink="/" class="logo">
                         <i class="pi pi-calculator"></i>
-                        <span>GST Buddy</span>
+                        <span>GSTBuddies</span>
                     </a>
                     <p>Your friendly AI companion for GST compliance. Because tax shouldn't be scary.</p>
                     <div class="social-links">
@@ -884,13 +887,13 @@
                 <!-- Contact -->
                 <div class="footer-links">
                     <h4>Contact</h4>
-                    <a href="mailto:support&#64;gstbuddy.in">support&#64;gstbuddy.in</a>
-                    <a href="mailto:sales&#64;gstbuddy.in">sales&#64;gstbuddy.in</a>
+                    <a href="mailto:support&#64;gstbuddies.com">support&#64;gstbuddies.com</a>
+                    <a href="mailto:sales&#64;gstbuddies.com">sales&#64;gstbuddies.com</a>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <p>© 2026 GST Buddy. Made with ❤️ in India for Indian Businesses.</p>
+                <p>© 2026 Gstbuddies. Made with ❤️ in India for Indian Businesses.</p>
             </div>
         </div>
     </footer>
@@ -910,7 +913,7 @@
                 <div>
                     <i class="pi pi-video" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;"></i>
                     <h3 style="margin: 0 0 10px;">Demo Video Coming Soon</h3>
-                    <p style="opacity: 0.7;">A 90-second walkthrough of GST Buddy in action</p>
+                    <p style="opacity: 0.7;">A 90-second walkthrough of Gstbuddies in action</p>
                 </div>
             </div>
         </div>
@@ -931,7 +934,7 @@
                 <li>Select your <strong>Party Ledger</strong> (e.g., Sundry Debtors)</li>
                 <li>Press <strong>Ctrl + E</strong> to export</li>
                 <li>Choose <strong>Excel (Spreadsheet)</strong> format</li>
-                <li>Save the file and upload it to GST Buddy</li>
+                <li>Save the file and upload it to Gstbuddies</li>
             </ol>
             } @else {
             <h3><i class="pi pi-download"></i> How to Export from Busy</h3>
@@ -940,7 +943,7 @@
                 <li>Go to <strong>Display → Account Books → Ledger</strong></li>
                 <li>Select the party ledger you want to export</li>
                 <li>Click the <strong>Excel</strong> button in the toolbar</li>
-                <li>Save the file and upload it to GST Buddy</li>
+                <li>Save the file and upload it to Gstbuddies</li>
             </ol>
             }
             <button pButton class="close-modal cta-secondary" (click)="closeHowToModal()">

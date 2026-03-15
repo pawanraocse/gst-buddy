@@ -19,8 +19,10 @@ import java.time.LocalDate;
 public class InterestRow {
 
     private String supplier;
+    private String invoiceNumber;
     private LocalDate purchaseDate;
     private LocalDate paymentDate;
+    private BigDecimal originalInvoiceValue;
     private BigDecimal principal;
     private int delayDays;
     private BigDecimal itcAmount;

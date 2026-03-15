@@ -103,6 +103,22 @@ class LedgerExcelParserTest {
         }
 
         @Test
+        @DisplayName("File containing 'Vch No.' successfully maps to invoiceNumber")
+        void standardWithInvoiceNumber() throws Exception {
+            Workbook wb = new XSSFWorkbook();
+            Sheet sheet = wb.createSheet();
+
+            setCells(sheet.createRow(0), "Date", "Vch No.", "Debit", "Credit", "Name");
+            setCells(sheet.createRow(1), 44652.0, "INV-001", null, 1000.0, "KD");
+
+            List<LedgerEntry> entries = parse(toBytes(wb), "KD STEEL.xlsx");
+
+            assertThat(entries).hasSize(1);
+            assertThat(entries.get(0).getInvoiceNumber()).isEqualTo("INV-001");
+            assertThat(entries.get(0).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PURCHASE);
+        }
+
+        @Test
         @DisplayName("Missing supplier → falls back to filename without extension")
         void missingSupplierFallsBackToFilename() throws Exception {
             Workbook wb = new XSSFWorkbook();

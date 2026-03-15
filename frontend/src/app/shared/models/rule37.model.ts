@@ -7,8 +7,10 @@ export type RiskCategory = 'SAFE' | 'AT_RISK' | 'BREACHED';
 
 export interface InterestRow {
   supplier: string;
+  invoiceNumber: string | null;
   purchaseDate: string;
   paymentDate: string | null;
+  originalInvoiceValue: number;
   principal: number;
   delayDays: number;
   itcAmount: number;
@@ -19,6 +21,7 @@ export interface InterestRow {
   riskCategory: RiskCategory;      // SAFE, AT_RISK, BREACHED
   gstr3bPeriod: string;            // Return period for reversal (e.g., "Jan 2025")
   daysToDeadline: number;          // Days until/since 180-day deadline (negative = breached)
+  itcAvailmentDate: string | null; // Date ITC was likely availed (20th of next month)
 }
 
 export interface CalculationSummary {

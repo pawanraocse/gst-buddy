@@ -26,14 +26,16 @@
                 @if (showExportAll()) {
                 <div class="detail-export" style="display: flex; gap: 0.5rem; align-items: center;">
                     <button class="export-compact-btn primary" (click)="exportAll.emit('issues')"
-                        pTooltip="Only late/unpaid transactions" tooltipPosition="bottom">
-                        <i class="pi pi-exclamation-triangle"></i>
-                        <span>Issues</span>
+                        pTooltip="Export only late/unpaid transactions">
+                        <i class="pi pi-file-excel"></i> Issues Excel
                     </button>
                     <button class="export-compact-btn secondary" (click)="exportAll.emit('complete')"
-                        pTooltip="All transactions including on-time" tooltipPosition="bottom">
-                        <i class="pi pi-file-excel"></i>
-                        <span>Full Report</span>
+                        pTooltip="Export all transactions including on-time payments">
+                        <i class="pi pi-list"></i> Full Excel
+                    </button>
+                    <button class="export-compact-btn secondary" (click)="exportAll.emit('gstr3b')"
+                        pTooltip="Export GSTR-3B Table 4(B)(2) Reversal Summary">
+                        <i class="pi pi-file-export"></i> GSTR-3B Summary
                     </button>
                 </div>
                 }
@@ -205,13 +207,14 @@
                     <thead>
                         <tr>
                             <th class="col-status">Status</th>
+                            <th class="col-invoice">Invoice No.</th>
                             <th class="col-date">Invoice Date</th>
                             @if (showAllColumns) {
-                            <th class="col-deadline">Payment Deadline</th>
+                            <th class="col-deadline" pTooltip="As per the second proviso to Section 16(2) of the CGST Act, payment must be made within 180 days from the date of issue of invoice." tooltipPosition="top">Payment Deadline <i class="pi pi-info-circle text-xs text-secondary ml-1"></i></th>
                             <th class="col-date">Paid On</th>
                             <th class="col-days">How Late</th>
                             }
-                            <th class="col-amount">Invoice Amount</th>
+                            <th class="col-amount">Invoice Value</th>
                             <th class="col-amount">ITC</th>
                             <th class="col-amount">ITC to Reverse</th>
                             <th class="col-amount">Interest</th>
@@ -228,6 +231,9 @@
                                     <i [class]="humanizeStatus(row.status).icon"></i>
                                     <span>{{ humanizeStatus(row.status).label }}</span>
                                 </div>
+                            </td>
+                            <td class="invoice-no-cell">
+                                <span class="invoice-number font-medium text-700">{{ row.invoiceNumber || '—' }}</span>
                             </td>
                             <td class="date-cell">{{ formatDate(row.purchaseDate) }}</td>
                             @if (showAllColumns) {
@@ -250,7 +256,18 @@
                                 </span>
                             </td>
                             }
-                            <td class="amount-cell invoice">{{ formatCurrency(row.principal) }}</td>
+                            <td class="amount-cell invoice">
+                                @if (row.originalInvoiceValue && row.originalInvoiceValue !== row.principal) {
+                                    <div class="partial-payment-block" pTooltip="Partial Payment: Reversal applies only to the proportionate unpaid balance" tooltipPosition="top">
+                                        <span class="original-value text-500 line-through text-xs block">{{ formatCurrency(row.originalInvoiceValue) }}</span>
+                                        <span class="pending-value font-bold block" [ngClass]="row.status === 'UNPAID' || !row.paymentDate ? 'text-red-600' : 'text-green-600'">
+                                            {{ formatCurrency(row.principal) }} {{ row.status === 'UNPAID' || !row.paymentDate ? 'Pending' : 'Paid Portion' }}
+                                        </span>
+                                    </div>
+                                } @else {
+                                    {{ formatCurrency(row.principal) }}
+                                }
+                            </td>
                             <td class="amount-cell itc">{{ formatCurrency(row.itcAmount) }}</td>
                             <td class="amount-cell itc-reverse">
                                 @if (row.status === 'UNPAID') {
@@ -259,7 +276,15 @@
                                     <span class="null-value">—</span>
                                 }
                             </td>
-                            <td class="amount-cell interest">{{ formatCurrency(row.interest) }}</td>
+                            <td class="amount-cell interest">
+                                @if (row.interest > 0) {
+                                    <span [pTooltip]="getInterestTooltip(row)" tooltipPosition="left" class="cursor-help">
+                                        {{ formatCurrency(row.interest) }}
+                                    </span>
+                                } @else {
+                                    <span class="null-value">—</span>
+                                }
+                            </td>
                             @if (showAllColumns) {
                             <td>
                                 <span class="gstr-badge">{{ row.gstr3bPeriod }}</span>
@@ -271,10 +296,9 @@
                             <td [attr.colspan]="showAllColumns ? 10 : 6">
                                 <div class="itc-reclaim-tip">
                                     <i class="pi pi-info-circle"></i>
-                                    <span>💡 You paid late — the reversed ITC of <strong>{{
+                                    <span>💡 You paid {{ row.originalInvoiceValue && row.originalInvoiceValue !== row.principal ? 'a portion of this invoice' : 'this invoice' }} late — the reversed ITC of <strong>{{
                                             formatCurrency(row.itcAmount) }}</strong>
-                                        can be re-claimed when you file GSTR-3B for <strong>{{ row.gstr3bPeriod
-                                            }}</strong>.</span>
+                                        can be re-claimed when you file GSTR-3B {{ row.gstr3bPeriod ? 'for' : '' }} <strong>{{ row.gstr3bPeriod || 'in the relevant month' }}</strong>.</span>
                                 </div>
                             </td>
                         </tr>

@@ -133,7 +133,7 @@ export class AccountSettingsComponent implements OnInit {
   shareWhatsApp(): void {
     const link = this.referralLink();
     if (link) {
-      const msg = encodeURIComponent(`Hey! Try GST Buddy for Rule 37 compliance checks. Sign up with my link and we both get bonus credits: ${link}`);
+      const msg = encodeURIComponent(`Hey! Try Gstbuddies for Rule 37 compliance checks. Sign up with my link and we both get bonus credits: ${link}`);
       window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
   }

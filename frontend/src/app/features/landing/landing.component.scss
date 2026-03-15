@@ -2498,6 +2498,11 @@ $gray-900: #111827;
     transition: all 0.3s ease;
     position: relative;
 
+    &:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+
     &.popular {
         border-color: $indigo-500;
         box-shadow:

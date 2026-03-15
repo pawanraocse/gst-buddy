@@ -108,6 +108,8 @@ public class LedgerExcelParser implements LedgerParser {
             int creditIndex = findIndex(normalizedHeaders, h -> h.contains("credit") || h.equals("cr"));
             int supplierIndex = findIndex(normalizedHeaders, h ->
                     h.contains("supplier") || h.contains("party") || h.contains("ledger") || h.contains("name"));
+            int invoiceIndex = findIndex(normalizedHeaders, h ->
+                    h.contains("vch") || h.contains("ref") || h.contains("invoice") || h.contains("bill"));
 
             // Position-based fallback: exactly 4 columns, no credit header
             if (colCount == 4 && creditIndex == -1) {
@@ -121,10 +123,10 @@ public class LedgerExcelParser implements LedgerParser {
                 throw new LedgerParseException("Could not find Debit or Credit columns. Found headers: " + String.join(", ", headers));
             }
 
-            log.info("Parsed header at row {} in '{}': dateCol={}, debitCol={}, creditCol={}, supplierCol={}",
-                    headerRowIndex, filename, dateIndex, debitIndex, creditIndex, supplierIndex);
+            log.info("Parsed header at row {} in '{}': dateCol={}, debitCol={}, creditCol={}, supplierCol={}, invoiceCol={}",
+                    headerRowIndex, filename, dateIndex, debitIndex, creditIndex, supplierIndex, invoiceIndex);
 
-            return parseHeaderBased(sheet, headerRowIndex, dateIndex, debitIndex, creditIndex, supplierIndex, defaultSupplier);
+            return parseHeaderBased(sheet, headerRowIndex, dateIndex, debitIndex, creditIndex, supplierIndex, invoiceIndex, defaultSupplier);
 
         } catch (LedgerParseException e) {
             throw e;
@@ -235,6 +237,7 @@ public class LedgerExcelParser implements LedgerParser {
             int creditIdx = -1;
             int dateIdx = -1;
             int particularsIdx = -1;
+            int invoiceIdx = -1;
 
             for (int r = markerRow + 1; r < sectionEnd; r++) {
                 Row row = sheet.getRow(r);
@@ -266,6 +269,7 @@ public class LedgerExcelParser implements LedgerParser {
             debitIdx = findIndex(subNormalized, h -> h.contains("debit") || h.equals("dr"));
             creditIdx = findIndex(subNormalized, h -> h.contains("credit") || h.equals("cr"));
             particularsIdx = findIndex(subNormalized, h -> h.contains("particulars") || h.contains("particular"));
+            invoiceIdx = findIndex(subNormalized, h -> h.contains("vch") || h.contains("ref") || h.contains("invoice") || h.contains("bill"));
 
             if (debitIdx == -1 && creditIdx == -1) {
                 log.warn("No Debit/Credit columns for supplier '{}'; skipping section", supplier);
@@ -294,12 +298,14 @@ public class LedgerExcelParser implements LedgerParser {
                 // Determine entry type using Tally's To/By convention
                 LedgerEntry.LedgerEntryType entryType = determineEntryType(dataRow, particularsIdx, debit, credit);
                 double amount = debit > 0 ? debit : credit;
+                String invoiceNumber = invoiceIdx >= 0 ? getCellStringValue(dataRow.getCell(invoiceIdx)).trim() : "";
 
                 allEntries.add(LedgerEntry.builder()
                         .date(date)
                         .entryType(entryType)
                         .supplier(supplier)
                         .amount(amount)
+                        .invoiceNumber(invoiceNumber.isEmpty() ? null : invoiceNumber)
                         .build());
             }
         }
@@ -377,7 +383,7 @@ public class LedgerExcelParser implements LedgerParser {
      */
     private List<LedgerEntry> parseHeaderBased(Sheet sheet, int headerRowIndex,
                                                int dateIndex, int debitIndex, int creditIndex,
-                                               int supplierIndex, String defaultSupplier) {
+                                               int supplierIndex, int invoiceIndex, String defaultSupplier) {
         List<LedgerEntry> entries = new ArrayList<>();
         for (int i = headerRowIndex + 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
@@ -393,12 +399,15 @@ public class LedgerExcelParser implements LedgerParser {
 
             String supplier = supplierIndex >= 0 ? getCellStringValue(row.getCell(supplierIndex)) : "";
             if (supplier == null || supplier.isBlank()) supplier = defaultSupplier;
+            
+            String invoiceNumber = invoiceIndex >= 0 ? getCellStringValue(row.getCell(invoiceIndex)).trim() : "";
 
             entries.add(LedgerEntry.builder()
                     .date(date)
                     .entryType(debit > 0 ? LedgerEntry.LedgerEntryType.PAYMENT : LedgerEntry.LedgerEntryType.PURCHASE)
                     .supplier(supplier.trim())
                     .amount(debit > 0 ? debit : credit)
+                    .invoiceNumber(invoiceNumber.isEmpty() ? null : invoiceNumber)
                     .build());
         }
         validateNotEmpty(entries);

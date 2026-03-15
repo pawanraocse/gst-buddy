@@ -29,11 +29,11 @@ class Rule37InterestCalculationServiceTest {
 
     // ─── Helper factory methods ───
     private LedgerEntry purchase(LocalDate date, double amount, String supplier) {
-        return new LedgerEntry(date, LedgerEntry.LedgerEntryType.PURCHASE, supplier, amount);
+        return new LedgerEntry(date, null, LedgerEntry.LedgerEntryType.PURCHASE, supplier, amount);
     }
 
     private LedgerEntry payment(LocalDate date, double amount, String supplier) {
-        return new LedgerEntry(date, LedgerEntry.LedgerEntryType.PAYMENT, supplier, amount);
+        return new LedgerEntry(date, null, LedgerEntry.LedgerEntryType.PAYMENT, supplier, amount);
     }
 
     @Nested
@@ -70,10 +70,10 @@ class Rule37InterestCalculationServiceTest {
             assertEquals(0, new BigDecimal("18000.00").compareTo(row.getItcAmount()),
                     "ITC amount should be 18000");
 
-            // Interest = 18000 * 0.18 * 212/365 ≈ 1882.19
-            assertTrue(row.getInterest().compareTo(new BigDecimal("1800")) > 0
-                    && row.getInterest().compareTo(new BigDecimal("1900")) < 0,
-                    "Interest should be approximately 1882");
+            // Interest = 18000 * 0.18 * 162/365 ≈ 1438.02
+            assertTrue(row.getInterest().compareTo(new BigDecimal("1400")) > 0
+                    && row.getInterest().compareTo(new BigDecimal("1500")) < 0,
+                    "Interest should be approximately 1438");
 
             assertEquals(InterestRow.RiskCategory.BREACHED, row.getRiskCategory());
         }
@@ -265,6 +265,15 @@ class Rule37InterestCalculationServiceTest {
 
             assertTrue(paidLate >= 1, "Should have at least one PAID_LATE entry for the matched portion");
             assertTrue(unpaid >= 1, "Should have at least one UNPAID entry for the remainder");
+            
+            // Verify original amount versus pending principal
+            InterestRow unpaidRow = summary.getDetails().stream()
+                    .filter(r -> r.getStatus() == InterestRow.InterestStatus.UNPAID)
+                    .findFirst()
+                    .orElseThrow();
+                    
+            assertEquals(100_000, unpaidRow.getOriginalInvoiceValue().doubleValue(), "Original invoice value must be 100k");
+            assertEquals(40_000, unpaidRow.getPrincipal().doubleValue(), "Pending balance (principal) must be 40k");
         }
     }
 

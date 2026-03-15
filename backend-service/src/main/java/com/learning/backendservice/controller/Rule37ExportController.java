@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/rule37/runs")
@@ -24,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class Rule37ExportController {
 
     private final Rule37CalculationRunService runService;
-    private final ExportStrategy exportStrategy;
+    private final List<ExportStrategy> exportStrategies;
 
     @Operation(summary = "Export run to Excel", description = "Download calculation run as Excel file")
     @ApiResponse(responseCode = "200", description = "Excel file")
@@ -36,11 +40,19 @@ public class Rule37ExportController {
             @Parameter(description = "Report type: 'issues' (default) or 'complete'")
             @RequestParam(value = "reportType", defaultValue = "issues") String reportType) {
         Rule37CalculationRun run = runService.getRunEntity(id);
-        byte[] bytes = exportStrategy.generate(run.getCalculationData(), run.getFilename(), reportType);
+
+        ExportStrategy strategy = exportStrategies.stream()
+                .filter(s -> s.supports(format, reportType))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported export format or report type"));
+
+        byte[] bytes = strategy.generate(run.getCalculationData(), run.getFilename(), reportType);
         String safeFilename = sanitizeFilename(run.getFilename())
-                + "_Interest_Calculation." + exportStrategy.getFileExtension();
+                + "_" + (reportType.equalsIgnoreCase("gstr3b") ? "GSTR3B_Summary" : "Interest_Calculation") 
+                + "." + strategy.getFileExtension();
+
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(exportStrategy.getContentType()))
+                .contentType(MediaType.parseMediaType(strategy.getContentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         org.springframework.http.ContentDisposition.attachment()
                                 .filename(safeFilename)
