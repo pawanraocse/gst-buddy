@@ -91,11 +91,40 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Deployment Status
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Send Email Notification
         run: |
-          if [ "${{ needs.build-and-deploy.result }}" == "success" ]; then
-            echo "✅ Budget deployment successful!"
-          else
-            echo "❌ Budget deployment failed!"
-            exit 1
-          fi
+          STATUS="${{ needs.build-and-deploy.result }}"
+          SUBJECT="[CI/CD] GST Buddy Deployment: $STATUS"
+          COLOR="#22c55e" # Green
+          [ "$STATUS" != "success" ] && COLOR="#ef4444" # Red
+          
+          HTML_BODY="<html><body style='font-family: sans-serif;'>
+            <h2 style='color: $COLOR;'>Deployment $STATUS</h2>
+            <p><strong>Environment:</strong> ${{ env.ENVIRONMENT }}</p>
+            <p><strong>Workflow:</strong> ${{ github.workflow }}</p>
+            <p><strong>Triggered by:</strong> ${{ github.actor }}</p>
+            <hr/>
+            <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}' 
+               style='display: inline-block; padding: 10px 20px; background: #6366f1; color: white; text-decoration: none; border-radius: 5px;'>
+               View Build Details
+            </a>
+          </body></html>"
+
+          aws sesv2 send-email \
+            --from-email-address "pawan.weblink@gmail.com" \
+            --destination '{"ToAddresses":["pawan.weblink@gmail.com"]}' \
+            --content "{
+              \"Simple\": {
+                \"Subject\": {\"Data\": \"$SUBJECT\"},
+                \"Body\": {
+                  \"Html\": {\"Data\": $(echo "$HTML_BODY" | jq -Rs .)}
+                }
+              }
+            }"
