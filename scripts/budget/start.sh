@@ -148,10 +148,9 @@ wait_for_container() {
 log_info "Starting services with PARALLEL strategy where possible..."
 echo ""
 
-# Phase 1: Infrastructure (OTEL & Redis)
+# Phase 1: Infrastructure (Redis)
 log_info "Phase 1/3: Starting infrastructure services..."
-docker-compose -f docker-compose.budget.yml up -d otel-collector redis 2>&1
-wait_for_container "gst-buddy-otel-collector" 30 || true
+docker-compose -f docker-compose.budget.yml up -d redis 2>&1
 wait_for_container "gst-buddy-redis" 30 || true
 
 # Phase 2: Service Discovery (Eureka - must be healthy before Java services)

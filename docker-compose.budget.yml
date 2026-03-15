@@ -35,13 +35,6 @@ services:
     restart: unless-stopped
     command: redis-server --save 60 1 --loglevel warning
 
-  # ============================================================================
-  # OpenTelemetry Collector
-  # ============================================================================
-  otel-collector:
-    extends:
-      file: docker-compose.base.yml
-      service: otel-collector
 
   # ============================================================================
   # Eureka Service Discovery
@@ -72,7 +65,6 @@ services:
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
       EUREKA_INSTANCE_HOSTNAME: gateway-service
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318/v1/traces
       # Production logging (change to DEBUG for troubleshooting)
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_GATEWAY: INFO
@@ -107,7 +99,6 @@ services:
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
       EUREKA_INSTANCE_HOSTNAME: backend-service
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318/v1/traces
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics
       MANAGEMENT_ENDPOINTS_WEB_BASE_PATH: /actuator
       server.port: 8082
@@ -151,7 +142,6 @@ services:
       EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
       EUREKA_INSTANCE_HOSTNAME: auth-service
       server.port: 8081
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318/v1/traces
       # Production logging (change to DEBUG for troubleshooting)
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics
