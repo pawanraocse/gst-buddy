@@ -22,11 +22,15 @@ public class InterestRow {
     private String invoiceNumber;
     private LocalDate purchaseDate;
     private LocalDate paymentDate;
-    private BigDecimal originalInvoiceValue;
-    private BigDecimal principal;
+    @Builder.Default
+    private BigDecimal originalInvoiceValue = BigDecimal.ZERO;
+    @Builder.Default
+    private BigDecimal principal = BigDecimal.ZERO;
     private int delayDays;
-    private BigDecimal itcAmount;
-    private BigDecimal interest;
+    @Builder.Default
+    private BigDecimal itcAmount = BigDecimal.ZERO;
+    @Builder.Default
+    private BigDecimal interest = BigDecimal.ZERO;
     private InterestStatus status;
 
     private LocalDate paymentDeadline;

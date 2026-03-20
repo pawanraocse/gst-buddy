@@ -8,8 +8,27 @@
 .compliance-view {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
     padding: 0.5rem;
+}
+
+.disclaimer-banner-inline {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 1px solid #bae6fd;
+    border-radius: 10px;
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #0369a1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: -0.5rem;
+
+    i {
+        font-size: 1rem;
+        color: #0ea5e9;
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -441,10 +460,11 @@
    📁 SUPPLIER SECTIONS - Expandable Cards
 ═══════════════════════════════════════════════════════════════════════════ */
 
-.supplier-section {
+.supplier-card {
     @include glass-card;
     overflow: visible;
     transition: all 0.3s ease;
+    margin-bottom: 1rem;
 
     &:hover {
         box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);

@@ -134,9 +134,9 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
 
         // Header
         Row headerRow = sheet.createRow(rowNum++);
-        String[] headers = { "Supplier", "Purchase Date", "Payment Date", "Principal Amount",
-                "Delay Days", "ITC (18%)", "ITC to Reverse", "Interest (18% p.a.)",
-                "Status", "Payment Deadline", "Risk Category", "GSTR-3B Period" };
+        String[] headers = { "Supplier", "Invoice/Voucher No.", "Purchase Date", "Payment Date",
+                "Ledger Amount (Incl. GST)", "Delay Days", "ITC (18%)", "ITC to Reverse",
+                "Interest (18% p.a.)", "Status", "Payment Deadline", "Risk Category", "GSTR-3B Period" };
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
@@ -150,46 +150,54 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
             // Col 0: Supplier (text)
             row.createCell(0).setCellValue(r.getSupplier());
 
-            // Col 1: Purchase Date (date)
-            setDateCell(row, 1, r.getPurchaseDate(), styles.dateStyle);
+            // Col 1: Invoice/Voucher No. (text)
+            row.createCell(1).setCellValue(
+                    r.getInvoiceNumber() != null ? r.getInvoiceNumber() : "");
 
-            // Col 2: Payment Date (date or "Unpaid")
+            // Col 2: Purchase Date (date)
+            setDateCell(row, 2, r.getPurchaseDate(), styles.dateStyle);
+
+            // Col 3: Payment Date (date or "Unpaid")
             if (r.getPaymentDate() != null) {
-                setDateCell(row, 2, r.getPaymentDate(), styles.dateStyle);
+                setDateCell(row, 3, r.getPaymentDate(), styles.dateStyle);
             } else {
-                row.createCell(2).setCellValue("Unpaid");
+                row.createCell(3).setCellValue("Unpaid");
             }
 
-            // Col 3: Principal Amount (number)
-            setCurrencyCell(row, 3, r.getPrincipal(), styles.currencyStyle);
+            // Col 4: Ledger Amount (number)
+            setCurrencyCell(row, 4, r.getPrincipal(), styles.currencyStyle);
 
-            // Col 4: Delay Days (integer)
-            setIntCell(row, 4, r.getDelayDays(), styles.integerStyle);
+            // Col 5: Delay Days (integer)
+            setIntCell(row, 5, r.getDelayDays(), styles.integerStyle);
 
-            // Col 5: ITC (number)
-            setCurrencyCell(row, 5, r.getItcAmount(), styles.currencyStyle);
+            // Col 6: ITC (number)
+            setCurrencyCell(row, 6, r.getItcAmount(), styles.currencyStyle);
 
-            // Col 6: ITC to Reverse (number only for UNPAID)
-            if (r.getStatus() == InterestRow.InterestStatus.UNPAID) {
-                setCurrencyCell(row, 6, r.getItcAmount(), styles.currencyStyle);
+            // Col 7: ITC to Reverse (number only for UNPAID with BREACHED risk)
+            if (r.getStatus() == InterestRow.InterestStatus.UNPAID
+                    && r.getRiskCategory() == InterestRow.RiskCategory.BREACHED) {
+                setCurrencyCell(row, 7, r.getItcAmount(), styles.currencyStyle);
+            } else if (r.getStatus() == InterestRow.InterestStatus.UNPAID
+                    && r.getRiskCategory() == InterestRow.RiskCategory.AT_RISK) {
+                row.createCell(7).setCellValue("Potential");
             }
             // else leave cell empty (no value)
 
-            // Col 7: Interest (number)
-            setCurrencyCell(row, 7, r.getInterest(), styles.currencyStyle);
+            // Col 8: Interest (number)
+            setCurrencyCell(row, 8, r.getInterest(), styles.currencyStyle);
 
-            // Col 8: Status (text)
-            row.createCell(8).setCellValue(formatStatus(r.getStatus()));
+            // Col 9: Status (text)
+            row.createCell(9).setCellValue(formatStatus(r.getStatus()));
 
-            // Col 9: Payment Deadline (date)
-            setDateCell(row, 9, r.getPaymentDeadline(), styles.dateStyle);
+            // Col 10: Payment Deadline (date)
+            setDateCell(row, 10, r.getPaymentDeadline(), styles.dateStyle);
 
-            // Col 10: Risk Category (text)
-            row.createCell(10).setCellValue(
+            // Col 11: Risk Category (text)
+            row.createCell(11).setCellValue(
                     r.getRiskCategory() != null ? r.getRiskCategory().name() : "");
 
-            // Col 11: GSTR-3B Period (text)
-            row.createCell(11).setCellValue(
+            // Col 12: GSTR-3B Period (text)
+            row.createCell(12).setCellValue(
                     r.getGstr3bPeriod() != null ? r.getGstr3bPeriod() : "");
         }
 
@@ -199,11 +207,11 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         Cell totalLabel = totalRow.createCell(0);
         totalLabel.setCellValue("TOTAL");
         totalLabel.setCellStyle(styles.headerStyle);
-        setCurrencyCell(totalRow, 6, summary.getTotalItcReversal(), styles.currencyBoldStyle);
-        setCurrencyCell(totalRow, 7, summary.getTotalInterest(), styles.currencyBoldStyle);
+        setCurrencyCell(totalRow, 7, summary.getTotalItcReversal(), styles.currencyBoldStyle);
+        setCurrencyCell(totalRow, 8, summary.getTotalInterest(), styles.currencyBoldStyle);
 
         // Column widths
-        int[] widths = { 30, 15, 15, 18, 12, 18, 18, 20, 12, 15, 15, 15 };
+        int[] widths = { 30, 20, 15, 15, 20, 12, 18, 18, 20, 12, 15, 15, 15 };
         for (int i = 0; i < widths.length; i++) {
             sheet.setColumnWidth(i, widths[i] * 256);
         }

@@ -25,15 +25,15 @@
 
 | Asset Type | Recommended Tool | Reasoning |
 |---|---|---|
-| **3D Isometric Illustrations** | **Midjourney v6.1** | Best at consistent stylized 3D scenes with coherent lighting |
-| **Flat/Outlined Icons** | **DALL·E 3** | Strong at isolated icon subjects on transparent backgrounds |
-| **Animated Icons (GIF)** | **Midjourney v6.1 + Photoshop/ezgif** | Generate key frames in MJ, compile as lightweight GIF |
-| **Gradient Meshes / Textures** | **Midjourney v6.1** | Excels at abstract generative art and color compositions |
-| **Lottie Animations** | **LottieFiles AI + After Effects** | Generate base keyframes in LottieFiles, refine in AE |
-| **GIF Loaders** | **Rive** or **LottieFiles AI** | Lightweight interactive animations, exportable as JSON |
-| **Product Videos (short)** | **Sora** | Best for synthetic product walkthrough footage |
-| **Feature Explainer Videos** | **Kling 1.6** | Good at scene-to-scene transitions with text overlays |
-| **Avatar Illustrations** | **DALL·E 3** | Consistent style for portrait illustrations |
+| **3D Isometric Illustrations** | **Leonardo.ai** or **Microsoft Designer** | Leonardo offers daily free credits; Microsoft is completely free (via Bing) |
+| **Flat/Outlined Icons** | **Microsoft Designer** | Excellent at isolated icons; completely free for personal use |
+| **Animated Icons (GIF)** | **Leonardo.ai Motion** or **Canva** | Generate base style in Leonardo, animate with free Motion credits |
+| **Gradient Meshes / Textures** | **Leonardo.ai** | High-quality abstract generations with generous free tier |
+| **Lottie Animations** | **LottieFiles AI (Free Tier)** | Good for basic compliance-style loops |
+| **GIF Loaders** | **Loading.io (Free)** or **Rive** | Standard for web loaders; easy to use without a subscription |
+| **Product Videos (short)** | **Luma Dream Machine** | High-quality video; includes free trial credits monthly |
+| **Feature Explainer Videos** | **Runway Gen-3 Alpha** or **Pika.art** | Both offer limited free trials or daily refillable credits |
+| **Avatar Illustrations** | **Microsoft Designer** | Clean, consistent style for portrait illustrations; free |
 
 ---
 
@@ -46,14 +46,13 @@
 **In-App Location:** Landing page, hero section right side (`div.ai-companion`)
 **Output Path:** `frontend/src/assets/images/hero/hero-illustration.png`
 
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D illustration of a friendly robot assistant holding a glowing document 
 with a green checkmark floating above it. The robot has soft, rounded features with 
 an indigo (#6366f1) and violet (#8b5cf6) color scheme. A calculator and spreadsheet 
 float nearby. Soft ambient lighting, no harsh shadows, white/transparent background. 
-Clean, modern SaaS product illustration style. Rounded edges on all objects. 
---ar 4:3 --style raw --no text, watermark, realistic
+Clean, modern SaaS product illustration style. Rounded edges on all objects.
 ```
 
 **Negative Prompts:** text, watermark, realistic human, dark background, harsh shadows, complex patterns
@@ -67,13 +66,12 @@ Clean, modern SaaS product illustration style. Rounded edges on all objects.
 **Dimensions:** 400×300px → WebP (<50KB)  
 **In-App Location:** Dashboard when no calculations have been run
 
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D illustration of a friendly small robot sitting on a stack of blank 
 documents, looking up curiously with a magnifying glass. Soft indigo (#6366f1) and 
 teal (#14b8a6) color palette. Clean white background, no shadows, minimal style. 
-A thought bubble with "?" floats nearby. Modern SaaS empty state illustration. 
---ar 4:3 --style raw --no text, watermark, realistic
+A thought bubble with "?" floats nearby. Modern SaaS empty state illustration.
 ```
 
 ---
@@ -85,7 +83,7 @@ A thought bubble with "?" floats nearby. Modern SaaS empty state illustration.
 **Dimensions:** 300×250px → WebP (<40KB)  
 **In-App Location:** Error pages, failed upload states
 
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A soft 3D isometric illustration of a small robot looking confused next to a broken 
 document with a red warning triangle. Color palette: indigo and rose (#f43f5e). 
@@ -107,73 +105,67 @@ Clean white background, rounded forms, modern SaaS style. No text.
 
 **Filename:** `rule-37.png`  
 **Output Path:** `frontend/src/assets/images/landing/icons/rule-37.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D icon of a calendar showing "180" with a clock overlay and a circular 
 arrow indicating reversal. Indigo (#6366f1) and amber (#f59e0b) accents. Soft 
-rounded edges, clean white background, modern fintech icon style. 
---ar 1:1 --style raw --no text, watermark
+rounded edges, clean white background, modern fintech icon style.
 ```
 
 ### 3.2 Rule 36(4) — ITC Matching
 
 **Filename:** `rule-36-4.png`  
 **Output Path:** `frontend/src/assets/images/landing/icons/rule-36-4.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D icon of two documents side by side with connecting dotted lines showing 
 a matching/comparison process. One document has a green checkmark, another has a 
 yellow question mark. Indigo (#6366f1) and teal (#14b8a6) palette. Clean white 
-background, rounded soft 3D style. 
---ar 1:1 --style raw --no text
+background, rounded soft 3D style.
 ```
 
 ### 3.3 Rule 86B — Credit Restriction
 
 **Filename:** `rule-86b.png`  
 **Output Path:** `frontend/src/assets/images/landing/icons/rule-86b.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D icon of a shield with a percentage meter at 99% and a lock symbol. 
 Indigo (#6366f1) and rose (#f43f5e) color accents. Rounded 3D forms, clean white 
-background, modern SaaS icon. 
---ar 1:1 --style raw --no text
+background, modern SaaS icon.
 ```
 
 ### 3.4 Rule 16(4) — ITC Time Limit
 
 **Filename:** `rule-16-4.png`  
 **Output Path:** `frontend/src/assets/images/landing/icons/rule-16-4.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D icon of an hourglass with a document and clock showing a deadline. 
 Sand inside is indigo (#6366f1) colored. Amber (#f59e0b) accent for urgency. 
-Rounded soft edges, clean white background, fintech icon style. 
---ar 1:1 --style raw --no text
+Rounded soft edges, clean white background, fintech icon style.
 ```
 
 ### 3.5 GSTR-3B Compliance
 
 **Filename:** `gstr-3b.png`  
 **Output Path:** `frontend/src/assets/images/landing/icons/gstr-3b.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D icon of a filing form/tax return document with a green checkmark badge 
 and the Indian rupee (₹) symbol. Indigo and teal green palette. Clean white 
 background, rounded soft 3D style.
---ar 1:1 --style raw --no text
 ```
 
 ### 3.6 GSTR-9 Annual Return
 
 **Filename:** `gstr-9.png`  
 **Output Path:** `frontend/src/assets/images/landing/icons/gstr-9.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D icon of an annual report book with a bar chart and year "2025" on the 
 cover. Indigo (#6366f1) and violet (#8b5cf6) gradient. Rounded 3D forms, white 
-background. 
---ar 1:1 --style raw --no text
+background.
 ```
 
 ---
@@ -189,7 +181,7 @@ background.
 
 **Filename:** `smart-calc.png`  
 **Output Path:** `frontend/src/assets/images/landing/features/smart-calc.png`
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A soft 3D isometric icon of a lightning bolt striking a calculator, with small 
 sparkle particles around it. Indigo (#6366f1) and yellow accent. Clean white 
@@ -200,7 +192,7 @@ background, rounded edges, SaaS product icon. No text.
 
 **Filename:** `peace-of-mind.png`  
 **Output Path:** `frontend/src/assets/images/landing/features/peace-of-mind.png`
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A soft 3D isometric icon of a dashboard screen showing a large green checkmark 
 with a small happy face emoji. Teal (#14b8a6) and white palette. Clean background, 
@@ -211,7 +203,7 @@ rounded edges, modern app icon. No text.
 
 **Filename:** `security.png`  
 **Output Path:** `frontend/src/assets/images/landing/features/security.png`
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A soft 3D isometric icon of a shield with a lock symbol and a cloud inside. 
 Indigo blue (#6366f1) shield with gold accent lock. Clean white background, 
@@ -222,7 +214,7 @@ rounded soft edges. No text.
 
 **Filename:** `auto-sync.png`  
 **Output Path:** `frontend/src/assets/images/landing/features/auto-sync.png`
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A soft 3D isometric icon of two circular arrows forming a sync loop around a 
 gear/cog. Indigo (#6366f1) and violet (#8b5cf6) gradient. Clean white background, 
@@ -233,7 +225,7 @@ rounded 3D style. No text.
 
 **Filename:** `reports.png`  
 **Output Path:** `frontend/src/assets/images/landing/features/reports.png`
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A soft 3D isometric icon of an Excel spreadsheet with a download arrow. Green 
 accent for the Excel badge. Indigo (#6366f1) document. Clean white background, 
@@ -253,36 +245,33 @@ rounded edges. No text.
 
 **Filename:** `step-1-export.png`  
 **Output Path:** `frontend/src/assets/images/steps/step-1-export.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D scene: A laptop showing Tally software with an Excel file flying out 
 from the screen into a floating folder. Soft indigo and green accents. Clean white 
-background, rounded 3D forms, modern SaaS illustration. 
---ar 1:1 --style raw --no text
+background, rounded 3D forms, modern SaaS illustration.
 ```
 
 ### 5.2 Step 2 — Upload & Go
 
 **Filename:** `step-2-upload.png`  
 **Output Path:** `frontend/src/assets/images/steps/step-2-upload.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D scene: A hand dragging an Excel file towards a cloud upload portal 
 with an upward arrow. Small sparkle particles around the upload area. Indigo and 
-violet palette. Clean white background, rounded edges. 
---ar 1:1 --style raw --no text
+violet palette. Clean white background, rounded edges.
 ```
 
 ### 5.3 Step 3 — Get Results
 
 **Filename:** `step-3-results.png`  
 **Output Path:** `frontend/src/assets/images/steps/step-3-results.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D scene: A floating dashboard card showing "All Clear ✓" with a green 
 checkmark, alongside a small pie chart and bar graph. Teal and indigo palette. 
 Clean white background, celebration confetti particles nearby.
---ar 1:1 --style raw --no text
 ```
 
 ---
@@ -298,53 +287,49 @@ Clean white background, celebration confetti particles nearby.
 
 **Filename:** `auth-login-illustration.png`  
 **Output Path:** `frontend/src/assets/images/auth/auth-login-illustration.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D illustration of a friendly robot assistant waving hello with one hand, 
 standing next to a shield with a green checkmark on it. The robot has soft rounded 
 features with indigo (#6366f1) and violet (#8b5cf6) color scheme. A small 
 "Welcome" speech bubble floats above. Soft ambient lighting, transparent/white 
-background, modern SaaS product illustration. 
---ar 1:1 --style raw --no text, watermark, realistic, dark background
+background, modern SaaS product illustration.
 ```
 
 ### 6.2 Signup — Robot Holding Checkmark
 
 **Filename:** `auth-signup-illustration.png`  
 **Output Path:** `frontend/src/assets/images/auth/auth-signup-illustration.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D illustration of a friendly robot assistant celebrating while holding a 
 large green checkmark above its head. Small confetti particles float around. 
 A blank user profile card floats nearby with a "+" symbol. Indigo (#6366f1) and 
-teal (#14b8a6) palette. Transparent/white background, rounded soft 3D forms. 
---ar 1:1 --style raw --no text, watermark, realistic
+teal (#14b8a6) palette. Transparent/white background, rounded soft 3D forms.
 ```
 
 ### 6.3 Verify Email — Envelope with Sparkles
 
 **Filename:** `auth-verify-illustration.png`  
 **Output Path:** `frontend/src/assets/images/auth/auth-verify-illustration.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D illustration of a floating open envelope with a glowing letter coming 
 out, surrounded by golden sparkle particles. A small "6-digit code" badge floats 
 nearby. Indigo (#6366f1) envelope with teal (#14b8a6) sparkle accents. Clean white 
-background, soft ambient lighting. 
---ar 1:1 --style raw --no text, watermark, realistic
+background, soft ambient lighting.
 ```
 
 ### 6.4 Password Reset — Lock with Key
 
 **Filename:** `auth-reset-illustration.png`  
 **Output Path:** `frontend/src/assets/images/auth/auth-reset-illustration.png`
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Isometric 3D illustration of a friendly lock character with a floating golden key 
 approaching it. Small shield icons float nearby for security. Indigo (#6366f1) lock 
 with gold (#f59e0b) key accents. Clean white background, rounded soft 3D forms, 
-modern SaaS style. 
---ar 1:1 --style raw --no text, watermark, realistic
+modern SaaS style.
 ```
 
 ### 6.5 Auth Background Dot Pattern
@@ -383,12 +368,11 @@ modern SaaS style.
 **Dimensions:** 1920×1080 → WebP (<80KB)  
 **In-App Location:** Pricing section background
 
-**Prompt (Midjourney v6.1):**
+**Prompt (Leonardo.ai - Phoenix):**
 ```
 Abstract gradient mesh background in deep navy (#0f172a) with subtle indigo 
 (#6366f1) and violet (#8b5cf6) glowing orbs. Very minimal, dark, moody. Grain 
-noise texture overlaid. Ultra-wide aspect ratio. 
---ar 16:9 --style raw --no objects, text, shapes
+noise texture overlaid. Ultra-wide aspect ratio.
 ```
 
 ### 6.3 Glass Noise Texture Overlay
@@ -397,7 +381,7 @@ noise texture overlaid. Ultra-wide aspect ratio.
 **Dimensions:** 200×200px, tileable → PNG (<5KB)  
 **Usage:** CSS `background-image` overlay on glass cards for frosted effect
 
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A seamless tileable noise/grain texture in very light gray. Subtle, barely visible 
 static noise pattern. Clean, minimal. Transparent background with white noise dots 
@@ -500,13 +484,13 @@ sparkle. Violet (#8b5cf6) coin. Very fast, 12 frames. Minimal SaaS style.
 
 ### 8.1 Landing Page Hero Video (Background Loop)
 
-**Platform:** Sora  
+**Platform:** Luma Dream Machine (Free Trial)  
 **Duration:** 8 seconds, loop  
 **Dimensions:** 1920×1080  
 **Format:** WebM (<2MB) + MP4 fallback  
 **In-App Location:** Optional: hero section background video (behind particles)
 
-**Sora Prompt:**
+**Luma Prompt:**
 ```
 Slow, cinematic camera movement over an abstract isometric landscape of floating 
 glass cards, documents, and data visualizations. Soft indigo and violet ambient 
@@ -518,7 +502,7 @@ No text. Dreamy and premium feel. Loopable. 8 seconds.
 
 ### 8.2 Product Walkthrough Demo (90 seconds)
 
-**Platform:** Kling 1.6 (scene-by-scene)  
+**Platform:** Runway Gen-3 Alpha (Free Trial) (scene-by-scene)  
 **Duration:** 90 seconds  
 **Format:** MP4 (1080p)  
 **In-App Location:** Landing page video modal
@@ -536,7 +520,7 @@ No text. Dreamy and premium feel. Loopable. 8 seconds.
 | 7. Pricing | 10s | Static | Pricing cards appear. "Try Free" highlighted. | Fair, accessible |
 | 8. CTA | 10s | Slow zoom in on CTA | "Start Free" button with glow. Text: "5 free compliance checks" | Motivating, low-friction |
 
-**Kling Prompt (Shot 2 example):**
+**Runway Prompt (Shot 2 example):**
 ```
 A close-up shot of an Indian accountant sitting at a desk covered with Excel 
 spreadsheets and tax forms. The person looks slightly overwhelmed but not 
@@ -557,7 +541,7 @@ setting. Camera slowly zooms in. Duration: 5 seconds.
 
 **Filename:** `avatar-1.png`  
 **Output Path:** `frontend/src/assets/images/landing/avatars/avatar-1.png`
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A friendly illustrated portrait avatar of a middle-aged Indian man with glasses 
 and a warm smile. Professional appearance, wearing a formal shirt. Soft, clean 
@@ -569,7 +553,7 @@ No text.
 
 **Filename:** `avatar-2.png`  
 **Output Path:** `frontend/src/assets/images/landing/avatars/avatar-2.png`
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A friendly illustrated portrait avatar of an Indian woman in her 30s with a 
 confident smile. Professional appearance, wearing business attire. Soft, clean 
@@ -581,7 +565,7 @@ No text.
 
 **Filename:** `avatar-3.png`  
 **Output Path:** `frontend/src/assets/images/landing/avatars/avatar-3.png`
-**Prompt (DALL·E 3):**
+**Prompt (Microsoft Designer):**
 ```
 A friendly illustrated portrait avatar of a young Indian man with a casual smile. 
 Business casual appearance. Soft, clean illustration style with subtle violet tint. 
@@ -609,7 +593,7 @@ Instead of a dry product walkthrough, the landing page video should be an **Inte
 - **Vibe:** High-energy, professional, empathetic to the user's struggle. Use UI animations mixed with live-action B-roll or expressive 3D avatars.
 
 > [!NOTE]
-> *This asset cannot be generated by static AI image tools (like Midjourney/DALL-E). It requires external video production tools (like Adobe After Effects, Canva Video, or an AI video generator like Runway / Synthesia).*
+> *This asset cannot be generated by static AI image tools (like Leonardo / Microsoft Designer). It requires external video production tools (like Adobe After Effects, Canva Video, or a trial video generator like Runway / Luma).*
 
 ---
 

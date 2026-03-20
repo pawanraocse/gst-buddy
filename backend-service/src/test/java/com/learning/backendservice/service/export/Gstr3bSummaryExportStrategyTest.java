@@ -44,19 +44,25 @@ class Gstr3bSummaryExportStrategyTest {
                 .supplier("Supplier A")
                 .status(InterestRow.InterestStatus.UNPAID)
                 .itcAmount(new BigDecimal("100.00"))
+                .interest(BigDecimal.ZERO)
                 .gstr3bPeriod("Feb 2025")
+                .riskCategory(InterestRow.RiskCategory.BREACHED)
                 .build();
         InterestRow r2 = InterestRow.builder()
                 .supplier("Supplier B")
                 .status(InterestRow.InterestStatus.UNPAID)
                 .itcAmount(new BigDecimal("200.00"))
+                .interest(BigDecimal.ZERO)
                 .gstr3bPeriod("Feb 2025")
+                .riskCategory(InterestRow.RiskCategory.BREACHED)
                 .build();
         InterestRow r3 = InterestRow.builder()
                 .supplier("Supplier C")
                 .status(InterestRow.InterestStatus.UNPAID)
                 .itcAmount(new BigDecimal("150.00"))
+                .interest(BigDecimal.ZERO)
                 .gstr3bPeriod("Mar 2025")
+                .riskCategory(InterestRow.RiskCategory.BREACHED)
                 .build();
         // Paid on time shouldn't be included
         InterestRow r4 = InterestRow.builder()

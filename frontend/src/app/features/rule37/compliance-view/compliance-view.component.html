@@ -181,8 +181,16 @@
     </div>
     } @else {
 
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         📊 COMPLIANCE TABLE — Detailed Ledger Analysis
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="disclaimer-banner-inline">
+        <i class="pi pi-info-circle"></i>
+        <span>All amounts are estimates based on your ledger data at 18% GST. Verify with your Tax Consultant before filing.</span>
+    </div>
+
     @for (group of filteredSupplierGroups; track group.supplier) {
-    <section class="supplier-section" [class.expanded]="isSupplierExpanded(group.supplier)">
+    <article class="supplier-card" [class.expanded]="isSupplierExpanded(group.supplier)">
 
         <!-- Supplier Header (Clickable to Expand) -->
         <header class="supplier-header" (click)="toggleSupplier(group.supplier)">
@@ -239,14 +247,14 @@
                             @if (showAllColumns) {
                             <th class="col-deadline" pTooltip="As per the second proviso to Section 16(2) of the CGST Act, payment must be made within 180 days from the date of issue of invoice." tooltipPosition="top">Payment Deadline <i class="pi pi-info-circle text-xs text-secondary ml-1"></i></th>
                             <th class="col-date">Paid On</th>
-                            <th class="col-days">How Late</th>
+                            <th class="col-days">Delay (Days)</th>
                             }
-                            <th class="col-amount">Invoice Value</th>
-                            <th class="col-amount">Est. ITC</th>
-                            <th class="col-amount">Est. Reversal</th>
-                            <th class="col-amount">Est. Interest</th>
+                            <th class="col-amount" pTooltip="Closing balance/amount from creditor ledger (Tax-inclusive)" tooltipPosition="top">Ledger Amount (Incl. Tax)</th>
+                            <th class="col-amount" pTooltip="Estimated Input Tax Credit computed as Ledger Amount × 18/118. Actual ITC depends on invoice-level GST rate." tooltipPosition="top">ITC @ 18% <i class="pi pi-info-circle text-xs text-secondary ml-1"></i></th>
+                            <th class="col-amount">Reversal</th>
+                            <th class="col-amount">Interest</th>
                             @if (showAllColumns) {
-                            <th class="col-gstr">File In</th>
+                            <th class="col-gstr">Return Period</th>
                             }
                         </tr>
                     </thead>
@@ -297,8 +305,13 @@
                             </td>
                             <td class="amount-cell itc">{{ formatCurrency(row.itcAmount) }}</td>
                             <td class="amount-cell itc-reverse">
-                                @if (row.status === 'UNPAID') {
+                                @if (row.riskCategory === 'BREACHED') {
                                     {{ formatCurrency(row.itcAmount) }}
+                                } @else if (row.riskCategory === 'AT_RISK') {
+                                    <div class="potential-reversal" pTooltip="Potential liability if unpaid by deadline" tooltipPosition="left">
+                                        <span class="val">{{ formatCurrency(row.itcAmount) }}</span>
+                                        <span class="tag">Potential</span>
+                                    </div>
                                 } @else {
                                     <span class="null-value">—</span>
                                 }
@@ -385,9 +398,9 @@
             </div>
             }
         </div>
-</div>
-}
-</section>
+    </div>
+    }
+</article>
 }
 }
 

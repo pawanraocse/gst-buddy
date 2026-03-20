@@ -173,6 +173,12 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
             BigDecimal principal, BigDecimal originalAmount, int delayDays, String invoiceNumber, LocalDate asOnDate) {
 
         LocalDate deadline = purchaseDate.plusDays(DAYS_THRESHOLD);
+        LocalDate itcAvailmentDate = calculateItcAvailmentDate(purchaseDate);
+
+        // GST-014: Show potential ITC at risk so user sees what's at stake.
+        // Interest stays at zero — obligation not triggered until 180 days breached.
+        BigDecimal potentialItc = principal.multiply(ITC_NUMERATOR, MC)
+                .divide(ITC_DENOMINATOR, SCALE, RM);
 
         return InterestRow.builder()
                 .supplier(supplier)
@@ -189,7 +195,7 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .riskCategory(InterestRow.RiskCategory.AT_RISK)
                 .gstr3bPeriod(formatGstr3bPeriod(deadline))
                 .daysToDeadline(daysBetween(asOnDate, deadline))
-                .itcAvailmentDate(null)
+                .itcAvailmentDate(itcAvailmentDate)
                 .build();
     }
 
@@ -247,7 +253,8 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalItcReversal = results.stream()
-                .filter(r -> r.getStatus() == InterestRow.InterestStatus.UNPAID)
+                .filter(r -> r.getStatus() == InterestRow.InterestStatus.UNPAID
+                        && r.getRiskCategory() == InterestRow.RiskCategory.BREACHED)
                 .map(InterestRow::getItcAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
