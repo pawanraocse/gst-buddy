@@ -236,8 +236,32 @@ AMPLIFY_APP_ID=$(terraform output -raw frontend_url 2>/dev/null | sed 's/.*main\
 if [ -n "$AMPLIFY_APP_ID" ] && [ "$AMPLIFY_APP_ID" != "" ]; then
     log_info "Triggering Amplify build for app: $AMPLIFY_APP_ID"
     
-    if aws amplify start-job --app-id "$AMPLIFY_APP_ID" --branch-name main --job-type RELEASE --region "$AWS_REGION" 2>/dev/null; then
-        log_success "Amplify build triggered! Frontend will be ready in ~3-5 minutes."
+    JOB_OUTPUT=$(aws amplify start-job --app-id "$AMPLIFY_APP_ID" --branch-name main --job-type RELEASE --region "$AWS_REGION" 2>/dev/null || echo "")
+    if [ -n "$JOB_OUTPUT" ]; then
+        JOB_ID=$(echo "$JOB_OUTPUT" | jq -r '.jobSummary.jobId')
+        log_success "Amplify build triggered! Job ID: $JOB_ID"
+        log_info "Tracking frontend build status (this usually takes 3-5 minutes)..."
+        
+        while true; do
+            JOB_STATUS=$(aws amplify get-job --app-id "$AMPLIFY_APP_ID" --branch-name main --job-id "$JOB_ID" --region "$AWS_REGION" 2>/dev/null | jq -r '.job.summary.status' || echo "UNKNOWN")
+            
+            if [ "$JOB_STATUS" == "SUCCEED" ]; then
+                echo ""
+                log_success "Frontend build completed successfully!"
+                break
+            elif [ "$JOB_STATUS" == "FAILED" ]; then
+                echo ""
+                log_error "Frontend build failed. Please check the AWS Amplify console."
+                break
+            elif [ "$JOB_STATUS" == "CANCELLED" ]; then
+                echo ""
+                log_warn "Frontend build was cancelled."
+                break
+            else
+                echo -n "."
+                sleep 15
+            fi
+        done
     else
         log_warn "Failed to trigger Amplify build. You may need to trigger manually:"
         echo "  aws amplify start-job --app-id $AMPLIFY_APP_ID --branch-name main --job-type RELEASE"
