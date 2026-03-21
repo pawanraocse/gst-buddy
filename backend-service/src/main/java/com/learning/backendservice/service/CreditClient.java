@@ -25,8 +25,9 @@ public class CreditClient {
                 .build();
     }
 
+    // ISSUE-008: No @Retry on credit mutations — retries risk double-charge.
+    // Orchestrator handles failure via @Transactional rollback.
     @CircuitBreaker(name = "authService")
-    @Retry(name = "authService")
     public CreditWalletResponse consumeCredits(String userId, int credits,
             String referenceId, String idempotencyKey) {
         log.info("Requesting credit consumption: userId={}, credits={}, idempotencyKey={}",

@@ -111,12 +111,16 @@ public class CreditServiceImpl implements CreditService {
             throw new IllegalArgumentException("Credits must be positive, got: " + credits);
         }
 
-        if (idempotencyKey != null && transactionRepository.existsByIdempotencyKey(idempotencyKey)) {
-            log.info("Consumption already processed: idempotencyKey={}", idempotencyKey);
+        // ISSUE-008: Idempotency check moved INSIDE the transaction (consumeCreditsInNewTx)
+        // to eliminate the TOCTOU race. The outer check is removed.
+        try {
+            return executeWithOptimisticRetry(() -> consumeCreditsInNewTx(userId, credits, referenceId, idempotencyKey));
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Safety net: unique constraint on idempotency_key caught a concurrent duplicate.
+            // This is expected under race conditions — return current wallet gracefully.
+            log.warn("Concurrent duplicate caught by DB constraint: idempotencyKey={}", idempotencyKey);
             return getWallet(userId);
         }
-
-        return executeWithOptimisticRetry(() -> consumeCreditsInNewTx(userId, credits, referenceId, idempotencyKey));
     }
 
     /**
@@ -126,6 +130,12 @@ public class CreditServiceImpl implements CreditService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public WalletDto consumeCreditsInNewTx(String userId, int credits,
             String referenceId, String idempotencyKey) {
+        // ISSUE-008: Idempotency check INSIDE the transaction — no TOCTOU gap
+        if (idempotencyKey != null && transactionRepository.existsByIdempotencyKey(idempotencyKey)) {
+            log.info("Consumption already processed: idempotencyKey={}", idempotencyKey);
+            return getWallet(userId);
+        }
+
         var wallet = getOrCreateWallet(userId);
 
         if (wallet.getRemainingCredits() < credits) {

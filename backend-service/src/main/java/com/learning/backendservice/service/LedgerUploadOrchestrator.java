@@ -23,7 +23,6 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
@@ -199,7 +198,8 @@ public class LedgerUploadOrchestrator {
 
         // ── Phase 4: Consume credits AFTER save (ISSUE-002) ──
         // If this fails, @Transactional ensures the saved run is rolled back.
-        String idempotencyKey = "analysis-" + createdBy + "-" + UUID.randomUUID();
+        // ISSUE-008: Use deterministic key (run ID) so retries reuse the same key
+        String idempotencyKey = "analysis-" + run.getId();
         CreditWalletResponse walletAfter;
         try {
             walletAfter = creditClient.consumeCredits(
