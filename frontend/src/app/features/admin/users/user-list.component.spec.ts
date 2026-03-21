@@ -28,7 +28,7 @@ describe('UserListComponent', () => {
                 provideAnimations(),
                 { provide: InvitationService, useValue: invSpy },
                 { provide: DialogService, useValue: dialogSpy },
-                { provide: MessageService, useValue: jasmine.createSpyObj('MessageService', ['add']) }
+                { provide: MessageService, useClass: MessageService }
             ],
             schemas: [NO_ERRORS_SCHEMA]
         })
@@ -36,7 +36,7 @@ describe('UserListComponent', () => {
                 set: {
                     providers: [
                         { provide: DialogService, useValue: dialogSpy },
-                        { provide: MessageService, useValue: jasmine.createSpyObj('MessageService', ['add']) }
+                        { provide: MessageService, useClass: MessageService }
                     ]
                 }
             })

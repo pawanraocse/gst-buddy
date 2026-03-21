@@ -19,7 +19,7 @@ describe('RoleListComponent', () => {
     beforeEach(async () => {
         const rSpy = jasmine.createSpyObj('RoleService', ['getRoles']);
         const dSpy = jasmine.createSpyObj('DialogService', ['open']);
-        const mSpy = jasmine.createSpyObj('MessageService', ['add']);
+
 
         await TestBed.configureTestingModule({
             imports: [RoleListComponent],
@@ -30,7 +30,7 @@ describe('RoleListComponent', () => {
                 provideAnimations(),
                 { provide: RoleService, useValue: rSpy },
                 { provide: DialogService, useValue: dSpy },
-                { provide: MessageService, useValue: mSpy }
+                { provide: MessageService, useClass: MessageService }
             ],
             schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();

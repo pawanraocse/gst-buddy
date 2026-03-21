@@ -44,7 +44,7 @@ public class Rule37ExportController {
         ExportStrategy strategy = exportStrategies.stream()
                 .filter(s -> s.supports(format, reportType))
                 .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported export format or report type"));
+                .orElseThrow(() -> new IllegalArgumentException("Unsupported export format or report type"));
 
         byte[] bytes = strategy.generate(run.getCalculationData(), run.getFilename(), reportType);
         String safeFilename = sanitizeFilename(run.getFilename())

@@ -73,18 +73,20 @@ describe('AdminApiService', () => {
     const req = httpTesting.expectOne(r =>
       r.url === `${BASE}/users` &&
       r.params.get('status') === 'ACTIVE' &&
-      r.params.get('search') === 'test'
+      r.params.get('search') === 'test' &&
+      r.params.get('size') === '1000'
     );
     expect(req.request.method).toBe('GET');
-    req.flush([]);
+    req.flush({ content: [], totalElements: 0 });
   });
 
   it('should fetch users without filters', () => {
     service.getUsers().subscribe();
 
-    const req = httpTesting.expectOne(`${BASE}/users`);
+    // Service always appends size=1000, so match by URL predicate
+    const req = httpTesting.expectOne(r => r.url === `${BASE}/users` && r.params.get('size') === '1000');
     expect(req.request.method).toBe('GET');
-    req.flush([]);
+    req.flush({ content: [], totalElements: 0 });
   });
 
   it('should fetch user detail', () => {
@@ -145,14 +147,14 @@ describe('AdminApiService', () => {
 
   it('should fetch user transactions', () => {
     service.getUserTransactions('u1').subscribe();
-    const req = httpTesting.expectOne(`${BASE}/credits/u1/transactions`);
+    const req = httpTesting.expectOne(`${BASE}/credits/wallets/u1/transactions`);
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
 
   it('should grant credits', () => {
     service.grantCredits('u1', { credits: 50, description: 'bonus' }).subscribe();
-    const req = httpTesting.expectOne(`${BASE}/credits/u1/grant`);
+    const req = httpTesting.expectOne(`${BASE}/credits/wallets/u1/grant`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ credits: 50, description: 'bonus' });
     req.flush(null);
@@ -160,7 +162,7 @@ describe('AdminApiService', () => {
 
   it('should revoke credits', () => {
     service.revokeCredits('u1', { credits: 10 }).subscribe();
-    const req = httpTesting.expectOne(`${BASE}/credits/u1/revoke`);
+    const req = httpTesting.expectOne(`${BASE}/credits/wallets/u1/revoke`);
     expect(req.request.method).toBe('POST');
     req.flush(null);
   });

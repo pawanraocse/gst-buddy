@@ -7,6 +7,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideZonelessChangeDetection, NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
 describe('OrganizationSettingsComponent', () => {
     let component: OrganizationSettingsComponent;
@@ -22,11 +23,12 @@ describe('OrganizationSettingsComponent', () => {
             imports: [OrganizationSettingsComponent],
             providers: [
                 provideZonelessChangeDetection(),
+                provideRouter([]),
                 provideHttpClient(),
                 provideHttpClientTesting(),
                 provideAnimations(),
                 { provide: OrganizationService, useValue: orgSpy },
-                { provide: MessageService, useValue: msgSpy }
+                { provide: MessageService, useClass: MessageService }
             ],
             schemas: [NO_ERRORS_SCHEMA]
         }).compileComponents();
