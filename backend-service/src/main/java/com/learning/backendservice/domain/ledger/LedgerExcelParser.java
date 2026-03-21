@@ -504,31 +504,19 @@ public class LedgerExcelParser implements LedgerParser {
             String val = getCellStringValue(cell).trim().toLowerCase(Locale.ROOT);
             if (val.isEmpty()) continue;
             // Check for common non-transaction markers
-            if (val.startsWith("opening")
-                    || val.startsWith("closing")
+            if (val.startsWith("closing")
                     || val.startsWith("total")
                     || val.startsWith("grand total")
-                    || val.equals("op. bal")
                     || val.equals("cl. bal")
-                    || val.equals("op bal")
                     || val.equals("cl bal")
-                    || val.startsWith("opening balance")
                     || val.startsWith("closing balance")
                     || val.startsWith("carried forward")
-                    || val.startsWith("brought forward")
-                    || val.startsWith("b/f")
                     || val.startsWith("c/f")
-                    || val.startsWith("bal b/d")
                     || val.startsWith("bal c/d")
-                    || val.startsWith("balance b/d")
                     || val.startsWith("balance c/d")
-                    || val.startsWith("balance b/f")
                     || val.startsWith("balance c/f")
-                    || val.startsWith("op. balance")
                     || val.startsWith("cl. balance")
-                    || val.equals("b/d")
                     || val.equals("c/d")
-                    || val.equals("b/f")
                     || val.equals("c/f")) {
                 return true;
             }

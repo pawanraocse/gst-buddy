@@ -348,8 +348,8 @@ class LedgerExcelParserTest {
         }
 
         @Test
-        @DisplayName("Opening balance rows are skipped (no real transaction)")
-        void openingBalanceRowsSkipped() throws Exception {
+        @DisplayName("Opening balance rows are allowed as valid transactions")
+        void openingBalanceRowsAllowed() throws Exception {
             Workbook wb = new XSSFWorkbook();
             Sheet sheet = wb.createSheet();
 
@@ -361,11 +361,12 @@ class LedgerExcelParserTest {
             List<LedgerEntry> entries = parse(toBytes(wb), "test.xlsx");
 
             // Row 2 has "Opening Balance" in the description column (col C).
-            // isNonTransactionRow() scans ALL columns, so this row is now correctly filtered.
-            // Only the genuine payment row (row 3) should survive.
-            assertThat(entries).hasSize(1);
-            assertThat(entries.get(0).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PAYMENT);
-            assertThat(entries.get(0).getAmount().compareTo(BigDecimal.valueOf(10000.0))).isZero();
+            // It should now be parsed correctly as a valid transaction.
+            assertThat(entries).hasSize(2);
+            assertThat(entries.get(0).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PURCHASE);
+            assertThat(entries.get(0).getAmount().compareTo(BigDecimal.valueOf(84887.0))).isZero();
+            assertThat(entries.get(1).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PAYMENT);
+            assertThat(entries.get(1).getAmount().compareTo(BigDecimal.valueOf(10000.0))).isZero();
         }
 
         @Test
