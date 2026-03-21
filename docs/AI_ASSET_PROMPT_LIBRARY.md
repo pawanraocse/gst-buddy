@@ -3,7 +3,7 @@
 **Project:** GST Buddy  
 **Version:** 1.0  
 **Date:** Feb 2026  
-**Visual Direction:** Crystal Isometric — Soft 3D, Indigo/Violet dominant, rounded forms, transparent backgrounds  
+**Visual Direction:** Professional Financial Precision — High-fidelity 3D Glassmorphism, Indigo/Violet & Silver palette, ultra-realistic textures, clean architectural studio lighting.
 
 ---
 
@@ -14,26 +14,31 @@
 3. [GST Rule Icons (128×128)](#3-gst-rule-icons)
 4. [Feature Icons (96×96)](#4-feature-icons)
 5. [Step Illustrations (200×200)](#5-step-illustrations)
-6. [UI Backgrounds & Textures](#6-ui-backgrounds--textures)
-7. [Lottie / GIF Animations](#7-lottie--gif-animations)
-8. [Product & Demo Videos](#8-product--demo-videos)
-9. [Avatars & Testimonials](#9-avatars--testimonials)
+6. [Auth Screen Illustrations](#6-auth-screen-illustrations-split-panel)
+7. [UI Backgrounds & Textures](#7-ui-backgrounds--textures)
+8. [Lottie Micro-Animations](#8-lottie-micro-animations)
+9. [Product & Demo Videos](#9-product--demo-videos)
+10. [Avatars & Testimonials](#10-avatars--testimonials)
+11. [Interactive Impact Video](#11-interactive-impact-video-marketingdemo)
 
 ---
 
 ## 1. Model Recommendations
 
-| Asset Type | Recommended Tool | Reasoning |
+| Asset Type | Recommended Tool | Format Strategy |
 |---|---|---|
-| **3D Isometric Illustrations** | **Leonardo.ai** or **Microsoft Designer** | Leonardo offers daily free credits; Microsoft is completely free (via Bing) |
-| **Flat/Outlined Icons** | **Microsoft Designer** | Excellent at isolated icons; completely free for personal use |
-| **Animated Icons (GIF)** | **Leonardo.ai Motion** or **Canva** | Generate base style in Leonardo, animate with free Motion credits |
-| **Gradient Meshes / Textures** | **Leonardo.ai** | High-quality abstract generations with generous free tier |
-| **Lottie Animations** | **LottieFiles AI (Free Tier)** | Good for basic compliance-style loops |
-| **GIF Loaders** | **Loading.io (Free)** or **Rive** | Standard for web loaders; easy to use without a subscription |
-| **Product Videos (short)** | **Luma Dream Machine** | High-quality video; includes free trial credits monthly |
-| **Feature Explainer Videos** | **Runway Gen-3 Alpha** or **Pika.art** | Both offer limited free trials or daily refillable credits |
-| **Avatar Illustrations** | **Microsoft Designer** | Clean, consistent style for portrait illustrations; free |
+| **3D Isometric Illustrations** | **Leonardo.ai** or **Microsoft Designer** | **WebP** (80% quality) — Best compression for complex 3D refractions |
+| **Icons (Rule/Feature)** | **Microsoft Designer** | **WebP** for 3D, or trace to **SVG** for flat/line art |
+| **Animated Icons** | **LottieFiles AI** | **Lottie JSON** (<20KB) — Avoid GIF entirely for small loop animations |
+| **Avatars** | **Microsoft Designer** | **WebP** — Best for photorealistic portraits |
+| **Product Videos** | **Luma Dream Machine** or **Runway** | **MP4 / WebM** (WebM for transparent backgrounds if needed) |
+
+### 1.1 Format Strategy for Performance
+To maintain "High-fidelity 3D Glassmorphism" while keeping build sizes minimal:
+1. **Never use PNG or JPEG.** Always export 3D raster assets to **WebP (Lossy, 80-85% quality)**. This reduces size by 40-70% with no visible quality loss.
+2. **Retina (2x) Sizing:** Generate icons at 2x their display size to ensure crispness on high-DPI screens (e.g., if displaying at 64x64, generate at 128x128).
+3. **Animations:** Rely strictly on **Lottie (JSON)** for all UI micro-animations and loaders. They act computationally like SVGs and are incredibly small (<20KB) compared to GIFs (>500KB). Do not use GIFs.
+4. **SVG SVGO Optimization:** For any hand-crafted vector backgrounds (like dot patterns), run them through an SVGO optimizer to strip metadata.
 
 ---
 
@@ -48,11 +53,7 @@
 
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D illustration of a friendly robot assistant holding a glowing document 
-with a green checkmark floating above it. The robot has soft, rounded features with 
-an indigo (#6366f1) and violet (#8b5cf6) color scheme. A calculator and spreadsheet 
-float nearby. Soft ambient lighting, no harsh shadows, white/transparent background. 
-Clean, modern SaaS product illustration style. Rounded edges on all objects.
+Ultra-realistic 3D close-up of a high-end translucent glass dashboard displaying glowing GST compliance scores. A brilliant green verification checkmark hovers above holographic data visualizations. The aesthetic is 'Professional Financial Precision' with an indigo (#6366f1) and violet (#8b5cf6) color scheme, accented by brushed silver. Cinematic studio lighting, sharp focus, clean white/transparent background. Premium B2B SaaS aesthetics.
 ```
 
 **Negative Prompts:** text, watermark, realistic human, dark background, harsh shadows, complex patterns
@@ -68,10 +69,7 @@ Clean, modern SaaS product illustration style. Rounded edges on all objects.
 
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D illustration of a friendly small robot sitting on a stack of blank 
-documents, looking up curiously with a magnifying glass. Soft indigo (#6366f1) and 
-teal (#14b8a6) color palette. Clean white background, no shadows, minimal style. 
-A thought bubble with "?" floats nearby. Modern SaaS empty state illustration.
+High-fidelity 3D illustration of a neat stack of translucent frosted glass folders. Floating slightly above them is a beautifully rendered golden holographic 'Search' magnifying glass icon. Soft indigo (#6366f1) and teal (#14b8a6) lighting refracts through the glass. Clean white isolated background, premium corporate SaaS empty state illustration, hyper-detailed.
 ```
 
 ---
@@ -85,9 +83,7 @@ A thought bubble with "?" floats nearby. Modern SaaS empty state illustration.
 
 **Prompt (Microsoft Designer):**
 ```
-A soft 3D isometric illustration of a small robot looking confused next to a broken 
-document with a red warning triangle. Color palette: indigo and rose (#f43f5e). 
-Clean white background, rounded forms, modern SaaS style. No text.
+A minimalist, high-fidelity 3D translucent warning triangle made of frosted glass, glowing with a soft ruby red (#f43f5e) inner light. The sign is suspended inside a subtle glass cube. Color palette: indigo and rose. Clean white background, sleek corporate design language, modern SaaS error state illustration. No text.
 ```
 
 ---
@@ -95,11 +91,11 @@ Clean white background, rounded forms, modern SaaS style. No text.
 ## 3. GST Rule Icons
 
 ### Style Guide for All Rule Icons
-- **Dimensions:** 128×128px → WebP or **GIF** (<20KB each)
-- **Style:** Soft 3D isometric, single subject, transparent/white background
-- **Color Palette:** Each icon uses Indigo base + one accent color
-- **GIF Option:** For "live" rules, consider making a subtle 2-3 second looping GIF (e.g., the clock hand ticking on Rule 37, the matching lines connecting on Rule 36(4)) — adds life without heavy Lottie dependency
-- **In-App Location:** Landing page GST Rules section
+- **Dimensions:** Generate at 256×256px → Export as **WebP** (<15KB) → Display at 128×128px.
+- **Style:** Soft 3D isometric, single subject, transparent/white background.
+- **Color Palette:** Each icon uses Indigo base + one accent color.
+- **Animation Option:** If animation is desired, convert static design into a **Lottie JSON** using AfterEffects/LottieFiles (e.g., ticking clock hand). *Do not use GIF format.*
+- **In-App Location:** Landing page GST Rules section.
 
 ### 3.1 Rule 37 — 180-Day ITC Reversal
 
@@ -173,9 +169,9 @@ background.
 ## 4. Feature Icons
 
 ### Style Guide
-- **Dimensions:** 96×96px → WebP (<15KB each)
-- **Style:** Consistent with rule icons but slightly smaller/simpler
-- **In-App Location:** Landing page bento feature grid
+- **Dimensions:** Generate at 128×128px → Export as **WebP** (<10KB) → Display at 64×64px.
+- **Style:** Consistent with rule icons but slightly smaller/simpler. (Alternative: If you switch these to flat 2D designs, use **SVG** <2KB).
+- **In-App Location:** Landing page bento feature grid.
 
 ### 4.1 Instant Calculation (Bolt)
 
@@ -247,9 +243,7 @@ rounded edges. No text.
 **Output Path:** `frontend/src/assets/images/steps/step-1-export.png`
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D scene: A laptop showing Tally software with an Excel file flying out 
-from the screen into a floating folder. Soft indigo and green accents. Clean white 
-background, rounded 3D forms, modern SaaS illustration.
+Photorealistic top-down view of a sleek, high-end silver laptop on a minimalist white desk. The laptop screen displays a pristine financial spreadsheet. A glowing 3D glass folder icon floats slightly above the keyboard. Soft, diffused morning sunlight streaming across the desk. Premium corporate financial software aesthetic, indigo color accents.
 ```
 
 ### 5.2 Step 2 — Upload & Go
@@ -258,9 +252,7 @@ background, rounded 3D forms, modern SaaS illustration.
 **Output Path:** `frontend/src/assets/images/steps/step-2-upload.png`
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D scene: A hand dragging an Excel file towards a cloud upload portal 
-with an upward arrow. Small sparkle particles around the upload area. Indigo and 
-violet palette. Clean white background, rounded edges.
+High-fidelity 3D illustration representing a cloud upload. A beautifully rendered translucent glass document with an Excel logo is being pulled upward by a sleek, glowing indigo (#6366f1) arrow into an abstract frosted glass cloud shape. Soft violet lighting, premium corporate SaaS design, clean white background.
 ```
 
 ### 5.3 Step 3 — Get Results
@@ -269,9 +261,7 @@ violet palette. Clean white background, rounded edges.
 **Output Path:** `frontend/src/assets/images/steps/step-3-results.png`
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D scene: A floating dashboard card showing "All Clear ✓" with a green 
-checkmark, alongside a small pie chart and bar graph. Teal and indigo palette. 
-Clean white background, celebration confetti particles nearby.
+Professional 3D rendering of a modern financial dashboard interface made of tiered frosted glass layers. The prominent central card features a brilliant metallic green checkmark signifying 'All Clear'. Subtle elegant holographic pie charts and bar graphs glow in teal and indigo around it. Clean white background, hyper-detailed UI elements.
 ```
 
 ---
@@ -280,7 +270,7 @@ Clean white background, celebration confetti particles nearby.
 
 ### Style Guide
 - **Dimensions:** 400×400px (login/signup), 300×300px (verify/reset) → WebP (<60KB each)
-- **Style:** Consistent with hero illustration — same 3D isometric, same lighting, same character
+- **Style:** Photorealistic, cinematic lighting, modern corporate office environments
 - **In-App Location:** Auth page left brand panel
 
 ### 6.1 Login — Robot Waving
@@ -289,11 +279,7 @@ Clean white background, celebration confetti particles nearby.
 **Output Path:** `frontend/src/assets/images/auth/auth-login-illustration.png`
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D illustration of a friendly robot assistant waving hello with one hand, 
-standing next to a shield with a green checkmark on it. The robot has soft rounded 
-features with indigo (#6366f1) and violet (#8b5cf6) color scheme. A small 
-"Welcome" speech bubble floats above. Soft ambient lighting, transparent/white 
-background, modern SaaS product illustration.
+Highly realistic, cinematic medium shot of a confident Indian male Chartered Accountant (30s) in a modern, glass-walled office boardroom. He is looking at the camera with a subtle, trustworthy smile. He wears a sharp navy-blue suit. Soft morning sunlight filters through the window. Shallow depth of field, premium corporate photography style, indigo color grading.
 ```
 
 ### 6.2 Signup — Robot Holding Checkmark
@@ -302,10 +288,7 @@ background, modern SaaS product illustration.
 **Output Path:** `frontend/src/assets/images/auth/auth-signup-illustration.png`
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D illustration of a friendly robot assistant celebrating while holding a 
-large green checkmark above its head. Small confetti particles float around. 
-A blank user profile card floats nearby with a "+" symbol. Indigo (#6366f1) and 
-teal (#14b8a6) palette. Transparent/white background, rounded soft 3D forms.
+Highly realistic, cinematic medium shot of an Indian female Finance Director (30s) standing in a high-tech modern office space. She is smiling confidently, holding a sleek silver tablet. Soft, elegant lighting with subtle teal and indigo ambient glows in the background. Shallow depth of field, premium corporate photography style.
 ```
 
 ### 6.3 Verify Email — Envelope with Sparkles
@@ -314,10 +297,7 @@ teal (#14b8a6) palette. Transparent/white background, rounded soft 3D forms.
 **Output Path:** `frontend/src/assets/images/auth/auth-verify-illustration.png`
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D illustration of a floating open envelope with a glowing letter coming 
-out, surrounded by golden sparkle particles. A small "6-digit code" badge floats 
-nearby. Indigo (#6366f1) envelope with teal (#14b8a6) sparkle accents. Clean white 
-background, soft ambient lighting.
+Close-up macro photography of a person's hand holding a sleek, modern smartphone displaying a glowing blue 'Verification Code' notification. The background is a beautifully blurred modern office environment (bokeh effect). Indigo (#6366f1) lighting accents. Hyper-realistic, 8k resolution, cinematic lighting.
 ```
 
 ### 6.4 Password Reset — Lock with Key
@@ -326,10 +306,7 @@ background, soft ambient lighting.
 **Output Path:** `frontend/src/assets/images/auth/auth-reset-illustration.png`
 **Prompt (Leonardo.ai - Phoenix):**
 ```
-Isometric 3D illustration of a friendly lock character with a floating golden key 
-approaching it. Small shield icons float nearby for security. Indigo (#6366f1) lock 
-with gold (#f59e0b) key accents. Clean white background, rounded soft 3D forms, 
-modern SaaS style.
+High-fidelity 3D rendering of a sophisticated biometric fingerprint lock made of brushed steel and glowing indigo glass. The lock sits on a clean, dark slate surface. Premium, secure, high-tech fintech aesthetic. Dramatic studio lighting, shallow depth of field.
 ```
 
 ### 6.5 Auth Background Dot Pattern
@@ -393,7 +370,7 @@ at 5% opacity.
 
 ---
 
-## 8. Lottie / GIF Animations
+## 8. Lottie Micro-Animations
 
 ### 7.1 Document Processing Loader
 
@@ -442,9 +419,7 @@ Plays once, not looping. Light and celebratory.
 
 **LottieFiles AI Prompt:**
 ```
-A small robot character sitting on a cloud, gently floating up and down. 
-Indigo (#6366f1) robot with teal (#14b8a6) accents. Small question mark 
-bubble appears and fades. Smooth ease-in-out floating loop.
+A sleek translucent glass folder gently floating up and down. A golden holographic 'Search' magnifying glass icon appears and fades above it. Indigo (#6366f1) and teal (#14b8a6) lighting accents. Smooth ease-in-out floating loop. Premium corporate design.
 ```
 
 ---
@@ -522,10 +497,7 @@ No text. Dreamy and premium feel. Loopable. 8 seconds.
 
 **Runway Prompt (Shot 2 example):**
 ```
-A close-up shot of an Indian accountant sitting at a desk covered with Excel 
-spreadsheets and tax forms. The person looks slightly overwhelmed but not 
-distressed. Warm office lighting, shallow depth of field. Modern Indian office 
-setting. Camera slowly zooms in. Duration: 5 seconds.
+Cinematic medium shot of an Indian corporate Finance Manager sitting at a modern glass desk covered with financial reports. He looks slightly stressed, rubbing his forehead. Cool, professional office lighting, shallow depth of field. Modern Indian corporate headquarters setting. Camera slowly pushes in. High-end commercial aesthetic. Duration: 5 seconds.
 ```
 
 ---
@@ -543,10 +515,7 @@ setting. Camera slowly zooms in. Duration: 5 seconds.
 **Output Path:** `frontend/src/assets/images/landing/avatars/avatar-1.png`
 **Prompt (Microsoft Designer):**
 ```
-A friendly illustrated portrait avatar of a middle-aged Indian man with glasses 
-and a warm smile. Professional appearance, wearing a formal shirt. Soft, clean 
-illustration style with subtle indigo tint. Circular crop, white background. 
-No text.
+Ultra-realistic studio portrait of a 45-year-old Indian male Chartered Accountant. He is wearing a sharp charcoal suit and glasses, smiling confidently. Corporate boardroom background with soft bokeh. Premium cinematic lighting, highly detailed, photorealistic. Circular crop, 8k resolution.
 ```
 
 ### 9.2 Priya Sharma (Finance Head, Surat)
@@ -555,10 +524,7 @@ No text.
 **Output Path:** `frontend/src/assets/images/landing/avatars/avatar-2.png`
 **Prompt (Microsoft Designer):**
 ```
-A friendly illustrated portrait avatar of an Indian woman in her 30s with a 
-confident smile. Professional appearance, wearing business attire. Soft, clean 
-illustration style with subtle teal tint. Circular crop, white background. 
-No text.
+Ultra-realistic studio portrait of a 35-year-old Indian female Finance Director. She is wearing elegant professional business attire, smiling warmly at the camera. Bright, modern glass-walled office background with soft bokeh. Premium cinematic lighting, photorealistic. Circular crop, 8k resolution.
 ```
 
 ### 9.3 Amit Patel (Business Owner, Ahmedabad)
@@ -567,9 +533,7 @@ No text.
 **Output Path:** `frontend/src/assets/images/landing/avatars/avatar-3.png`
 **Prompt (Microsoft Designer):**
 ```
-A friendly illustrated portrait avatar of a young Indian man with a casual smile. 
-Business casual appearance. Soft, clean illustration style with subtle violet tint. 
-Circular crop, white background. No text.
+Ultra-realistic studio portrait of a 32-year-old Indian male Tech Entrepreneur. He is wearing a professional smart-casual navy blazer over a crisp white shirt, smiling slightly. Minimalist corporate background with soft bokeh. Premium cinematic lighting, photorealistic. Circular crop, 8k resolution.
 ```
 
 ---
