@@ -28,7 +28,7 @@ public class Rule37CalculationRunService {
 
     public Page<Rule37RunResponse> listRuns(Pageable pageable) {
         String tenantId = TenantContext.getCurrentTenant();
-        return runRepository.findByTenantIdOrderByCreatedAtDesc(tenantId, pageable)
+        return runRepository.findByTenantId(tenantId, pageable)
                 .map(this::toResponse);
     }
 

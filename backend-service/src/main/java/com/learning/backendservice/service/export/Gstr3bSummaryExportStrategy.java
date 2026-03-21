@@ -8,12 +8,33 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Component
 public class Gstr3bSummaryExportStrategy implements ExportStrategy {
+
+    /** Formatter for period strings like "Apr 2025", "Jun 2025". */
+    private static final DateTimeFormatter PERIOD_FORMAT =
+            DateTimeFormatter.ofPattern("MMM yyyy", Locale.ENGLISH);
+
+    /** Comparator that sorts period strings chronologically. */
+    private static final Comparator<String> PERIOD_COMPARATOR = (a, b) -> {
+        try {
+            YearMonth ya = YearMonth.parse(a, PERIOD_FORMAT);
+            YearMonth yb = YearMonth.parse(b, PERIOD_FORMAT);
+            return ya.compareTo(yb);
+        } catch (DateTimeParseException e) {
+            return a.compareTo(b); // fallback: lexicographic
+        }
+    };
 
     @Override
     public boolean supports(String format, String reportType) {
@@ -37,10 +58,11 @@ public class Gstr3bSummaryExportStrategy implements ExportStrategy {
                             && r.getItcAmount().compareTo(BigDecimal.ZERO) > 0)
                     .toList();
 
-            // Group reversals by GSTR-3B period
+            // Group reversals by GSTR-3B period — sorted chronologically
             Map<String, BigDecimal> reversalsByPeriod = reversalRows.stream()
                     .collect(Collectors.groupingBy(
                             InterestRow::getGstr3bPeriod,
+                            () -> new TreeMap<>(PERIOD_COMPARATOR),
                             Collectors.reducing(BigDecimal.ZERO, InterestRow::getItcAmount, BigDecimal::add)
                     ));
 

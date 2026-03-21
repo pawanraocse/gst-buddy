@@ -37,6 +37,7 @@ class LedgerUploadOrchestratorTest {
     @Mock private LedgerFileProcessor ledgerFileProcessor;
     @Mock private Rule37RunRepository runRepository;
     @Mock private CreditClient creditClient;
+    @Mock private com.learning.backendservice.config.MemoryGuard memoryGuard;
 
     private UploadProperties uploadProperties;
     private LedgerUploadOrchestrator orchestrator;
@@ -51,7 +52,7 @@ class LedgerUploadOrchestratorTest {
         uploadProperties = new UploadProperties();
         orchestrator = new LedgerUploadOrchestrator(
                 ledgerFileProcessor, runRepository, uploadProperties,
-                creditClient, RETENTION_DAYS, MAX_RUNS_PER_TENANT);
+                creditClient, memoryGuard, RETENTION_DAYS, MAX_RUNS_PER_TENANT);
         TenantContext.setCurrentTenant("test-tenant");
     }
 

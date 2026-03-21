@@ -69,7 +69,7 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                     : payments;
             map.computeIfAbsent(entry.getSupplier(), k -> new ArrayList<>())
                     .add(new MutableLedgerItem(entry.getDate(),
-                            BigDecimal.valueOf(entry.getAmount()), entry.getInvoiceNumber()));
+                            entry.getAmount(), entry.getInvoiceNumber()));
         });
 
         return new SupplierQueues(purchases, payments);
@@ -188,7 +188,7 @@ public class Rule37InterestCalculationService implements Rule37InterestCalculato
                 .originalInvoiceValue(originalAmount.setScale(SCALE, RM))
                 .principal(principal.setScale(SCALE, RM))
                 .delayDays(delayDays)
-                .itcAmount(BigDecimal.ZERO)
+                .itcAmount(potentialItc)
                 .interest(BigDecimal.ZERO)
                 .status(InterestRow.InterestStatus.UNPAID)
                 .paymentDeadline(deadline)

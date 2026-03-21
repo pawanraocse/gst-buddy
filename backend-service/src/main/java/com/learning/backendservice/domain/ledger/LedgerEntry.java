@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
  * Value object representing a single ledger row from Tally/Busy format.
  * Maps to MVP {@code LedgerEntry} type.
+ * All financial amounts use {@link BigDecimal} for precision (ISSUE-001).
  */
 @Data
 @Builder
@@ -21,7 +23,7 @@ public class LedgerEntry {
     private String invoiceNumber;
     private LedgerEntryType entryType;
     private String supplier;
-    private double amount;
+    private BigDecimal amount;
 
     public enum LedgerEntryType {
         PURCHASE,

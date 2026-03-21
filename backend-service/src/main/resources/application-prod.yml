@@ -11,6 +11,13 @@ spring:
   jpa:
     show-sql: false
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+      file-size-threshold: 1MB
+      resolve-lazily: true
+
 server:
   port: 8082
 
@@ -28,6 +35,13 @@ management:
     sampling:
       probability: 0.1
 
+# Disable Swagger UI in production
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
 logging:
   level:
     root: INFO
@@ -36,3 +50,9 @@ logging:
 
   file:
     name: /var/log/backend-service/backend-service.log
+
+# Production retention — longer than default 7 days
+app:
+  retention:
+    days: ${APP_RETENTION_DAYS:30}
+

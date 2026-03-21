@@ -1,5 +1,5 @@
 package com.learning.backendservice.domain.ledger;
-
+import java.math.BigDecimal;
 import com.learning.backendservice.exception.LedgerParseException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -96,7 +96,7 @@ class LedgerExcelParserTest {
 
             assertThat(entries).hasSize(3);
             assertThat(entries.get(0).getDate()).isEqualTo(LocalDate.of(2022, 4, 1));
-            assertThat(entries.get(0).getAmount()).isEqualTo(1063.0);
+            assertThat(entries.get(0).getAmount().compareTo(BigDecimal.valueOf(1063.0))).isZero();
             assertThat(entries.get(0).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PAYMENT);
             assertThat(entries.get(0).getSupplier()).isEqualTo("KD");
             assertThat(entries.get(2).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PURCHASE);
@@ -235,7 +235,7 @@ class LedgerExcelParserTest {
 
             assertThat(entries).hasSize(2);
             assertThat(entries.get(0).getSupplier()).isEqualTo("Vendor X");
-            assertThat(entries.get(0).getAmount()).isEqualTo(5000.0);
+            assertThat(entries.get(0).getAmount().compareTo(BigDecimal.valueOf(5000.0))).isZero();
             assertThat(entries.get(1).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PURCHASE);
         }
 
@@ -303,9 +303,9 @@ class LedgerExcelParserTest {
             List<LedgerEntry> saini = bySupplier.get("ABHISHEK SAINI");
             assertThat(saini).hasSize(3);
             assertThat(saini.get(0).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PAYMENT); // "To"
-            assertThat(saini.get(0).getAmount()).isEqualTo(10000.0);
+            assertThat(saini.get(0).getAmount().compareTo(BigDecimal.valueOf(10000.0))).isZero();
             assertThat(saini.get(2).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PURCHASE); // "By"
-            assertThat(saini.get(2).getAmount()).isEqualTo(14100.0);
+            assertThat(saini.get(2).getAmount().compareTo(BigDecimal.valueOf(14100.0))).isZero();
 
             List<LedgerEntry> aesthete = bySupplier.get("AESTHETE INTL");
             assertThat(aesthete).hasSize(2);
@@ -365,7 +365,7 @@ class LedgerExcelParserTest {
             // Only the genuine payment row (row 3) should survive.
             assertThat(entries).hasSize(1);
             assertThat(entries.get(0).getEntryType()).isEqualTo(LedgerEntry.LedgerEntryType.PAYMENT);
-            assertThat(entries.get(0).getAmount()).isEqualTo(10000.0);
+            assertThat(entries.get(0).getAmount().compareTo(BigDecimal.valueOf(10000.0))).isZero();
         }
 
         @Test

@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface Rule37RunRepository extends JpaRepository<Rule37CalculationRun, Long> {
 
-    Page<Rule37CalculationRun> findByTenantIdOrderByCreatedAtDesc(String tenantId, Pageable pageable);
+    Page<Rule37CalculationRun> findByTenantId(String tenantId, Pageable pageable);
 
     Optional<Rule37CalculationRun> findByIdAndTenantId(Long id, String tenantId);
 

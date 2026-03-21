@@ -29,11 +29,11 @@ class Rule37InterestCalculationServiceTest {
 
     // ─── Helper factory methods ───
     private LedgerEntry purchase(LocalDate date, double amount, String supplier) {
-        return new LedgerEntry(date, null, LedgerEntry.LedgerEntryType.PURCHASE, supplier, amount);
+        return new LedgerEntry(date, null, LedgerEntry.LedgerEntryType.PURCHASE, supplier, BigDecimal.valueOf(amount));
     }
 
     private LedgerEntry payment(LocalDate date, double amount, String supplier) {
-        return new LedgerEntry(date, null, LedgerEntry.LedgerEntryType.PAYMENT, supplier, amount);
+        return new LedgerEntry(date, null, LedgerEntry.LedgerEntryType.PAYMENT, supplier, BigDecimal.valueOf(amount));
     }
 
     @Nested
@@ -330,12 +330,14 @@ class Rule37InterestCalculationServiceTest {
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("Expected AT_RISK early warning entry"));
 
-            assertEquals(0, row.getItcAmount().compareTo(BigDecimal.ZERO),
-                    "AT_RISK should have zero ITC");
-            assertEquals(0, row.getInterest().compareTo(BigDecimal.ZERO),
-                    "AT_RISK should have zero interest");
             assertEquals(InterestRow.InterestStatus.UNPAID, row.getStatus());
             assertTrue(row.getDaysToDeadline() > 0, "AT_RISK should have positive days to deadline");
+
+            // ISSUE-016: AT_RISK rows now show the potential ITC at stake
+            assertTrue(row.getItcAmount().compareTo(BigDecimal.ZERO) > 0,
+                    "AT_RISK should show potential ITC at stake");
+            assertEquals(0, row.getInterest().compareTo(BigDecimal.ZERO),
+                    "AT_RISK should have zero interest (obligation not triggered)");
         }
 
         @Test

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -42,6 +43,13 @@ public class LedgerExcelParser implements LedgerParser {
 
     private static final long MAX_DECOMPRESSED_SIZE = 100L * 1024 * 1024; // 100 MB
     private static final int MAX_ROWS = 50_000;
+    private static final int MAX_ENTRIES_PER_FILE = 20_000;
+    private static final int MAX_SUPPLIERS_PER_FILE = 500;
+
+    // Set POI decompression limit once at class load — thread-safe
+    static {
+        org.apache.poi.util.IOUtils.setByteArrayMaxOverride((int) MAX_DECOMPRESSED_SIZE);
+    }
 
     /** How many rows to scan from the top when looking for the header row. */
     static final int HEADER_SCAN_DEPTH = 20;
@@ -218,6 +226,12 @@ public class LedgerExcelParser implements LedgerParser {
 
         log.info("Found {} supplier sub-ledgers in file", markerRows.size());
 
+        if (markerRows.size() > MAX_SUPPLIERS_PER_FILE) {
+            throw new LedgerParseException(
+                    "File contains " + markerRows.size() + " supplier ledgers, max "
+                    + MAX_SUPPLIERS_PER_FILE + ". Please split into smaller files.");
+        }
+
         for (int m = 0; m < markerRows.size(); m++) {
             int markerRow = markerRows.get(m);
             int sectionEnd = (m + 1 < markerRows.size()) ? markerRows.get(m + 1) : sheet.getLastRowNum() + 1;
@@ -228,8 +242,8 @@ public class LedgerExcelParser implements LedgerParser {
             if (supplier.isEmpty()) {
                 supplier = defaultSupplier;
             }
-            // Clean up supplier name (some Tally exports have trailing \r\n or whitespace)
-            supplier = supplier.replaceAll("[\\r\\n]+", " ").trim();
+            // Clean up supplier name (some Tally exports have trailing CR/LF or whitespace)
+            supplier = supplier.replaceAll("[\r\n]+", " ").trim();
 
             // Find the sub-header row (contains "Date") within this section
             int subHeaderRow = -1;
@@ -289,13 +303,13 @@ public class LedgerExcelParser implements LedgerParser {
                 LocalDate date = parseExcelDate(getCellValue(dataRow, dateIdx));
                 if (date == null) continue;
 
-                double debit = debitIdx >= 0 ? parseDouble(getCellValue(dataRow, debitIdx)) : 0;
-                double credit = creditIdx >= 0 ? parseDouble(getCellValue(dataRow, creditIdx)) : 0;
-                if (debit <= 0 && credit <= 0) continue;
+                BigDecimal debit = debitIdx >= 0 ? parseBigDecimal(getCellValue(dataRow, debitIdx)) : BigDecimal.ZERO;
+                BigDecimal credit = creditIdx >= 0 ? parseBigDecimal(getCellValue(dataRow, creditIdx)) : BigDecimal.ZERO;
+                if (debit.signum() <= 0 && credit.signum() <= 0) continue;
 
                 // Determine entry type using Tally's To/By convention
                 LedgerEntry.LedgerEntryType entryType = determineEntryType(dataRow, particularsIdx, debit, credit);
-                double amount = debit > 0 ? debit : credit;
+                BigDecimal amount = debit.signum() > 0 ? debit : credit;
                 String invoiceNumber = invoiceIdx >= 0 ? getCellStringValue(dataRow.getCell(invoiceIdx)).trim() : "";
 
                 allEntries.add(LedgerEntry.builder()
@@ -323,7 +337,7 @@ public class LedgerExcelParser implements LedgerParser {
      * </ul>
      * Falls back to Debit/Credit amount if Particulars is unavailable.
      */
-    private LedgerEntry.LedgerEntryType determineEntryType(Row row, int particularsIdx, double debit, double credit) {
+    private LedgerEntry.LedgerEntryType determineEntryType(Row row, int particularsIdx, BigDecimal debit, BigDecimal credit) {
         if (particularsIdx >= 0) {
             String particulars = getCellStringValue(row.getCell(particularsIdx)).trim().toLowerCase(Locale.ROOT);
             if (particulars.equals("to")) {
@@ -334,7 +348,7 @@ public class LedgerExcelParser implements LedgerParser {
             }
         }
         // Fallback: debit > 0 means payment out, credit > 0 means purchase in
-        return debit > 0 ? LedgerEntry.LedgerEntryType.PAYMENT : LedgerEntry.LedgerEntryType.PURCHASE;
+        return debit.signum() > 0 ? LedgerEntry.LedgerEntryType.PAYMENT : LedgerEntry.LedgerEntryType.PURCHASE;
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -348,6 +362,8 @@ public class LedgerExcelParser implements LedgerParser {
      * @param headerRowIndex the detected header row index (data starts at headerRowIndex + 1)
      */
     private List<LedgerEntry> parsePositionBased(Sheet sheet, int headerRowIndex, String defaultSupplier) {
+        log.warn("Position-based fallback: sheet '{}' has no invoice column — entries will lack invoice numbers",
+                sheet.getSheetName());
         List<LedgerEntry> entries = new ArrayList<>();
         for (int i = headerRowIndex + 1; i <= sheet.getLastRowNum(); i++) {
             Row row = sheet.getRow(i);
@@ -357,18 +373,18 @@ public class LedgerExcelParser implements LedgerParser {
             if (date == null) continue;
             if (isNonTransactionRow(row)) continue;
 
-            double debit = parseDouble(getCellValue(row, 1));
-            double credit = parseDouble(getCellValue(row, 2));
-            if (debit <= 0 && credit <= 0) continue;
+            BigDecimal debit = parseBigDecimal(getCellValue(row, 1));
+            BigDecimal credit = parseBigDecimal(getCellValue(row, 2));
+            if (debit.signum() <= 0 && credit.signum() <= 0) continue;
 
             String supplier = getCellStringValue(row.getCell(3));
             if (supplier == null || supplier.isBlank()) supplier = defaultSupplier;
 
             entries.add(LedgerEntry.builder()
                     .date(date)
-                    .entryType(debit > 0 ? LedgerEntry.LedgerEntryType.PAYMENT : LedgerEntry.LedgerEntryType.PURCHASE)
+                    .entryType(debit.signum() > 0 ? LedgerEntry.LedgerEntryType.PAYMENT : LedgerEntry.LedgerEntryType.PURCHASE)
                     .supplier(supplier.trim())
-                    .amount(debit > 0 ? debit : credit)
+                    .amount(debit.signum() > 0 ? debit : credit)
                     .build());
         }
         validateNotEmpty(entries);
@@ -393,9 +409,9 @@ public class LedgerExcelParser implements LedgerParser {
             if (date == null) continue;
             if (isNonTransactionRow(row)) continue;
 
-            double debit = debitIndex >= 0 ? parseDouble(getCellValue(row, debitIndex)) : 0;
-            double credit = creditIndex >= 0 ? parseDouble(getCellValue(row, creditIndex)) : 0;
-            if (debit <= 0 && credit <= 0) continue;
+            BigDecimal debit = debitIndex >= 0 ? parseBigDecimal(getCellValue(row, debitIndex)) : BigDecimal.ZERO;
+            BigDecimal credit = creditIndex >= 0 ? parseBigDecimal(getCellValue(row, creditIndex)) : BigDecimal.ZERO;
+            if (debit.signum() <= 0 && credit.signum() <= 0) continue;
 
             String supplier = supplierIndex >= 0 ? getCellStringValue(row.getCell(supplierIndex)) : "";
             if (supplier == null || supplier.isBlank()) supplier = defaultSupplier;
@@ -404,9 +420,9 @@ public class LedgerExcelParser implements LedgerParser {
 
             entries.add(LedgerEntry.builder()
                     .date(date)
-                    .entryType(debit > 0 ? LedgerEntry.LedgerEntryType.PAYMENT : LedgerEntry.LedgerEntryType.PURCHASE)
+                    .entryType(debit.signum() > 0 ? LedgerEntry.LedgerEntryType.PAYMENT : LedgerEntry.LedgerEntryType.PURCHASE)
                     .supplier(supplier.trim())
-                    .amount(debit > 0 ? debit : credit)
+                    .amount(debit.signum() > 0 ? debit : credit)
                     .invoiceNumber(invoiceNumber.isEmpty() ? null : invoiceNumber)
                     .build());
         }
@@ -422,7 +438,7 @@ public class LedgerExcelParser implements LedgerParser {
         if (!inputStream.markSupported()) {
             inputStream = new BufferedInputStream(inputStream);
         }
-        org.apache.poi.util.IOUtils.setByteArrayMaxOverride((int) MAX_DECOMPRESSED_SIZE);
+        // IOUtils limit set once in static initializer — no per-call overhead
         return WorkbookFactory.create(inputStream);
     }
 
@@ -436,6 +452,11 @@ public class LedgerExcelParser implements LedgerParser {
         if (entries.isEmpty()) {
             throw new LedgerParseException("No valid entries found in Excel file. "
                     + "Check if Date, Debit, and Credit columns have valid data.");
+        }
+        if (entries.size() > MAX_ENTRIES_PER_FILE) {
+            throw new LedgerParseException(
+                    "File contains " + entries.size() + " transactions, max "
+                    + MAX_ENTRIES_PER_FILE + ". Please split into smaller files.");
         }
     }
 
@@ -587,15 +608,16 @@ public class LedgerExcelParser implements LedgerParser {
         }
     }
 
-    private static double parseDouble(Object value) {
-        if (value == null) return 0;
-        if (value instanceof Number n) return n.doubleValue();
+    private static BigDecimal parseBigDecimal(Object value) {
+        if (value == null) return BigDecimal.ZERO;
+        if (value instanceof BigDecimal bd) return bd;
+        if (value instanceof Number n) return BigDecimal.valueOf(n.doubleValue());
         String s = value.toString().replaceAll("[^0-9.\\-]", "");
-        if (s.isEmpty()) return 0;
+        if (s.isEmpty()) return BigDecimal.ZERO;
         try {
-            return Double.parseDouble(s);
+            return new BigDecimal(s);
         } catch (NumberFormatException e) {
-            return 0;
+            return BigDecimal.ZERO;
         }
     }
 

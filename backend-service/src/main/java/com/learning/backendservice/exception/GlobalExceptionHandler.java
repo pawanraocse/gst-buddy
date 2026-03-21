@@ -77,6 +77,17 @@ public class GlobalExceptionHandler {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
+        @ExceptionHandler(TooManyRequestsException.class)
+        public ResponseEntity<ErrorResponse> handleTooManyRequests(
+                        TooManyRequestsException ex, HttpServletRequest request) {
+                String requestId = request.getHeader(HeaderNames.REQUEST_ID);
+                log.warn("Too many requests on path={} requestId={}: {}", request.getRequestURI(), requestId,
+                                ex.getMessage());
+                ErrorResponse error = ErrorResponse.of(HttpStatus.TOO_MANY_REQUESTS.value(), "TOO_MANY_REQUESTS",
+                                ex.getMessage(), requestId, request.getRequestURI());
+                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(error);
+        }
+
         @ExceptionHandler(InsufficientCreditsException.class)
         public ResponseEntity<ErrorResponse> handleInsufficientCredits(
                         InsufficientCreditsException ex, HttpServletRequest request) {

@@ -54,7 +54,8 @@ public class LedgerUploadController {
 
         String createdBy = request.getHeader(HeaderNames.USER_ID);
         if (createdBy == null || createdBy.isBlank()) {
-            createdBy = "system";
+            throw new IllegalArgumentException(
+                    "Missing required header: " + HeaderNames.USER_ID + ". User identification is required for credit consumption.");
         }
         UploadResult result = runService.processUpload(files, asOnDate, createdBy);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);

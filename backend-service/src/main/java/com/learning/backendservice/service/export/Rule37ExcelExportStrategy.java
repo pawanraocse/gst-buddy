@@ -54,9 +54,13 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
             Sheet summarySheet = workbook.createSheet("Summary");
             writeSummarySheet(summarySheet, ledgerResults, issuesOnly, styles);
 
-            // ── Per-ledger detail sheets ──
+            // ── Per-ledger detail sheets (with deduplication) ──
+            java.util.Set<String> usedSheetNames = new java.util.HashSet<>();
+            usedSheetNames.add("Summary");
+
             for (LedgerResult lr : ledgerResults) {
-                String sheetName = sanitizeSheetName(lr.getLedgerName());
+                String sheetName = deduplicateSheetName(sanitizeSheetName(lr.getLedgerName()), usedSheetNames);
+                usedSheetNames.add(sheetName);
                 Sheet sheet = workbook.createSheet(sheetName);
                 writeLedgerSheet(sheet, lr.getSummary(), issuesOnly, styles);
             }
@@ -66,6 +70,26 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate Excel export: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Ensures sheet name is unique within the workbook by appending (2), (3), etc.
+     */
+    private static String deduplicateSheetName(String baseName, java.util.Set<String> usedNames) {
+        if (!usedNames.contains(baseName)) {
+            return baseName;
+        }
+        int suffix = 2;
+        String candidate;
+        do {
+            String suffixStr = " (" + suffix + ")";
+            // Ensure total length doesn't exceed Excel's 31-char limit
+            int maxBase = MAX_SHEET_NAME_LENGTH - suffixStr.length();
+            String truncatedBase = baseName.length() > maxBase ? baseName.substring(0, maxBase) : baseName;
+            candidate = truncatedBase + suffixStr;
+            suffix++;
+        } while (usedNames.contains(candidate));
+        return candidate;
     }
 
     // ══════════════════════════════════════════════════════
@@ -113,6 +137,12 @@ public class Rule37ExcelExportStrategy implements ExportStrategy {
         sheet.setColumnWidth(1, 20 * 256);
         sheet.setColumnWidth(2, 20 * 256);
         sheet.setColumnWidth(3, 15 * 256);
+
+        // ISSUE-018: Legal disclaimer footer
+        rowNum += 2;
+        Row disclaimerRow = sheet.createRow(rowNum);
+        disclaimerRow.createCell(0).setCellValue(
+                com.learning.backendservice.domain.rule37.CalculationSummary.DISCLAIMER);
     }
 
     // ══════════════════════════════════════════════════════

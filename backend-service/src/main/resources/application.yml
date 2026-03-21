@@ -2,6 +2,13 @@ spring:
   application:
     name: backend-service
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+      file-size-threshold: 1MB
+      resolve-lazily: true
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:gst-buddy}}
     username: ${SPRING_DATASOURCE_USERNAME:}
@@ -128,7 +135,8 @@ app:
     max-runs-per-tenant: ${APP_MAX_RUNS_PER_TENANT:50}  # Max saved calculations per tenant
   upload:
     max-file-size: 10MB             # Max ledger Excel size per file
-    max-files: 20                   # Max files per multi-file upload (OOM prevention)
+    max-files: 20                   # Max files per multi-file upload
+    max-concurrent-uploads: ${APP_MAX_CONCURRENT_UPLOADS:2}  # Semaphore permits for upload throttling
 
 # OpenAPI Documentation
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
  * Purges expired Rule 37 calculation runs daily.
@@ -28,13 +29,13 @@ public class RetentionScheduler {
     }
 
     /**
-     * Purge expired calculation runs daily at 2:00 AM.
+     * Purge expired calculation runs daily at 2:00 AM UTC.
      * Uses the {@code idx_rule37_runs_expires} index for efficient lookups.
      */
-    @Scheduled(cron = "0 0 2 * * *")
+    @Scheduled(cron = "0 0 2 * * *", zone = "UTC")
     @Transactional
     public void purgeExpiredRuns() {
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         int deleted = runRepository.deleteByExpiresAtBefore(now);
         if (deleted > 0) {
             log.info("Retention: purged {} expired calculation runs (cutoff={})", deleted, now);

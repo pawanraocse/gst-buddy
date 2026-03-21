@@ -10,6 +10,7 @@ public class UploadProperties {
 
     private DataSize maxFileSize = DataSize.ofMegabytes(10);
     private int maxFiles = 20;
+    private int maxConcurrentUploads = 2;
 
     public DataSize getMaxFileSize() {
         return maxFileSize;
@@ -25,5 +26,13 @@ public class UploadProperties {
 
     public void setMaxFiles(int maxFiles) {
         this.maxFiles = maxFiles;
+    }
+
+    public int getMaxConcurrentUploads() {
+        return maxConcurrentUploads;
+    }
+
+    public void setMaxConcurrentUploads(int maxConcurrentUploads) {
+        this.maxConcurrentUploads = maxConcurrentUploads;
     }
 }

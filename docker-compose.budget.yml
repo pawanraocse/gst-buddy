@@ -88,8 +88,8 @@ services:
       file: docker-compose.base.yml
       service: backend-service
     restart: unless-stopped
-    # Optimized JVM for t3.small
-    entrypoint: ["java", "-Xmx512m", "-Xms256m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-jar", "/app/app.jar"]
+    # Optimized JVM for t3.small + OOM safety
+    entrypoint: ["java", "-Xmx512m", "-Xms256m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-XX:+HeapDumpOnOutOfMemoryError", "-XX:HeapDumpPath=/tmp/heapdump.hprof", "-XX:+ExitOnOutOfMemoryError", "-jar", "/app/app.jar"]
     environment:
       SPRING_APPLICATION_NAME: backend-service
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
