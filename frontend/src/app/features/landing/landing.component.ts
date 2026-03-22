@@ -247,32 +247,18 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
         isPopular: boolean;
     }>>([
         {
-            name: 'Trial',
-            tagline: 'Try it free',
-            price: 0,
-            credits: 1,
-            features: [
-                { text: '1 ledger analysis', included: true },
-                { text: 'Rule 37 support', included: true },
-                { text: 'Excel export', included: true },
-                { text: 'Priority support', included: false }
-            ],
-            cta: 'Get Started Free',
-            isPopular: false
-        },
-        {
             name: 'Pro',
-            tagline: 'For small stores',
+            tagline: 'Perfect for small stores',
             price: 149,
             credits: 2,
             features: [
                 { text: '2 ledger analyses', included: true },
-                { text: 'All GST rules', included: true },
+                { text: 'All GST rules included', included: true },
                 { text: 'Email support', included: true },
-                { text: 'Basic reports', included: true }
+                { text: 'Basic reporting', included: true }
             ],
             cta: 'Buy Credits',
-            isPopular: true
+            isPopular: false
         },
         {
             name: 'Ultra',
@@ -281,9 +267,23 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             credits: 20,
             features: [
                 { text: '20 ledger analyses', included: true },
-                { text: 'All GST rules', included: true },
+                { text: 'All GST rules included', included: true },
                 { text: 'Priority support', included: true },
                 { text: 'Best value per credit', included: true }
+            ],
+            cta: 'Buy Credits',
+            isPopular: true
+        },
+        {
+            name: 'Max',
+            tagline: 'For high volume processing',
+            price: 3499,
+            credits: 100,
+            features: [
+                { text: '100 ledger analyses', included: true },
+                { text: 'All GST rules included', included: true },
+                { text: 'Priority support', included: true },
+                { text: 'Maximum savings', included: true }
             ],
             cta: 'Buy Credits',
             isPopular: false
@@ -666,14 +666,15 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
     private loadPlans(): void {
         this.creditApi.getPlans().subscribe({
             next: (plans) => {
-                const mapped = plans.map(p => ({
+                const nonTrialPlans = plans.filter(p => !p.isTrial);
+                const mapped = nonTrialPlans.map(p => ({
                     name: p.displayName,
                     tagline: p.description || `${p.credits} ledger analyses`,
                     price: p.priceInr,
                     credits: p.credits,
                     features: this.buildFeatures(p),
-                    cta: p.isTrial ? 'Get Started Free' : 'Buy Credits',
-                    isPopular: p.name === 'pro'
+                    cta: 'Buy Credits',
+                    isPopular: p.name === 'ultra'
                 }));
                 this.pricingPlans.set(mapped);
             },

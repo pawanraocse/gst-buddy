@@ -366,9 +366,10 @@ COMMENT ON COLUMN credit_transactions.reference_type IS 'TRIAL | PLAN_PURCHASE |
 -- 16. SEED DATA - PRICING PLANS
 -- ============================================================================
 INSERT INTO plans (name, display_name, price_inr, credits, is_trial, sort_order, description) VALUES
-('trial', 'Trial', 0, 1, true, 1, 'Free starter — 1 ledger analysis'),
+('trial', 'Trial', 0, 2, true, 1, 'Free starter — 2 ledger analyses'),
 ('pro', 'Pro', 149, 2, false, 2, 'Perfect for small stores — 2 ledger analyses'),
-('ultra', 'Ultra', 999, 20, false, 3, 'Best value — 20 ledger analyses')
+('ultra', 'Ultra', 999, 20, false, 3, 'Best value — 20 ledger analyses'),
+('max', 'Max', 3499, 100, false, 4, 'For high volume processing — 100 ledger analyses')
 ON CONFLICT (name) DO NOTHING;
 
 -- ============================================================================

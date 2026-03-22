@@ -244,31 +244,22 @@
         <p class="plans-subtitle">Choose a plan to add more credits to your account.</p>
         <div class="plans-grid">
             @for (plan of plans(); track plan.id) {
-            <div class="plan-card" [class.plan-featured]="!plan.isTrial">
-                @if (!plan.isTrial) {
+            <div class="plan-card" [class.plan-featured]="plan.name === 'ultra'">
+                @if (plan.name === 'ultra') {
                 <div class="plan-badge">Popular</div>
                 }
                 <h3 class="plan-name">{{ plan.displayName }}</h3>
                 <div class="plan-price">
-                    @if (plan.priceInr === 0) {
-                    <span class="price-amount">Free</span>
-                    } @else {
                     <span class="price-currency">₹</span>
                     <span class="price-amount">{{ plan.priceInr }}</span>
-                    }
                 </div>
                 <div class="plan-credits">
                     <i class="pi pi-bolt"></i>
                     <span>{{ plan.credits }} credits</span>
                 </div>
                 <p class="plan-description">{{ plan.description }}</p>
-                @if (plan.isTrial) {
-                <button pButton label="Current Plan" [disabled]="true"
-                    class="p-button-outlined p-button-secondary w-full plan-btn"></button>
-                } @else {
                 <button pButton label="Buy Credits" icon="pi pi-shopping-cart"
                     class="p-button w-full plan-btn"></button>
-                }
             </div>
             }
         </div>

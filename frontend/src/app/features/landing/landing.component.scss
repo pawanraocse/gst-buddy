@@ -2477,6 +2477,53 @@ $gray-900: #111827;
     }
 }
 
+.trial-promo-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba($teal-500, 0.1), rgba($indigo-500, 0.05));
+    border: 1px solid rgba($teal-500, 0.2);
+    border-radius: 16px;
+    padding: 24px 32px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .promo-content {
+        font-size: 1.1rem;
+        color: $gray-700;
+
+        .highlight {
+            font-weight: 700;
+            color: $teal-600;
+            background: linear-gradient(135deg, $teal-600, $indigo-600);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    }
+
+    .promo-btn {
+        border-color: $teal-500 !important;
+        color: $teal-600 !important;
+        background: white !important;
+        font-weight: 600 !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease !important;
+
+        &:hover {
+            background: rgba($teal-500, 0.1) !important;
+            transform: translateY(-2px);
+        }
+    }
+}
+
 .pricing-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

@@ -260,6 +260,72 @@
 }
 
 /* ===========================
+   Collapsed State (Desktop)
+   =========================== */
+@media (min-width: 992px) {
+  .layout-wrapper.layout-sidebar-collapsed {
+    .layout-sidebar {
+      width: 88px;
+    }
+
+    .layout-main-container {
+      margin-left: 118px; /* 88px + 1rem (approx 16px) left-position gap + 1rem spacing approx */
+    }
+
+    .sidebar-header {
+      flex-direction: column;
+      padding: var(--space-6) 0;
+      gap: var(--space-4);
+
+      .app-name {
+        display: none;
+      }
+    }
+
+    .menu-link {
+      justify-content: center;
+      padding: var(--space-4) 0;
+      
+      span {
+        display: none;
+      }
+      
+      i {
+        margin: 0;
+        font-size: 1.4rem;
+      }
+    }
+
+    .menu-separator {
+      text-align: center;
+      padding: 0;
+      
+      .separator-label {
+        font-size: 0;
+        border-bottom: none;
+        
+        &::after {
+          content: '...';
+          font-size: 1rem;
+          color: var(--text-secondary);
+        }
+      }
+    }
+
+    .user-card {
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-3) 0;
+      gap: var(--space-4);
+
+      .user-info {
+        display: none;
+      }
+    }
+  }
+}
+
+/* ===========================
    Responsive
    =========================== */
 @media (max-width: 991px) {

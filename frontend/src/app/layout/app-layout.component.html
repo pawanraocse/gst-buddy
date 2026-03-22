@@ -1,14 +1,17 @@
-<div class="layout-wrapper" [class.layout-sidebar-active]="sidebarActive()">
+<div class="layout-wrapper" [class.layout-sidebar-active]="sidebarActive()" [class.layout-sidebar-collapsed]="sidebarCollapsed()">
 
   <!-- Floating Sidebar (Glassmorphism) -->
   <aside class="layout-sidebar">
-    <div class="sidebar-header">
+    <div class="sidebar-header" style="justify-content: space-between;">
       <div class="logo-container">
         <div class="logo-box">
           <i class="pi pi-bolt"></i>
         </div>
         <span class="app-name">Gstbuddies</span>
       </div>
+      <button class="sidebar-toggle-desktop hidden md:flex" (click)="toggleDesktopSidebar()" pTooltip="Toggle Sidebar" tooltipPosition="right" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); width: 2rem; height: 2rem; align-items: center; justify-content: center; border-radius: 8px;">
+        <i class="pi" [ngClass]="sidebarCollapsed() ? 'pi-angle-right' : 'pi-angle-left'"></i>
+      </button>
     </div>
 
     <div class="sidebar-content">
@@ -66,8 +69,8 @@
         </div>
 
         <div class="header-actions">
-          <button pButton icon="pi pi-cog" class="header-action-btn" [rounded]="true" [text]="true"
-            routerLink="/app/settings/account" pTooltip="Settings"></button>
+          <!--<button pButton icon="pi pi-cog" class="header-action-btn" [rounded]="true" [text]="true"
+            routerLink="/app/settings/account" pTooltip="Settings"></button>-->
         </div>
       </div>
     </header>

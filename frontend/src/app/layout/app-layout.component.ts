@@ -21,6 +21,14 @@ export class AppLayoutComponent {
   router = inject(RouterModule); // To track active route if needed, or stick to simple logic
 
   sidebarActive = signal(false);
+  sidebarCollapsed = signal(false);
+
+  constructor() {
+    const savedState = localStorage.getItem('sidebar_collapsed');
+    if (savedState) {
+      this.sidebarCollapsed.set(savedState === 'true');
+    }
+  }
 
   @ViewChild('shareDialog') shareDialog!: ShareDialogComponent;
 
@@ -30,6 +38,14 @@ export class AppLayoutComponent {
 
   toggleSidebar() {
     this.sidebarActive.update(v => !v);
+  }
+
+  toggleDesktopSidebar() {
+    this.sidebarCollapsed.update(v => {
+      const newState = !v;
+      localStorage.setItem('sidebar_collapsed', String(newState));
+      return newState;
+    });
   }
 
   // Helper to check active route roughly

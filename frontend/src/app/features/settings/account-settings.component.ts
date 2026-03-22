@@ -92,7 +92,11 @@ export class AccountSettingsComponent implements OnInit {
     if (this.plans().length === 0) {
       this.plansLoading.set(true);
       this.creditApi.getPlans().subscribe({
-        next: (p) => { this.plans.set(p); this.plansLoading.set(false); },
+        next: (p) => { 
+          const nonTrialPlans = p.filter(plan => !plan.isTrial);
+          this.plans.set(nonTrialPlans); 
+          this.plansLoading.set(false); 
+        },
         error: () => {
           this.plansLoading.set(false);
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load plans.' });
