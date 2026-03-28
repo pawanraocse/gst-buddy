@@ -3,6 +3,29 @@ _Last 10 sessions. Oldest sessions pruned when limit exceeded._
 
 ---
 
+## Session: 2026-03-28 17:19 | Agent: Antigravity
+
+### What Was Done
+- Fixed GitHub Actions `deploy-production.yml` matrix context syntax error.
+- Fixed `deploy-production.yml` Maven build context to resolve inter-module dependencies from root.
+- Removed `otel-collector` completely from all docker-compose and deployment scripts to eliminate cost/burden.
+
+### Files Changed
+- `.github/workflows/deploy-production.yml` — fixed CI/CD logic
+- `docker-compose.base.yml` — removed otel-collector service
+- `docker-compose.yml` — removed otel-collector mapping
+- `terraform/envs/budget/main.tf` — removed otel ECR repo
+- `scripts/budget/destroy.sh` — removed from cleanup list
+- `.memory/SESSION_LOG.md` — updated session log
+
+### Decisions Made
+- Omitted standalone `otel-collector` from all environments due to infrastructure overhead. Will pursue ADOT sidecar pattern when tracing is required natively in ECS.
+
+### Carry-Forward
+- Wait for team alignment before implementing ADOT sidecars in ECS task definitions.
+
+---
+
 ## Session: 2026-03-07 15:04 | Agent: Antigravity
 
 ### What Was Done

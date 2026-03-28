@@ -12,31 +12,7 @@
 services:
 
 
-  # ============================================================================
-  # OpenTelemetry Collector
-  # ============================================================================
-  otel-collector:
-    build:
-      context: ./docker/otel-collector
-      dockerfile: Dockerfile
-    container_name: gst-buddy-otel-collector
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
-    environment:
-      AWS_REGION: ${AWS_REGION:-us-east-1}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_PROFILE: ""
-    networks:
-      - app-network
-    ports:
-      - "4317:4317"
-      - "4318:4318"
-      - "13133:13133"
-    healthcheck:
-      disable: true
-    restart: unless-stopped
+
 
   # ============================================================================
   # Eureka Service Discovery

@@ -32,8 +32,6 @@ x-redis-config: &redis-config
   REDIS_HOST: redis
   REDIS_PORT: ${REDIS_PORT}
 
-x-otel-config: &otel-config
-  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318/v1/traces
 
 x-monitoring-config: &monitoring-config
   MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics
@@ -85,14 +83,6 @@ services:
     restart: unless-stopped
 
   # ============================================================================
-  # OpenTelemetry Collector
-  # ============================================================================
-  otel-collector:
-    extends:
-      file: docker-compose.base.yml
-      service: otel-collector
-
-  # ============================================================================
   # Eureka Server
   # ============================================================================
   eureka-server:
@@ -108,7 +98,7 @@ services:
       file: docker-compose.base.yml
       service: gateway-service
     environment:
-      <<: [ *aws-config, *eureka-config, *redis-config, *otel-config ]
+      <<: [ *aws-config, *eureka-config, *redis-config ]
       SPRING_APPLICATION_NAME: gateway-service
       SERVER_PORT: ${GATEWAY_PORT}
       EUREKA_INSTANCE_HOSTNAME: gateway-service
@@ -118,8 +108,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      otel-collector:
-        condition: service_started
 
   # ============================================================================
   # Backend Service (Flyway owner)
@@ -129,7 +117,7 @@ services:
       file: docker-compose.base.yml
       service: backend-service
     environment:
-      <<: [ *eureka-config, *datasource-config, *redis-config, *otel-config, *monitoring-config ]
+      <<: [ *eureka-config, *datasource-config, *redis-config, *monitoring-config ]
       SPRING_APPLICATION_NAME: backend-service
       SERVER_PORT: ${BACKEND_PORT}
       EUREKA_INSTANCE_HOSTNAME: backend-service
@@ -148,7 +136,7 @@ services:
       file: docker-compose.base.yml
       service: auth-service
     environment:
-      <<: [ *aws-config, *eureka-config, *datasource-config, *redis-config, *otel-config, *monitoring-config ]
+      <<: [ *aws-config, *eureka-config, *datasource-config, *redis-config, *monitoring-config ]
       SPRING_APPLICATION_NAME: auth-service
       SERVER_PORT: ${AUTH_PORT}
       SPRING_PROFILES_ACTIVE: ${AUTH_PROFILE:-}
