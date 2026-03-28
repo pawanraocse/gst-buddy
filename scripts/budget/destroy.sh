@@ -163,7 +163,6 @@ SERVICES=(
 
     "backend-service"
     "eureka-server"
-    "otel-collector"
 )
 
 for svc in "${SERVICES[@]}"; do

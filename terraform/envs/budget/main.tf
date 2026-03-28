@@ -155,8 +155,7 @@ module "ecr" {
     "gateway-service",
     "auth-service",
     "backend-service",
-    "eureka-server",
-    "otel-collector"
+    "eureka-server"
   ]
 
   # Budget: Minimal image retention
