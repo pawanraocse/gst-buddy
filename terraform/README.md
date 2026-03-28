@@ -34,7 +34,7 @@ Edit `/terraform.tfvars`:
 
 ```hcl
 aws_region   = "us-east-1"
-project_name = "gst-buddy-lite"
+project_name = "GSTbuddies-lite"
 environment  = "dev"
 
 callback_urls = [
@@ -71,7 +71,7 @@ The script will:
 
 After deployment:
 ```
-https://gst-buddy-lite-dev-XXXXXXXX.auth.us-east-1.amazoncognito.com/oauth2/authorize?...
+https://GSTbuddies-lite-dev-XXXXXXXX.auth.us-east-1.amazoncognito.com/oauth2/authorize?...
 ```
 
 ---
@@ -80,10 +80,10 @@ https://gst-buddy-lite-dev-XXXXXXXX.auth.us-east-1.amazoncognito.com/oauth2/auth
 
 | Resource | Name | Description |
 |----------|------|-------------|
-| **User Pool** | `gst-buddy-lite-dev-user-pool` | Cognito user pool with custom attributes |
-| **Lambda Function** | `gst-buddy-lite-dev-pre-token-generation` | Injects tenantId into JWT tokens |
-| **User Pool Domain** | `gst-buddy-lite-dev-XXXXXXXX` | Hosted UI domain (Modern v2) |
-| **User Pool Client** | `gst-buddy-lite-dev-native-client` | OAuth2 client (with secret) |
+| **User Pool** | `GSTbuddies-lite-dev-user-pool` | Cognito user pool with custom attributes |
+| **Lambda Function** | `GSTbuddies-lite-dev-pre-token-generation` | Injects tenantId into JWT tokens |
+| **User Pool Domain** | `GSTbuddies-lite-dev-XXXXXXXX` | Hosted UI domain (Modern v2) |
+| **User Pool Client** | `GSTbuddies-lite-dev-native-client` | OAuth2 client (with secret) |
 | **User Groups** | admin, admin, user | Role-based groups |
 | **SSM Parameters** | 11 parameters | Secure configuration storage |
 
@@ -96,7 +96,7 @@ https://gst-buddy-lite-dev-XXXXXXXX.auth.us-east-1.amazoncognito.com/oauth2/auth
 The Lambda function automatically injects the user's `tenantId` from custom attributes into JWT tokens during authentication.
 
 **Function:**
-- **Name:** `gst-buddy-lite-dev-pre-token-generation`
+- **Name:** `GSTbuddies-lite-dev-pre-token-generation`
 - **Runtime:** Node.js 20.x
 - **Memory:** 128 MB
 - **Timeout:** 3 seconds
@@ -123,47 +123,47 @@ All configuration is stored in AWS Systems Manager Parameter Store for secure ac
 
 ### Current Deployment Paths
 
-Replace `gst-buddy-lite` and `dev` with your `project_name` and `environment`:
+Replace `GSTbuddies-lite` and `dev` with your `project_name` and `environment`:
 
 | Parameter | Path | Type |
 |-----------|------|------|
-| User Pool ID | `/gst-buddy-lite/dev/cognito/user_pool_id` | String |
-| Client ID | `/gst-buddy-lite/dev/cognito/client_id` | String |
-| Client Secret | `/gst-buddy-lite/dev/cognito/client_secret` | SecureString |
-| Issuer URI | `/gst-buddy-lite/dev/cognito/issuer_uri` | String |
-| JWKS URI | `/gst-buddy-lite/dev/cognito/jwks_uri` | String |
-| Domain | `/gst-buddy-lite/dev/cognito/domain` | String |
-| Hosted UI URL | `/gst-buddy-lite/dev/cognito/hosted_ui_url` | String |
-| Branding ID | `/gst-buddy-lite/dev/cognito/branding_id` | String |
-| Callback URL | `/gst-buddy-lite/dev/cognito/callback_url` | String |
-| Logout Redirect URL | `/gst-buddy-lite/dev/cognito/logout_redirect_url` | String |
-| AWS Region | `/gst-buddy-lite/dev/aws/region` | String |
+| User Pool ID | `/GSTbuddies-lite/dev/cognito/user_pool_id` | String |
+| Client ID | `/GSTbuddies-lite/dev/cognito/client_id` | String |
+| Client Secret | `/GSTbuddies-lite/dev/cognito/client_secret` | SecureString |
+| Issuer URI | `/GSTbuddies-lite/dev/cognito/issuer_uri` | String |
+| JWKS URI | `/GSTbuddies-lite/dev/cognito/jwks_uri` | String |
+| Domain | `/GSTbuddies-lite/dev/cognito/domain` | String |
+| Hosted UI URL | `/GSTbuddies-lite/dev/cognito/hosted_ui_url` | String |
+| Branding ID | `/GSTbuddies-lite/dev/cognito/branding_id` | String |
+| Callback URL | `/GSTbuddies-lite/dev/cognito/callback_url` | String |
+| Logout Redirect URL | `/GSTbuddies-lite/dev/cognito/logout_redirect_url` | String |
+| AWS Region | `/GSTbuddies-lite/dev/aws/region` | String |
 
 ### Accessing SSM Parameters
 
 ```bash
 # List all Cognito parameters
 aws ssm get-parameters-by-path \
-  --path "/gst-buddy-lite/dev/cognito" \
+  --path "/GSTbuddies-lite/dev/cognito" \
   --region us-east-1 \
   --profile personal
 
 # Get specific parameter
 aws ssm get-parameter \
-  --name "/gst-buddy-lite/dev/cognito/user_pool_id" \
+  --name "/GSTbuddies-lite/dev/cognito/user_pool_id" \
   --region us-east-1 \
   --profile personal
 
 # Get client secret (encrypted)
 aws ssm get-parameter \
-  --name "/gst-buddy-lite/dev/cognito/client_secret" \
+  --name "/GSTbuddies-lite/dev/cognito/client_secret" \
   --with-decryption \
   --region us-east-1 \
   --profile personal
 
 # View all parameters in table format
 aws ssm get-parameters-by-path \
-  --path "/gst-buddy-lite/dev/cognito" \
+  --path "/GSTbuddies-lite/dev/cognito" \
   --with-decryption \
   --query 'Parameters[*].{Name:Name,Value:Value}' \
   --output table \
@@ -230,7 +230,7 @@ Decode the access token at https://jwt.io
 ### 5. Check Lambda Logs
 
 ```bash
-aws logs tail /aws/lambda/gst-buddy-lite-dev-pre-token-generation \
+aws logs tail /aws/lambda/GSTbuddies-lite-dev-pre-token-generation \
   --follow \
   --profile personal \
   --region us-east-1
@@ -250,7 +250,7 @@ spring:
     aws:
       paramstore:
         enabled: true
-        prefix: /gst-buddy-lite
+        prefix: /GSTbuddies-lite
         profile-separator: /
         default-context: dev/cognito
   
@@ -361,7 +361,7 @@ terraform/
 **Solution:** Ensure you're using the correct region and profile:
 ```bash
 aws ssm get-parameter \
-  --name "/gst-buddy-lite/dev/cognito/user_pool_id" \
+  --name "/GSTbuddies-lite/dev/cognito/user_pool_id" \
   --region us-east-1 \
   --profile personal
 ```
@@ -370,7 +370,7 @@ aws ssm get-parameter \
 
 **Check Lambda logs:**
 ```bash
-aws logs tail /aws/lambda/gst-buddy-lite-dev-pre-token-generation --follow --profile personal --region us-east-1
+aws logs tail /aws/lambda/GSTbuddies-lite-dev-pre-token-generation --follow --profile personal --region us-east-1
 ```
 
 ### Issue: JWT Missing Tenant ID
@@ -389,7 +389,7 @@ aws cognito-idp admin-get-user \
 ## 📚 Resources
 
 - **AWS Console Links** (Replace with your resources):
-  - [Lambda Function](https://console.aws.amazon.com/lambda/home?region=us-east-1#/functions/gst-buddy-lite-dev-pre-token-generation)
+  - [Lambda Function](https://console.aws.amazon.com/lambda/home?region=us-east-1#/functions/GSTbuddies-lite-dev-pre-token-generation)
   - [Cognito User Pool](https://console.aws.amazon.com/cognito/v2/idp/user-pools/us-east-1_6RGxkqTmA)
   - [CloudWatch Logs](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups)
 

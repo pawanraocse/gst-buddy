@@ -29,3 +29,8 @@ output "ssm_url_path" {
   description = "SSM parameter path for Amplify URL"
   value       = aws_ssm_parameter.amplify_url.name
 }
+
+output "branch_name" {
+  description = "The name of the created Amplify branch"
+  value       = aws_amplify_branch.main.branch_name
+}

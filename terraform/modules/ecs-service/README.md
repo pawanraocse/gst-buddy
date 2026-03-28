@@ -18,7 +18,7 @@ Deploy any containerized service to ECS Fargate. Template-friendly design for ea
 module "gateway" {
   source = "../../modules/ecs-service"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
   service_name = "gateway"
 

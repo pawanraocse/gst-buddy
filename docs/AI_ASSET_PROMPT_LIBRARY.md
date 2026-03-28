@@ -1,6 +1,6 @@
 # AI Asset Generation Prompt Library
 
-**Project:** GST Buddy  
+**Project:** GSTbuddies  
 **Version:** 1.0  
 **Date:** Feb 2026  
 **Visual Direction:** Professional Financial Precision — High-fidelity 3D Glassmorphism, Indigo/Violet & Silver palette, ultra-realistic textures, clean architectural studio lighting.
@@ -486,9 +486,9 @@ No text. Dreamy and premium feel. Loopable. 8 seconds.
 
 | Shot | Duration | Camera | Subject | Mood |
 |---|---|---|---|---|
-| 1. Intro | 5s | Static, centered | GST Buddy logo animates in with particle effect | Premium, minimal |
+| 1. Intro | 5s | Static, centered | GSTbuddies logo animates in with particle effect | Premium, minimal |
 | 2. Problem | 15s | Slow zoom in | Overwhelmed accountant at desk with piles of Excel sheets. Text overlay: "Tracking GST compliance manually?" | Empathetic, relatable |
-| 3. Solution | 10s | Pan right | Screen recording: user opens GST Buddy dashboard, clean glass UI | Relieving, modern |
+| 3. Solution | 10s | Pan right | Screen recording: user opens GSTbuddies dashboard, clean glass UI | Relieving, modern |
 | 4. Upload | 15s | Close-up on screen | Drag-and-drop upload of Excel file. Processing animation plays. | Fast, capable |
 | 5. Results | 15s | Slight zoom out | Dashboard shows "All Clear ✓". Confetti animation. ITC numbers displayed. | Triumphant, satisfying |
 | 6. Export | 10s | Close-up | Click "Export to Excel" button. Download confirmation. | Productive, efficient |
@@ -541,11 +541,11 @@ Ultra-realistic studio portrait of a 32-year-old Indian male Tech Entrepreneur. 
 ## 11. Interactive Impact Video (Marketing/Demo)
 
 ### Concept & Objective
-Instead of a dry product walkthrough, the landing page video should be an **Interactive Impact Video**. The objective is to motivate the user to sign up by demonstrating the real-world value of GST Buddy.
+Instead of a dry product walkthrough, the landing page video should be an **Interactive Impact Video**. The objective is to motivate the user to sign up by demonstrating the real-world value of GSTbuddies.
 
 ### Key Storyboard Elements to Include:
 1. **The Problem (0:00 - 0:05):** Show a stressed CA or Business Owner dealing with Excel files, missing deadlines, and worrying about Rule 36(4) mismatches.
-2. **The Solution (0:05 - 0:15):** Introduce GST Buddy. Show a fast-paced, dynamic sequence of a file being uploaded and processed in seconds.
+2. **The Solution (0:05 - 0:15):** Introduce GSTbuddies. Show a fast-paced, dynamic sequence of a file being uploaded and processed in seconds.
 3. **The Impact (0:15 - 0:25):** 
    - **Show the money:** Highlight an "ITC Saved" dashboard metric ticking upwards. 
    - **Show the time:** Visualize dropping from "Days of work" to "Minutes".

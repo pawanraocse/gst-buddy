@@ -1,4 +1,4 @@
-# GST Buddy - Frontend Design System
+# GSTbuddies - Frontend Design System
 
 **Version:** 1.0
 **Philosophy:** "Anti-Gravity" — Lightweight, Friendly, Trustworthy.

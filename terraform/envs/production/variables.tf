@@ -7,7 +7,7 @@
 variable "project_name" {
   description = "Name of the project"
   type        = string
-  default     = "saas-factory"
+  default     = "GSTbuddies"
 }
 
 variable "environment" {
@@ -81,7 +81,7 @@ variable "rds_multi_az" {
 variable "database_name" {
   description = "Database name"
   type        = string
-  default     = "saas_db"
+  default     = "gstbuddies_db"
 }
 
 variable "database_username" {

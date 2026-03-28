@@ -20,7 +20,7 @@ variable "aws_profile" {
 variable "project_name" {
   description = "Project name used in resource naming"
   type        = string
-  default     = "gst-buddy"
+  default     = "GSTbuddies"
 
   validation {
     condition     = can(regex("^[a-z0-9-]{3,20}$", var.project_name)) && !can(regex("^aws", var.project_name))

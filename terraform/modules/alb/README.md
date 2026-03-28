@@ -8,7 +8,7 @@ Application Load Balancer with HTTPS and path-based routing for microservices.
 module "alb" {
   source = "../../modules/alb"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
 
   vpc_id     = module.vpc.vpc_id

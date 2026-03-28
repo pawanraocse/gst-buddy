@@ -13,7 +13,7 @@ PROJECT_ROOT="$SCRIPT_DIR/.."
 # Configuration
 AWS_REGION="${AWS_REGION:-us-east-1}"
 AWS_PROFILE="${AWS_PROFILE:-production}"
-PROJECT_NAME="${PROJECT_NAME:-saas-factory}"
+PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
 ENVIRONMENT="${ENVIRONMENT:-production}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 

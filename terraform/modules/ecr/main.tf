@@ -25,7 +25,7 @@ locals {
 resource "aws_ecr_repository" "services" {
   for_each = toset(local.services)
 
-  name                 = "${var.project_name}/${each.value}"
+  name                 = lower("${var.project_name}/${each.value}")
   image_tag_mutability = var.image_tag_mutability
 
   image_scanning_configuration {
@@ -38,7 +38,7 @@ resource "aws_ecr_repository" "services" {
   }
 
   tags = merge(local.common_tags, {
-    Name    = "${var.project_name}-${each.value}"
+    Name    = lower("${var.project_name}-${each.value}")
     Service = each.value
   })
 }

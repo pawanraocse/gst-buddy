@@ -8,7 +8,7 @@ Fargate-enabled ECS cluster with optional Spot capacity.
 module "ecs_cluster" {
   source = "../../modules/ecs-cluster"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
 
   enable_container_insights = true

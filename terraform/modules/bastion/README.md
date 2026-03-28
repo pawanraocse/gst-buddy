@@ -15,7 +15,7 @@ Secure EC2 instance for database administration access.
 module "bastion" {
   source = "../../modules/bastion"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
 
   vpc_id    = module.vpc.vpc_id
@@ -44,7 +44,7 @@ ssh -i key.pem ec2-user@<bastion-ip>
 ### Connect to RDS
 ```bash
 # From bastion
-psql -h <rds-endpoint> -U postgres -d saas_db
+psql -h <rds-endpoint> -U postgres -d gstbuddies_db
 ```
 
 ## Cost

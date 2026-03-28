@@ -22,7 +22,7 @@ rds_instance_class        = "db.t3.small"
 rds_allocated_storage     = 20
 rds_max_allocated_storage = 100
 rds_multi_az              = false  # Set true for HA (~$50/mo extra)
-database_name             = "saas_db"
+database_name             = "gstbuddies_db"
 database_username         = "postgres"
 
 # ElastiCache

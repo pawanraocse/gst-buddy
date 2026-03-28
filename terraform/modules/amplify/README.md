@@ -16,7 +16,7 @@ AWS Amplify for Angular frontend hosting with CI/CD.
 module "amplify" {
   source = "../../modules/amplify"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
 
   repository_url      = "https://github.com/user/repo"

@@ -2,7 +2,7 @@
 
 ## Project Purpose
 
-**GST Buddy** is a multi-tenant SaaS platform for Indian GST (Goods and Services Tax) compliance. It enables businesses to upload supplier payment ledgers and automatically calculate Rule 37 ITC (Input Tax Credit) reversals, interest liability, and at-risk supplier identification based on the 180-day payment rule.
+**GSTbuddies** is a multi-tenant SaaS platform for Indian GST (Goods and Services Tax) compliance. It enables businesses to upload supplier payment ledgers and automatically calculate Rule 37 ITC (Input Tax Credit) reversals, interest liability, and at-risk supplier identification based on the 180-day payment rule.
 
 ## Tech Stack
 

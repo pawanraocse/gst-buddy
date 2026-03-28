@@ -1,0 +1,225 @@
+#!/bin/bash
+# =============================================================================
+# Production Start Script (prod_init)
+# =============================================================================
+# Builds and starts services on EC2 using local Docker builds.
+# Services are started with health monitoring and sequential ordering.
+# Prerequisites: JARs + Dockerfiles rsynced to /app
+# =============================================================================
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="${SCRIPT_DIR}/../.."
+
+# Logging functions
+log_info() { echo "[INFO] $1"; }
+log_success() { echo "[SUCCESS] $1"; }
+log_error() { echo "[ERROR] $1"; }
+log_warn() { echo "[WARN] $1"; }
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🚀 Starting Production Services (prod_init)"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Configuration from environment or SSM
+AWS_REGION="${AWS_REGION:-us-east-1}"
+ENVIRONMENT="${ENVIRONMENT:-prod_init}"
+PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
+AWS_PROFILE="${AWS_PROFILE:-}" # Usually not needed on EC2 with IAM role
+
+# =============================================================================
+# Optimize Swap Settings
+# =============================================================================
+log_info "Optimizing swap settings for t3.medium..."
+sudo sysctl -w vm.swappiness=10 2>/dev/null || true
+sudo sysctl -w vm.vfs_cache_pressure=50 2>/dev/null || true
+
+# =============================================================================
+# Fetch Configuration from SSM
+# =============================================================================
+log_info "Fetching configuration from SSM Parameter Store..."
+
+# Database
+export DB_HOST=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/rds/endpoint" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export DB_PORT="${DB_PORT:-5432}"
+export DB_NAME=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/rds/database" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export DB_USERNAME=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/rds/username" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+
+# Get password from Secrets Manager
+SECRET_ARN=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/rds/secret_arn" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id "$SECRET_ARN" --query 'SecretString' --output text --region "$AWS_REGION" | jq -r '.password')
+
+# Redis (Local Container instead of ElastiCache for budget saving)
+export REDIS_HOST="redis"
+export REDIS_PORT="6379"
+
+# Cognito
+export COGNITO_USER_POOL_ID=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/cognito/user_pool_id" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export COGNITO_CLIENT_ID=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/cognito/client_id" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export COGNITO_CLIENT_SECRET=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/cognito/client_secret" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
+export COGNITO_SPA_CLIENT_ID=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/cognito/spa_client_id" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export COGNITO_DOMAIN=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/cognito/domain" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export COGNITO_ISSUER_URI="https://cognito-idp.${AWS_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}"
+export COGNITO_JWKS_URI="${COGNITO_ISSUER_URI}/.well-known/jwks.json"
+export COGNITO_REDIRECT_URI=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/cognito/callback_url" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export COGNITO_LOGOUT_REDIRECT_URL=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/cognito/logout_redirect_url" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+
+# CORS and Frontend
+export FRONTEND_URL=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/frontend/url" --query 'Parameter.Value' --output text --region "$AWS_REGION")
+export CORS_ALLOWED_ORIGINS="${FRONTEND_URL},https://gstbuddies.com,https://www.gstbuddies.com,http://localhost:4200"
+
+# Internal Security
+export INTERNAL_API_KEY=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/api/internal_key" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
+
+log_success "Configuration loaded from SSM"
+echo ""
+echo "📦 Configuration:"
+echo "  DB_HOST:    $DB_HOST"
+echo "  DB_NAME:    $DB_NAME"
+echo "  REDIS_HOST: $REDIS_HOST"
+echo "  COGNITO:    $COGNITO_USER_POOL_ID"
+echo "  CORS:       $CORS_ALLOWED_ORIGINS"
+echo ""
+
+
+
+# =============================================================================
+# Build Docker Images
+# =============================================================================
+log_info "Building Docker images (this takes ~5 min first time)..."
+cd "$PROJECT_ROOT"
+# Lowercase project name for Docker Compose
+DOCKER_PROJECT_NAME=$(echo "${PROJECT_NAME}" | tr '[:upper:]' '[:lower:]')
+
+docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml build --no-cache 2>&1 || {
+    log_error "Failed to build Docker images"
+    exit 1
+}
+log_success "Docker images built!"
+
+# =============================================================================
+# Helper: Wait for Service Health (Fast Polling)
+# =============================================================================
+wait_for_healthy() {
+    local service_name=$1
+    local max_wait=${2:-180}  # Default 3 min
+    local interval=5          # Poll every 5 seconds (faster!)
+    local elapsed=0
+    
+    while [ $elapsed -lt $max_wait ]; do
+        status=$(docker inspect --format='{{.State.Health.Status}}' "$service_name" 2>/dev/null || echo "not_found")
+        
+        if [ "$status" = "healthy" ]; then
+            log_success "$service_name is healthy! (${elapsed}s)"
+            return 0
+        elif [ "$status" = "unhealthy" ]; then
+            log_warn "$service_name is unhealthy, waiting..."
+        fi
+        
+        sleep $interval
+        elapsed=$((elapsed + interval))
+    done
+    
+    log_warn "$service_name did not become healthy in ${max_wait}s (current: $status)"
+    return 1
+}
+
+wait_for_container() {
+    local service_name=$1
+    local max_wait=${2:-30}
+    local elapsed=0
+    
+    while [ $elapsed -lt $max_wait ]; do
+        if docker ps --format '{{.Names}}' | grep -q "^${service_name}$"; then
+            log_success "$service_name container started"
+            return 0
+        fi
+        sleep 2
+        elapsed=$((elapsed + 2))
+    done
+    
+    log_error "$service_name container failed to start"
+    return 1
+}
+
+# =============================================================================
+# Parallel + Sequential Startup (Optimized)
+# =============================================================================
+log_info "Starting services with PARALLEL strategy where possible..."
+echo ""
+
+# Phase 1: Infrastructure (Redis)
+log_info "Phase 1/3: Starting infrastructure services..."
+docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d redis 2>&1
+wait_for_container "${PROJECT_NAME}-redis" 30 || true
+
+# Phase 2: Service Discovery (Eureka - must be healthy before Java services)
+log_info "Phase 2/3: Starting Eureka (required for service discovery)..."
+docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d eureka-server 2>&1
+wait_for_healthy "${PROJECT_NAME}-eureka-server" 300 || {
+    log_error "Eureka failed to start. Cannot continue."
+    docker logs "${PROJECT_NAME}-eureka-server" --tail 50
+    exit 1
+}
+
+# Phase 3: All Java Services (in parallel - they all depend only on Eureka)
+log_info "Phase 3/3: Starting all Java services (parallel)..."
+docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d gateway-service auth-service backend-service 2>&1
+
+# Wait for all services with fast polling
+log_info "Waiting for services to become healthy (polling every 5s)..."
+SERVICES_TO_CHECK=("${PROJECT_NAME}-gateway-service" "${PROJECT_NAME}-auth-service" "${PROJECT_NAME}-backend-service")
+MAX_WAIT=300
+elapsed=0
+
+while [ $elapsed -lt $MAX_WAIT ]; do
+    all_healthy=true
+    status_line=""
+    
+    for svc in "${SERVICES_TO_CHECK[@]}"; do
+        status=$(docker inspect --format='{{.State.Health.Status}}' "$svc" 2>/dev/null || echo "starting")
+        status_line="$status_line $svc:$status"
+        
+        if [ "$status" != "healthy" ]; then
+            all_healthy=false
+        fi
+    done
+    
+    echo -ne "\r  [${elapsed}s]$status_line"
+    
+    if [ "$all_healthy" = true ]; then
+        echo ""
+        log_success "All services healthy!"
+        break
+    fi
+    
+    sleep 5
+    elapsed=$((elapsed + 5))
+done
+
+if [ "$all_healthy" != true ]; then
+    echo ""
+    log_warn "Some services may still be starting. Check with: docker ps"
+fi
+
+# =============================================================================
+# Summary
+# =============================================================================
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+log_success "Production Environment Started!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "🐳 Services:"
+docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml ps
+echo ""
+echo "🌐 Endpoints (Internal access only via tunnels):"
+echo "  Gateway:  http://localhost:8080"
+echo "  Eureka:   http://localhost:8761"
+echo ""
+echo "💡 Tip: Public access via https://api.gstbuddies.com"
+echo ""
+

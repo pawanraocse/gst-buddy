@@ -382,7 +382,7 @@ ON CONFLICT (name) DO NOTHING;
 -- the real Cognito sub.
 -- ============================================================================
 INSERT INTO users (user_id, tenant_id, email, name, status, source, created_at, updated_at) VALUES
-('SYSTEM_ADMIN_PLACEHOLDER', 'default', 'system-admin@gst-buddy.local', 'System Admin', 'ACTIVE', 'MANUAL', NOW(), NOW())
+('SYSTEM_ADMIN_PLACEHOLDER', 'default', 'system-admin@GSTbuddies.local', 'System Admin', 'ACTIVE', 'MANUAL', NOW(), NOW())
 ON CONFLICT (user_id) DO NOTHING;
 
 INSERT INTO user_roles (tenant_id, user_id, role_id, assigned_by, assigned_at) VALUES

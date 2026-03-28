@@ -129,14 +129,21 @@ resource "aws_iam_role_policy" "bastion_app_access" {
             "ssm:GetParameters",
             "ssm:GetParametersByPath"
           ]
-          Resource = "arn:aws:ssm:*:*:parameter/${var.project_name}/*"
+          Resource = [
+            "arn:aws:ssm:*:*:parameter/${var.project_name}/*",
+            "arn:aws:ssm:*:*:parameter/${lower(var.project_name)}/*"
+          ]
         },
         {
           Effect = "Allow"
           Action = [
             "secretsmanager:GetSecretValue"
           ]
-          Resource = "arn:aws:secretsmanager:*:*:secret:${var.project_name}/*"
+          Resource = [
+            "arn:aws:secretsmanager:*:*:secret:${var.project_name}*",
+            "arn:aws:secretsmanager:*:*:secret:${lower(var.project_name)}*",
+            "arn:aws:secretsmanager:*:*:secret:${lower(replace(var.project_name, "_", "-"))}*"
+          ]
         },
         {
           Effect = "Allow"

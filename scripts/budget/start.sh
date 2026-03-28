@@ -27,7 +27,7 @@ echo ""
 # Configuration from environment or SSM
 AWS_REGION="${AWS_REGION:-us-east-1}"
 ENVIRONMENT="${ENVIRONMENT:-budget}"
-PROJECT_NAME="${PROJECT_NAME:-gst-buddy}"
+PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
 
 # =============================================================================
 # Optimize Swap Settings
@@ -151,14 +151,14 @@ echo ""
 # Phase 1: Infrastructure (Redis)
 log_info "Phase 1/3: Starting infrastructure services..."
 docker-compose -f docker-compose.budget.yml up -d redis 2>&1
-wait_for_container "gst-buddy-redis" 30 || true
+wait_for_container "GSTbuddies-redis" 30 || true
 
 # Phase 2: Service Discovery (Eureka - must be healthy before Java services)
 log_info "Phase 2/3: Starting Eureka (required for service discovery)..."
 docker-compose -f docker-compose.budget.yml up -d eureka-server 2>&1
-wait_for_healthy "gst-buddy-eureka-server" 300 || {
+wait_for_healthy "GSTbuddies-eureka-server" 300 || {
     log_error "Eureka failed to start. Cannot continue."
-    docker logs gst-buddy-eureka-server --tail 50
+    docker logs GSTbuddies-eureka-server --tail 50
     exit 1
 }
 
@@ -168,7 +168,7 @@ docker-compose -f docker-compose.budget.yml up -d gateway-service auth-service b
 
 # Wait for all services with fast polling
 log_info "Waiting for services to become healthy (polling every 5s)..."
-SERVICES_TO_CHECK=("gst-buddy-gateway-service" "gst-buddy-auth-service" "gst-buddy-backend-service")
+SERVICES_TO_CHECK=("GSTbuddies-gateway-service" "GSTbuddies-auth-service" "GSTbuddies-backend-service")
 MAX_WAIT=300
 elapsed=0
 

@@ -65,6 +65,14 @@ public class AuthServiceImpl implements AuthService {
 
                 userService.upsertOnLogin(userId, email, name, "COGNITO");
 
+                // Ensure every user (Manual or SSO) has their trial credits
+                try {
+                        creditService.grantTrialCredits(userId);
+                } catch (Exception e) {
+                        log.warn("Failed to grant trial credits for userId={}: {}",
+                                        userId, e.getMessage());
+                }
+
                 // Migrate email-based wallet (from signup) to UUID-based wallet (post-login)
                 try {
                         creditService.migrateWallet(email, userId);

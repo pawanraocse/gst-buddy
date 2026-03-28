@@ -52,7 +52,12 @@ public class GrantTrialCreditsAction implements SignupAction {
     @Override
     public void execute(SignupContext ctx) throws SignupActionException {
         try {
-            String userId = ctx.getEmail(); // userId = email in this system
+            // Use Cognito UUID as primary userId, fallback to email if not yet set
+            String userId = ctx.getCognitoUserId();
+            if (userId == null || userId.isBlank()) {
+                userId = ctx.getEmail();
+            }
+            
             log.info("Granting trial credits for userId={}", userId);
 
             var wallet = creditService.grantTrialCredits(userId);

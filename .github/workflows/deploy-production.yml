@@ -21,9 +21,9 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  PROJECT_NAME: gst-buddy
+  PROJECT_NAME: GSTbuddies
   ENVIRONMENT: production
-  ECS_CLUSTER: gst-buddy-production
+  ECS_CLUSTER: GSTbuddies-production
 
 jobs:
   detect-changes:

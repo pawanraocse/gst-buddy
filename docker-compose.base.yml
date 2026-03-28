@@ -21,8 +21,8 @@ services:
     build:
       context: ./eureka-server
       dockerfile: Dockerfile
-    image: ${PROJECT_NAME}-eureka-server:1.0.0
-    container_name: gst-buddy-eureka-server
+    image: gstbuddies-eureka-server:1.0.0
+    container_name: GSTbuddies-eureka-server
     environment:
       SPRING_APPLICATION_NAME: eureka-server
       SERVER_PORT: 8761
@@ -48,8 +48,8 @@ services:
     build:
       context: ./gateway-service
       dockerfile: Dockerfile
-    image: ${PROJECT_NAME}-gateway-service:1.0.0
-    container_name: gst-buddy-gateway-service
+    image: gstbuddies-gateway-service:1.0.0
+    container_name: GSTbuddies-gateway-service
     networks:
       - app-network
     ports:
@@ -71,8 +71,8 @@ services:
     build:
       context: ./backend-service
       dockerfile: Dockerfile
-    image: ${PROJECT_NAME}-backend-service:1.0.0
-    container_name: gst-buddy-backend-service
+    image: gstbuddies-backend-service:1.0.0
+    container_name: GSTbuddies-backend-service
     networks:
       - app-network
     ports:
@@ -93,8 +93,8 @@ services:
     build:
       context: ./auth-service
       dockerfile: Dockerfile
-    image: ${PROJECT_NAME}-auth-service:1.0.0
-    container_name: gst-buddy-auth-service
+    image: gstbuddies-auth-service:1.0.0
+    container_name: GSTbuddies-auth-service
     volumes:
       - ~/.aws:/home/spring/.aws:ro
     networks:

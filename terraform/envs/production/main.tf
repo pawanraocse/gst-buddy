@@ -154,7 +154,7 @@ module "ecs_cluster" {
   vpc_id = module.vpc.vpc_id
 
   enable_container_insights = true
-  enable_service_discovery  = true # Creates saas-factory.local namespace
+  enable_service_discovery  = true # Creates GSTbuddies.local namespace
 }
 
 # =============================================================================
@@ -219,7 +219,7 @@ module "gateway_service" {
   environment_variables = {
     SPRING_APPLICATION_NAME = "gateway-service"
     SERVER_PORT             = "8080"
-    EUREKA_URI              = "http://eureka.saas-factory.local:8761/eureka"
+    EUREKA_URI              = "http://eureka.GSTbuddies.local:8761/eureka"
     REDIS_HOST              = module.elasticache.primary_endpoint
     REDIS_PORT              = "6379"
   }
@@ -256,7 +256,7 @@ module "auth_service" {
   environment_variables = {
     SPRING_APPLICATION_NAME = "auth-service"
     SERVER_PORT             = "8081"
-    EUREKA_URI              = "http://eureka.saas-factory.local:8761/eureka"
+    EUREKA_URI              = "http://eureka.GSTbuddies.local:8761/eureka"
     SPRING_DATASOURCE_URL   = "jdbc:postgresql://${module.rds.endpoint}/${var.database_name}"
     REDIS_HOST              = module.elasticache.primary_endpoint
     REDIS_PORT              = "6379"
@@ -298,7 +298,7 @@ module "backend_service" {
   environment_variables = {
     SPRING_APPLICATION_NAME = "backend-service"
     SERVER_PORT             = "8082"
-    EUREKA_URI              = "http://eureka.saas-factory.local:8761/eureka"
+    EUREKA_URI              = "http://eureka.GSTbuddies.local:8761/eureka"
     SPRING_DATASOURCE_URL   = "jdbc:postgresql://${module.rds.endpoint}/${var.database_name}"
     REDIS_HOST              = module.elasticache.primary_endpoint
     REDIS_PORT              = "6379"
@@ -341,7 +341,7 @@ module "eureka_service" {
   # No autoscaling for Eureka
   enable_autoscaling = false
 
-  # Service Discovery - registers as eureka.saas-factory.local
+  # Service Discovery - registers as eureka.GSTbuddies.local
   service_discovery_namespace_id = module.ecs_cluster.service_discovery_namespace_id
 
   environment_variables = {

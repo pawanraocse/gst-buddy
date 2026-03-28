@@ -11,8 +11,10 @@ locals {
     Module      = "rds"
   }
 
-  # Database identifier
-  db_identifier = "${var.project_name}-${var.environment}"
+active_environment = var.environment == "prod_init" ? "production" : var.environment
+
+  # Database identifier (must be lowercase and hyphens only in AWS)
+  db_identifier = lower(replace("${var.project_name}-${var.environment}", "_", "-"))
 
   # Engine configuration
   is_aurora = var.use_aurora
@@ -27,7 +29,7 @@ locals {
 # =============================================================================
 
 resource "aws_security_group" "rds" {
-  name        = "${var.project_name}-${var.environment}-rds-sg"
+  name        = lower(replace("${var.project_name}-${var.environment}-rds-sg", "_", "-"))
   description = "Security group for RDS database"
   vpc_id      = var.vpc_id
 
@@ -68,7 +70,7 @@ resource "random_password" "master" {
 }
 
 resource "aws_secretsmanager_secret" "db_credentials" {
-  name        = "${var.project_name}/${var.environment}/rds-credentials"
+  name        = lower(replace("${var.project_name}-${var.environment}/rds-credentials", "_", "-"))
   description = "RDS database credentials for ${var.project_name}-${var.environment}"
 
   recovery_window_in_days = var.environment == "prod" || var.environment == "production" ? 30 : 0
@@ -135,13 +137,13 @@ resource "aws_db_instance" "postgres" {
   # Deletion protection
   deletion_protection       = var.deletion_protection
   skip_final_snapshot       = var.skip_final_snapshot
-  final_snapshot_identifier = var.skip_final_snapshot ? null : "${local.db_identifier}-final-snapshot"
+  final_snapshot_identifier = var.skip_final_snapshot ? null : lower("${local.db_identifier}-final-snapshot")
 
-  # Apply changes immediately in non-prod
-  apply_immediately = var.environment != "prod" && var.environment != "production"
+  # Apply changes immediately in non-prod (including prod_init as production)
+  apply_immediately = var.environment != "prod" && var.environment != "production" && var.environment != "prod_init"
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-postgres"
+    Name = lower(replace("${var.project_name}-${var.environment}-postgres", "_", "-"))
   })
 
   lifecycle {
@@ -152,7 +154,7 @@ resource "aws_db_instance" "postgres" {
 resource "aws_db_parameter_group" "postgres" {
   count = local.is_aurora ? 0 : 1
 
-  name        = "${var.project_name}-${var.environment}-postgres-params"
+  name        = lower(replace("${var.project_name}-${var.environment}-postgres-params", "_", "-"))
   family      = "postgres${split(".", var.postgres_version)[0]}"
   description = "PostgreSQL parameter group for ${var.project_name}-${var.environment}"
 

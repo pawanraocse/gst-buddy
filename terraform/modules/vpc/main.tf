@@ -31,7 +31,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-vpc"
+    Name = lower(replace("${var.project_name}-${var.environment}-vpc", "_", "-"))
   })
 }
 
@@ -43,7 +43,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-igw"
+    Name = lower(replace("${var.project_name}-${var.environment}-igw", "_", "-"))
   })
 }
 
@@ -60,7 +60,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-public-${var.availability_zones[count.index]}"
+    Name = lower(replace("${var.project_name}-${var.environment}-public-${var.availability_zones[count.index]}", "_", "-"))
     Tier = "Public"
   })
 }
@@ -75,7 +75,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-public-rt"
+    Name = lower(replace("${var.project_name}-${var.environment}-public-rt", "_", "-"))
   })
 }
 
@@ -98,7 +98,7 @@ resource "aws_eip" "nat" {
   domain = "vpc"
 
   tags = merge(local.common_tags, {
-    Name = var.single_nat_gateway ? "${var.project_name}-${var.environment}-nat-eip" : "${var.project_name}-${var.environment}-nat-eip-${var.availability_zones[count.index]}"
+    Name = lower(replace(var.single_nat_gateway ? "${var.project_name}-${var.environment}-nat-eip" : "${var.project_name}-${var.environment}-nat-eip-${var.availability_zones[count.index]}", "_", "-"))
   })
 
   depends_on = [aws_internet_gateway.main]
@@ -112,7 +112,7 @@ resource "aws_nat_gateway" "main" {
   subnet_id     = aws_subnet.public[count.index].id
 
   tags = merge(local.common_tags, {
-    Name = var.single_nat_gateway ? "${var.project_name}-${var.environment}-nat" : "${var.project_name}-${var.environment}-nat-${var.availability_zones[count.index]}"
+    Name = lower(replace(var.single_nat_gateway ? "${var.project_name}-${var.environment}-nat" : "${var.project_name}-${var.environment}-nat-${var.availability_zones[count.index]}", "_", "-"))
   })
 
   depends_on = [aws_internet_gateway.main]
@@ -131,7 +131,7 @@ resource "aws_subnet" "private" {
   map_public_ip_on_launch = false
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-private-${var.availability_zones[count.index]}"
+    Name = lower(replace("${var.project_name}-${var.environment}-private-${var.availability_zones[count.index]}", "_", "-"))
     Tier = "Private"
   })
 }
@@ -152,7 +152,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = merge(local.common_tags, {
-    Name = var.single_nat_gateway ? "${var.project_name}-${var.environment}-private-rt" : "${var.project_name}-${var.environment}-private-rt-${count.index + 1}"
+    Name = lower(replace(var.single_nat_gateway ? "${var.project_name}-${var.environment}-private-rt" : "${var.project_name}-${var.environment}-private-rt-${count.index + 1}", "_", "-"))
   })
 }
 
@@ -177,7 +177,7 @@ resource "aws_subnet" "database" {
   map_public_ip_on_launch = false
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-database-${var.availability_zones[count.index]}"
+    Name = lower(replace("${var.project_name}-${var.environment}-database-${var.availability_zones[count.index]}", "_", "-"))
     Tier = "Database"
   })
 }
@@ -190,7 +190,7 @@ resource "aws_route_table" "database" {
   # Only VPC internal traffic allowed
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-database-rt"
+    Name = lower(replace("${var.project_name}-${var.environment}-database-rt", "_", "-"))
   })
 }
 
@@ -204,23 +204,23 @@ resource "aws_route_table_association" "database" {
 
 # Database Subnet Group (for RDS)
 resource "aws_db_subnet_group" "database" {
-  name        = "${var.project_name}-${var.environment}-db-subnet-group"
+  name        = lower(replace("${var.project_name}-${var.environment}-db-subnet-group", "_", "-"))
   description = "Database subnet group for ${var.project_name}-${var.environment}"
   subnet_ids  = aws_subnet.database[*].id
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-db-subnet-group"
+    Name = lower(replace("${var.project_name}-${var.environment}-db-subnet-group", "_", "-"))
   })
 }
 
 # ElastiCache Subnet Group
 resource "aws_elasticache_subnet_group" "cache" {
-  name        = "${var.project_name}-${var.environment}-cache-subnet-group"
+  name        = lower(replace("${var.project_name}-${var.environment}-cache-subnet-group", "_", "-"))
   description = "ElastiCache subnet group for ${var.project_name}-${var.environment}"
   subnet_ids  = aws_subnet.database[*].id
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-${var.environment}-cache-subnet-group"
+    Name = lower(replace("${var.project_name}-${var.environment}-cache-subnet-group", "_", "-"))
   })
 }
 

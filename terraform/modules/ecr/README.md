@@ -8,7 +8,7 @@ ECR repositories for Docker images with lifecycle policies.
 module "ecr" {
   source = "../../modules/ecr"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
 
   # Optional: Override default services
@@ -35,9 +35,9 @@ module "ecr" {
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
 
 # Build and push
-docker build -t saas-factory/gateway-service .
-docker tag saas-factory/gateway-service:latest ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/saas-factory/gateway-service:latest
-docker push ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/saas-factory/gateway-service:latest
+docker build -t GSTbuddies/gateway-service .
+docker tag GSTbuddies/gateway-service:latest ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/GSTbuddies/gateway-service:latest
+docker push ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/GSTbuddies/gateway-service:latest
 ```
 
 ## Outputs

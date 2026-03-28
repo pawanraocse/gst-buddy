@@ -5,10 +5,10 @@ _Last updated: 2026-03-07 | Updated by: Antigravity_
 ---
 
 ## Project Identity
-- **Name:** gst-buddy (GST Buddy)
+- **Name:** GSTbuddies (GSTbuddies)
 - **Type:** Multi-tenant SaaS for Indian GST compliance (Rule 37 ITC reversals)
 - **Owner:** Pawan Yadav
-- **Repo:** `~/prototype/gst-buddy`
+- **Repo:** `~/prototype/GSTbuddies`
 - **Status:** Beta — Budget env deployed, Production scaffold ready
 
 ## Architecture Overview
@@ -49,3 +49,26 @@ _Last updated: 2026-03-07 | Updated by: Antigravity_
 - Admin user bootstrapped: `pawan.weblink@gmail.com` (super-admin)
 - Bootstrap script hardened with DB fallback
 - DB tunnel scripts + aliases created
+
+## PATTERNS
+
+---
+
+## Pattern: Grant-on-Login (2026-03-28)
+- **Description**: Automatically grants baseline resources (like trial credits) during the auth session retrieval.
+- **Implementation**: `AuthServiceImpl.getCurrentUser()` calls `creditService.grantTrialCredits()`.
+- **Benefit**: Handles social/SSO users who don't hit "Signup Complete" screens.
+
+## Pattern: UUID-to-Email Alias (2026-03-28)
+- **Description**: Keying internal resources to Cognito `sub` but allowing lookup by `email`.
+- **Implementation**: `users` table maps both; `user_credit_wallets` relies exclusively on `user_id` (UUID).
+
+## Current State & Findings (2026-03-28)
+- **Production Environment**: `prod_init` (EC2 + RDS) is the current target.
+- **Critical Bug**: Google SSO users had 0 credits because they bypassed the signup pipeline.
+- **Root Cause 1**: `GrantTrialCreditsAction` used `email` instead of Cognito `sub` (UUID) as `userId`.
+- **Root Cause 2**: SSO login skipped the `SignupAction` chain.
+- **Fix**: Added "grant-on-login" logic in `AuthServiceImpl`.
+- **CORS**: `https://gstbuddies.com` wasn't in allowed origins; updated SSM and start scripts.
+- **Cognito**: Google identity provider was missing `email_verified` mapping. Fixed in Terraform.
+- **Database**: `plans` table was empty in production; seeded manually with 'trial' plan.

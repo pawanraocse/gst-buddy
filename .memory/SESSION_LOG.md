@@ -3,6 +3,45 @@ _Last 10 sessions. Oldest sessions pruned when limit exceeded._
 
 ---
 
+## Session: 2026-03-28 21:15 | Agent: Antigravity (Gemini)
+
+### What Was Done
+- **Fixed Production Bug: 0 Credits**: Resolved critical prod gap where Google SSO users had 0 credits.
+- **Backend Code Fix**: Updated `AuthServiceImpl.java` to grant 2 trial credits during `getCurrentUser` flow if wallet is missing.
+- **ID Consistency**: Fixed `GrantTrialCreditsAction.java` and internal logic to use Cognito `sub` (UUID) as the primary key for wallets instead of email.
+- **Production Seeding**: Seeded `plans` table in RDS with 'trial' plan (2 credits).
+- **Cognito Fix**: Updated `terraform/modules/cognito-user-pool/main.tf` to map `email_verified` from Google Identity Provider.
+- **CORS Fix**: Updated `ssm_frontend.tf` and `start.sh` to include `https://gstbuddies.com` in allowed origins.
+- **Manual Patch**: Restored 2 credits to `pawan.weblink@gmail.com` in production via manual SQL.
+- **Redeployed**: Rebuilt and deployed `auth-service` to `prod_init`.
+
+### Files Changed
+- `auth-service/src/main/java/com/learning/authservice/auth/service/AuthServiceImpl.java`
+- `auth-service/src/main/java/com/learning/authservice/signup/actions/GrantTrialCreditsAction.java`
+- `terraform/modules/cognito-user-pool/main.tf`
+- `terraform/envs/prod_init/ssm_frontend.tf`
+- `scripts/prod_init/start.sh`
+- `scripts/bootstrap-system-admin.sh`
+
+### Decisions
+## Stack
+- **Language:** Java 21, TypeScript 5.9
+- **Runtime:** JVM (Spring Boot 3.5.9), Node.js (Angular 21)
+- **Framework:** Spring Cloud 2025.0.0 (Gateway, Eureka), PrimeNG 21, PrimeFlex 4
+- **Auth SDK:** AWS Amplify 6.15.8 (frontend), AWS Cognito SDK (backend)
+- **Database:** PostgreSQL 16 — shared schema, `tenant_id` discriminator (NOT database-per-tenant)
+- **IdP:** AWS Cognito with Google/SAML Social Federation
+- **Cache:** Caffeine (local L1) + Redisson/Redis (distributed L2)
+- **Payments:** Razorpay SDK 1.4.6 (INR)
+- **Observability:** OpenTelemetry 1.43.0, Micrometer, AWS X-Ray
+- **Testing:** JUnit 5, Mockito, AssertJ, Testcontainers, REST Assured, Jasmine + Karma
+- **IaC:** Terraform 1.9+
+- **CI/CD:** GitHub Actions → ECR → ECS (production); rsync to EC2 (prod_init/budget)
+- **DB Migrations:** Flyway (per-service history tables)
+- Verify GSTR-2A/2B reconciliation logic under the new UUID-based wallet system.
+
+---
+
 ## Session: 2026-03-28 17:19 | Agent: Antigravity
 
 ### What Was Done
@@ -89,7 +128,7 @@ _Last 10 sessions. Oldest sessions pruned when limit exceeded._
 ## Session: 2026-03-03 19:15 | Agent: Antigravity
 
 ### What Was Done
-- Initialized persistent memory system across the `gst-buddy` project
+- Initialized persistent memory system across the `GSTbuddies` project
 
 ### Files Changed
 - `.cursorrules` — updated agent instructions to enforce memory system

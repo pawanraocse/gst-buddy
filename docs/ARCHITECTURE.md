@@ -69,7 +69,7 @@ graph TB
 
 
 ### 📦 Backend Service (Port 8082)
-**Role:** Domain-specific business logic (GST Buddy).
+**Role:** Domain-specific business logic (GSTbuddies).
 
 - **Business Logic:** Rule 37 ledger upload, calculation, export; future GST rules.
 - **Authorization:** Enforces `@RequirePermission` checks.

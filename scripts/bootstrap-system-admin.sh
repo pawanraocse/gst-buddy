@@ -20,14 +20,14 @@ fi
 
 # Configuration
 REGION="${AWS_REGION:-us-east-1}"
-PROJECT_NAME="${PROJECT_NAME:-gst-buddy}"
+PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
 ENVIRONMENT="${3:-${ENVIRONMENT:-budget}}"
 ENV="${ENV:-local}"
 AUTH_SERVICE_URL="${AUTH_SERVICE_URL:-http://localhost:8081}"
 INTERNAL_API_KEY="${INTERNAL_API_KEY:-}"
 
 echo "================================================================"
-echo "   GST Buddy - System Admin Bootstrap"
+echo "   GSTbuddies - System Admin Bootstrap"
 echo "================================================================"
 echo "Creates a Super Admin user in Cognito and links it via API."
 echo ""
@@ -67,8 +67,8 @@ ADMIN_EMAIL="${1:-}"
 ADMIN_PASSWORD="${2:-}"
 
 if [ -z "$ADMIN_EMAIL" ]; then
-    read -p "Enter Admin Email [system-admin@gst-buddy.local]: " ADMIN_EMAIL
-    ADMIN_EMAIL="${ADMIN_EMAIL:-system-admin@gst-buddy.local}"
+    read -p "Enter Admin Email [system-admin@GSTbuddies.local]: " ADMIN_EMAIL
+    ADMIN_EMAIL="${ADMIN_EMAIL:-system-admin@GSTbuddies.local}"
 fi
 
 if [ -z "$ADMIN_PASSWORD" ]; then
@@ -218,7 +218,7 @@ if [ "$API_LINKED" = "false" ] && [ "$ENVIRONMENT" != "local" ]; then
 
                 -- Ensure credit wallet exists
                 INSERT INTO user_credit_wallets (user_id, tenant_id, total_credits, consumed_credits, has_used_trial, version, created_at, updated_at)
-                VALUES ('$COGNITO_SUB', 'default', 0, 0, false, 0, NOW(), NOW())
+                VALUES ('$COGNITO_SUB', 'default', 2, 0, true, 0, NOW(), NOW())
                 ON CONFLICT DO NOTHING;
 
                 -- Clean up seeded placeholder (no longer needed)

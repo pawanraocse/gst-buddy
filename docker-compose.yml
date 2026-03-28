@@ -44,7 +44,7 @@ services:
   # ============================================================================
   postgres:
     image: postgres:16-alpine
-    container_name: gst-buddy-postgres-${ENV}
+    container_name: GSTbuddies-postgres-${ENV}
     environment:
       POSTGRES_DB: ${POSTGRES_DB_NAME}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -67,7 +67,7 @@ services:
   # ============================================================================
   redis:
     image: redis:7-alpine
-    container_name: gst-buddy-redis-${ENV}
+    container_name: GSTbuddies-redis-${ENV}
     command: redis-server --appendonly yes
     networks:
       - app-network

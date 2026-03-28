@@ -1,7 +1,7 @@
 # Authentication & Security
 
 ## Overview
-Cloud-Infra-Lite uses **AWS Cognito** for identity management and **Spring Cloud Gateway** for request validation. The architecture is simplified for a single-tenant SaaS application.
+GSTbuddies-Lite uses **AWS Cognito** for identity management and **Spring Cloud Gateway** for request validation. The architecture is simplified for a single-tenant SaaS application.
 
 ## Authentication Flow
 
@@ -45,9 +45,9 @@ graph LR
 
 ### Service Configuration
 Services load Cognito configuration from AWS Systems Manager (SSM) Parameter Store at startup:
-- `/gst-buddy/<env>/cognito/user_pool_id`
-- `/gst-buddy/<env>/cognito/issuer_uri`
-- `/gst-buddy/<env>/cognito/jwks_uri`
+- `/GSTbuddies/<env>/cognito/user_pool_id`
+- `/GSTbuddies/<env>/cognito/issuer_uri`
+- `/GSTbuddies/<env>/cognito/jwks_uri`
 
 ## Super-Admin Bootstrap
 

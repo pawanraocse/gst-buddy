@@ -1,10 +1,10 @@
-# GST Buddy Issues Tracker
+# GSTbuddies Issues Tracker
 
 Last updated: 2026-03-18
 
 ## Purpose
 
-This document tracks review findings, release blockers, improvements, and product suggestions for GST Buddy.
+This document tracks review findings, release blockers, improvements, and product suggestions for GSTbuddies.
 
 Primary focus for this review:
 
@@ -165,8 +165,8 @@ Why this matters:
 
 Evidence:
 
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/domain/ledger/LedgerExcelParser.java`
-- `/home/pawan/personal/gst-buddy/backend-service/src/test/java/com/learning/backendservice/domain/ledger/LedgerExcelParserTest.java`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/domain/ledger/LedgerExcelParser.java`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/test/java/com/learning/backendservice/domain/ledger/LedgerExcelParserTest.java`
 
 Suggested fix:
 
@@ -226,9 +226,9 @@ Why this matters:
 
 Evidence:
 
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/domain/rule37/Rule37InterestCalculationService.java`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/dashboard/dashboard.component.html`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/rule37/compliance-view/compliance-view.component.html`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/domain/rule37/Rule37InterestCalculationService.java`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/dashboard/dashboard.component.html`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/rule37/compliance-view/compliance-view.component.html`
 
 Suggested fix:
 
@@ -296,9 +296,9 @@ Why this matters:
 
 Evidence:
 
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/domain/rule37/Rule37InterestCalculationService.java`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/rule37/compliance-view/compliance-view.component.ts`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/rule37/compliance-view/compliance-view.component.html`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/domain/rule37/Rule37InterestCalculationService.java`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/rule37/compliance-view/compliance-view.component.ts`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/rule37/compliance-view/compliance-view.component.html`
 
 Suggested fix:
 
@@ -381,10 +381,10 @@ Why this matters:
 
 Evidence:
 
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/dto/UploadResult.java`
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/service/LedgerUploadOrchestrator.java`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/shared/models/rule37.model.ts`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/dashboard/dashboard.component.ts`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/dto/UploadResult.java`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/service/LedgerUploadOrchestrator.java`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/shared/models/rule37.model.ts`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/dashboard/dashboard.component.ts`
 
 Suggested fix:
 
@@ -439,11 +439,11 @@ Why this matters:
 
 Evidence:
 
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/rule37/compliance-view/compliance-view.component.ts`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/core/services/rule37-api.service.ts`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/dashboard/dashboard.component.ts`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/rule37/calculation-history/calculation-history.component.ts`
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/service/export/Gstr3bSummaryExportStrategy.java`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/rule37/compliance-view/compliance-view.component.ts`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/core/services/rule37-api.service.ts`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/dashboard/dashboard.component.ts`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/rule37/calculation-history/calculation-history.component.ts`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/service/export/Gstr3bSummaryExportStrategy.java`
 
 Suggested fix:
 
@@ -494,8 +494,8 @@ Why this matters:
 
 Evidence:
 
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/dashboard/dashboard.component.ts`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/dashboard/dashboard.component.html`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/dashboard/dashboard.component.ts`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/dashboard/dashboard.component.html`
 
 Suggested fix:
 
@@ -554,10 +554,10 @@ Why this matters:
 
 Evidence:
 
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/landing/landing.component.html`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/dashboard/dashboard.component.html`
-- `/home/pawan/personal/gst-buddy/frontend/src/app/features/rule37/compliance-view/compliance-view.component.html`
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/domain/rule37/CalculationSummary.java`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/landing/landing.component.html`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/dashboard/dashboard.component.html`
+- `/home/pawan/personal/GSTbuddies/frontend/src/app/features/rule37/compliance-view/compliance-view.component.html`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/domain/rule37/CalculationSummary.java`
 
 Suggested fix:
 
@@ -711,9 +711,9 @@ Why this matters:
 
 Evidence:
 
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/domain/rule37/Rule37InterestCalculationService.java`
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/domain/ledger/LedgerEntry.java`
-- `/home/pawan/personal/gst-buddy/backend-service/src/main/java/com/learning/backendservice/domain/ledger/LedgerExcelParser.java`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/domain/rule37/Rule37InterestCalculationService.java`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/domain/ledger/LedgerEntry.java`
+- `/home/pawan/personal/GSTbuddies/backend-service/src/main/java/com/learning/backendservice/domain/ledger/LedgerExcelParser.java`
 
 Suggested fix:
 

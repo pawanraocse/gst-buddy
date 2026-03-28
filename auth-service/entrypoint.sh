@@ -17,7 +17,7 @@ fi
 export HOME=/home/spring
 
 # SSM Parameter Path Prefix
-PROJECT_NAME=${PROJECT_NAME:-gst-buddy}
+PROJECT_NAME=${PROJECT_NAME:-GSTbuddies}
 SSM_PREFIX="/${PROJECT_NAME}/dev/cognito"
 
 echo "[INFO] Starting Auth Service Entrypoint"

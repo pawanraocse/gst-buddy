@@ -107,7 +107,7 @@ sequenceDiagram
     participant AuthService as Auth Service
     participant DB as PostgreSQL
 
-    Script->>Cognito: CreateUser (admin@gst-buddy.local)
+    Script->>Cognito: CreateUser (admin@GSTbuddies.local)
     Cognito-->>Script: cognito-sub-abc123
     Script->>AuthService: POST /admin/bootstrap/new-super-admin<br/>{cognitoSub, email}
     AuthService->>DB: Create user with cognito-sub
@@ -140,11 +140,11 @@ ENVIRONMENT=prod ./scripts/bootstrap-system-admin.sh
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `PROJECT_NAME` | `gst-buddy` | Cognito user pool lookup prefix |
+| `PROJECT_NAME` | `GSTbuddies` | Cognito user pool lookup prefix |
 | `ENVIRONMENT` | `dev` | Environment suffix |
 | `AUTH_SERVICE_URL` | `http://localhost:8081/auth` | Auth service base URL |
 | `INTERNAL_API_KEY` | `dev-internal-key-change-me` | Bootstrap endpoint auth key |
-| `ADMIN_EMAIL` | `system-admin@gst-buddy.local` | Admin account email |
+| `ADMIN_EMAIL` | `system-admin@GSTbuddies.local` | Admin account email |
 | `ADMIN_PASSWORD` | `Admin@12345678` | Initial password |
 
 ---

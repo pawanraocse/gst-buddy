@@ -21,7 +21,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  PROJECT_NAME: gst-buddy
+  PROJECT_NAME: GSTbuddies
   ENVIRONMENT: budget
 
 jobs:
@@ -101,7 +101,7 @@ jobs:
       - name: Send Email Notification
         run: |
           STATUS="${{ needs.build-and-deploy.result }}"
-          SUBJECT="[CI/CD] GST Buddy Deployment: $STATUS"
+          SUBJECT="[CI/CD] GSTbuddies Deployment: $STATUS"
           COLOR="#22c55e" # Green
           [ "$STATUS" != "success" ] && COLOR="#ef4444" # Red
           

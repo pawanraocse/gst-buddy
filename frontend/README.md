@@ -39,10 +39,10 @@ export const environment = {
 **Fetching from SSM manually:**
 ```bash
 # Get User Pool ID
-aws ssm get-parameter --name "/cloud-infra/dev/cognito/user_pool_id" --query 'Parameter.Value' --output text
+aws ssm get-parameter --name "/GSTbuddies/dev/cognito/user_pool_id" --query 'Parameter.Value' --output text
 
 # Get Client ID  
-aws ssm get-parameter --name "/cloud-infra/dev/cognito/client_id" --query 'Parameter.Value' --output text
+aws ssm get-parameter --name "/GSTbuddies/dev/cognito/client_id" --query 'Parameter.Value' --output text
 ```
 
 ## 🎨 UI/UX & Theming

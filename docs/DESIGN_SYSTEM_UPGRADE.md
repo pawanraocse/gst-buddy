@@ -1,4 +1,4 @@
-# GST Buddy — UI/UX Design System Upgrade Strategy
+# GSTbuddies — UI/UX Design System Upgrade Strategy
 
 **Version:** 2.0 — "Fintech Glass → Fintech Crystal"  
 **Prepared by:** Design Architecture Team  
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-GST Buddy's current design system (v1.0) has a solid foundation — glassmorphism cards, Indigo/Violet palette, Inter + Clash Display typography, and GPU-accelerated animations. However, to compete visually with Stripe, Linear, and Vercel, the system needs deeper refinement across **six dimensions**: typography hierarchy, color depth, iconography consistency, motion choreography, component polish, and visual asset strategy.
+GSTbuddies's current design system (v1.0) has a solid foundation — glassmorphism cards, Indigo/Violet palette, Inter + Clash Display typography, and GPU-accelerated animations. However, to compete visually with Stripe, Linear, and Vercel, the system needs deeper refinement across **six dimensions**: typography hierarchy, color depth, iconography consistency, motion choreography, component polish, and visual asset strategy.
 
 This document provides a production-ready upgrade plan across all six.
 
@@ -239,7 +239,7 @@ The app uses **PrimeIcons** (`pi pi-*`) for everything: navigation, actions, sta
 ### 6.1 Sidebar (`app-layout.component`)
 | Aspect | Current | Upgrade |
 |---|---|---|
-| Logo | `pi pi-bolt` icon in gradient box | Replace with **custom SVG logomark** (GST Buddy shield/calculator icon). Use `<img>` or inline SVG. |
+| Logo | `pi pi-bolt` icon in gradient box | Replace with **custom SVG logomark** (GSTbuddies shield/calculator icon). Use `<img>` or inline SVG. |
 | Menu items | `pi pi-*` icons, 1rem gap | Switch to Lucide icons at 20px, add `transition: all 200ms --ease-default` |
 | Active state | Left border + background gradient | Add **animated indicator pill** (small rounded bar that slides vertically between items with `transform: translateY()`) |
 | User card | Basic avatar + logout | Add **role badge** with colored dot (Admin = violet, User = teal). Add subtle ring animation around avatar on hover. |
@@ -422,7 +422,7 @@ This appendix connects every design token to the specific screens and Angular co
 |---|---|---|---|---|---|---|
 | `--text-hero` | ✅ Hero headline | — | — | — | — | — |
 | `--text-display` | Section headers (Features, Pricing, FAQ) | ✅ Status banner "All Clear" | — | — | — | — |
-| `--text-h1` | — | ✅ "GST Buddy" page title | ✅ "Welcome to GST Buddy" / "Create Account" | ✅ "Admin Dashboard" | ✅ "Account Settings" | — |
+| `--text-h1` | — | ✅ "GSTbuddies" page title | ✅ "Welcome to GSTbuddies" / "Create Account" | ✅ "Admin Dashboard" | ✅ "Account Settings" | — |
 | `--text-h2` | Rule cards section titles | ✅ Verdict banner "Action Needed" | — | ✅ Section headers (Users, Credits) | ✅ Section headers | ✅ Ledger name |
 | `--text-h3` | Feature card titles, FAQ questions | How-it-works step titles | — | ✅ Table cell group headers | — | ✅ Invoice summary headers |
 | `--text-body-lg` | Hero subtitle, testimonial quotes | — | ✅ "Tax shouldn't be scary..." subtitle | — | — | — |

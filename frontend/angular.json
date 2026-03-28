@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "gst-buddy": {
+    "GSTbuddies": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -69,10 +69,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "gst-buddy:build:production"
+              "buildTarget": "GSTbuddies:build:production"
             },
             "development": {
-              "buildTarget": "gst-buddy:build:development"
+              "buildTarget": "GSTbuddies:build:development"
             }
           },
           "defaultConfiguration": "development"

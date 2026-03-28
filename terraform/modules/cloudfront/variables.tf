@@ -13,3 +13,15 @@ variable "comment" {
   type        = string
   default     = "Managed by Terraform"
 }
+
+variable "aliases" {
+  description = "Extra CNAMEs for the distribution"
+  type        = list(string)
+  default     = []
+}
+
+variable "acm_certificate_arn" {
+  description = "ACM certificate ARN for HTTPS. If not provided, CloudFront default certificate is used."
+  type        = string
+  default     = null
+}

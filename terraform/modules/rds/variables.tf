@@ -10,18 +10,18 @@ variable "project_name" {
   type        = string
 
   validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.project_name))
-    error_message = "Project name must contain only lowercase letters, numbers, and hyphens."
+    condition     = can(regex("^[a-zA-Z0-9-]+$", var.project_name))
+    error_message = "Project name must contain only letters, numbers, and hyphens."
   }
 }
 
 variable "environment" {
-  description = "Environment name (e.g., dev, staging, prod)"
+  description = "Environment name (e.g., dev, staging, prod, budget, prod_init)"
   type        = string
 
   validation {
-    condition     = contains(["dev", "staging", "prod", "budget", "production"], var.environment)
-    error_message = "Environment must be one of: dev, staging, prod, budget, production."
+    condition     = contains(["dev", "staging", "prod", "budget", "production", "prod_init"], var.environment)
+    error_message = "Environment must be one of: dev, staging, prod, budget, production, prod_init."
   }
 }
 
@@ -132,7 +132,7 @@ variable "aurora_max_capacity" {
 variable "database_name" {
   description = "Name of the default database to create"
   type        = string
-  default     = "saas_db"
+  default     = "gstbuddies_db"
 
   validation {
     condition     = can(regex("^[a-z][a-z0-9_]*$", var.database_name))

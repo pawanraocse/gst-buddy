@@ -23,7 +23,7 @@ const config = {
     cognito: {
         userPoolId: process.env.ANGULAR_APP_COGNITO_POOL_ID || 'us-east-1_TDmsHjRgU',
         userPoolWebClientId: process.env.ANGULAR_APP_COGNITO_CLIENT_ID || '455m33j66v54q1m05892550186',
-        domain: process.env.ANGULAR_APP_COGNITO_DOMAIN || 'cloud-infra-lite-dev-3ubmtss0.auth.us-east-1.amazoncognito.com',
+        domain: process.env.ANGULAR_APP_COGNITO_DOMAIN || 'GSTbuddies-lite-dev-3ubmtss0.auth.us-east-1.amazoncognito.com',
         region: process.env.ANGULAR_APP_COGNITO_REGION || 'us-east-1'
     }
 };

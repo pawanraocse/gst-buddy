@@ -51,7 +51,7 @@ Production-grade AWS RDS module supporting both PostgreSQL and Aurora PostgreSQL
 module "rds" {
   source = "../../modules/rds"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "budget"
 
   vpc_id               = module.vpc.vpc_id
@@ -81,7 +81,7 @@ module "rds" {
 module "rds" {
   source = "../../modules/rds"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
 
   vpc_id               = module.vpc.vpc_id
@@ -109,7 +109,7 @@ module "rds" {
 module "rds" {
   source = "../../modules/rds"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
 
   vpc_id               = module.vpc.vpc_id
@@ -135,7 +135,7 @@ module "rds" {
 | `instance_class` | string | `db.t3.micro` | | RDS instance class |
 | `aurora_instance_class` | string | `db.t3.medium` | | Aurora instance class |
 | `aurora_serverless` | bool | `false` | | Use Aurora Serverless v2 |
-| `database_name` | string | `saas_db` | | Database name |
+| `database_name` | string | `gstbuddies_db` | | Database name |
 | `master_username` | string | `postgres` | | Master username |
 | `multi_az` | bool | `false` | | Multi-AZ deployment |
 | `deletion_protection` | bool | `false` | | Deletion protection |
@@ -159,9 +159,9 @@ module "rds" {
 {
   "username": "postgres",
   "password": "auto-generated-32-char",
-  "host": "saas-factory-prod.xxxxx.us-east-1.rds.amazonaws.com",
+  "host": "GSTbuddies-prod.xxxxx.us-east-1.rds.amazonaws.com",
   "port": 5432,
-  "database": "saas_db",
+  "database": "gstbuddies_db",
   "engine": "aurora-postgresql"
 }
 ```

@@ -18,7 +18,7 @@ AWS ElastiCache Redis module for caching and session management.
 module "elasticache" {
   source = "../../modules/elasticache"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "budget"
 
   vpc_id                        = module.vpc.vpc_id
@@ -42,7 +42,7 @@ module "elasticache" {
 module "elasticache" {
   source = "../../modules/elasticache"
 
-  project_name = "saas-factory"
+  project_name = "GSTbuddies"
   environment  = "production"
 
   vpc_id                        = module.vpc.vpc_id

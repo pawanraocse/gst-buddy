@@ -160,23 +160,23 @@ docker-compose -f docker-compose.budget.yml restart auth-service
 
 ```bash
 # View logs in CloudWatch
-aws logs tail /ecs/cloud-infra-prod/auth-service --follow
+aws logs tail /ecs/GSTbuddies-prod/auth-service --follow
 
 # Check ECS service status
-aws ecs describe-services --cluster cloud-infra-prod --services auth-service
+aws ecs describe-services --cluster GSTbuddies-prod --services auth-service
 
 # Force new deployment
-aws ecs update-service --cluster cloud-infra-prod --service auth-service --force-new-deployment
+aws ecs update-service --cluster GSTbuddies-prod --service auth-service --force-new-deployment
 ```
 
 ### Lambda (Pre-Token Generation)
 
 ```bash
 # View Lambda logs
-aws logs tail /aws/lambda/cloud-infra-budget-pre-token-generation --follow
+aws logs tail /aws/lambda/GSTbuddies-budget-pre-token-generation --follow
 
 # Test Lambda (requires test event)
-aws lambda invoke --function-name cloud-infra-budget-pre-token-generation \
+aws lambda invoke --function-name GSTbuddies-budget-pre-token-generation \
   --payload file://test-event.json response.json
 ```
 

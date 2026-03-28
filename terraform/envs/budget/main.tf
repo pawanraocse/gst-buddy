@@ -213,7 +213,7 @@ module "amplify" {
           commands:
             - npm run build
       artifacts:
-        baseDirectory: frontend/dist/gst-buddy/browser
+        baseDirectory: frontend/dist/GSTbuddies/browser
         files:
           - '**/*'
       cache:

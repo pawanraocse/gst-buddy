@@ -148,7 +148,7 @@ resource "aws_cognito_user_pool" "main" {
 # =============================================================================
 
 resource "aws_cognito_user_pool_domain" "main" {
-  domain                = "${var.project_name}-${var.environment}-${random_string.domain_suffix.result}"
+  domain                = lower(replace("${var.project_name}-${var.environment}-${random_string.domain_suffix.result}", "_", "-"))
   user_pool_id          = aws_cognito_user_pool.main.id
   managed_login_version = 2
 }
@@ -353,9 +353,10 @@ resource "aws_cognito_identity_provider" "google" {
   }
 
   attribute_mapping = {
-    email    = "email"
-    username = "sub"
-    name     = "name"
+    email          = "email"
+    email_verified = "email_verified"
+    username       = "sub"
+    name           = "name"
   }
 
   lifecycle {

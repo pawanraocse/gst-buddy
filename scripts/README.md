@@ -1,6 +1,6 @@
 # Project Scripts Documentation
 
-All utility scripts for building, deploying, and managing GST Buddy across environments.
+All utility scripts for building, deploying, and managing GSTbuddies across environments.
 
 ---
 
@@ -142,8 +142,8 @@ All connection details are fetched from SSM and printed when the tunnel opens.
 
 **Shell aliases** (added to `~/.zshrc`):
 ```bash
-alias sshgstbudget='~/prototype/gst-buddy/scripts/budget/db-tunnel.sh'
-alias sshgstprod='~/prototype/gst-buddy/scripts/production/db-tunnel.sh'
+alias sshgstbudget='~/prototype/GSTbuddies/scripts/budget/db-tunnel.sh'
+alias sshgstprod='~/prototype/GSTbuddies/scripts/production/db-tunnel.sh'
 ```
 
 ---

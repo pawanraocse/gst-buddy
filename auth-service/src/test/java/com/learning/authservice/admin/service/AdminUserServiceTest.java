@@ -220,15 +220,15 @@ class AdminUserServiceTest {
         @Test
         @DisplayName("returns existing detail when cognito sub already matches")
         void returnsExistingWhenAlreadyLinked() {
-            User existing = buildUser("cognito-sub-1", "admin@gst-buddy.local", "ACTIVE");
-            when(userRepository.findByEmail("admin@gst-buddy.local"))
+            User existing = buildUser("cognito-sub-1", "admin@GSTbuddies.local", "ACTIVE");
+            when(userRepository.findByEmail("admin@GSTbuddies.local"))
                     .thenReturn(Optional.of(existing));
             when(userRoleRepository.findByUserId("cognito-sub-1")).thenReturn(List.of());
             when(walletRepository.findByUserIdAndTenantId("cognito-sub-1", "default"))
                     .thenReturn(Optional.empty());
 
             AdminUserDetailDto dto = adminUserService.bootstrapSystemAdmin(
-                    "cognito-sub-1", "admin@gst-buddy.local");
+                    "cognito-sub-1", "admin@GSTbuddies.local");
 
             assertThat(dto.userId()).isEqualTo("cognito-sub-1");
             verify(userRepository, never()).delete(any());
@@ -237,11 +237,11 @@ class AdminUserServiceTest {
         @Test
         @DisplayName("transfers placeholder to real cognito sub")
         void transfersPlaceholderToRealSub() {
-            User placeholder = buildUser("SYSTEM_ADMIN_PLACEHOLDER", "admin@gst-buddy.local", "ACTIVE");
+            User placeholder = buildUser("SYSTEM_ADMIN_PLACEHOLDER", "admin@GSTbuddies.local", "ACTIVE");
             var oldRole = UserRole.builder().userId("SYSTEM_ADMIN_PLACEHOLDER")
                     .tenantId("default").roleId("super-admin").build();
 
-            when(userRepository.findByEmail("admin@gst-buddy.local"))
+            when(userRepository.findByEmail("admin@GSTbuddies.local"))
                     .thenReturn(Optional.of(placeholder));
             when(userRoleRepository.findByUserId("SYSTEM_ADMIN_PLACEHOLDER"))
                     .thenReturn(List.of(oldRole));
@@ -254,7 +254,7 @@ class AdminUserServiceTest {
                     .thenReturn(Optional.empty());
 
             AdminUserDetailDto dto = adminUserService.bootstrapSystemAdmin(
-                    "real-cognito-sub", "admin@gst-buddy.local");
+                    "real-cognito-sub", "admin@GSTbuddies.local");
 
             verify(userRepository).delete(placeholder);
             verify(userRoleRepository).deleteAll(List.of(oldRole));
