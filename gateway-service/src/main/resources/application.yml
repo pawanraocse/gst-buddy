@@ -78,6 +78,7 @@ cognito:
     user-pool-id: ${COGNITO_USER_POOL_ID:}
     client-id: ${COGNITO_SPA_CLIENT_ID:}
     region: ${AWS_REGION:us-east-1}
+    domain: ${COGNITO_DOMAIN:}
 
 eureka:
   client:

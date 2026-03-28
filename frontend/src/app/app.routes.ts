@@ -84,6 +84,18 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/callback.component').then(m => m.AuthCallbackComponent)
   },
   {
+    path: 'privacy',
+    loadComponent: () => import('./features/legal/privacy-policy.component').then(m => m.PrivacyPolicyComponent)
+  },
+  {
+    path: 'terms',
+    loadComponent: () => import('./features/legal/terms-of-service.component').then(m => m.TermsOfServiceComponent)
+  },
+  {
+    path: 'refund',
+    loadComponent: () => import('./features/legal/refund-policy.component').then(m => m.RefundPolicyComponent)
+  },
+  {
     path: '',
     loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent)
   },

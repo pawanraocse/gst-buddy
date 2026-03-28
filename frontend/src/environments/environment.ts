@@ -1,10 +1,13 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080', // Gateway URL (update for production)
+  apiUrl: 'http://localhost:8080', // Overridden at runtime by /api/config proxy
   cognito: {
-    userPoolId: 'us-east-1_66Wwv59jC',
-    userPoolWebClientId: '4inrr6881ll3f17tqqls3samqt',
+    // These are fallback values only — real values are fetched from /api/config/cognito at startup.
+    // Do NOT hardcode production or dev IDs here.
+    userPoolId: '',
+    userPoolWebClientId: '',
     region: 'us-east-1',
-    domain: 'gst-buddy-dev-y6lmkpp3.auth.us-east-1.amazoncognito.com'
+    domain: ''
   }
 };
+

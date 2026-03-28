@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { UserInfo } from './models';
 import { environment } from '../../environments/environment';
+import { AppConfigService } from './services/app-config.service';
 
 /**
  * Authentication service
@@ -18,6 +19,7 @@ import { environment } from '../../environments/environment';
 export class AuthService {
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
+  private readonly appConfig = inject(AppConfigService);
 
   /** Current authenticated user */
   readonly user = signal<UserInfo | null>(null);
@@ -96,8 +98,9 @@ export class AuthService {
 
   // Fallback for manual social login redirect
   private fallbackSocialLogin(provider: string): void {
-    const cognitoDomain = environment.cognito.domain;
-    const clientId = environment.cognito.userPoolWebClientId;
+    const config = this.appConfig.getCognitoConfig();
+    const cognitoDomain = config.domain;
+    const clientId = config.clientId;
     const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
 
     const socialUrl = `https://${cognitoDomain}/oauth2/authorize` +

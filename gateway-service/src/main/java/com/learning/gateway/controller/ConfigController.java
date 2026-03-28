@@ -28,13 +28,16 @@ public class ConfigController {
     @Value("${cognito.spa.region:us-east-1}")
     private String region;
 
+    @Value("${cognito.spa.domain:}")
+    private String domain;
+
     /**
      * Returns Cognito configuration for the frontend SPA.
      * This endpoint is public - no authentication required.
      */
     @GetMapping("/cognito")
     public Mono<CognitoConfig> getCognitoConfig() {
-        return Mono.just(new CognitoConfig(userPoolId, clientId, region));
+        return Mono.just(new CognitoConfig(userPoolId, clientId, region, domain));
     }
 
     /**
@@ -43,6 +46,7 @@ public class ConfigController {
     public record CognitoConfig(
             String userPoolId,
             String clientId,
-            String region) {
+            String region,
+            String domain) {
     }
 }

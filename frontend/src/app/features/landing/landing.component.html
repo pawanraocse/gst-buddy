@@ -860,11 +860,7 @@
                         <span>GSTBuddies</span>
                     </a>
                     <p>Your friendly AI companion for GST compliance. Because tax shouldn't be scary.</p>
-                    <div class="social-links">
-                        <a href="#" aria-label="LinkedIn"><i class="pi pi-linkedin"></i></a>
-                        <a href="#" aria-label="Twitter"><i class="pi pi-twitter"></i></a>
-                        <a href="#" aria-label="YouTube"><i class="pi pi-youtube"></i></a>
-                    </div>
+                    <!-- No social links yet -->
                 </div>
 
                 <!-- Product -->
@@ -873,31 +869,28 @@
                     <a (click)="scrollTo('features')">Features</a>
                     <a (click)="scrollTo('pricing')">Pricing</a>
                     <a (click)="scrollTo('how-it-works')">How It Works</a>
-                    <a href="#">Changelog</a>
+                    <a (click)="scrollTo('faq')">FAQ</a>
                 </div>
 
                 <!-- Resources -->
                 <div class="footer-links">
                     <h4>Resources</h4>
                     <a (click)="openSupportDialog()" class="cursor-pointer">Help Center</a>
-                    <a href="#">Blog</a>
-                    <a href="#">API Docs</a>
                     <a (click)="scrollTo('faq')">FAQ</a>
                 </div>
 
                 <!-- Legal -->
                 <div class="footer-links">
                     <h4>Legal</h4>
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Refund Policy</a>
-                    <a href="#">Cookie Policy</a>
+                    <a routerLink="/privacy">Privacy Policy</a>
+                    <a routerLink="/terms">Terms of Service</a>
+                    <a routerLink="/refund">Refund Policy</a>
                 </div>
 
                 <!-- Contact -->
                 <div class="footer-links">
                     <h4>Contact</h4>
-                    <a (click)="openSupportDialog()" class="cursor-pointer">Support & Feedback</a>
+                    <a (click)="openSupportDialog()" class="cursor-pointer">Support &amp; Feedback</a>
                     <a href="mailto:sales&#64;gstbuddies.com">sales&#64;gstbuddies.com</a>
                 </div>
             </div>
@@ -917,13 +910,18 @@
             <button class="close-btn" (click)="closeVideoModal()" aria-label="Close video">
                 <i class="pi pi-times"></i>
             </button>
-            <!-- Placeholder for video embed -->
-            <div
-                style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; text-align: center; padding: 40px;">
-                <div>
-                    <i class="pi pi-video" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;"></i>
-                    <h3 style="margin: 0 0 10px;">Demo Video Coming Soon</h3>
-                    <p style="opacity: 0.7;">A 90-second walkthrough of Gstbuddies in action</p>
+            <!-- Coming Soon card -->
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 40px;">
+                <div style="text-align: center; max-width: 400px;">
+                    <div style="width: 72px; height: 72px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 0 40px rgba(139,92,246,0.4);">
+                        <i class="pi pi-video" style="font-size: 2rem; color: white;"></i>
+                    </div>
+                    <h3 style="margin: 0 0 12px; font-size: 1.5rem; font-weight: 700; color: #fff;">Demo Video Coming Soon</h3>
+                    <p style="color: #9ca3af; line-height: 1.6; margin: 0 0 24px;">We're recording a 90-second walkthrough of Gstbuddies showing Rule 37 compliance in action.</p>
+                    <p style="color: #6b7280; font-size: 0.85rem; margin: 0 0 24px;">In the meantime, try it free — 2 compliance checks on us.</p>
+                    <a routerLink="/auth/signup/personal" (click)="closeVideoModal()" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; text-decoration: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 0.9rem;">
+                        Start Free Trial <i class="pi pi-arrow-right"></i>
+                    </a>
                 </div>
             </div>
         </div>

@@ -8,6 +8,7 @@ export interface CognitoConfig {
     userPoolId: string;
     clientId: string;
     region: string;
+    domain: string;
 }
 
 /**
@@ -34,7 +35,8 @@ export class AppConfigService {
                 this.cognitoConfig = {
                     userPoolId: config.userPoolId,
                     clientId: config.clientId,
-                    region: config.region || 'us-east-1'
+                    region: config.region || 'us-east-1',
+                    domain: config.domain || environment.cognito.domain
                 };
                 console.log('[AppConfig] Loaded Cognito config from gateway');
                 this.configLoaded = true;
@@ -52,7 +54,8 @@ export class AppConfigService {
         this.cognitoConfig = {
             userPoolId: environment.cognito.userPoolId,
             clientId: environment.cognito.userPoolWebClientId,
-            region: environment.cognito.region
+            region: environment.cognito.region,
+            domain: environment.cognito.domain
         };
         this.configLoaded = true;
     }
