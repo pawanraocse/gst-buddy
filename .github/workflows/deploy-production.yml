@@ -1,5 +1,5 @@
 # GitHub Actions - Production Deployment
-# Triggered on push to main or manual dispatch
+# Triggered on push to prod or manual dispatch
 
 name: Deploy to Production
 
