@@ -7,17 +7,19 @@ import { AccordionModule } from 'primeng/accordion';
 import { RippleModule } from 'primeng/ripple';
 import { CarouselModule } from 'primeng/carousel';
 import { CreditApiService, PlanDto } from '../../core/services/credit-api.service';
+import { SupportTicketDialogComponent } from '../../shared/components/support-ticket-dialog/support-ticket-dialog.component';
 
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule, ButtonModule, AccordionModule, RippleModule, CarouselModule],
+    imports: [CommonModule, RouterLink, FormsModule, ButtonModule, AccordionModule, RippleModule, CarouselModule, SupportTicketDialogComponent],
     templateUrl: './landing.component.html',
     styleUrl: './landing.component.scss'
 })
 export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
     @ViewChild('particleCanvas') particleCanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChildren('animateOnScroll') animatedElements!: QueryList<ElementRef>;
+    @ViewChild('supportDialog') supportDialog!: SupportTicketDialogComponent;
 
     private creditApi = inject(CreditApiService);
 
@@ -41,6 +43,10 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
 
     // Pricing selection
     selectedPlan = signal('Pro');
+
+    openSupportDialog() {
+        this.supportDialog.show();
+    }
 
     // Typewriter
     typewriterText = '';

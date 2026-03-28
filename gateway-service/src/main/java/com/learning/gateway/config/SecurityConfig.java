@@ -62,6 +62,11 @@ public class SecurityConfig {
                                                                 "/auth/api/v1/plans",
                                                                 "/auth/api/v1/credits/**",
 
+                                                                // Support system
+                                                                "/auth/api/v1/support/public/**",
+                                                                "/auth/api/v1/support/tickets/**",
+                                                                "/auth/api/v1/support/admin/tickets/**",
+
                                                                 // Referral system (uses gateway JWT filter for
                                                                 // X-User-Id)
                                                                 "/auth/api/v1/referral/**",

@@ -220,7 +220,9 @@ INSERT INTO permissions (id, resource, action, description) VALUES
 ('credit:manage', 'credit', 'manage', 'Grant or revoke credits for any user'),
 ('plan:manage', 'plan', 'manage', 'Create, update, or deactivate pricing plans'),
 ('account:suspend', 'account', 'suspend', 'Suspend (disable) any user account'),
-('account:delete', 'account', 'delete', 'Permanently delete any user account')
+('account:delete', 'account', 'delete', 'Permanently delete any user account'),
+-- Support permissions
+('support:manage', 'support', 'manage', 'View and manage all support tickets')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
@@ -425,3 +427,51 @@ CREATE TRIGGER update_referrals_updated_at
 BEFORE UPDATE ON referrals
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- 19. SUPPORT TICKETS
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS support_tickets (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id VARCHAR(255),
+    email VARCHAR(255),
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'default',
+    subject VARCHAR(255) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    description TEXT NOT NULL,
+    is_enrolled BOOLEAN NOT NULL DEFAULT false, -- true when submitted by a registered user
+    status VARCHAR(32) NOT NULL DEFAULT 'OPEN' CHECK (status IN ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_tickets_user ON support_tickets(user_id);
+CREATE INDEX idx_tickets_email ON support_tickets(email);
+CREATE INDEX idx_tickets_status ON support_tickets(status);
+CREATE INDEX idx_tickets_tenant ON support_tickets(tenant_id);
+CREATE INDEX idx_tickets_enrolled ON support_tickets(is_enrolled);
+CREATE INDEX idx_tickets_created ON support_tickets(created_at DESC);
+
+COMMENT ON TABLE support_tickets IS 'User queries, feedback and bug reports';
+COMMENT ON COLUMN support_tickets.is_enrolled IS 'True when ticket was submitted by a registered/logged-in user';
+
+
+CREATE TRIGGER update_support_tickets_updated_at
+BEFORE UPDATE ON support_tickets
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- 20. TICKET REPLIES
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS ticket_replies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ticket_id UUID NOT NULL,
+    user_id VARCHAR(255), -- ID of the admin or user who replied
+    message TEXT NOT NULL,
+    is_admin_reply BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (ticket_id) REFERENCES support_tickets(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_ticket_replies_ticket ON ticket_replies(ticket_id);

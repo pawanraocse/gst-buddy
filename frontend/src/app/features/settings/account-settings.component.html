@@ -164,6 +164,46 @@
     </div>
 </div>
 
+<!-- Support Queries Section -->
+<div class="settings-card">
+    <div class="card-header">
+        <i class="pi pi-comments" style="color: #10b981;"></i>
+        <h2>My Support Queries</h2>
+    </div>
+    <div class="card-content">
+        @if (ticketsLoading()) {
+        <div class="flex justify-content-center p-4">
+            <i class="pi pi-spin pi-spinner text-primary text-2xl"></i>
+        </div>
+        } @else if (userTickets().length > 0) {
+        <div class="queries-list">
+            @for (ticket of userTickets(); track ticket.id) {
+            <div class="query-item">
+                <div class="query-main">
+                    <span class="query-subject text-900 font-semibold">{{ ticket.subject }}</span>
+                    <div class="query-meta flex gap-2 mt-1">
+                        <span class="text-xs text-secondary">{{ ticket.category }}</span>
+                        <span class="text-xs text-400">•</span>
+                        <span class="text-xs text-secondary">{{ ticket.createdAt | date:'mediumDate' }}</span>
+                    </div>
+                </div>
+                <div class="query-status">
+                    <span class="status-badge" [ngClass]="'status-' + ticket.status.toLowerCase()">
+                        {{ ticket.status }}
+                    </span>
+                </div>
+            </div>
+            }
+        </div>
+        } @else {
+        <div class="text-center p-3 surface-50 border-round-lg">
+            <i class="pi pi-info-circle text-500 mb-2"></i>
+            <p class="text-secondary text-sm m-0">You haven't submitted any support requests yet.</p>
+        </div>
+        }
+    </div>
+</div>
+
 <!-- Preferences Section -->
 <div class="settings-card">
     <div class="card-header">

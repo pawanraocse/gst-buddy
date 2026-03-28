@@ -452,6 +452,47 @@
     flex: 1;
 }
 
-.plan-btn {
-    margin-top: auto;
+// =====================
+// Support Queries
+// =====================
+.queries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.query-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateX(4px);
+        background: rgba(255, 255, 255, 0.6);
+        border-color: var(--primary-200);
+    }
+}
+
+.query-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &.status-open { background: #fee2e2; color: #dc2626; }
+    &.status-in_progress { background: #fef3c7; color: #d97706; }
+    &.status-resolved { background: #d1fae5; color: #059669; }
+    &.status-closed { background: #f3f4f6; color: #4b5563; }
 }

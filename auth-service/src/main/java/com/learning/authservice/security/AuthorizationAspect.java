@@ -18,6 +18,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * AOP aspect that enforces {@link RequirePermission} on controller methods.
  * Reads the caller's identity from the {@code X-User-Id} request header
  * and verifies that they hold the declared permission via {@link AuthorizationService}.
+ *
+ * <p>Super-admin users bypass all permission checks — they are a platform-level
+ * omnipotent role and should never be blocked by individual resource:action guards.</p>
  */
 @Aspect
 @Component
@@ -35,6 +38,12 @@ public class AuthorizationAspect {
         String resource = requirePermission.resource();
         String action = requirePermission.action();
         String permissionId = resource + ":" + action;
+
+        // Super-admin is omnipotent — bypass all resource:action permission checks
+        if (authorizationService.isSuperAdmin(userId)) {
+            log.debug("Super-admin bypass: userId={}, permission={}", userId, permissionId);
+            return joinPoint.proceed();
+        }
 
         if (!authorizationService.hasPermission(userId, resource, action)) {
             log.warn("Permission denied: userId={}, required={}", userId, permissionId);

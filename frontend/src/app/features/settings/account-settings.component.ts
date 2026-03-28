@@ -14,6 +14,7 @@ import { environment } from '../../../environments/environment';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CreditApiService, WalletDto, PlanDto } from '../../core/services/credit-api.service';
 import { ReferralApiService } from '../../core/services/referral-api.service';
+import { SupportApiService, SupportTicketDto } from '../../core/services/support-api.service';
 
 @Component({
   selector: 'app-account-settings',
@@ -30,12 +31,17 @@ export class AccountSettingsComponent implements OnInit {
   private messageService = inject(MessageService);
   private creditApi = inject(CreditApiService);
   private referralApi = inject(ReferralApiService);
+  private supportApi = inject(SupportApiService);
 
   deleting = signal(false);
   showDeleteDialog = false;
   confirmationText = '';
   wallet = signal<WalletDto | null>(null);
   walletLoading = signal(true);
+
+  // Tickets
+  userTickets = signal<SupportTicketDto[]>([]);
+  ticketsLoading = signal(false);
 
   // Plans
   plans = signal<PlanDto[]>([]);
@@ -78,6 +84,15 @@ export class AccountSettingsComponent implements OnInit {
         this.referralRewardPerReferral.set(s.rewardPerReferral);
       },
       error: () => { }
+    });
+    this.loadUserTickets();
+  }
+
+  loadUserTickets() {
+    this.ticketsLoading.set(true);
+    this.supportApi.getMyTickets().subscribe({
+      next: (t) => { this.userTickets.set(t); this.ticketsLoading.set(false); },
+      error: () => { this.ticketsLoading.set(false); }
     });
   }
 

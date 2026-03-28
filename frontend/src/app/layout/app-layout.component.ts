@@ -8,11 +8,12 @@ import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
 import { MenuItem } from 'primeng/api';
 import { ShareDialogComponent } from '../shared/components/share-dialog/share-dialog.component';
+import { SupportTicketDialogComponent } from '../shared/components/support-ticket-dialog/support-ticket-dialog.component';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, MenubarModule, ButtonModule, AvatarModule, TooltipModule, ShareDialogComponent],
+  imports: [CommonModule, RouterModule, MenubarModule, ButtonModule, AvatarModule, TooltipModule, ShareDialogComponent, SupportTicketDialogComponent],
   templateUrl: './app-layout.component.html',
   styleUrls: ['./app-layout.component.scss']
 })
@@ -31,9 +32,14 @@ export class AppLayoutComponent {
   }
 
   @ViewChild('shareDialog') shareDialog!: ShareDialogComponent;
+  @ViewChild('supportDialog') supportDialog!: SupportTicketDialogComponent;
 
   openShareDialog() {
     this.shareDialog.show();
+  }
+
+  openSupportDialog() {
+    this.supportDialog.show();
   }
 
   toggleSidebar() {
@@ -72,7 +78,8 @@ export class AppLayoutComponent {
         { label: 'Admin Dashboard', icon: 'pi pi-chart-bar', routerLink: '/app/admin/dashboard' },
         { label: 'Manage Users', icon: 'pi pi-users', routerLink: '/app/admin/users' },
         { label: 'Manage Plans', icon: 'pi pi-credit-card', routerLink: '/app/admin/plans' },
-        { label: 'Credit Overview', icon: 'pi pi-wallet', routerLink: '/app/admin/credits' }
+        { label: 'Credit Overview', icon: 'pi pi-wallet', routerLink: '/app/admin/credits' },
+        { label: 'Support Queries', icon: 'pi pi-envelope', routerLink: '/app/admin/support' }
       );
     }
 

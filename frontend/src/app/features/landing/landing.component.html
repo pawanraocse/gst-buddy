@@ -879,7 +879,7 @@
                 <!-- Resources -->
                 <div class="footer-links">
                     <h4>Resources</h4>
-                    <a href="#">Help Center</a>
+                    <a (click)="openSupportDialog()" class="cursor-pointer">Help Center</a>
                     <a href="#">Blog</a>
                     <a href="#">API Docs</a>
                     <a (click)="scrollTo('faq')">FAQ</a>
@@ -897,7 +897,7 @@
                 <!-- Contact -->
                 <div class="footer-links">
                     <h4>Contact</h4>
-                    <a href="mailto:support&#64;gstbuddies.com">support&#64;gstbuddies.com</a>
+                    <a (click)="openSupportDialog()" class="cursor-pointer">Support & Feedback</a>
                     <a href="mailto:sales&#64;gstbuddies.com">sales&#64;gstbuddies.com</a>
                 </div>
             </div>
@@ -962,4 +962,6 @@
         </div>
     </div>
     }
+    
+    <app-support-ticket-dialog #supportDialog [isAuthenticated]="false"></app-support-ticket-dialog>
 </div>

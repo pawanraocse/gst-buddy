@@ -70,6 +70,10 @@ export const routes: Routes = [
           {
             path: 'credits',
             loadComponent: () => import('./features/admin/admin-credits.component').then(m => m.AdminCreditsComponent)
+          },
+          {
+            path: 'support',
+            loadComponent: () => import('./features/admin/support/admin-support.component').then(m => m.AdminSupportComponent)
           }
         ]
       }

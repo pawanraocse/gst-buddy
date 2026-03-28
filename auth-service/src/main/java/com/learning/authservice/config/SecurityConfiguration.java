@@ -61,6 +61,9 @@ public class SecurityConfiguration {
                                                                 "/api/v1/invitations/validate",
                                                                 "/api/v1/invitations/accept",
                                                                 "/api/v1/resource-permissions/**",
+                                                                "/api/v1/support/public/**",
+                                                                "/api/v1/support/tickets/**",
+                                                                "/api/v1/support/admin/tickets/**",
                                                                 // Gateway-authenticated endpoints (X-User-Id trusted)
                                                                 "/api/v1/auth/me",
                                                                 "/api/v1/acl/**",

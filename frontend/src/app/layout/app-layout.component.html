@@ -9,7 +9,7 @@
         </div>
         <span class="app-name">Gstbuddies</span>
       </div>
-      <button class="sidebar-toggle-desktop hidden md:flex" (click)="toggleDesktopSidebar()" pTooltip="Toggle Sidebar" tooltipPosition="right" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); width: 2rem; height: 2rem; align-items: center; justify-content: center; border-radius: 8px;">
+      <button class="sidebar-toggle-desktop hidden md:flex" (click)="toggleDesktopSidebar()" pTooltip="Toggle Sidebar" tooltipPosition="right">
         <i class="pi" [ngClass]="sidebarCollapsed() ? 'pi-angle-right' : 'pi-angle-left'"></i>
       </button>
     </div>
@@ -68,10 +68,10 @@
           <span class="text-primary font-medium">Compliance Dashboard</span>
         </div>
 
-        <div class="header-actions">
-          <!--<button pButton icon="pi pi-cog" class="header-action-btn" [rounded]="true" [text]="true"
-            routerLink="/app/settings/account" pTooltip="Settings"></button>-->
-        </div>
+        <!--<div class="header-actions">
+          <button pButton icon="pi pi-cog" class="header-action-btn" [rounded]="true" [text]="true"
+            routerLink="/app/settings/account" pTooltip="Settings"></button>
+        </div>-->
       </div>
     </header>
 
@@ -84,5 +84,17 @@
   </div>
 
   <div class="layout-mask md:hidden" *ngIf="sidebarActive()" (click)="sidebarActive.set(false)"></div>
+  
+  <!-- Floating Support Button -->
+  <button 
+    pButton 
+    icon="pi pi-question-circle" 
+    class="floating-support-btn p-button-rounded p-button-raised"
+    (click)="openSupportDialog()"
+    pTooltip="Get Support & Feedback"
+    tooltipPosition="left">
+  </button>
+
   <app-share-dialog #shareDialog></app-share-dialog>
+  <app-support-ticket-dialog #supportDialog [isAuthenticated]="true"></app-support-ticket-dialog>
 </div>
