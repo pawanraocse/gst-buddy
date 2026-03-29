@@ -69,6 +69,11 @@
                         <i class="pi pi-user text-primary"></i>
                         <input pInputText id="name" formControlName="name" class="w-full" placeholder="John Doe" />
                     </span>
+                    @if (signupForm.get('name')?.invalid && signupForm.get('name')?.dirty) {
+                        <small class="text-red-500 font-medium animate-fade-in">
+                            <i class="pi pi-exclamation-circle mr-1"></i> Name must be at least 2 characters string
+                        </small>
+                    }
                 </div>
 
                 <div class="flex flex-column gap-2">
@@ -78,12 +83,17 @@
                         <input pInputText id="email" formControlName="email" class="w-full"
                             placeholder="name@example.com" />
                     </span>
+                    @if (signupForm.get('email')?.invalid && signupForm.get('email')?.dirty) {
+                        <small class="text-red-500 font-medium animate-fade-in">
+                            <i class="pi pi-exclamation-circle mr-1"></i> Please enter a valid email address
+                        </small>
+                    }
                 </div>
 
                 <div class="flex flex-column gap-2">
                     <label for="password" class="font-semibold text-700">Password</label>
                     <p-password id="password" formControlName="password" [toggleMask]="true" styleClass="w-full"
-                        inputStyleClass="w-full p-inputtext-lg" placeholder="Min 12 chars">
+                        inputStyleClass="w-full p-inputtext-lg" placeholder="Min 8 chars">
                         <!-- Password Suggestions Template -->
                         <ng-template pTemplate="header">
                             <div class="font-semibold text-sm mb-2">Password Requirements</div>
@@ -93,10 +103,20 @@
                                 <li>At least one lowercase</li>
                                 <li>At least one uppercase</li>
                                 <li>At least one numeric</li>
-                                <li>Minimum 12 characters</li>
+                                <li>Minimum 8 characters</li>
                             </ul>
                         </ng-template>
                     </p-password>
+                    @if (signupForm.get('password')?.invalid && signupForm.get('password')?.dirty) {
+                        <small class="text-red-500 font-medium animate-fade-in">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            @if (signupForm.get('password')?.hasError('required')) {
+                                Password is required
+                            } @else if (signupForm.get('password')?.hasError('minlength')) {
+                                Password must be at least 8 characters long
+                            }
+                        </small>
+                    }
                 </div>
 
                 <div class="flex flex-column gap-2">
