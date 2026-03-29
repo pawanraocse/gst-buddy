@@ -65,7 +65,16 @@ public class AuthServiceImpl implements AuthService {
 
                 userService.upsertOnLogin(userId, email, name, "COGNITO");
 
+                // First, migrate email-based wallet (from old signup) to UUID-based wallet (post-login)
+                try {
+                        creditService.migrateWallet(email, userId);
+                } catch (Exception e) {
+                        log.warn("Wallet migration failed for email={}, userId={}: {}",
+                                        email, userId, e.getMessage());
+                }
+
                 // Ensure every user (Manual or SSO) has their trial credits
+                // Migration (above) carries over the hasUsedTrial flag so we don't double grant
                 try {
                         creditService.grantTrialCredits(userId);
                 } catch (Exception e) {
@@ -73,13 +82,6 @@ public class AuthServiceImpl implements AuthService {
                                         userId, e.getMessage());
                 }
 
-                // Migrate email-based wallet (from signup) to UUID-based wallet (post-login)
-                try {
-                        creditService.migrateWallet(email, userId);
-                } catch (Exception e) {
-                        log.warn("Wallet migration failed for email={}, userId={}: {}",
-                                        email, userId, e.getMessage());
-                }
 
                 String role = "viewer";
 
