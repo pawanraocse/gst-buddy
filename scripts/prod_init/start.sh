@@ -154,14 +154,14 @@ echo ""
 # Phase 1: Infrastructure (Redis)
 log_info "Phase 1/3: Starting infrastructure services..."
 docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d redis 2>&1
-wait_for_container "${PROJECT_NAME}-redis" 30 || true
+wait_for_container "${DOCKER_PROJECT_NAME}-redis" 30 || true
 
 # Phase 2: Service Discovery (Eureka - must be healthy before Java services)
 log_info "Phase 2/3: Starting Eureka (required for service discovery)..."
 docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d eureka-server 2>&1
-wait_for_healthy "${PROJECT_NAME}-eureka-server" 300 || {
+wait_for_healthy "${DOCKER_PROJECT_NAME}-eureka-server" 300 || {
     log_error "Eureka failed to start. Cannot continue."
-    docker logs "${PROJECT_NAME}-eureka-server" --tail 50
+    docker logs "${DOCKER_PROJECT_NAME}-eureka-server" --tail 50
     exit 1
 }
 
@@ -171,7 +171,7 @@ docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d
 
 # Wait for all services with fast polling
 log_info "Waiting for services to become healthy (polling every 5s)..."
-SERVICES_TO_CHECK=("${PROJECT_NAME}-gateway-service" "${PROJECT_NAME}-auth-service" "${PROJECT_NAME}-backend-service")
+SERVICES_TO_CHECK=("${DOCKER_PROJECT_NAME}-gateway-service" "${DOCKER_PROJECT_NAME}-auth-service" "${DOCKER_PROJECT_NAME}-backend-service")
 MAX_WAIT=300
 elapsed=0
 

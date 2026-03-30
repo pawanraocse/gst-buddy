@@ -1,0 +1,133 @@
+# GitHub Actions - Prod Init Deployment
+# Triggered on push to prod
+
+name: Deploy to Prod Init
+
+on:
+  push:
+    branches:
+      - prod
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  PROJECT_NAME: GSTbuddies
+  ENVIRONMENT: prod_init
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build backend applications
+        run: |
+          # Build all services using the root pom
+          mvn clean package -DskipTests -q
+
+      - name: Get EC2 IP from SSM
+        id: get-ip
+        run: |
+          EC2_IP=$(aws ssm get-parameter --name "/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/ec2/public_ip" --query 'Parameter.Value' --output text)
+          echo "ec2_ip=$EC2_IP" >> $GITHUB_OUTPUT
+          
+          if [ -z "$EC2_IP" ] || [ "$EC2_IP" == "None" ] || [ "$EC2_IP" == "null" ]; then
+            echo "Failed to retrieve EC2 IP from SSM. Aborting."
+            exit 1
+          fi
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy Backend to EC2
+        run: |
+          # Sync code + built JARs to EC2 exactly matching the local deploy script
+          rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+              --exclude '.terraform' \
+              --exclude 'node_modules' \
+              --exclude '.git' \
+              --exclude '.idea' \
+              --exclude 'frontend' \
+              --exclude '*.class' \
+              --exclude 'target/classes' \
+              --exclude 'target/test-classes' \
+              --exclude 'target/generated-sources' \
+              --exclude 'target/maven-status' \
+              --include 'target/*.jar' \
+              ./ ec2-user@${{ steps.get-ip.outputs.ec2_ip }}:/app/
+              
+          # Connect via SSH and restart backend microservices
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get-ip.outputs.ec2_ip }} "cd /app && chmod +x scripts/prod_init/*.sh && export PROJECT_NAME=${{ env.PROJECT_NAME }} && ./scripts/prod_init/start.sh"
+
+      - name: Trigger Amplify Frontend Build
+        run: |
+          # Retrieve the AWS Amplify App ID directly from SSM 
+          AMPLIFY_APP_ID=$(aws ssm get-parameter --name "/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/amplify/app_id" --query 'Parameter.Value' --output text)
+          
+          if [ -z "$AMPLIFY_APP_ID" ] || [ "$AMPLIFY_APP_ID" == "None" ] || [ "$AMPLIFY_APP_ID" == "null" ]; then
+            echo "Failed to retrieve Amplify App ID from SSM. Proceeding without explicit frontend trigger since frontend auto-deploys via Github connection, but build tracking will be missing."
+          else
+            echo "Triggering explicit AWS Amplify build for App: $AMPLIFY_APP_ID"
+            aws amplify start-job --app-id "$AMPLIFY_APP_ID" --branch-name prod --job-type RELEASE --region ${{ env.AWS_REGION }}
+          fi
+
+  notify:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Send Email Notification
+        run: |
+          STATUS="${{ needs.build-and-deploy.result }}"
+          SUBJECT="[CI/CD] gstbuddies Prod_Init Deployment: $STATUS"
+          COLOR="#22c55e" # Green
+          [ "$STATUS" != "success" ] && COLOR="#ef4444" # Red
+          
+          HTML_BODY="<html><body style='font-family: sans-serif;'>
+            <h2 style='color: $COLOR;'>Deployment $STATUS</h2>
+            <p><strong>Environment:</strong> ${{ env.ENVIRONMENT }}</p>
+            <p><strong>Workflow:</strong> ${{ github.workflow }}</p>
+            <p><strong>Triggered by:</strong> ${{ github.actor }}</p>
+            <hr/>
+            <p>The backend microservices were deployed to EC2 and the Amplify UI job was triggered.</p>
+            <a href='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}' 
+               style='display: inline-block; padding: 10px 20px; background: #6366f1; color: white; text-decoration: none; border-radius: 5px;'>
+               View Build Details
+            </a>
+          </body></html>"
+
+          aws sesv2 send-email \
+            --from-email-address "no-reply@gstbuddies.com" \
+            --destination '{"ToAddresses":["pawan.weblink@gmail.com"]}' \
+            --content "{
+              \"Simple\": {
+                \"Subject\": {\"Data\": \"$SUBJECT\"},
+                \"Body\": {
+                  \"Html\": {\"Data\": $(echo "$HTML_BODY" | jq -Rs .)}
+                }
+              }
+            }"
