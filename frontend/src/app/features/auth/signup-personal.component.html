@@ -69,9 +69,9 @@
                         <i class="pi pi-user text-primary"></i>
                         <input pInputText id="name" formControlName="name" class="w-full" placeholder="John Doe" />
                     </span>
-                    @if (signupForm.get('name')?.invalid && signupForm.get('name')?.dirty) {
+                    @if (signupForm.get('name')?.invalid && (signupForm.get('name')?.dirty || signupForm.get('name')?.touched)) {
                         <small class="text-red-500 font-medium animate-fade-in">
-                            <i class="pi pi-exclamation-circle mr-1"></i> Name must be at least 2 characters string
+                            <i class="pi pi-exclamation-circle mr-1"></i> Name must move at least 2 characters
                         </small>
                     }
                 </div>
@@ -83,7 +83,7 @@
                         <input pInputText id="email" formControlName="email" class="w-full"
                             placeholder="name@example.com" />
                     </span>
-                    @if (signupForm.get('email')?.invalid && signupForm.get('email')?.dirty) {
+                    @if (signupForm.get('email')?.invalid && (signupForm.get('email')?.dirty || signupForm.get('email')?.touched)) {
                         <small class="text-red-500 font-medium animate-fade-in">
                             <i class="pi pi-exclamation-circle mr-1"></i> Please enter a valid email address
                         </small>
@@ -107,13 +107,15 @@
                             </ul>
                         </ng-template>
                     </p-password>
-                    @if (signupForm.get('password')?.invalid && signupForm.get('password')?.dirty) {
+                    @if (signupForm.get('password')?.invalid && (signupForm.get('password')?.dirty || signupForm.get('password')?.touched)) {
                         <small class="text-red-500 font-medium animate-fade-in">
                             <i class="pi pi-exclamation-circle mr-1"></i>
                             @if (signupForm.get('password')?.hasError('required')) {
                                 Password is required
                             } @else if (signupForm.get('password')?.hasError('minlength')) {
                                 Password must be at least 8 characters long
+                            } @else if (signupForm.get('password')?.hasError('pattern')) {
+                                Must include uppercase, lowercase, and a number
                             }
                         </small>
                     }
@@ -125,7 +127,7 @@
                         [feedback]="false" styleClass="w-full" inputStyleClass="w-full p-inputtext-lg"
                         placeholder="Re-enter password">
                     </p-password>
-                    @if (signupForm.hasError('mismatch') && signupForm.get('confirmPassword')?.dirty) {
+                    @if (signupForm.hasError('mismatch') && (signupForm.get('confirmPassword')?.dirty || signupForm.get('confirmPassword')?.touched)) {
                     <small class="text-red-500 font-medium animate-fade-in">
                         <i class="pi pi-exclamation-circle mr-1"></i> Passwords do not match
                     </small>
@@ -160,9 +162,16 @@
                     }
                 </div>
 
-                <p-button type="submit" label="Create Account" [loading]="loading()" [disabled]="signupForm.invalid"
-                    styleClass="w-full p-button-lg shadow-2 mt-2">
-                </p-button>
+                <div class="flex flex-column gap-2 mt-2">
+                    <p-button type="submit" label="Create Account" [loading]="loading()" [disabled]="signupForm.invalid"
+                        styleClass="w-full p-button-lg shadow-2">
+                    </p-button>
+                    @if (signupForm.invalid && (signupForm.dirty || signupForm.touched)) {
+                    <small class="text-center text-500 text-xs animate-fade-in">
+                        <i class="pi pi-info-circle mr-1"></i> Please fulfill all requirements above
+                    </small>
+                    }
+                </div>
 
                 <div class="text-center mt-4">
                     <span class="text-secondary">Already have an account? </span>

@@ -61,6 +61,21 @@
     --text-sm: 0.875rem;
     --text-xs: 0.75rem;
     --text-mono: 0.875rem;
+
+    /* Spacing Scale (4px-based) */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+
+    /* App-specific utility surfaces */
+    --bg-surface-glass: rgba(255, 255, 255, 0.6);
+    --surface-hover: rgba(0, 0, 0, 0.04);
 }
 
 /* ========== DARK MODE OVERRIDES ========== */
@@ -81,6 +96,10 @@
 
         /* Gradients - Dark Mode Adjustments */
         --bg-gradient-auth: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+        
+        /* App-specific utility surfaces (Dark) */
+        --bg-surface-glass: rgba(15, 23, 42, 0.4);
+        --surface-hover: rgba(255, 255, 255, 0.08);
     }
 }
 

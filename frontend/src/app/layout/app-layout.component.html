@@ -61,10 +61,10 @@
         <div class="hidden md:block">
           <span class="text-secondary font-medium">
             Welcome back,
-            <span class="text-900 font-semibold">{{ authService.user()?.name ||
+            <span style="color: var(--text-main)" class="font-semibold">{{ authService.user()?.name ||
               authService.user()?.email?.split('@')?.[0] }}</span>
           </span>
-          <span class="text-400 mx-2">•</span>
+          <span style="color: var(--text-light)" class="mx-2">•</span>
           <span class="text-primary font-medium">Compliance Dashboard</span>
         </div>
 
