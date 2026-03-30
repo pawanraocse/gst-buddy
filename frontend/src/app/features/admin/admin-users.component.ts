@@ -116,11 +116,11 @@ import { AdminApiService, AdminUserSummary } from '../../core/services/admin-api
     :host ::ng-deep .status-select { min-width: 180px; }
 
     .table-card {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(12px);
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
       border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.06);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.1);
       overflow: hidden;
     }
     .user-row { cursor: pointer; transition: background 0.15s; }

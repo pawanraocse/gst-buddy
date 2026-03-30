@@ -102,44 +102,44 @@ import {
         <div class="flex flex-column gap-3 pt-2">
           @if (!editingPlan) {
             <div class="flex flex-column gap-1">
-              <label class="font-medium">Slug (unique name)</label>
+              <label class="font-medium" style="color: var(--text-main)">Slug (unique name)</label>
               <input pInputText [(ngModel)]="form.name" placeholder="e.g. starter-50" class="w-full" />
             </div>
           }
           <div class="flex flex-column gap-1">
-            <label class="font-medium">Display Name</label>
+            <label class="font-medium" style="color: var(--text-main)">Display Name</label>
             <input pInputText [(ngModel)]="form.displayName" placeholder="e.g. Starter Pack" class="w-full" />
           </div>
           <div class="grid">
             <div class="col-6">
-              <label class="font-medium">Price (INR)</label>
+              <label class="font-medium" style="color: var(--text-main)">Price (INR)</label>
               <p-inputNumber [(ngModel)]="form.priceInr" [min]="0" mode="currency" currency="INR"
                              locale="en-IN" styleClass="w-full"></p-inputNumber>
             </div>
             <div class="col-6">
-              <label class="font-medium">Credits</label>
+              <label class="font-medium" style="color: var(--text-main)">Credits</label>
               <p-inputNumber [(ngModel)]="form.credits" [min]="1" [showButtons]="true"
                              styleClass="w-full"></p-inputNumber>
             </div>
           </div>
           <div class="grid">
             <div class="col-6">
-              <label class="font-medium">Validity (days)</label>
+              <label class="font-medium" style="color: var(--text-main)">Validity (days)</label>
               <p-inputNumber [(ngModel)]="form.validityDays" [min]="1" [showButtons]="true"
                              styleClass="w-full"></p-inputNumber>
             </div>
             <div class="col-6">
-              <label class="font-medium">Sort Order</label>
+              <label class="font-medium" style="color: var(--text-main)">Sort Order</label>
               <p-inputNumber [(ngModel)]="form.sortOrder" [min]="0" [showButtons]="true"
                              styleClass="w-full"></p-inputNumber>
             </div>
           </div>
           <div class="flex align-items-center gap-2">
             <p-toggleSwitch [(ngModel)]="form.isTrial"></p-toggleSwitch>
-            <label>Trial plan (one per user)</label>
+            <label style="color: var(--text-main)">Trial plan (one per user)</label>
           </div>
           <div class="flex flex-column gap-1">
-            <label class="font-medium">Description</label>
+            <label class="font-medium" style="color: var(--text-main)">Description</label>
             <input pInputText [(ngModel)]="form.description" placeholder="Optional description" class="w-full" />
           </div>
           <div class="flex justify-content-end gap-2 mt-2">
@@ -154,8 +154,8 @@ import {
   styles: [`
     .admin-plans { padding: 0.5rem; }
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-    .page-header h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; }
-    .page-header p { margin: 0; font-size: 0.95rem; }
+    .page-header h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; color: var(--text-main); }
+    .page-header p { margin: 0; font-size: 0.95rem; color: var(--text-secondary); }
     .loading-state { display: flex; justify-content: center; padding: 4rem; }
 
     .plans-grid {
@@ -165,21 +165,21 @@ import {
     }
 
     .plan-card {
-      background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
-      border-radius: 20px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.06);
+      background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));
+      border-radius: 20px; padding: 1.5rem; border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.1);
       transition: transform 0.2s, box-shadow 0.2s;
-      &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px -4px rgba(0,0,0,0.1); }
+      &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px -4px rgba(0,0,0,0.15); }
       &.inactive { opacity: 0.65; }
     }
     .plan-header { margin-bottom: 1rem; }
     .plan-name-row { display: flex; justify-content: space-between; align-items: center; }
-    .plan-name-row h3 { margin: 0; font-size: 1.15rem; font-weight: 600; }
+    .plan-name-row h3 { margin: 0; font-size: 1.15rem; font-weight: 600; color: var(--text-main); }
     .plan-slug { font-size: 0.75rem; color: var(--text-secondary); font-family: monospace; }
 
     .plan-price { margin-bottom: 1rem; }
-    .currency { font-size: 1.1rem; font-weight: 500; vertical-align: top; }
-    .amount { font-size: 2rem; font-weight: 700; }
+    .currency { font-size: 1.1rem; font-weight: 500; vertical-align: top; color: var(--text-main); }
+    .amount { font-size: 2rem; font-weight: 700; color: var(--text-main); }
 
     .plan-details { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
     .detail-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-secondary); }

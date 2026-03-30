@@ -212,14 +212,14 @@ import { TooltipModule } from 'primeng/tooltip';
     </div>
   `,
   styles: [`
-    .filter-bar { background: var(--surface-ground); }
+    .filter-bar { background: var(--bg-surface); }
     .subject-cell { max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .thread-section { scrollbar-width: thin; }
     .thread-section::-webkit-scrollbar { width: 5px; }
-    .thread-section::-webkit-scrollbar-thumb { background: var(--surface-border); border-radius: 10px; }
-    .reply-bubble { border: 1px solid var(--surface-border); }
-    .reply-admin { background: var(--blue-50); border-left: 3px solid var(--blue-400); }
-    .reply-user { background: var(--surface-ground); border-left: 3px solid var(--surface-400); }
+    .thread-section::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+    .reply-bubble { border: 1px solid var(--glass-border); color: var(--text-main); }
+    .reply-admin { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--blue-400); }
+    .reply-user { background: var(--surface-hover); border-left: 3px solid var(--surface-400); }
     .resize-none { resize: none; }
     .letter-spacing-1 { letter-spacing: 0.05em; }
     :host ::ng-deep .p-datatable tbody tr { cursor: pointer; }

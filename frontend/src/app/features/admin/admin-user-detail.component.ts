@@ -207,14 +207,14 @@ import {
     .loading-state { display: flex; justify-content: center; padding: 4rem; }
 
     .profile-card {
-      background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
-      border-radius: 20px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.06); margin-bottom: 1.25rem;
+      background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));
+      border-radius: 20px; padding: 1.5rem; border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.1); margin-bottom: 1.25rem;
     }
     .profile-header { display: flex; align-items: flex-start; gap: 1.25rem; flex-wrap: wrap; }
     .avatar {
       width: 64px; height: 64px; border-radius: 20px;
-      background: var(--primary-50, #eef2ff); color: var(--primary-500, #6366f1);
+      background: var(--primary-50, rgba(99, 102, 241, 0.1)); color: var(--primary-500, #6366f1);
       display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;
     }
     .profile-info { flex: 1; min-width: 200px; }
@@ -228,9 +228,9 @@ import {
     @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } }
 
     .detail-card {
-      background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
-      border-radius: 20px; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.06);
+      background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));
+      border-radius: 20px; padding: 1.25rem; border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.1);
     }
     .detail-card.full-width { margin-bottom: 1.25rem; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -240,7 +240,7 @@ import {
     .role-chip {
       display: flex; align-items: center; gap: 0.35rem;
       padding: 0.35rem 0.75rem; border-radius: 20px;
-      background: var(--primary-50, #eef2ff); color: var(--primary-700, #4338ca);
+      background: var(--primary-50, rgba(99, 102, 241, 0.1)); color: var(--primary-700, #4338ca);
       font-size: 0.85rem; font-weight: 500;
     }
     .chip-remove {

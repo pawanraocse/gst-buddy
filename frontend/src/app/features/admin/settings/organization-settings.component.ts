@@ -162,9 +162,9 @@ import {OrganizationProfile, OrganizationService} from '../../../core/services/o
       <div class="mt-5" *ngIf="!loading">
         <p-card styleClass="modern-card surface-card border-none shadow-2">
             <ng-template pTemplate="header">
-                <div class="p-4 pb-0 border-bottom-1 surface-border">
-                    <h3 class="m-0 text-xl font-semibold text-800 mb-2">Update Details</h3>
-                    <p class="text-500 m-0 text-sm pb-3">Keep your organization profile up-to-date.</p>
+                <div class="p-4 pb-0 border-bottom-1 border-white-alpha-10">
+                    <h3 class="m-0 text-xl font-semibold text-main mb-2">Update Details</h3>
+                    <p class="text-secondary m-0 text-sm pb-3">Keep your organization profile up-to-date.</p>
                 </div>
             </ng-template>
 
@@ -208,21 +208,24 @@ import {OrganizationProfile, OrganizationService} from '../../../core/services/o
     }
     .modern-card {
         border-radius: 12px;
+        background: var(--bg-surface) !important;
+        border: 1px solid var(--glass-border) !important;
         transition: transform 0.2s, box-shadow 0.2s;
     }
     .modern-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
     }
     .icon-box {
         width: 40px;
         height: 40px;
     }
     .plan-card {
-      background: var(--surface-0);
-      border: 1px solid var(--surface-200);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(var(--glass-blur));
       transition: all 0.3s ease;
-      color: var(--text-color);
+      color: var(--text-main);
     }
     .plan-card.premium {
       background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);

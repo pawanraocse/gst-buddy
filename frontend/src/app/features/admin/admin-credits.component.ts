@@ -62,7 +62,7 @@ import { forkJoin } from 'rxjs';
       <!-- User Wallets Table -->
       <div class="table-card">
         <div class="table-header">
-          <h3>Per-User Wallet Breakdown</h3>
+          <h3 style="color: var(--text-main)">Per-User Wallet Breakdown</h3>
           <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
             <input pInputText type="text" placeholder="Search users..."
@@ -119,33 +119,33 @@ import { forkJoin } from 'rxjs';
       gap: 1rem; margin-bottom: 1.5rem;
     }
     .summary-card {
-      background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
-      border-radius: 16px; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 2px 16px -4px rgba(0,0,0,0.05);
+      background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));
+      border-radius: 16px; padding: 1.25rem; border: 1px solid var(--glass-border);
+      box-shadow: 0 2px 16px -4px rgba(0,0,0,0.1);
       display: flex; align-items: center; gap: 1rem;
     }
     .sc-icon {
       width: 40px; height: 40px; border-radius: 12px;
       display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
     }
-    .sc-icon.green { background: #d1fae5; color: #059669; }
-    .sc-icon.orange { background: #fef3c7; color: #d97706; }
-    .sc-icon.blue { background: #dbeafe; color: #2563eb; }
-    .sc-icon.purple { background: #ede9fe; color: #7c3aed; }
+    .sc-icon.green { background: rgba(16, 185, 129, 0.12); color: #059669; }
+    .sc-icon.orange { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+    .sc-icon.blue { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
+    .sc-icon.purple { background: rgba(139, 92, 246, 0.12); color: #7c3aed; }
     .sc-body { display: flex; flex-direction: column; }
     .sc-value { font-size: 1.35rem; font-weight: 700; font-family: 'SF Mono', monospace; }
     .sc-label { font-size: 0.8rem; color: var(--text-secondary); }
 
     .table-card {
-      background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
-      border-radius: 20px; border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.06); overflow: hidden;
+      background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur));
+      border-radius: 20px; border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.1); overflow: hidden;
     }
     .table-header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 1.25rem 1.5rem; flex-wrap: wrap; gap: 1rem;
     }
-    .table-header h3 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+    .table-header h3 { margin: 0; font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
     .search-input { width: 260px; }
     .font-mono { font-family: 'SF Mono', 'Fira Code', monospace; }
     .empty-state { text-align: center; padding: 2rem !important; color: var(--text-secondary); }

@@ -107,12 +107,12 @@ import { AdminApiService, AdminDashboardStats } from '../../core/services/admin-
     }
 
     .kpi-card {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(12px);
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
       border-radius: 20px;
       padding: 1.5rem;
-      border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.06);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 24px -4px rgba(0,0,0,0.1);
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
       &:hover { transform: translateY(-2px); box-shadow: 0 8px 32px -4px rgba(0,0,0,0.1); }
@@ -123,10 +123,10 @@ import { AdminApiService, AdminDashboardStats } from '../../core/services/admin-
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 1rem; font-size: 1.25rem;
     }
-    .kpi-users .kpi-icon { background: var(--primary-50, #eef2ff); color: var(--primary-500, #6366f1); }
-    .kpi-credits .kpi-icon { background: #fef3c7; color: #d97706; }
-    .kpi-revenue .kpi-icon { background: #d1fae5; color: #059669; }
-    .kpi-plans .kpi-icon { background: #ede9fe; color: #7c3aed; }
+    .kpi-users .kpi-icon { background: rgba(99, 102, 241, 0.12); color: var(--primary-500, #6366f1); }
+    .kpi-credits .kpi-icon { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+    .kpi-revenue .kpi-icon { background: rgba(16, 185, 129, 0.12); color: #059669; }
+    .kpi-plans .kpi-icon { background: rgba(139, 92, 246, 0.12); color: #7c3aed; }
 
     .kpi-body { display: flex; flex-direction: column; margin-bottom: 0.75rem; }
     .kpi-value { font-size: 1.75rem; font-weight: 700; line-height: 1.2; }
@@ -135,20 +135,20 @@ import { AdminApiService, AdminDashboardStats } from '../../core/services/admin-
     .kpi-footer { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .kpi-badge {
       font-size: 0.75rem; padding: 0.2rem 0.6rem;
-      border-radius: 20px; background: #f1f5f9; color: #475569;
+      border-radius: 20px; background: var(--surface-hover); color: var(--text-secondary);
     }
-    .kpi-badge.active { background: #d1fae5; color: #059669; }
-    .kpi-badge.warn { background: #fee2e2; color: #dc2626; }
+    .kpi-badge.active { background: rgba(16, 185, 129, 0.12); color: #059669; }
+    .kpi-badge.warn { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
 
     .actions-section h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; }
     .actions-grid { display: flex; gap: 1rem; flex-wrap: wrap; }
     .action-btn {
       display: flex; align-items: center; gap: 0.75rem;
       padding: 1rem 1.5rem; border-radius: 14px;
-      background: rgba(255,255,255,0.85); border: 1px solid rgba(0,0,0,0.08);
-      color: var(--text-main, #1e293b); font-weight: 500;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      color: var(--text-main); font-weight: 500;
       cursor: pointer; transition: all 0.2s;
-      &:hover { background: var(--primary-50, #eef2ff); border-color: var(--primary-200, #c7d2fe); }
+      &:hover { background: var(--surface-hover); border-color: var(--primary-500); }
       i { font-size: 1.1rem; color: var(--primary-500, #6366f1); }
     }
   `]
