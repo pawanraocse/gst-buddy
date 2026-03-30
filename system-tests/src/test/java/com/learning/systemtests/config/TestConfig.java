@@ -131,7 +131,7 @@ public final class TestConfig {
     /**
      * Project name for SSM parameter path.
      */
-    public static final String PROJECT_NAME = getEnv("PROJECT_NAME", "GSTbuddies");
+    public static final String PROJECT_NAME = getEnv("PROJECT_NAME", "gstbuddies");
 
     /**
      * Environment for SSM parameter path.

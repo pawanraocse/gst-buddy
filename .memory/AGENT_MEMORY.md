@@ -1,6 +1,13 @@
 # AGENT_MEMORY
 _Source of truth for long-term project knowledge._
-_Last updated: 2026-03-07 | Updated by: Antigravity_
+_Last updated: 2026-03-29 | Updated by: Antigravity_
+
+---
+
+## 🏆 OPERATIONAL SAFETY
+- **CRITICAL**: No `terraform apply`, `git push origin prod`, or `docker` deployments without explicit user **"APPROVED"** on an implementation plan.
+- **RESTRICTED ZONES**: `main` (branch), `prod` (branch), `terraform/` (all modules).
+- **Mandatory Workflow**: Always use Planning Mode for infrastructure or production environment changes.
 
 ---
 

@@ -12,7 +12,7 @@ unset AWS_PROFILE
 export AWS_REGION=${AWS_REGION:-us-east-1}
 
 # SSM Parameter Path Prefix
-PROJECT_NAME=${PROJECT_NAME:-GSTbuddies}
+PROJECT_NAME=${PROJECT_NAME:-gstbuddies}
 SSM_PREFIX="/${PROJECT_NAME}/dev/cognito"
 
 echo "AWS Region: $AWS_REGION"

@@ -27,7 +27,7 @@ services:
   # ============================================================================
   redis:
     image: redis:7-alpine
-    container_name: GSTbuddies-redis
+    container_name: gstbuddies-redis
     ports:
       - "6379:6379"
     networks:

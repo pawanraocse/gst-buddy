@@ -7,7 +7,7 @@ spring:
   
   # Default datasource for health checks and when no tenant context is set
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:GSTbuddies}}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:gstbuddies}}
     username: ${SPRING_DATASOURCE_USERNAME:}
     password: ${SPRING_DATASOURCE_PASSWORD:}
 
@@ -147,7 +147,7 @@ auth:
 app:
   datasource:
     platform:
-      url: ${PLATFORM_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:GSTbuddies}}
+      url: ${PLATFORM_DATASOURCE_URL:jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:gstbuddies}}
       username: ${PLATFORM_DATASOURCE_USERNAME:}
       password: ${PLATFORM_DATASOURCE_PASSWORD:}
   referral:

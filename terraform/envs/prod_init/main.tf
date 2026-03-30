@@ -182,7 +182,7 @@ module "cloudfront" {
   comment            = "GSTbuddies API Gateway (HTTPS)"
 
   # Production Domain Settings
-  aliases            = ["${var.api_subdomain}.${var.domain_name}"]
+  aliases             = ["${var.api_subdomain}.${var.domain_name}"]
   acm_certificate_arn = aws_acm_certificate_validation.main.certificate_arn
 }
 

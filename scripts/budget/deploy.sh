@@ -22,7 +22,7 @@ fi
 AWS_REGION="${AWS_REGION:-us-east-1}"
 AWS_PROFILE="${AWS_PROFILE:-personal}"
 SSH_KEY="${SSH_KEY:-}"
-PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
+PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 
 # Colors
 RED='\033[0;31m'

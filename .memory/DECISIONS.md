@@ -44,3 +44,12 @@ and open SSH tunnels. Added `sshgstbudget` (port 5433) and `sshgstprod` (port 54
 **Alternatives Considered:** pgAdmin with built-in SSH tunnel config (requires manual setup per user)
 
 ---
+
+---
+
+## ADR-005 | 2026-03-29 | [CRITICAL]
+**Title:** Mandatory Planning & Approval Workflow
+**Context:** Prevent accidental or premature deployments to the 'prod' branch or infrastructure changes.
+**Decision:** All non-trivial actions (commits, merges, terraform, docker) MUST follow the Planning Mode workflow (Research -> Plan -> Approval -> Task -> Execute -> Verify).
+**Consequences:** Any agent session MUST present a plan and wait for "APPROVED" before touching production resources.
+**Alternatives Considered:** None (Required for safety)

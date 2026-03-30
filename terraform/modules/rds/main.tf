@@ -11,7 +11,7 @@ locals {
     Module      = "rds"
   }
 
-active_environment = var.environment == "prod_init" ? "production" : var.environment
+  active_environment = var.environment == "prod_init" ? "production" : var.environment
 
   # Database identifier (must be lowercase and hyphens only in AWS)
   db_identifier = lower(replace("${var.project_name}-${var.environment}", "_", "-"))

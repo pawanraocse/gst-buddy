@@ -18,7 +18,7 @@ fi
 
 AWS_REGION="${AWS_REGION:-us-east-1}"
 AWS_PROFILE="${AWS_PROFILE:-production}"
-PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
+PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 ENVIRONMENT="production"
 LOCAL_PORT="${1:-5434}"
 

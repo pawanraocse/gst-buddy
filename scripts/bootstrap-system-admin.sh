@@ -20,14 +20,14 @@ fi
 
 # Configuration
 REGION="${AWS_REGION:-us-east-1}"
-PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
+PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 ENVIRONMENT="${3:-${ENVIRONMENT:-budget}}"
 ENV="${ENV:-local}"
 AUTH_SERVICE_URL="${AUTH_SERVICE_URL:-http://localhost:8081}"
 INTERNAL_API_KEY="${INTERNAL_API_KEY:-}"
 
 echo "================================================================"
-echo "   GSTbuddies - System Admin Bootstrap"
+echo "   gstbuddies - System Admin Bootstrap"
 echo "================================================================"
 echo "Creates a Super Admin user in Cognito and links it via API."
 echo ""
@@ -67,8 +67,8 @@ ADMIN_EMAIL="${1:-}"
 ADMIN_PASSWORD="${2:-}"
 
 if [ -z "$ADMIN_EMAIL" ]; then
-    read -p "Enter Admin Email [system-admin@GSTbuddies.local]: " ADMIN_EMAIL
-    ADMIN_EMAIL="${ADMIN_EMAIL:-system-admin@GSTbuddies.local}"
+    read -p "Enter Admin Email [system-admin@gstbuddies.local]: " ADMIN_EMAIL
+    ADMIN_EMAIL="${ADMIN_EMAIL:-system-admin@gstbuddies.local}"
 fi
 
 if [ -z "$ADMIN_PASSWORD" ]; then

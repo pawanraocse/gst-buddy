@@ -1,12 +1,12 @@
 #!/bin/bash
 # ============================================================================
-# Manual Cleanup Script for GSTbuddies-dev
+# Manual Cleanup Script for gstbuddies-dev
 # ============================================================================
 # usage: ./manual_cleanup.sh [aws-profile]
 
 set -e
 
-PROJECT="GSTbuddies"
+PROJECT="gstbuddies"
 ENV="dev"
 REGION="us-east-1"
 PROFILE="${1:-default}"

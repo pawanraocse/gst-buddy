@@ -13,7 +13,7 @@ TERRAFORM_DIR="$PROJECT_ROOT/terraform/envs/production"
 
 AWS_REGION="${AWS_REGION:-us-east-1}"
 AWS_PROFILE="${AWS_PROFILE:-production}"
-PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
+PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 ENVIRONMENT="${ENVIRONMENT:-production}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 
@@ -64,8 +64,8 @@ if [ ! -f "terraform.tfvars" ]; then
     echo ""
     
     # Prompt for values
-    read -p "Project name [GSTbuddies]: " INPUT_PROJECT
-    INPUT_PROJECT="${INPUT_PROJECT:-GSTbuddies}"
+    read -p "Project name [gstbuddies]: " INPUT_PROJECT
+    INPUT_PROJECT="${INPUT_PROJECT:-gstbuddies}"
     
     read -p "AWS Region [us-east-1]: " INPUT_REGION
     INPUT_REGION="${INPUT_REGION:-us-east-1}"

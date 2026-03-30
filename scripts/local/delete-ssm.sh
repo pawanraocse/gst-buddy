@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-PROJECT_NAME="${TF_VAR_project_name:-GSTbuddies}"
+PROJECT_NAME="${TF_VAR_project_name:-gstbuddies}"
 ENVIRONMENT="${TF_VAR_environment:-dev}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 AWS_PROFILE="${AWS_PROFILE:-default}"

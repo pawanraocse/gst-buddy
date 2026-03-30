@@ -1,5 +1,14 @@
 # Project Skills & Conventions
 
+## 🏆 OPERATIONAL GOLDEN RULE
+> [!IMPORTANT]
+> **NEVER** commit code, merge branches, `terraform apply`, or execute `docker-compose up` on the `prod` tracking branch without an explicit **"APPROVED"** from the user after presenting a detailed implementation plan. 
+> 
+> *   Treat `main`, `prod`, and all `terraform/` directories as **RESTRICTED ZONES**.
+> *   Always use **Planning Mode** (Research -> Plan -> Approval -> Execute) for non-trivial infrastructure or production deployment actions.
+
+---
+
 ## Persistent Memory Trigger
 - skill: persistent_memory
   version: "1.0"

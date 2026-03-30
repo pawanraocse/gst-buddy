@@ -15,7 +15,7 @@ TERRAFORM_DIR="$SCRIPT_DIR/../../terraform/envs/budget"
 
 AWS_PROFILE="${AWS_PROFILE:-personal}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
-PROJECT_NAME="${PROJECT_NAME:-GSTbuddies}"
+PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 ENVIRONMENT="${ENVIRONMENT:-budget}"
 
 # Load environment variables from .env file if it exists

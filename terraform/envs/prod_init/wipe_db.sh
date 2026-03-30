@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT_NAME="GSTbuddies"
+PROJECT_NAME="gstbuddies"
 ENVIRONMENT="budget"
 AWS_REGION="us-east-1"
 DB_HOST=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/rds/endpoint" --query 'Parameter.Value' --output text --region "$AWS_REGION")

@@ -18,7 +18,7 @@ processors:
   resource:
     attributes:
       - key: service.namespace
-        value: GSTbuddies
+        value: gstbuddies
         action: upsert
 
 exporters:

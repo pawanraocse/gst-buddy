@@ -4,7 +4,7 @@ spring:
       on-profile: dev
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:GSTbuddies}
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:gstbuddies}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
 

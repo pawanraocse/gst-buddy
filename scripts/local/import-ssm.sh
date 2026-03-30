@@ -20,7 +20,7 @@ PROFILE="${AWS_PROFILE:-personal}"
 REGION="${AWS_REGION:-us-east-1}"
 
 # Match how deploy.sh resolves the project name and environment
-PROJECT="${PROJECT_NAME:-GSTbuddies}"
+PROJECT="${PROJECT_NAME:-gstbuddies}"
 TF_ENV="${ENVIRONMENT:-dev}"
 
 PARAM_PATH="/${PROJECT}/${TF_ENV}/cognito"
@@ -63,7 +63,7 @@ if [ -s terraform/cognito-config.env ]; then
         echo "Updating frontend environment files..."
         
         # Extract the base domain from the auth domain string
-        # e.g. from GSTbuddies-dev-tgwoncvq turns into auth domain format
+        # e.g. from gstbuddies-dev-tgwoncvq turns into auth domain format
         AUTH_DOMAIN="${COGNITO_DOMAIN}.auth.${REGION}.amazoncognito.com"
 
         # Update development environment

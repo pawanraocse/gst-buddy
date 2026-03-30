@@ -2,7 +2,7 @@
 set -e
 
 # Configuration
-PROJECT="GSTbuddies"
+PROJECT="gstbuddies"
 ENVIRONMENT="budget"
 REGION="us-east-1"
 BASTION_USER="ec2-user"

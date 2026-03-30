@@ -28,7 +28,7 @@ readonly NC='\033[0m'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SPAWN_SCRIPT="$SCRIPT_DIR/spawn-project.sh"
-TEST_DIR="/tmp/GSTbuddies-tests"
+TEST_DIR="/tmp/gstbuddies-tests"
 VERBOSE=false
 SPECIFIC_TEST=""
 
@@ -350,7 +350,7 @@ test_terraform_config_updated() {
         # Check terraform.tfvars updated
         if [[ -f "$dest/terraform/terraform.tfvars" ]]; then
             assert_file_contains "$dest/terraform/terraform.tfvars" "myplatform" "Should have new project name" || all_pass=false
-            assert_file_not_contains "$dest/terraform/terraform.tfvars" "GSTbuddies" "Should not have old project name" || all_pass=false
+            assert_file_not_contains "$dest/terraform/terraform.tfvars" "gstbuddies" "Should not have old project name" || all_pass=false
         fi
         
         # Check terraform state files are removed
@@ -470,7 +470,7 @@ test_documentation_updated() {
         # Check terraform README has project name  
         if [[ -f "$dest/terraform/README.md" ]]; then
             assert_file_contains "$dest/terraform/README.md" "mydocs" "Should have new project name" || all_pass=false
-            assert_file_not_contains "$dest/terraform/README.md" "GSTbuddies" "Should not have old name" || all_pass=false
+            assert_file_not_contains "$dest/terraform/README.md" "gstbuddies" "Should not have old name" || all_pass=false
         fi
         
         # Check delete-ssm.sh has project name
