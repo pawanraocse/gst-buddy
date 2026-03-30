@@ -3,6 +3,27 @@ _Last 10 sessions. Oldest sessions pruned when limit exceeded._
 
 ---
 
+## Session: 2026-03-30 13:35 | Agent: Antigravity (Gemini)
+
+### What Was Done
+- **Production Infrastructure Recovery**: Restored `prod_init` EC2 instance after casing mismatch in `terraform.tfvars` (`gstbuddies` vs `GSTbuddies`) caused resource destruction.
+- **CI/CD Automation**: Created `.github/workflows/deploy-prod-init.yml` to automate backend builds, rsync deployment to EC2, and Amplify frontend triggers.
+- **Backend Fixes**: Fixed `scripts/prod_init/start.sh` to correctly handle `PROJECT_NAME` casing when fetching AWS SSM parameters.
+- **Amplify Path Fix**: Corrected `baseDirectory` in `terraform/envs/prod_init/main.tf` to `frontend/dist/gstbuddies`.
+- **Validation**: Manually verified backend health and successfully triggered an Amplify release.
+
+### Files Changed
+- `.github/workflows/deploy-prod-init.yml` [NEW]
+- `scripts/prod_init/start.sh`
+- `terraform/envs/prod_init/terraform.tfvars`
+- `terraform/envs/prod_init/main.tf`
+
+### Decisions
+- Standardized `PROJECT_NAME` as `GSTbuddies` (case-sensitive) across all Terraform and SSM logic to prevent infrastructure drift.
+- Automated `prod_init` deployment on every push to the `prod` branch.
+
+---
+
 ## Session: 2026-03-28 21:15 | Agent: Antigravity (Gemini)
 
 ### What Was Done

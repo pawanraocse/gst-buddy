@@ -70,12 +70,10 @@ _Last updated: 2026-03-29 | Updated by: Antigravity_
 - **Description**: Keying internal resources to Cognito `sub` but allowing lookup by `email`.
 - **Implementation**: `users` table maps both; `user_credit_wallets` relies exclusively on `user_id` (UUID).
 
-## Current State & Findings (2026-03-28)
-- **Production Environment**: `prod_init` (EC2 + RDS) is the current target.
-- **Critical Bug**: Google SSO users had 0 credits because they bypassed the signup pipeline.
-- **Root Cause 1**: `GrantTrialCreditsAction` used `email` instead of Cognito `sub` (UUID) as `userId`.
-- **Root Cause 2**: SSO login skipped the `SignupAction` chain.
-- **Fix**: Added "grant-on-login" logic in `AuthServiceImpl`.
-- **CORS**: `https://gstbuddies.com` wasn't in allowed origins; updated SSM and start scripts.
-- **Cognito**: Google identity provider was missing `email_verified` mapping. Fixed in Terraform.
-- **Database**: `plans` table was empty in production; seeded manually with 'trial' plan.
+## Current State & Findings (2026-03-30)
+- **Production Environment**: `prod_init` (EC2 + RDS) is fully restored and automated via GitHub Actions.
+- **Critical Bug (Resolved)**: Google SSO users had 0 credits because they bypassed the signup pipeline.
+- **Infrastructure Gotcha**: `terraform.tfvars` project names are CASE-SENSITIVE for resource identification. `gstbuddies` != `GSTbuddies` in Terraform state.
+- **Deployment**: `start.sh` now correctly handles SSM parameter paths by using explicit `PROJECT_NAME` export.
+- **Amplify**: Frontend build artifacts directory standardized to `frontend/dist/gstbuddies`.
+- **CI/CD**: `prod` branch push automatically deploys to EC2/Amplify.
