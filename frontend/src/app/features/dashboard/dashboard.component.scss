@@ -21,7 +21,7 @@
   }
 
   &.buddy-status-teal {
-    background: linear-gradient(to right, var(--buddy-teal-light), rgba(255, 255, 255, 0.8));
+    background: linear-gradient(to right, var(--buddy-teal-light), var(--glass-bg));
     border-color: var(--buddy-teal);
     color: var(--buddy-teal-dark);
 
@@ -31,7 +31,7 @@
   }
 
   &.buddy-status-amber {
-    background: linear-gradient(to right, var(--buddy-amber-light), rgba(255, 255, 255, 0.8));
+    background: linear-gradient(to right, var(--buddy-amber-light), var(--glass-bg));
     border-color: var(--buddy-amber);
     color: var(--buddy-amber-dark);
 
@@ -43,8 +43,8 @@
 
 .buddy-info-card {
   @include glass-card;
-  background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
-  border: 1px solid var(--blue-100);
+  background: var(--bg-surface-glass);
+  border: 1px solid var(--border-color);
 }
 
 .buddy-success-card {
@@ -55,9 +55,9 @@
 
 /* Override default surface cards with glass panels */
 .surface-50 {
-  background: rgba(255, 255, 255, 0.6) !important;
+  background: var(--glass-bg) !important;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border: 1px solid var(--glass-border) !important;
 }
 
 /* Custom Table Styles for Dashboard */
@@ -70,9 +70,9 @@
     }
 
     .p-datatable-thead>tr>th {
-      background: rgba(255, 255, 255, 0.5);
-      color: var(--surface-600);
-      border-bottom: 1px solid var(--surface-200);
+      background: var(--bg-app);
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
       font-weight: 600;
       padding: 1rem;
     }
@@ -90,7 +90,7 @@
       }
 
       &:hover {
-        background: rgba(255, 255, 255, 0.4) !important;
+        background: var(--primary-50) !important;
       }
     }
   }
@@ -129,13 +129,13 @@
   }
 
   &.verdict-action {
-    background: linear-gradient(to right, #fffbeb, rgba(255, 255, 255, 0.8));
-    border-color: #d97706;
+    background: linear-gradient(to right, rgba(var(--warning-rgb, 245, 158, 11), 0.1), var(--glass-bg));
+    border-color: var(--warning-500);
   }
 
   &.verdict-clear {
-    background: linear-gradient(to right, #ecfdf5, rgba(255, 255, 255, 0.8));
-    border-color: #16a34a;
+    background: linear-gradient(to right, rgba(var(--success-rgb, 20, 184, 166), 0.1), var(--glass-bg));
+    border-color: var(--success-500);
   }
 }
 
@@ -179,7 +179,7 @@
   }
 
   &.active {
-    background: white;
+    background: var(--bg-surface);
     color: var(--primary-600);
     box-shadow: var(--shadow-xs);
   }
@@ -191,21 +191,21 @@
 
 ::ng-deep .howto-panel {
   .p-panel-header {
-    background: linear-gradient(135deg, #f0f9ff, #ffffff);
-    border: 1px solid var(--blue-100);
+    background: var(--bg-app);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     font-weight: 600;
     transition: all 0.3s ease;
 
     &:hover {
-      background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+      background: var(--bg-surface);
     }
   }
 
   .p-panel-content {
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--bg-surface-glass);
     backdrop-filter: blur(8px);
-    border: 1px solid var(--blue-100);
+    border: 1px solid var(--border-color);
     border-top: none;
     border-radius: 0 0 12px 12px;
     padding: 1.25rem 1.5rem;
@@ -271,15 +271,15 @@
   }
 
   &.upload {
-    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    background: rgba(20, 184, 166, 0.1);
 
     i {
-      color: #059669;
+      color: var(--success-500);
     }
   }
 
   &.process {
-    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    background: rgba(99, 102, 241, 0.1);
 
     i {
       color: var(--primary-500);
@@ -287,15 +287,15 @@
   }
 
   &.calculate {
-    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    background: rgba(245, 158, 11, 0.1);
 
     i {
-      color: #d97706;
+      color: var(--warning-500);
     }
   }
 
   &.download {
-    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    background: rgba(139, 92, 246, 0.1);
 
     i {
       color: #7c3aed;

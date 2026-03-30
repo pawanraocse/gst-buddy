@@ -1,78 +1,56 @@
 /*
  * 🎨 Premium Design System - Theme Variables
  * Source of Truth for Colors, Typography, and Spacing.
- * Conforms to `docs/FRONTEND_DESIGN_SYSTEM.md`.
  */
 
 :root {
     /* ========== 1. Brand Palette (Fintech Glass) ========== */
-
-    /* Primary: Indigo (Trust) */
+    /* Primary / Secondary colors - Work in both Light and Dark */
     --primary-50: #eef2ff;
     --primary-100: #e0e7ff;
     --primary-200: #c7d2fe;
     --primary-300: #a5b4fc;
     --primary-400: #818cf8;
     --primary-500: #6366f1;
-    /* Brand Primary */
     --primary-600: #4f46e5;
     --primary-700: #4338ca;
 
-    /* Primary Alpha (Subtle tints) */
-    --primary-alpha-10: rgba(99, 102, 241, 0.10);
-    --primary-alpha-20: rgba(99, 102, 241, 0.20);
-    --primary-alpha-30: rgba(99, 102, 241, 0.30);
-
-    /* Secondary: Violet (Creativity) */
     --secondary-500: #8b5cf6;
     --secondary-600: #7c3aed;
 
-    /* Gradients */
-    --primary-gradient: linear-gradient(135deg, var(--primary-500) 0%, #7c3aed 50%, #a855f7 100%);
-    --primary-gradient-hover: linear-gradient(135deg, #a855f7 0%, var(--primary-500) 100%);
-    --bg-gradient-auth: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fae8ff 100%);
-
-    /* ========== 2. Semantic Actions (Buddy System) ========== */
-
-    /* Success: Teal (All Clear) */
+    /* Semantic - Work in both */
     --success-500: #14b8a6;
-    --success-bg: #f0fdfa;
-    --success-text: #0f766e;
-
-    /* Warning: Amber (Action Pending) */
     --warning-500: #f59e0b;
-    --warning-bg: #fffbeb;
-    --warning-text: #b45309;
-
-    /* Error: Rose (Critical Only - No "Error Red") */
     --error-500: #f43f5e;
-    --error-bg: #fff1f2;
-
-    /* Info: Sky */
     --info-500: #0ea5e9;
 
-    /* ========== 3. Surfaces & Typography ========== */
-
+    /* ========== 2. Adaptive Surface & Typography (LIGHT) ========== */
     --bg-app: #f8fafc;
-    /* Slate-50 */
     --bg-surface: #ffffff;
     --text-main: #0f172a;
-    /* Slate-900 */
     --text-secondary: #64748b;
-    /* Slate-500 */
     --text-light: #94a3b8;
-    /* Slate-400 */
-
     --border-color: #e2e8f0;
-    /* Slate-200 */
 
-    /* Surface System (Glass) */
-    --surface-glass: rgba(255, 255, 255, 0.72);
-    --surface-glass-hover: rgba(255, 255, 255, 0.85);
-    --surface-glass-heavy: rgba(255, 255, 255, 0.90);
+    /* Glass Vars - Light Mode */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-blur: 12px;
 
-    /* ========== 4. Typography Scale (Crystal Scale) ========== */
+    /* Gradients */
+    --primary-gradient: linear-gradient(135deg, var(--primary-500) 0%, #7c3aed 50%, #a855f7 100%);
+    --bg-gradient-auth: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fae8ff 100%);
 
+    /* Other Tokens (Spacing, Radius, etc.) */
+    --border-radius-xl: 1rem;
+    --border-radius-lg: 0.75rem;
+    --border-radius-md: 0.5rem;
+
+    --duration-fast: 200ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+
+    /* Typography Scale */
     --text-hero: 4rem;
     --text-display: 2.5rem;
     --text-h1: 1.875rem;
@@ -83,61 +61,36 @@
     --text-sm: 0.875rem;
     --text-xs: 0.75rem;
     --text-mono: 0.875rem;
-
-    /* ========== 5. Spacing Scale (4px base unit) ========== */
-
-    --space-1: 0.25rem;  /* 4px */
-    --space-2: 0.5rem;   /* 8px */
-    --space-3: 0.75rem;  /* 12px */
-    --space-4: 1rem;     /* 16px */
-    --space-5: 1.25rem;  /* 20px */
-    --space-6: 1.5rem;   /* 24px */
-    --space-8: 2rem;     /* 32px */
-    --space-10: 2.5rem;  /* 40px */
-    --space-12: 3rem;    /* 48px */
-    --space-16: 4rem;    /* 64px */
-    --space-20: 5rem;    /* 80px */
-
-    /* ========== 6. Shadow / Elevation System ========== */
-
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
-    --shadow-glow-primary: 0 8px 20px rgba(99, 102, 241, 0.25);
-    --shadow-glow-success: 0 8px 20px rgba(20, 184, 166, 0.25);
-
-    /* ========== 7. Animation Tokens ========== */
-
-    --ease-default: cubic-bezier(0.2, 0, 0, 1);
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-out: cubic-bezier(0, 0, 0.2, 1);
-
-    --duration-instant: 100ms;
-    --duration-fast: 200ms;
-    --duration-normal: 300ms;
-    --duration-slow: 500ms;
-
-    /* ========== 8. Dimensions & Radius ========== */
-
-    --border-radius-xl: 1rem;
-    /* 16px - Cards */
-    --border-radius-lg: 0.75rem;
-    /* 12px - Inputs */
-    --border-radius-md: 0.5rem;
-    /* 8px - Buttons */
-
-    --wrapper-width: 1200px;
 }
 
-/* ========== Mixins ========== */
+/* ========== DARK MODE OVERRIDES ========== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Adaptive Surface & Typography (DARK) */
+        --bg-app: #0f172a;       /* Deep Slate-900 */
+        --bg-surface: #1e293b;   /* Slate-800 */
+        --text-main: #f8fafc;    /* Slate-50 */
+        --text-secondary: #94a3b8; /* Slate-400 */
+        --text-light: #64748b;   /* Slate-500 */
+        --border-color: #334155; /* Slate-700 */
+
+        /* Glass Vars - Dark Mode */
+        --glass-bg: rgba(30, 41, 59, 0.65); /* Slate-800 Alpha */
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-blur: 16px;
+
+        /* Gradients - Dark Mode Adjustments */
+        --bg-gradient-auth: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+    }
+}
+
+/* ========== Mixins (Now Adaptive) ========== */
 
 @mixin glass-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
     box-shadow:
         0 4px 6px -1px rgba(0, 0, 0, 0.05),
         0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -145,7 +98,7 @@
 }
 
 @mixin glass-panel {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--glass-bg);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border-color);
 }
@@ -164,19 +117,5 @@
     &:hover {
         box-shadow: 0 8px 20px -5px rgba(99, 102, 241, 0.4);
         transform: translateY(-1px);
-        background: var(--primary-gradient-hover);
-    }
-}
-
-@mixin premium-button-outline {
-    background: transparent;
-    border: 1px solid var(--primary-500);
-    color: var(--primary-600);
-    transition: all 0.2s ease;
-    border-radius: var(--border-radius-md);
-
-    &:hover {
-        background: var(--primary-50);
-        color: var(--primary-700);
     }
 }

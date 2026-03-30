@@ -22,7 +22,7 @@
 }
 
 .settings-card {
-    background: var(--surface-glass, rgba(255, 255, 255, 0.7));
+    background: var(--bg-surface-glass);
     backdrop-filter: blur(8px);
     border-radius: 16px;
     border: 1px solid var(--border-color);
@@ -39,7 +39,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 1.25rem 1.5rem;
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--bg-app);
     border-bottom: 1px solid var(--border-color);
 
     i {
@@ -368,7 +368,7 @@
 
 .plan-card {
     position: relative;
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--bg-surface-glass);
     backdrop-filter: blur(8px);
     border: 1px solid var(--border-color);
     border-radius: 16px;
@@ -466,14 +466,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.4);
+    background: var(--bg-surface-glass);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
         transform: translateX(4px);
-        background: rgba(255, 255, 255, 0.6);
+        background: var(--bg-surface);
         border-color: var(--primary-200);
     }
 }

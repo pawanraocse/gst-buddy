@@ -156,13 +156,13 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--glass-bg);
     backdrop-filter: blur(8px);
     border-radius: 100px;
     font-size: var(--text-sm, 0.875rem);
     font-weight: 500;
     color: var(--text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--glass-border);
 
     i {
         color: var(--success-500, #14b8a6);
@@ -193,14 +193,14 @@
     @include glass-card;
     width: 100%;
     max-width: 450px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(237, 233, 254, 0.45) 50%, rgba(252, 231, 243, 0.4) 100%);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 2.5rem;
     box-shadow:
         0 20px 25px -5px rgba(0, 0, 0, 0.08),
         0 10px 10px -5px rgba(0, 0, 0, 0.03),
-        0 0 0 1px rgba(255, 255, 255, 0.5);
+        0 0 0 1px var(--glass-border);
     transition: transform 0.3s var(--ease-default, ease), box-shadow 0.3s ease;
     z-index: 1;
     position: relative;
@@ -211,7 +211,7 @@
         box-shadow:
             0 25px 35px -5px rgba(0, 0, 0, 0.1),
             0 12px 15px -5px rgba(0, 0, 0, 0.04),
-            0 0 0 1px rgba(255, 255, 255, 0.6);
+            0 0 0 1px var(--glass-border);
     }
 
     /* Shake on validation error */
@@ -453,7 +453,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem;
-    background: white;
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-md);
     color: var(--text-main);
@@ -477,14 +477,14 @@
     @include glass-card;
     width: 100%;
     max-width: 480px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(237, 233, 254, 0.45) 50%, rgba(252, 231, 243, 0.4) 100%);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 2.5rem;
     box-shadow:
         0 20px 25px -5px rgba(0, 0, 0, 0.08),
         0 10px 10px -5px rgba(0, 0, 0, 0.03),
-        0 0 0 1px rgba(255, 255, 255, 0.5);
+        0 0 0 1px var(--glass-border);
     z-index: 1;
     position: relative;
     animation: fadeInUp 0.5s var(--ease-default, ease-out);

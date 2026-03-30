@@ -50,7 +50,7 @@
 ═══════════════════════════════════════════════════════════════════════════ */
 
 .history-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--bg-surface-glass);
     backdrop-filter: blur(12px);
     border-radius: 14px;
     border: 1px solid var(--border-color);
