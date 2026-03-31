@@ -17,7 +17,6 @@ terraform {
     region         = "ap-south-1"
     dynamodb_table = "gstbuddies-terraform-locks"
     encrypt        = true
-    profile        = "personal"
   }
 }
 
