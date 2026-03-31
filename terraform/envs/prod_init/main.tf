@@ -11,14 +11,14 @@ terraform {
     }
   }
 
-  # Uncomment for remote state
-  # backend "s3" {
-  #   bucket         = "your-terraform-state-bucket"
-  #   key            = "budget/terraform.tfstate"
-  #   region         = "us-east-1"
-  #   dynamodb_table = "terraform-locks"
-  #   encrypt        = true
-  # }
+  backend "s3" {
+    bucket         = "gstbuddies-terraform-state-045084720221-ap-south-1"
+    key            = "prod_init/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "gstbuddies-terraform-locks"
+    encrypt        = true
+    profile        = "personal"
+  }
 }
 
 provider "aws" {
