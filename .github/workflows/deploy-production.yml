@@ -3,15 +3,16 @@
 
 name: Deploy to Production
 
+# on:
+#   push:
+#     branches:
+#       - prod
+#     paths:
+#       - "gateway-service/**"
+#       - "auth-service/**"
+#       - "backend-service/**"
+#       - "platform-service/**"
 on:
-  push:
-    branches:
-      - prod
-    paths:
-      - "gateway-service/**"
-      - "auth-service/**"
-      - "backend-service/**"
-      - "platform-service/**"
   workflow_dispatch:
     inputs:
       services:
