@@ -56,6 +56,10 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
+      - name: Prepare EC2 Environment
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get-ip.outputs.ec2_ip }} "sudo mkdir -p /app && sudo chown ec2-user:ec2-user /app"
+
       - name: Deploy Backend to EC2
         run: |
           # Sync code + built JARs to EC2 exactly matching the local deploy script
