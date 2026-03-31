@@ -34,6 +34,21 @@ provider "aws" {
   }
 }
 
+# Aliased provider strictly for ACM Certificates required by CloudFront
+provider "aws" {
+  alias  = "us-east-1"
+  region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      CostCenter  = "Budget"
+    }
+  }
+}
+
 # =============================================================================
 # Local Variables
 # =============================================================================
@@ -54,6 +69,7 @@ data "aws_route53_zone" "main" {
 }
 
 resource "aws_acm_certificate" "wildcard" {
+  provider                  = aws.us-east-1
   domain_name               = "*.${var.domain_name}"
   subject_alternative_names = [var.domain_name]
   validation_method         = "DNS"
@@ -81,6 +97,7 @@ resource "aws_route53_record" "validation" {
 }
 
 resource "aws_acm_certificate_validation" "main" {
+  provider                = aws.us-east-1
   certificate_arn         = aws_acm_certificate.wildcard.arn
   validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]
 }
@@ -101,8 +118,8 @@ module "vpc" {
   # Budget: No NAT Gateway (EC2 in public subnet has direct internet access)
   enable_nat_gateway = false
 
-  # Optional: Enable flow logs for debugging
-  enable_flow_logs = var.enable_flow_logs
+  # Enabled for security monitoring
+  enable_flow_logs = true
 }
 
 
@@ -133,10 +150,10 @@ module "rds" {
   database_name   = var.database_name
   master_username = var.database_username
 
-  # Budget: Single-AZ, skip final snapshot
+  # Live Use: Protected from accidental deletion
   multi_az            = false
-  deletion_protection = false
-  skip_final_snapshot = true
+  deletion_protection = true
+  skip_final_snapshot = false
 
   # Allow from EC2 bastion
   allowed_security_groups = [module.bastion.security_group_id]
@@ -219,7 +236,7 @@ module "ecr" {
   max_image_count      = 3
   untagged_image_days  = 7
   image_tag_mutability = "MUTABLE"
-  scan_on_push         = false # Save costs
+  scan_on_push         = true # Enabled for live security scanning
 }
 
 # Store ECR registry URL in SSM for easy access

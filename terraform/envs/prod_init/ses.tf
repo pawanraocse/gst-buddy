@@ -34,7 +34,7 @@ resource "aws_route53_record" "ses_mail_from_mx" {
   name    = aws_ses_domain_mail_from.main.mail_from_domain
   type    = "MX"
   ttl     = "600"
-  records = ["10 feedback-smtp.us-east-1.amazonses.com"] # Default for us-east-1
+  records = ["10 feedback-smtp.ap-south-1.amazonses.com"] # Default for ap-south-1
 }
 
 # 6. Route53 TXT Record (SPF) for MAIL FROM
