@@ -138,7 +138,7 @@ if [ $? -eq 0 ]; then
 
     PROJECT_NAME=${TF_VAR_project_name:-$DEFAULT_PROJECT_NAME}
     ENVIRONMENT=${TF_VAR_environment:-dev}
-    AWS_REGION=${AWS_REGION:-us-east-1}
+    AWS_REGION=${AWS_REGION:-ap-south-1}
     
     PARAM_PATH="/${PROJECT_NAME}/${ENVIRONMENT}"
     

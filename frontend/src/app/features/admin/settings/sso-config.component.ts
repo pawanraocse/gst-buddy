@@ -304,7 +304,7 @@ export class SsoConfigComponent implements OnInit {
   };
 
   spEntityId = 'urn:amazon:cognito:sp:YOUR_USER_POOL_ID';
-  acsUrl = 'https://YOUR_DOMAIN.auth.us-east-1.amazoncognito.com/saml2/idpresponse';
+  acsUrl = 'https://YOUR_DOMAIN.auth.ap-south-1.amazoncognito.com/saml2/idpresponse';
 
   ngOnInit() {
     this.loadConfiguration();

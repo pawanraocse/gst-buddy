@@ -8,7 +8,7 @@ set -e
 
 PROJECT="gstbuddies"
 ENV="dev"
-REGION="us-east-1"
+REGION="ap-south-1"
 PROFILE="${1:-default}"
 
 echo "Using AWS Profile: $PROFILE"

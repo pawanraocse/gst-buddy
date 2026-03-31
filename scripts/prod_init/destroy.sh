@@ -11,12 +11,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TERRAFORM_DIR="$SCRIPT_DIR/../../terraform/envs/budget"
+TERRAFORM_DIR="$SCRIPT_DIR/../../terraform/envs/prod_init"
 
 AWS_PROFILE="${AWS_PROFILE:-personal}"
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-1}"
 PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
-ENVIRONMENT="${ENVIRONMENT:-budget}"
+ENVIRONMENT="${ENVIRONMENT:-prod_init}"
 
 # Load environment variables from .env file if it exists
 if [ -f "$SCRIPT_DIR/../../.env" ]; then
@@ -210,9 +210,41 @@ echo "✅ ECR images cleaned"
 echo ""
 
 # =============================================================================
-# Step 2: Destroy Terraform Infrastructure
+# Step 2: Disable RDS Deletion Protection (Required for destroy)
 # =============================================================================
-echo "🗑️  Step 2: Destroying infrastructure..."
+echo "🛡️  Step 2: Disabling RDS deletion protection..."
+echo ""
+
+cd "$TERRAFORM_DIR"
+COMMON_VARS="-var-file=../../common.auto.tfvars"
+
+# Use AWS CLI to directly disable protection (more reliable than Terraform during destroy)
+log_info "  Checking RDS deletion protection for: ${PROJECT_NAME}-${ENVIRONMENT}"
+RDS_ID=$(aws rds describe-db-instances \
+    --query "DBInstances[?contains(DBInstanceIdentifier, '${PROJECT_NAME}-${ENVIRONMENT}')].DBInstanceIdentifier | [0]" \
+    --output text --region "$AWS_REGION" --profile "$AWS_PROFILE")
+
+if [ "$RDS_ID" != "None" ] && [ -n "$RDS_ID" ]; then
+    log_info "  Disabling protection for $RDS_ID..."
+    aws rds modify-db-instance \
+        --db-instance-identifier "$RDS_ID" \
+        --no-deletion-protection \
+        --apply-immediately \
+        --region "$AWS_REGION" \
+        --profile "$AWS_PROFILE" >/dev/null
+    
+    # Wait a moment for AWS to update
+    sleep 5
+    log_success "  Protection disabled for $RDS_ID"
+fi
+
+echo "✅ RDS deletion protection disabled"
+echo ""
+
+# =============================================================================
+# Step 3: Destroy Terraform Infrastructure
+# =============================================================================
+echo "🗑️  Step 3: Destroying infrastructure..."
 echo ""
 
 cd "$TERRAFORM_DIR"

@@ -21,6 +21,14 @@ export interface WalletDto {
   remaining: number;
 }
 
+export interface PaymentOrderDto {
+  orderId: string;
+  amount: number;
+  currency: string;
+  razorpayKeyId: string;
+}
+
+
 /**
  * Credit System API Service — Plans, wallet balance, and credit operations.
  */
@@ -40,5 +48,28 @@ export class CreditApiService {
    */
   getWallet(): Observable<WalletDto> {
     return this.http.get<WalletDto>(`${AUTH_BASE}/api/v1/credits`);
+  }
+
+  /**
+   * Create a Razorpay order for purchasing a plan.
+   */
+  createOrder(planName: string): Observable<PaymentOrderDto> {
+    return this.http.post<PaymentOrderDto>(`${AUTH_BASE}/api/v1/payments/create-order`, null, {
+      params: { planName }
+    });
+  }
+
+  /**
+   * Verify the Razorpay payment and grant credits to the user's wallet.
+   */
+  verifyPayment(
+    orderId: string,
+    paymentId: string,
+    signature: string,
+    planName: string
+  ): Observable<WalletDto> {
+    return this.http.post<WalletDto>(`${AUTH_BASE}/api/v1/payments/verify`, null, {
+      params: { orderId, paymentId, signature, planName }
+    });
   }
 }

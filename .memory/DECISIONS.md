@@ -53,3 +53,21 @@ and open SSH tunnels. Added `sshgstbudget` (port 5433) and `sshgstprod` (port 54
 **Decision:** All non-trivial actions (commits, merges, terraform, docker) MUST follow the Planning Mode workflow (Research -> Plan -> Approval -> Task -> Execute -> Verify).
 **Consequences:** Any agent session MUST present a plan and wait for "APPROVED" before touching production resources.
 **Alternatives Considered:** None (Required for safety)
+
+---
+
+## ADR-006 | 2026-03-31 | [HIGH]
+**Title:** Standardizing `PROJECT_NAME` Casing for SSM Parameter Lookups
+**Status:** Accepted
+**Context:** Infrastructure deployment failed when resolving SSM parameters (e.g. `ec2_public_ip`) because the GitHub actions workflow exported `PROJECT_NAME=GSTbuddies`, but Terraform created the SSM paths using `gstbuddies`. AWS SSM parameter paths are strictly case-sensitive.
+**Decision:** All usages of `PROJECT_NAME` within CI/CD pipelines, Terraform variables, and shell scripts MUST be lowercased before being used to construct SSM parameter paths.
+**Consequences:** Deployment scripts (`start.sh`) and GitHub actions must explicitly normalize the string to lowercase before querying SSM. Prevents cross-environment drift and deployment pipeline failures.
+
+---
+
+## ADR-007 | 2026-03-31 | [HIGH]
+**Title:** Native `docker compose` over Standalone Binary for Amazon Linux 2023 EC2
+**Status:** Accepted
+**Context:** Amazon Linux 2023 (AL2023) differs from Amazon Linux 2 in its package repositories. The standalone `docker-compose` binary downloaded via `curl` throws an error related to `buildx` requirements when attempting to build images natively on the EC2 instance.
+**Decision:** The EC2 bootstrapping script (`start.sh`) configures Docker to use native `docker compose` (the plugin), and explicitly disables BuildKit (`DOCKER_BUILDKIT=0`) and the Docker CLI build (`COMPOSE_DOCKER_CLI_BUILD=0`). Commands must be run with `sudo -E` to properly pass environment variables loaded from SSM to the daemon.
+**Consequences:** Improved deployment reliability on fresh AL2023 instances. Eliminates the need to install the separate `docker-compose-plugin` package or relying on the deprecated standalone binary.

@@ -58,7 +58,7 @@ public class RazorpayPaymentService implements PaymentService {
             var orderRequest = new JSONObject();
             orderRequest.put("amount", amountInPaise);
             orderRequest.put("currency", "INR");
-            orderRequest.put("receipt", "plan_" + planName + "_" + userId + "_" + System.currentTimeMillis());
+            orderRequest.put("receipt", "p_" + userId.substring(0, 8) + "_" + System.currentTimeMillis());
             orderRequest.put("notes", new JSONObject()
                     .put("planName", planName)
                     .put("userId", userId)

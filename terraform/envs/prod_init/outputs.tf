@@ -85,7 +85,7 @@ output "ssm_command" {
 
 output "frontend_url" {
   description = "Frontend URL (Amplify)"
-  value       = module.amplify.branch_url
+  value       = var.domain_name != null ? "https://${var.domain_name}" : module.amplify.branch_url
 }
 
 # =============================================================================
@@ -126,7 +126,7 @@ output "next_steps" {
   value       = <<-EOT
     
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    ✅ Budget Deployment Complete!
+    ✅ Prod Init Deployment Complete (Mumbai)!
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     
     📦 Infrastructure:
@@ -135,10 +135,10 @@ output "next_steps" {
     
     🚀 Deploy Services:
       1. SSH: ${module.bastion.ssh_command}
-      2. cd /app && docker-compose -f docker-compose.budget.yml up -d
+      2. cd /app && docker-compose -f docker-compose.prod_init.yml up -d
     
     🌐 Access:
-      Frontend: ${module.amplify.branch_url}
+      Frontend: ${var.domain_name != "" ? "https://${var.domain_name}" : module.amplify.branch_url}
       API:      https://${module.cloudfront.domain_name}
     
     💰 Cost: ~$15-30/month

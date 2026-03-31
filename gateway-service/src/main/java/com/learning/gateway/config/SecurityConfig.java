@@ -71,6 +71,9 @@ public class SecurityConfig {
                                                                 // X-User-Id)
                                                                 "/auth/api/v1/referral/**",
 
+                                                                // Payment system
+                                                                "/auth/api/v1/payments/**",
+
                                                                 // Bootstrap endpoint (protected by X-Internal-Api-Key,
                                                                 // not JWT)
                                                                 "/auth/api/v1/admin/bootstrap/**")

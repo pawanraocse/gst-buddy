@@ -11,18 +11,32 @@ terraform {
     }
   }
 
-  # Uncomment for remote state
-  # backend "s3" {
-  #   bucket         = "your-terraform-state-bucket"
-  #   key            = "budget/terraform.tfstate"
-  #   region         = "us-east-1"
-  #   dynamodb_table = "terraform-locks"
-  #   encrypt        = true
-  # }
+  backend "s3" {
+    bucket         = "gstbuddies-terraform-state-045084720221-ap-south-1"
+    key            = "prod_init/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "gstbuddies-terraform-locks"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
   region = var.aws_region
+
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+      CostCenter  = "Budget"
+    }
+  }
+}
+
+# Aliased provider strictly for ACM Certificates required by CloudFront
+provider "aws" {
+  alias  = "us-east-1"
+  region = "us-east-1"
 
   default_tags {
     tags = {
@@ -54,6 +68,7 @@ data "aws_route53_zone" "main" {
 }
 
 resource "aws_acm_certificate" "wildcard" {
+  provider                  = aws.us-east-1
   domain_name               = "*.${var.domain_name}"
   subject_alternative_names = [var.domain_name]
   validation_method         = "DNS"
@@ -81,6 +96,7 @@ resource "aws_route53_record" "validation" {
 }
 
 resource "aws_acm_certificate_validation" "main" {
+  provider                = aws.us-east-1
   certificate_arn         = aws_acm_certificate.wildcard.arn
   validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]
 }
@@ -101,8 +117,8 @@ module "vpc" {
   # Budget: No NAT Gateway (EC2 in public subnet has direct internet access)
   enable_nat_gateway = false
 
-  # Optional: Enable flow logs for debugging
-  enable_flow_logs = var.enable_flow_logs
+  # Enabled for security monitoring
+  enable_flow_logs = true
 }
 
 
@@ -133,10 +149,10 @@ module "rds" {
   database_name   = var.database_name
   master_username = var.database_username
 
-  # Budget: Single-AZ, skip final snapshot
+  # Live Use: Protected from accidental deletion
   multi_az            = false
-  deletion_protection = false
-  skip_final_snapshot = true
+  deletion_protection = true
+  skip_final_snapshot = false
 
   # Allow from EC2 bastion
   allowed_security_groups = [module.bastion.security_group_id]
@@ -219,7 +235,7 @@ module "ecr" {
   max_image_count      = 3
   untagged_image_days  = 7
   image_tag_mutability = "MUTABLE"
-  scan_on_push         = false # Save costs
+  scan_on_push         = true # Enabled for live security scanning
 }
 
 # Store ECR registry URL in SSM for easy access
@@ -484,4 +500,48 @@ resource "aws_ssm_parameter" "api_internal_key" {
   value       = random_password.internal_api_key.result
 
   tags = { Module = "budget" }
+}
+
+# =============================================================================
+# Razorpay Live Payment Keys (Managed manually via Console for security)
+# =============================================================================
+
+resource "aws_ssm_parameter" "razorpay_key_id" {
+  name        = "/${var.project_name}/${var.environment}/razorpay/key_id"
+  description = "Razorpay Live Key ID"
+  type        = "SecureString"
+  value       = "CHANGE_ME" # Set manually in console
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = { Module = "prod_init" }
+}
+
+resource "aws_ssm_parameter" "razorpay_key_secret" {
+  name        = "/${var.project_name}/${var.environment}/razorpay/key_secret"
+  description = "Razorpay Live Key Secret"
+  type        = "SecureString"
+  value       = "CHANGE_ME" # Set manually in console
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = { Module = "prod_init" }
+}
+
+# =============================================================================
+# EC2 Instance Connect Endpoint (Secure Console Access via Private IP)
+# =============================================================================
+
+resource "aws_ec2_instance_connect_endpoint" "main" {
+  subnet_id          = module.vpc.public_subnet_ids[0]
+  security_group_ids = [module.bastion.security_group_id]
+
+  tags = {
+    Name   = "${local.name_prefix}-eice"
+    Module = "prod_init"
+  }
 }

@@ -44,7 +44,7 @@ import { RouterLink } from '@angular/router';
 
           <section>
             <h2>3. Data Storage and Security</h2>
-            <p>Your data is stored on AWS infrastructure (us-east-1 region) with:</p>
+            <p>Your data is stored on AWS infrastructure (ap-south-1 region) with:</p>
             <ul>
               <li>AES-256 encryption at rest</li>
               <li>TLS 1.2+ encryption in transit</li>

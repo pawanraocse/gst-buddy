@@ -25,7 +25,7 @@ public class ConfigController {
     @Value("${cognito.spa.client-id:}")
     private String clientId;
 
-    @Value("${cognito.spa.region:us-east-1}")
+    @Value("${cognito.spa.region:ap-south-1}")
     private String region;
 
     @Value("${cognito.spa.domain:}")

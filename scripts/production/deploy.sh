@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 TERRAFORM_DIR="$PROJECT_ROOT/terraform/envs/production"
 
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-1}"
 AWS_PROFILE="${AWS_PROFILE:-production}"
 PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 ENVIRONMENT="${ENVIRONMENT:-production}"
@@ -67,8 +67,8 @@ if [ ! -f "terraform.tfvars" ]; then
     read -p "Project name [gstbuddies]: " INPUT_PROJECT
     INPUT_PROJECT="${INPUT_PROJECT:-gstbuddies}"
     
-    read -p "AWS Region [us-east-1]: " INPUT_REGION
-    INPUT_REGION="${INPUT_REGION:-us-east-1}"
+    read -p "AWS Region [ap-south-1]: " INPUT_REGION
+    INPUT_REGION="${INPUT_REGION:-ap-south-1}"
     
     echo ""
     echo "ACM Certificate ARN (for HTTPS):"

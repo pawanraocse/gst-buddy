@@ -76,12 +76,12 @@ cognito:
   client-id: ${COGNITO_CLIENT_ID}
   client-secret: ${COGNITO_CLIENT_SECRET:}
   domain: ${COGNITO_DOMAIN}
-  region: ${AWS_REGION:us-east-1}
+  region: ${AWS_REGION:ap-south-1}
   logout-redirect-url: ${COGNITO_LOGOUT_REDIRECT_URL:http://localhost:8081/auth/logged-out}
 
 # AWS Configuration
 aws:
-  region: ${AWS_REGION:us-east-1}
+  region: ${AWS_REGION:ap-south-1}
   ses:
     # From email address for invitation emails (must be verified in SES)
     from-email: ${SES_FROM_EMAIL:noreply@example.com}
@@ -110,7 +110,7 @@ eureka:
     lease-expiration-duration-in-seconds: 90
     metadata-map:
       version: ${project.version:1.0.0}
-      region: ${AWS_REGION:us-east-1}
+      region: ${AWS_REGION:ap-south-1}
 
 management:
   tracing:

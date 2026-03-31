@@ -59,13 +59,13 @@ github_access_token = "ghp_xxx"
 aws acm request-certificate \
   --domain-name "api.yourdomain.com" \
   --validation-method DNS \
-  --region us-east-1
+  --region ap-south-1
 
-# Output: arn:aws:acm:us-east-1:123456789012:certificate/xxx
+# Output: arn:aws:acm:ap-south-1:123456789012:certificate/xxx
 ```
 
 **Or via AWS Console:**
-1. Go to **AWS Certificate Manager** (in us-east-1 region)
+1. Go to **AWS Certificate Manager** (in ap-south-1 region)
 2. Click **Request certificate** → **Request public certificate**
 3. Enter domain name (e.g., `api.yourdomain.com`)
 4. Choose **DNS validation**

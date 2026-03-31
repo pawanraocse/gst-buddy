@@ -33,4 +33,4 @@ rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no -i $SSH_KEY" \
 
 ssh -o StrictHostKeyChecking=no -i "$SSH_KEY" ec2-user@"$EC2_IP" "cd /app && chmod +x scripts/prod_init/*.sh && ./scripts/prod_init/start.sh"
 
-aws amplify start-job --app-id d3tdjwycaeadss --branch-name prod --job-type RELEASE --region us-east-1
+aws amplify start-job --app-id d3tdjwycaeadss --branch-name prod --job-type RELEASE --region ap-south-1

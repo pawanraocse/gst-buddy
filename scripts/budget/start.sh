@@ -25,7 +25,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 # Configuration from environment or SSM
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-1}"
 ENVIRONMENT="${ENVIRONMENT:-budget}"
 PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 

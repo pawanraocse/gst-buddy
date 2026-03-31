@@ -19,7 +19,7 @@ if [ -f "$PROJECT_ROOT/.env" ]; then
     set +a
 fi
 
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-1}"
 AWS_PROFILE="${AWS_PROFILE:-personal}"
 
 # Colors

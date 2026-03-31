@@ -9,7 +9,7 @@ echo "========================================="
 unset AWS_PROFILE
 
 # AWS Region
-export AWS_REGION=${AWS_REGION:-us-east-1}
+export AWS_REGION=${AWS_REGION:-ap-south-1}
 
 # SSM Parameter Path Prefix
 PROJECT_NAME=${PROJECT_NAME:-gstbuddies}

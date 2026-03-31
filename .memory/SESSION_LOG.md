@@ -1,5 +1,54 @@
-# SESSION_LOG
-_Last 10 sessions. Oldest sessions pruned when limit exceeded._
+## Session: 2026-03-31 16:50 | Agent: Antigravity
+
+### What Was Done
+- **Resolved Razorpay 500 Error**: Fixed payment order creation failure caused by `receipt` ID exceeding the 40-character limit. Implemented a shortened pattern (`p_` + 8-char `userId` + `timestamp`).
+- **Local Verification**: Added `RazorpayPaymentServiceTest.java` to verify the order creation payload and receipt length (24 chars) before deployment.
+- **Fixed 401 Unauthorized**: Whitelisted `/api/v1/payments/**` in both `gateway-service` and `auth-service` security configurations to allow unauthenticated order creation.
+- **Mumbai Environment Fixes**: Corrected hardcoded `us-east-1` region fallbacks in `auth-service` to `ap-south-1`.
+- **Connectivity & Stability**: Mapped host port **80** to Gateway Service, increased health check safety margins for `t3.medium`, and codified rules in Terraform.
+- **Infrastructure Persistence**: Updated `bastion` module for ports 80/443 and `prod_init` main.tf for Razorpay SSM parameters.
+
+### Files Changed
+- `auth-service/src/main/java/com/learning/authservice/credit/service/RazorpayPaymentService.java`
+- `auth-service/src/test/java/com/learning/authservice/credit/service/RazorpayPaymentServiceTest.java` [NEW]
+- `auth-service/src/main/java/com/learning/authservice/config/SecurityConfiguration.java`
+- `gateway-service/src/main/java/com/learning/gateway/config/SecurityConfig.java`
+- `auth-service/src/main/resources/application.yml`
+- `docker-compose.prod_init.yml`
+- `terraform/modules/bastion/main.tf`
+- `terraform/envs/prod_init/main.tf`
+
+### Decisions
+- **ADR-008**: Whitelisted payment creation endpoints at Gateway and Auth levels to support public checkout flows.
+- **ADR-009**: Standardized receipt ID generation to a 24-character prefixed timestamp to comply with Razorpay constraints.
+- **Infrastructure**: Direct port 80 mapping on EC2 was chosen for the `prod_init` (budget) environment to minimize Load Balancer costs while maintaining CloudFront compatibility.
+
+---
+
+## Session: 2026-03-31 15:45 | Agent: Antigravity
+
+### What Was Done
+- **Infrastructure Migration**: Successfully migrated the `prod_init` environment from `us-east-1` to `ap-south-1` (Mumbai) to satisfy GST data residency requirements. Maintained `us-east-1` specifically for CloudFront ACM certificates.
+- **State Management**: Provisioned a new S3 backend and DynamoDB lock table in `ap-south-1`.
+- **Razorpay Integration**: Injected live Razorpay Key IDs and Webhook Secrets into the new Mumbai SSM Parameter Store.
+- **CI/CD Fixes**: Resolved GitHub Actions deployment failures triggered by a casing mismatch (`GSTbuddies` vs `gstbuddies`) in SSM paths.
+- **EC2 Bootstrap Fixes**: Modified `.github/workflows/deploy-prod-init.yml` to automatically create and chown the `/app` directory on fresh EC2 instances before rsync.
+- **Amazon Linux 2023 Compatibility**: Refactored `scripts/prod_init/start.sh` to use `sudo -E` for preserving environment variables, disabled BuildKit (`DOCKER_BUILDKIT=0`), and switched from standalone `docker-compose` to native `docker compose` to resolve buildx incompatibilities.
+- **Validation**: Backend successfully deployed and running on the new Mumbai EC2 instance.
+
+### Files Changed
+- `terraform/common.auto.tfvars`
+- `terraform/envs/prod_init/terraform.tfvars`
+- `terraform/envs/prod_init/main.tf`
+- `terraform/envs/prod_init/outputs.tf`
+- `.github/workflows/deploy-prod-init.yml`
+- `scripts/prod_init/start.sh`
+- `.memory/SESSION_LOG.md`
+- `artifacts/task.md`
+
+### Decisions
+- Standardized Docker Compose execution in EC2 startup scripts using `sudo -E docker compose` and explicit BuildKit disable flags to guarantee out-of-the-box compatibility with native Amazon Linux 2023 environments.
+- Enforced complete lowercasing for all dynamic SSM parameter resolutions within CI pipelines to prevent cross-environment edge cases.
 
 ---
 

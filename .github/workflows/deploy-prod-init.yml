@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: us-east-1
-  PROJECT_NAME: GSTbuddies
+  AWS_REGION: ap-south-1
+  PROJECT_NAME: gstbuddies
   ENVIRONMENT: prod_init
 
 jobs:
@@ -55,6 +55,10 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
+      - name: Prepare EC2 Environment
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get-ip.outputs.ec2_ip }} "sudo mkdir -p /app && sudo chown ec2-user:ec2-user /app"
 
       - name: Deploy Backend to EC2
         run: |

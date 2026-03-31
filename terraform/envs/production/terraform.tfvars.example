@@ -13,7 +13,7 @@ environment = "production"
 
 # VPC
 vpc_cidr           = "10.0.0.0/16"
-availability_zones = ["us-east-1a", "us-east-1b"]
+availability_zones = ["ap-south-1a", "ap-south-1b"]
 single_nat_gateway = true  # Set false for HA (~$30/mo per extra NAT)
 
 # RDS
@@ -30,7 +30,7 @@ redis_node_type = "cache.t3.small"
 redis_num_nodes = 1  # Set 2+ for cluster mode
 
 # SSL Certificate (REQUIRED)
-acm_certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/xxxxxxxx"
+acm_certificate_arn = "arn:aws:acm:ap-south-1:123456789012:certificate/xxxxxxxx"
 
 # Frontend (REQUIRED)
 frontend_repository_url = "https://github.com/your-org/your-repo"

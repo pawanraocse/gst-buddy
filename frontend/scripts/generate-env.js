@@ -10,7 +10,7 @@
  *   ANGULAR_APP_COGNITO_POOL_ID  - Cognito User Pool ID
  *   ANGULAR_APP_COGNITO_CLIENT_ID - Cognito Client ID (SPA)
  *   ANGULAR_APP_COGNITO_DOMAIN   - Cognito Domain
- *   ANGULAR_APP_COGNITO_REGION   - Cognito Region (default: us-east-1)
+ *   ANGULAR_APP_COGNITO_REGION   - Cognito Region (default: ap-south-1)
  */
 
 const fs = require('fs');
@@ -21,10 +21,10 @@ const config = {
     production: true,
     apiUrl: process.env.ANGULAR_APP_API_URL || 'http://localhost:8080',
     cognito: {
-        userPoolId: process.env.ANGULAR_APP_COGNITO_POOL_ID || 'us-east-1_TDmsHjRgU',
+        userPoolId: process.env.ANGULAR_APP_COGNITO_POOL_ID || 'ap-south-1_TDmsHjRgU',
         userPoolWebClientId: process.env.ANGULAR_APP_COGNITO_CLIENT_ID || '455m33j66v54q1m05892550186',
-        domain: process.env.ANGULAR_APP_COGNITO_DOMAIN || 'GSTbuddies-lite-dev-3ubmtss0.auth.us-east-1.amazoncognito.com',
-        region: process.env.ANGULAR_APP_COGNITO_REGION || 'us-east-1'
+        domain: process.env.ANGULAR_APP_COGNITO_DOMAIN || 'GSTbuddies-lite-dev-3ubmtss0.auth.ap-south-1.amazoncognito.com',
+        region: process.env.ANGULAR_APP_COGNITO_REGION || 'ap-south-1'
     }
 };
 

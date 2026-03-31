@@ -49,7 +49,7 @@ resource "aws_cognito_user_pool" "main" {
 | environment | Environment name | string | yes |
 | user_pool_id | Cognito User Pool ID | string | yes |
 | user_pool_arn | Cognito User Pool ARN | string | yes |
-| aws_region | AWS region | string | no (default: us-east-1) |
+| aws_region | AWS region | string | no (default: ap-south-1) |
 | aws_account_id | AWS Account ID | string | yes |
 
 ## Outputs

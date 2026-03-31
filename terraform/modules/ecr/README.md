@@ -32,12 +32,12 @@ module "ecr" {
 
 ```bash
 # Login to ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com
 
 # Build and push
 docker build -t GSTbuddies/gateway-service .
-docker tag GSTbuddies/gateway-service:latest ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/GSTbuddies/gateway-service:latest
-docker push ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/GSTbuddies/gateway-service:latest
+docker tag GSTbuddies/gateway-service:latest ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/GSTbuddies/gateway-service:latest
+docker push ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/GSTbuddies/gateway-service:latest
 ```
 
 ## Outputs

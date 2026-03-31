@@ -204,9 +204,9 @@ Example `environment.ts`:
 export const environment = {
   production: false,
   cognito: {
-    userPoolId: 'us-east-1_jjRFRnxGA',
+    userPoolId: 'ap-south-1_jjRFRnxGA',
     clientId: '...',
-    region: 'us-east-1'
+    region: 'ap-south-1'
   }
 };
 ```

@@ -5,7 +5,6 @@ import com.learning.authservice.credit.entity.ReferenceType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Orchestrates the plan purchase flow:
@@ -60,5 +59,27 @@ public class PurchaseOrchestrator {
                 planName, userId, orderId, plan.getCredits());
 
         return wallet;
+    }
+
+    /**
+     * Grant credits triggered by Razorpay Webhook (payment.captured event).
+     * Uses a webhook-specific idempotency key to prevent double-granting
+     * if both the frontend /verify and the webhook fire for the same payment.
+     */
+    public void grantCreditsFromWebhook(String orderId, String paymentId, String planName, String userId) {
+        var plan = planService.getActivePlanByName(planName);
+        // Webhook idempotency key uses "webhook-" prefix — distinct from "purchase-" prefix above
+        String idempotencyKey = "webhook-" + paymentId;
+
+        creditService.grantCredits(
+                userId,
+                plan.getCredits(),
+                ReferenceType.PLAN_PURCHASE,
+                orderId,
+                idempotencyKey,
+                "Plan purchase via webhook: " + plan.getDisplayName() + " (" + plan.getCredits() + " credits)");
+
+        log.info("Webhook credit grant: plan={}, userId={}, paymentId={}, credits={}",
+                planName, userId, paymentId, plan.getCredits());
     }
 }

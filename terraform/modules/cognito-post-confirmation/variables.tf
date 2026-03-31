@@ -21,7 +21,7 @@ variable "user_pool_arn" {
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
 }
 
 variable "aws_account_id" {
