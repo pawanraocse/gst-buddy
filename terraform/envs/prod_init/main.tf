@@ -501,3 +501,33 @@ resource "aws_ssm_parameter" "api_internal_key" {
 
   tags = { Module = "budget" }
 }
+
+# =============================================================================
+# Razorpay Live Payment Keys (Managed manually via Console for security)
+# =============================================================================
+
+resource "aws_ssm_parameter" "razorpay_key_id" {
+  name        = "/${var.project_name}/${var.environment}/razorpay/key_id"
+  description = "Razorpay Live Key ID"
+  type        = "SecureString"
+  value       = "CHANGE_ME" # Set manually in console
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = { Module = "prod_init" }
+}
+
+resource "aws_ssm_parameter" "razorpay_key_secret" {
+  name        = "/${var.project_name}/${var.environment}/razorpay/key_secret"
+  description = "Razorpay Live Key Secret"
+  type        = "SecureString"
+  value       = "CHANGE_ME" # Set manually in console
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+
+  tags = { Module = "prod_init" }
+}

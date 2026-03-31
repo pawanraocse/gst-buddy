@@ -30,6 +30,23 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = var.allowed_ssh_cidr_blocks
   }
 
+  # Standard Web Traffic
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Application ports (Gateway, Eureka, services)
   ingress {
     description = "Gateway API"

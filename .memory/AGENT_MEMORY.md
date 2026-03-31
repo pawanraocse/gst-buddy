@@ -1,6 +1,6 @@
 # AGENT_MEMORY
 _Source of truth for long-term project knowledge._
-_Last updated: 2026-03-29 | Updated by: Antigravity_
+_Last updated: 2026-03-31 | Updated by: Antigravity_
 
 ---
 
@@ -50,12 +50,15 @@ _Last updated: 2026-03-29 | Updated by: Antigravity_
 - 2026-03-07 [MEDIUM] — The Cognito PostConfirmation Lambda creates a user record in the DB on first login, but does NOT assign roles. Admin roles must be assigned via the bootstrap script/API.
 - 2026-03-07 [MEDIUM] — Gateway routes: `/auth/**` preserves host header; `/auth-service/**` rewrites path. Use `/auth/api/v1/...` for API calls through gateway.
 - 2026-03-07 [LOW] — Budget RDS is in a private subnet. Access via SSH tunnel through EC2 bastion only.
+- 2026-03-31 [HIGH] — Razorpay order creation fails with `BAD_REQUEST_ERROR` if the `receipt` ID exceeds 40 characters. Always use a shortened pattern (e.g., `p_userId_timestamp`).
+- 2026-03-31 [MEDIUM] — `rsync` include rules are hierarchical; intermediate directories (e.g., `auth-service/`, `auth-service/target/`) must be explicitly included for nested files to be synchronized.
+- 2026-03-31 [MEDIUM] — Java microservices on `t3.medium` require ~2-3 minutes to reach a `healthy` state. Access via port 80 will fail until health checks pass.
 
 ## Active Context
-- Budget environment deployed and operational
-- Admin user bootstrapped: `pawan.weblink@gmail.com` (super-admin)
-- Bootstrap script hardened with DB fallback
-- DB tunnel scripts + aliases created
+- **Mumbai Migration**: `prod_init` (EC2 + RDS) successfully migrated to `ap-south-1` for GST data residency.
+- **Payment Fix**: Razorpay receipt length issue resolved and verified with unit tests.
+- **Connectivity**: Production services accessible via Port 80; security groups codified in Terraform.
+- **Admin**: `pawan.weblink@gmail.com` (super-admin) active in budget/prod.
 
 ## PATTERNS
 
