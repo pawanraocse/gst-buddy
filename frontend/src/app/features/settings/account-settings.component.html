@@ -298,8 +298,13 @@
                     <span>{{ plan.credits }} credits</span>
                 </div>
                 <p class="plan-description">{{ plan.description }}</p>
-                <button pButton label="Buy Credits" icon="pi pi-shopping-cart"
-                    class="p-button w-full plan-btn"></button>
+                <button pButton
+                    [label]="buyingPlan() === plan.name ? 'Opening...' : 'Buy Credits'"
+                    icon="pi pi-shopping-cart"
+                    class="p-button w-full plan-btn"
+                    [loading]="buyingPlan() === plan.name"
+                    [disabled]="!!buyingPlan()"
+                    (click)="buyPlan(plan)"></button>
             </div>
             }
         </div>

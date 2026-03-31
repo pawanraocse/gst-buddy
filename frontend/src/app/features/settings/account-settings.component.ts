@@ -12,7 +12,8 @@ import { AuthService } from '../../core/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { CreditApiService, WalletDto, PlanDto } from '../../core/services/credit-api.service';
+import { CreditApiService, WalletDto, PlanDto, PaymentOrderDto } from '../../core/services/credit-api.service';
+
 import { ReferralApiService } from '../../core/services/referral-api.service';
 import { SupportApiService, SupportTicketDto } from '../../core/services/support-api.service';
 
@@ -47,6 +48,7 @@ export class AccountSettingsComponent implements OnInit {
   plans = signal<PlanDto[]>([]);
   plansLoading = signal(false);
   showPlansDialog = false;
+  buyingPlan = signal<string | null>(null); // tracks which plan is being purchased
 
   // Mock preferences for UI
   preferences = {
@@ -118,6 +120,82 @@ export class AccountSettingsComponent implements OnInit {
         }
       });
     }
+  }
+
+  buyPlan(plan: PlanDto): void {
+    if (this.buyingPlan()) return; // Prevent double-click
+    this.buyingPlan.set(plan.name);
+
+    this.creditApi.createOrder(plan.name).subscribe({
+      next: (order) => {
+        // Dynamically load Razorpay checkout.js if not already loaded
+        const loadRazorpay = new Promise<void>((resolve) => {
+          if ((window as any).Razorpay) { resolve(); return; }
+          const script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.onload = () => resolve();
+          document.body.appendChild(script);
+        });
+
+        loadRazorpay.then(() => {
+          const user = this.authService.user();
+          const options = {
+            key: order.razorpayKeyId,
+            amount: order.amount * 100, // paise
+            currency: order.currency,
+            name: 'GSTbuddies',
+            description: `${plan.displayName} — ${plan.credits} credits`,
+            order_id: order.orderId,
+            theme: { color: '#6366f1' },
+            prefill: {
+              email: user?.email || '',
+            },
+            handler: (response: any) => {
+              // Payment successful in browser — call backend to verify & grant credits
+              this.creditApi.verifyPayment(
+                response.razorpay_order_id,
+                response.razorpay_payment_id,
+                response.razorpay_signature,
+                plan.name
+              ).subscribe({
+                next: (wallet) => {
+                  this.wallet.set(wallet);
+                  this.showPlansDialog = false;
+                  this.buyingPlan.set(null);
+                  this.messageService.add({
+                    severity: 'success',
+                    summary: '🎉 Credits Added!',
+                    detail: `${plan.credits} credits have been added to your account.`,
+                    life: 5000
+                  });
+                },
+                error: () => {
+                  this.buyingPlan.set(null);
+                  this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Payment Received',
+                    detail: 'Your payment was received. Credits will be added shortly.',
+                    life: 6000
+                  });
+                }
+              });
+            },
+            modal: {
+              ondismiss: () => {
+                this.buyingPlan.set(null);
+              }
+            }
+          };
+
+          const rzp = new (window as any).Razorpay(options);
+          rzp.open();
+        });
+      },
+      error: () => {
+        this.buyingPlan.set(null);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to initiate payment. Please try again.' });
+      }
+    });
   }
 
   deleteAccount(): void {
