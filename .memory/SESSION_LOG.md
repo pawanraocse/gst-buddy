@@ -212,3 +212,12 @@
 - Populate existing architectural decisions
 
 ---
+
+## Session Summary - 2026-03-31
+- **Author**: Antigravity (Gemini)
+- **Status**: Completed
+- **Changes**: Fixed Amplify build failure (Exit 254) in prod_init.
+- **Key Actions**:
+  - Normalized `project_name` to `gstbuddies` (lowercase) in `terraform/envs/prod_init/terraform.tfvars`.
+  - Removed redundant `Trigger Amplify Frontend Build` step from `.github/workflows/deploy-prod-init.yml`.
+- **Reasoning**: Case mismatch in SSM paths was causing retrieval failures, and manual `start-job` was conflicting with Amplify auto-build.

@@ -25,3 +25,7 @@ _Last updated: 2026-03-28_
 - [x] Admin user bootstrapped (pawan.weblink@gmail.com) — 2026-03-07
 - [x] Fixed SecurityConfiguration: /api/v1/admin/bootstrap/** wildcard — 2026-03-07
 - [x] Fixed gateway SecurityConfig: bootstrap endpoint permitAll — 2026-03-07
+
+## 2026-03-31 - Triggered by Gemini
+- [ ] Verify next `prod-init` build (Build 20+) passes without Exit 254.
+- [ ] Check if other environments (`budget`, `production`) have similar case-sensitivity risks.

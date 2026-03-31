@@ -80,17 +80,6 @@ jobs:
           # Connect via SSH and restart backend microservices
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ steps.get-ip.outputs.ec2_ip }} "cd /app && chmod +x scripts/prod_init/*.sh && export PROJECT_NAME=${{ env.PROJECT_NAME }} && ./scripts/prod_init/start.sh"
 
-      - name: Trigger Amplify Frontend Build
-        run: |
-          # Retrieve the AWS Amplify App ID directly from SSM 
-          AMPLIFY_APP_ID=$(aws ssm get-parameter --name "/${{ env.PROJECT_NAME }}/${{ env.ENVIRONMENT }}/amplify/app_id" --query 'Parameter.Value' --output text)
-          
-          if [ -z "$AMPLIFY_APP_ID" ] || [ "$AMPLIFY_APP_ID" == "None" ] || [ "$AMPLIFY_APP_ID" == "null" ]; then
-            echo "Failed to retrieve Amplify App ID from SSM. Proceeding without explicit frontend trigger since frontend auto-deploys via Github connection, but build tracking will be missing."
-          else
-            echo "Triggering explicit AWS Amplify build for App: $AMPLIFY_APP_ID"
-            aws amplify start-job --app-id "$AMPLIFY_APP_ID" --branch-name prod --job-type RELEASE --region ${{ env.AWS_REGION }}
-          fi
 
   notify:
     needs: build-and-deploy
