@@ -63,8 +63,13 @@ jobs:
       - name: Deploy Backend to EC2
         run: |
           # Sync code + built JARs to EC2 exactly matching the local deploy script
-          rsync -avz --progress -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+          rsync -rlptz --progress --delete \
+              --no-owner --no-group \
+              -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
               --exclude '.terraform' \
+              --exclude 'terraform' \
+              --exclude 'docs' \
+              --exclude '.github' \
               --exclude 'node_modules' \
               --exclude '.git' \
               --exclude '.idea' \
