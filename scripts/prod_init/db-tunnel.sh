@@ -19,7 +19,7 @@ fi
 AWS_REGION="${AWS_REGION:-us-east-1}"
 AWS_PROFILE="${AWS_PROFILE:-personal}"
 PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
-ENVIRONMENT="budget"
+ENVIRONMENT="prod_init"
 LOCAL_PORT="${1:-5433}"
 
 echo ""

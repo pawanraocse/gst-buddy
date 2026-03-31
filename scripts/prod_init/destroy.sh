@@ -11,12 +11,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TERRAFORM_DIR="$SCRIPT_DIR/../../terraform/envs/budget"
+TERRAFORM_DIR="$SCRIPT_DIR/../../terraform/envs/prod_init"
 
 AWS_PROFILE="${AWS_PROFILE:-personal}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
-ENVIRONMENT="${ENVIRONMENT:-budget}"
+ENVIRONMENT="${ENVIRONMENT:-prod_init}"
 
 # Load environment variables from .env file if it exists
 if [ -f "$SCRIPT_DIR/../../.env" ]; then

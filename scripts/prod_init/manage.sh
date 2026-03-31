@@ -3,7 +3,7 @@ set -e
 
 # Configuration
 PROJECT="gstbuddies"
-ENVIRONMENT="budget"
+ENVIRONMENT="prod_init"
 REGION="us-east-1"
 BASTION_USER="ec2-user"
 SSH_KEY="~/.ssh/pawankeys"
