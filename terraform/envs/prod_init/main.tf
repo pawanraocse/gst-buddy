@@ -531,3 +531,17 @@ resource "aws_ssm_parameter" "razorpay_key_secret" {
 
   tags = { Module = "prod_init" }
 }
+
+# =============================================================================
+# EC2 Instance Connect Endpoint (Secure Console Access via Private IP)
+# =============================================================================
+
+resource "aws_ec2_instance_connect_endpoint" "main" {
+  subnet_id          = module.vpc.public_subnet_ids[0]
+  security_group_ids = [module.bastion.security_group_id]
+
+  tags = {
+    Name   = "${local.name_prefix}-eice"
+    Module = "prod_init"
+  }
+}

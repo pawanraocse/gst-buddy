@@ -57,7 +57,7 @@ _Last updated: 2026-03-31 | Updated by: Antigravity_
 ## Active Context
 - **Mumbai Migration**: `prod_init` (EC2 + RDS) successfully migrated to `ap-south-1` for GST data residency.
 - **Payment Fix**: Razorpay receipt length issue resolved and verified with unit tests.
-- **Connectivity**: Production services accessible via Port 80; security groups codified in Terraform.
+- **Connectivity**: Production services accessible via Port 80; security groups and **EC2 Instance Connect Endpoint** codified in Terraform.
 - **Admin**: `pawan.weblink@gmail.com` (super-admin) active in budget/prod.
 
 ## PATTERNS
