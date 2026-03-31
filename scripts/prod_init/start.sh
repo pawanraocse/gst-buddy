@@ -80,7 +80,7 @@ export CORS_ALLOWED_ORIGINS="${FRONTEND_URL},https://gstbuddies.com,https://www.
 export INTERNAL_API_KEY=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/api/internal_key" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
 
 # Razorpay Payment Gateway (Live Keys)
-export RAZORPAY_KEY_ID=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/razorpay/key_id" --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
+export RAZORPAY_KEY_ID=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/razorpay/key_id" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
 export RAZORPAY_KEY_SECRET=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/razorpay/key_secret" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
 export RAZORPAY_WEBHOOK_SECRET=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/razorpay/webhook_secret" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
 
