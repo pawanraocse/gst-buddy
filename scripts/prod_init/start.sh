@@ -30,6 +30,11 @@ ENVIRONMENT="${ENVIRONMENT:-prod_init}"
 PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 AWS_PROFILE="${AWS_PROFILE:-}" # Usually not needed on EC2 with IAM role
 
+# Docker Configuration (Disabling BuildKit to fix buildx incompatibility on AL2023)
+export DOCKER_BUILDKIT=0
+export COMPOSE_DOCKER_CLI_BUILD=0
+DOCKER_COMPOSE="sudo -E /usr/local/bin/docker-compose"
+
 # =============================================================================
 # Optimize Swap Settings
 # =============================================================================
@@ -99,7 +104,7 @@ cd "$PROJECT_ROOT"
 # Lowercase project name for Docker Compose
 DOCKER_PROJECT_NAME=$(echo "${PROJECT_NAME}" | tr '[:upper:]' '[:lower:]')
 
-sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml build --no-cache 2>&1 || {
+$DOCKER_COMPOSE -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml build --no-cache 2>&1 || {
     log_error "Failed to build Docker images"
     exit 1
 }
@@ -158,12 +163,12 @@ echo ""
 
 # Phase 1: Infrastructure (Redis)
 log_info "Phase 1/3: Starting infrastructure services..."
-sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d redis 2>&1
+$DOCKER_COMPOSE -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d redis 2>&1
 wait_for_container "${DOCKER_PROJECT_NAME}-redis" 30 || true
 
 # Phase 2: Service Discovery (Eureka - must be healthy before Java services)
 log_info "Phase 2/3: Starting Eureka (required for service discovery)..."
-sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d eureka-server 2>&1
+$DOCKER_COMPOSE -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d eureka-server 2>&1
 wait_for_healthy "${DOCKER_PROJECT_NAME}-eureka-server" 300 || {
     log_error "Eureka failed to start. Cannot continue."
     sudo -E docker logs "${DOCKER_PROJECT_NAME}-eureka-server" --tail 50
@@ -172,7 +177,7 @@ wait_for_healthy "${DOCKER_PROJECT_NAME}-eureka-server" 300 || {
 
 # Phase 3: All Java Services (in parallel - they all depend only on Eureka)
 log_info "Phase 3/3: Starting all Java services (parallel)..."
-sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d gateway-service auth-service backend-service 2>&1
+$DOCKER_COMPOSE -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d gateway-service auth-service backend-service 2>&1
 
 # Wait for all services with fast polling
 log_info "Waiting for services to become healthy (polling every 5s)..."
@@ -219,7 +224,7 @@ log_success "Production Environment Started!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "🐳 Services:"
-sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml ps
+$DOCKER_COMPOSE -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml ps
 echo ""
 echo "🌐 Endpoints (Internal access only via tunnels):"
 echo "  Gateway:  http://localhost:8080"
