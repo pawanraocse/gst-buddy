@@ -140,7 +140,7 @@ resource "aws_db_instance" "postgres" {
   final_snapshot_identifier = var.skip_final_snapshot ? null : lower("${local.db_identifier}-final-snapshot")
 
   # Apply changes immediately in non-prod (including prod_init as production)
-  apply_immediately = var.environment != "prod" && var.environment != "production" && var.environment != "prod_init"
+  apply_immediately = var.environment != "prod" && var.environment != "production"
 
   tags = merge(local.common_tags, {
     Name = lower(replace("${var.project_name}-${var.environment}-postgres", "_", "-"))
