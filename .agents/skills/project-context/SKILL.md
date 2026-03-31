@@ -1,4 +1,11 @@
-# Project Skills & Conventions
+---
+name: project-context
+description: >
+  The operational manual for the gst-buddy project. Includes tech stack details, 
+  naming conventions, module reuse catalogue, and project-specific "gotchas".
+---
+
+# Project Context Skill
 
 ## 🏆 OPERATIONAL GOLDEN RULE
 > [!IMPORTANT]
@@ -243,3 +250,16 @@ Before adding a new component, utility, hook, or service:
 10. **Admin panel available** — super-admin users (JWT `custom:role=super-admin`) can manage users, credits, and plans at `/app/admin/*`
 11. **Admin guard pattern:** `adminGuard` reads `custom:role` from JWT claim; `AuthorizationAspect` enforces backend `@RequirePermission` via `X-User-Id` header
 12. **Component-level providers (PrimeNG):** When testing components that declare `providers: [MessageService]`, use `fixture.debugElement.injector.get(MessageService)` + `spyOn()` instead of `overrideComponent`
+
+---
+
+## 🛠 Debugging & Operations (Prod Init)
+
+All diagnostic and troubleshooting commands for the production environment are centralized in the `/debug` workflow for Antigravity and the `debug` skill for Cursor.
+
+- **Source of Truth**: [`_agents/workflows/debug.md`](file:///Users/pawan.yadav/prototype/gst-buddy/_agents/workflows/debug.md)
+- **Slash Command**: Use **`/debug`** in the chat to run diagnostics.
+- **Cursor Skill**: Also available via the `@debug` skill (symlinked).
+
+> [!TIP]
+> Always refer to the master workflow file for the most up-to-date SSH commands, App IDs, and SSM paths.

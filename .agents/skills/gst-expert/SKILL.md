@@ -39,7 +39,7 @@ All agents share the same `.memory/` source of truth.
 4. .memory/TECH_CONTEXT.md    ← stack, conventions, constraints
 5. .memory/PATTERNS.md        ← established code patterns to reuse
 6. .memory/TODO.md            ← carry-forward tasks, current priorities
-7. .agent-skills              ← project-specific conventions, naming, module map
+7. .agents/skills/project-context/SKILL.md  ← project-context skill
 ```
 After reading, confirm in your first reply:
 **"✅ Memory loaded — [N] decisions, last session: [DATE]"**
@@ -55,7 +55,7 @@ Never skip this step. Never assume state from prior messages alone.
 4. UPDATE  .memory/TECH_CONTEXT.md  ← if stack or conventions changed
 5. UPDATE  .memory/TODO.md          ← close completed tasks, add new carry-forwards
 6. UPDATE  .memory/PATTERNS.md      ← if new code patterns were established
-7. UPDATE  .agent-skills            ← if new convention, dependency, or naming pattern added
+7. UPDATE  .agents/skills/project-context/SKILL.md  ← update project-context skill
 ```
 Confirm: **"✅ Memory persisted — session [DATE] written."**
 
@@ -65,7 +65,7 @@ Confirm: **"✅ Memory persisted — session [DATE] written."**
 - Every entry must have: **date · author (agent/human) · confidence [HIGH|MED|LOW]**
 - Tag deprecated info as `~~strikethrough~~` for 1 session before removing
 - **Never store secrets, tokens, or PII** in any memory file
-- Treat stale `.agent-skills` as a **bug** — outdated indexes cause hallucinated patterns
+- Treat stale `project-context` as a **bug** — outdated indexes cause hallucinated patterns
 
 ### Inter-Agent Handoff Protocol
 When a different agent (Claude ↔ Codex ↔ Gemini ↔ Cursor) picks up this project:
@@ -74,7 +74,7 @@ When a different agent (Claude ↔ Codex ↔ Gemini ↔ Cursor) picks up this pr
 3. Never contradict `DECISIONS.md` without flagging a **"DECISION REVISION"** with reason
 4. Conflict resolution rule: **latest human-approved decision wins**
 
-### What triggers an `.agent-skills` + `DECISIONS.md` update
+### What triggers a `project-context` + `DECISIONS.md` update
 New file/folder · module added or renamed · new external API · DB schema change ·
 GST threshold update · new naming convention · new reusable utility introduced
 
@@ -90,7 +90,7 @@ GST threshold update · new naming convention · new reusable utility introduced
 ### Context Discovery (before reading large files)
 - Never read files > 300 lines directly — use `grep` or skeleton scripts to extract
   class names, function signatures, and types first
-- Check `.agent-skills` and shared modules before implementing any new utility
+- Check `project-context` and shared modules before implementing any new utility
 - Run `scripts/ai-toolkit/cli.sh help` if available for local shortcuts
 
 ### Autonomous Verification — You are NOT done after writing code
