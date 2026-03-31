@@ -1,0 +1,265 @@
+---
+name: project-context
+description: >
+  The operational manual for the gst-buddy project. Includes tech stack details, 
+  naming conventions, module reuse catalogue, and project-specific "gotchas".
+---
+
+# Project Context Skill
+
+## 🏆 OPERATIONAL GOLDEN RULE
+> [!IMPORTANT]
+> **NEVER** commit code, merge branches, `terraform apply`, or execute `docker-compose up` on the `prod` tracking branch without an explicit **"APPROVED"** from the user after presenting a detailed implementation plan. 
+> 
+> *   Treat `main`, `prod`, and all `terraform/` directories as **RESTRICTED ZONES**.
+> *   Always use **Planning Mode** (Research -> Plan -> Approval -> Execute) for non-trivial infrastructure or production deployment actions.
+
+---
+
+## Persistent Memory Trigger
+- skill: persistent_memory
+  version: "1.0"
+  trigger: always
+  priority: CRITICAL
+  boot_actions: read all `.memory/` files
+  shutdown_actions: write session summary, update memory, persist decisions, update todos
+  rules: never skip boot, always confirm load + write, prune if >500 lines, flag conflicts
+
+---
+
+## Language & Toolchain
+
+### Java 21 (Backend)
+- Build all: `./mvnw clean install`
+- Build single module: `./mvnw clean package -pl auth-service -am -DskipTests`
+- Run tests: `./mvnw test`
+- Run with system tests: `./mvnw install -Psystem-tests`
+- Checkstyle config: `checkstyle.xml` at project root
+- SpotBugs: `spotbugs-exclude.xml` in backend-service
+
+### Angular 21 (Frontend)
+- Package manager: npm (see `frontend/package.json`)
+- TypeScript: ~5.9.0 (strict mode enabled)
+- Build: `cd frontend && ng build`
+- Serve: `cd frontend && ng serve` (port 4200)
+- Test: `cd frontend && ng test`
+
+### Terraform 1.9+ (Infrastructure)
+- Init: `cd terraform && terraform init`
+- Plan: `terraform plan`
+- Apply: `terraform apply`
+- Budget env: `cd terraform/envs/budget && terraform apply`
+- Production env: `cd terraform/envs/production && terraform apply`
+
+### Docker
+- Local dev: `docker-compose up -d`
+- Budget AWS: `docker-compose -f docker-compose.budget.yml up -d`
+- Rebuild single service: `docker-compose up -d --build auth-service`
+- Logs: `docker-compose logs -f <service-name>`
+
+### Python (Lambda functions)
+- Runtime: Python 3.11 (PostConfirmation), Python 3.12 (PreTokenGeneration)
+- Test: `cd terraform/lambdas/<function> && pip install -r requirements-test.txt && pytest -v`
+
+---
+
+## AI Vibe Coding (Token Optimization & Skill+CLI)
+When you (the agent) need to read large datasets or long logs, **you must not read massive raw files into your context window**.
+1. **The Toolkit:** Run `scripts/ai-toolkit/cli.sh help` to see available local shortcuts.
+2. **The Orchestration Pattern:** If a task requires scanning thousands of lines to find a single answer, write a local `orchestrate.js` or `orchestrate.py` script that runs, parses, and prints **ONLY the summarized 1-2 sentence answer** to stdout.
+
+---
+
+## Frameworks & Key Dependencies
+
+| Dependency | Version | Purpose |
+|-----------|---------|---------|
+| Spring Boot | 3.5.9 | Application framework |
+| Spring Cloud | 2025.0.0 | Gateway, Eureka, circuit breakers |
+| Spring Security | (managed) | OAuth2 Resource Server + Client |
+| AWS SDK v2 | 2.36.3 | Cognito, SES, SSM |
+| Resilience4j | (managed) | Circuit breakers, retries |
+| OpenTelemetry | 1.43.0 | Distributed tracing |
+| Flyway | (managed) | Database migrations |
+| Apache POI | 5.2.5 | Excel parsing and generation |
+| Razorpay SDK | 1.4.6 | Payment processing |
+| Redisson | (managed) | Distributed cache + locking |
+| Caffeine | (managed) | Local in-memory cache |
+| SpringDoc OpenAPI | 2.8.13 | API documentation |
+| PrimeNG | 21.0.0-rc.1 | Angular UI components |
+| PrimeFlex | 4.0.0 | CSS utility framework |
+| AWS Amplify | 6.15.8 | Frontend Cognito integration |
+
+---
+
+## Naming Conventions
+
+### Java
+- **Classes:** PascalCase (`UserService`, `CreditServiceImpl`)
+- **Interfaces:** PascalCase, no `I` prefix (`CreditService`, `PaymentService`)
+- **Methods/Variables:** camelCase, verb-noun (`fetchUser`, `validateInput`)
+- **Constants:** UPPER_SNAKE_CASE (`HEADER_TENANT_ID`)
+- **Packages:** lowercase, domain-grouped (`credit.service`, `signup.pipeline`)
+- **DTOs:** Suffix with `Dto` (`UserDto`, `PlanDto`)
+- **Entities:** No suffix (`User`, `Plan`, `CreditTransaction`)
+- **Repositories:** Suffix with `Repository` (`UserRepository`)
+- **Controllers:** Suffix with `Controller` (`AuthController`)
+- **Test files:** `<Class>Test.java` (`CreditServiceImplTest.java`)
+
+### Angular / TypeScript
+- **Components:** kebab-case selectors (`app-user-profile`), PascalCase classes
+- **Services:** camelCase file names with `.service.ts` suffix
+- **Interceptors:** `.interceptor.ts` suffix
+- **Guards:** `.guard.ts` suffix
+- **Feature folders:** `src/app/features/<domain>/`
+- **Core services:** `src/app/core/services/`
+
+### Terraform
+- **Modules:** kebab-case folders (`cognito-user-pool`, `ecs-service`)
+- **Resources:** snake_case (`aws_cognito_user_pool`)
+- **Variables:** snake_case (`project_name`, `enable_nat_gateway`)
+
+### Database
+- **Tables:** snake_case, plural (`users`, `credit_transactions`)
+- **Columns:** snake_case (`tenant_id`, `created_at`)
+- **Migrations:** `V<N>__<Description>.sql` (Flyway convention)
+
+---
+
+## Component / Utility Reuse Catalogue
+
+### Shared Modules (reach for these first)
+- `common-dto` → `TenantContext`, `HeaderNames`, `ErrorCodes`, `TenantConstants`
+- `common-infra` → `TenantFilter`, `TenantAuditingListener`, `CacheService`, `DistributedLockService`, `ApiRateLimiter`, `HttpClientFactory`, `JsonResponseWriter`
+
+### Auth Service Reusable Patterns
+- Signup pipeline: `SignupAction` interface → `SignupPipeline` executor (add new actions here)
+- Credit system: `CreditService` for wallet operations (grant, consume, validate)
+- Referral system: `ReferralService` for referral codes, stats, and credit rewards (configurable via `ReferralProperties`)
+- Email: `EmailService` interface → `SesEmailService` (prod) / `DevEmailService` (local)
+
+### Backend Service Reusable Patterns
+- Ledger parsing: `LedgerParser` interface → `LedgerExcelParser` (add new formats here)
+- Export: `ExportStrategy` interface → `Rule37ExcelExportStrategy` (add new export formats here)
+- Credit consumption: `CreditClient` (WebClient-based call to auth-service)
+
+### Auth Service — Admin Module (Super-Admin)
+- `AuthorizationService` — resolves effective permissions via user_roles → role_permissions
+- `AuthorizationAspect` (AOP) — enforces `@RequirePermission` on controller methods
+- `AdminUserService` — cross-tenant user CRUD, role assignment, system admin bootstrap
+- `AdminCreditService` — dashboard stats, grant/revoke credits, transaction history
+- DTOs in `admin.dto` package — `AdminUserDetailDto`, `AdminDashboardStatsDto`, `AdminTransactionDto`, `CreatePlanRequest`, etc.
+
+### Frontend Reusable Services
+- `auth.service.ts` — Amplify-based auth (signup, login, tokens, session); exposes `isSuperAdmin` computed signal
+- `http-client.service.ts` — Configured HTTP client with auth interceptor
+- `base-api.service.ts` — Base class for API services
+- `admin-api.service.ts` — Full admin API client (dashboard stats, user CRUD, credit mgmt, plan CRUD)
+- Auth guard/guest guard/admin guard for route protection
+
+---
+
+## Testing
+
+### Backend
+- **Framework:** JUnit 5 + Mockito + AssertJ
+- **Integration:** Testcontainers (PostgreSQL)
+- **Base classes:** `BaseControllerTest` (WebMvcTest), `BaseIntegrationTest` (full context)
+- **Convention:** Nested test classes for grouping (`@Nested class HappyPath`)
+- **Location:** `src/test/java/` mirroring main source structure
+- **Config:** `application-test.yml` in test resources
+
+### Frontend
+- **Framework:** Jasmine + Karma (ChromeHeadless for CI)
+- **Run:** `ng test` (interactive), `ng test --no-watch --browsers=ChromeHeadless` (CI)
+- **Pattern:** Standalone component testing with `TestBed.configureTestingModule({ imports: [Component] })`
+- **Mocking:** `jasmine.createSpyObj()` for services, `fixture.debugElement.injector.get(Service)` + `spyOn()` for component-level providers
+- **Coverage:** Admin guard, admin-api service, admin dashboard/users/user-detail/plans/credits components
+
+### System Tests
+- **Framework:** REST Assured 5.5.0 + Testcontainers
+- **Skipped by default** — run with: `./mvnw install -Psystem-tests`
+
+### Lambda Tests
+- **Framework:** pytest
+- **Run:** `pytest test_handler.py -v --cov=handler`
+
+---
+
+## CI/CD Pipeline
+
+### Budget GitHub Actions (`deploy-budget.yml`)
+1. Trigger: push to `main` or manual dispatch
+2. Build Maven project (`mvn clean package`)
+3. Retrieve EC2 IP from AWS SSM Parameter Store
+4. Sync JAR files directly to EC2 via rsync
+5. SSH into EC2 and restart docker-compose services
+6. **Required Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `SSH_PRIVATE_KEY`
+
+### Production GitHub Actions (`deploy-production.yml`)
+1. Trigger: push to `prod` or manual dispatch
+2. Detect changed services
+3. Build Maven project
+4. Build Docker images
+5. Push to Amazon ECR
+6. Deploy to ECS (force new deployment)
+7. Wait for deployment stabilization
+
+### Required Passing Gates
+- Maven build (`./mvnw clean install`)
+- All unit tests pass
+- Docker image builds successfully
+
+---
+
+## Coding Standards (NON-NEGOTIABLE)
+
+### SOLID — enforced on every class, module, and function
+- **S** — Single Responsibility: one purpose per unit; split if it does two things
+- **O** — Open / Closed: extend via abstraction; never patch working logic
+- **L** — Liskov Substitution: subtypes are safe drop-in replacements
+- **I** — Interface Segregation: narrow interfaces; no fat contracts
+- **D** — Dependency Inversion: inject dependencies; depend on abstractions
+
+### Style & Safety
+- Modern syntax only — use latest stable features of the project's language
+- Strict typing everywhere: typed interfaces/DTOs, no `any`, no untyped dicts
+- No hardcoded secrets, URLs, ports, or env-specific values — use config layer
+- Self-documenting names; public APIs require JSDoc / docstrings with param types
+- Error handling is never optional: every async path, every external call
+
+### Reuse Before Create
+Before adding a new component, utility, hook, or service:
+1. Search the codebase for an existing equivalent
+2. Consider extending an existing abstraction (Open/Closed)
+3. Only create new if truly no overlap exists — document the decision
+
+---
+
+## Project-Specific Gotchas
+
+1. **System tests are skipped by default** — run with `-Psystem-tests` profile
+2. **Gateway is the sole JWT validator** — internal services trust `X-Tenant-Id`/`X-User-Id` headers
+3. **Cognito Lambda triggers** inject tenant info into JWTs — changes to tenant logic require Lambda redeployment
+4. **Frontend env configs** have hardcoded Cognito pool IDs — update `environment.ts` after Terraform deploy
+5. **Credit consumption is idempotent** — uses `reference_id` + `reference_type` for dedup
+6. **DB migrations** use Flyway with separate histories per service (`flyway_schema_history_auth`, etc.)
+7. **RetentionScheduler** auto-deletes expired Rule 37 runs (default 7 days) — configurable via `APP_RETENTION_DAYS`
+8. **Excel upload limits:** 10MB per file, max 20 files per request
+9. **Multi-tenant isolation** relies on `tenant_id` column + `TenantFilter` in common-infra — every new entity must include `tenant_id`
+10. **Admin panel available** — super-admin users (JWT `custom:role=super-admin`) can manage users, credits, and plans at `/app/admin/*`
+11. **Admin guard pattern:** `adminGuard` reads `custom:role` from JWT claim; `AuthorizationAspect` enforces backend `@RequirePermission` via `X-User-Id` header
+12. **Component-level providers (PrimeNG):** When testing components that declare `providers: [MessageService]`, use `fixture.debugElement.injector.get(MessageService)` + `spyOn()` instead of `overrideComponent`
+
+---
+
+## 🛠 Debugging & Operations (Prod Init)
+
+All diagnostic and troubleshooting commands for the production environment are centralized in the `/debug` workflow for Antigravity and the `debug` skill for Cursor.
+
+- **Source of Truth**: [`_agents/workflows/debug.md`](file:///Users/pawan.yadav/prototype/gst-buddy/_agents/workflows/debug.md)
+- **Slash Command**: Use **`/debug`** in the chat to run diagnostics.
+- **Cursor Skill**: Also available via the `@debug` skill (symlinked).
+
+> [!TIP]
+> Always refer to the master workflow file for the most up-to-date SSH commands, App IDs, and SSM paths.
