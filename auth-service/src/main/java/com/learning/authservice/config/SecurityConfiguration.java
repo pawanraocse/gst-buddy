@@ -75,6 +75,8 @@ public class SecurityConfiguration {
                                                                 "/api/v1/credits",
                                                                 "/api/v1/credits/consume",
                                                                 "/api/v1/credits/transactions",
+                                                                // Payment endpoints (gateway-authenticated)
+                                                                "/api/v1/payments/**",
                                                                 // Referral endpoints (gateway-authenticated via
                                                                 // X-User-Id)
                                                                 "/api/v1/referral/**",
