@@ -33,7 +33,7 @@ module "gateway" {
 
   # Secrets from SSM/Secrets Manager
   secrets = {
-    COGNITO_USER_POOL_ID = "arn:aws:ssm:us-east-1:123:parameter/project/prod/cognito/user_pool_id"
+    COGNITO_USER_POOL_ID = "arn:aws:ssm:ap-south-1:123:parameter/project/prod/cognito/user_pool_id"
     DB_PASSWORD          = module.rds.secret_arn
   }
 

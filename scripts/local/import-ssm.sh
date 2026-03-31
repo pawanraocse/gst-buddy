@@ -17,7 +17,7 @@ if [ -f "$ROOT_DIR/.env" ]; then
 fi
 
 PROFILE="${AWS_PROFILE:-personal}"
-REGION="${AWS_REGION:-us-east-1}"
+REGION="${AWS_REGION:-ap-south-1}"
 
 # Match how deploy.sh resolves the project name and environment
 PROJECT="${PROJECT_NAME:-gstbuddies}"

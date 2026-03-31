@@ -159,7 +159,7 @@ module "rds" {
 {
   "username": "postgres",
   "password": "auto-generated-32-char",
-  "host": "GSTbuddies-prod.xxxxx.us-east-1.rds.amazonaws.com",
+  "host": "GSTbuddies-prod.xxxxx.ap-south-1.rds.amazonaws.com",
   "port": 5432,
   "database": "gstbuddies_db",
   "engine": "aurora-postgresql"

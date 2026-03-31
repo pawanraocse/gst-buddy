@@ -1,11 +1,11 @@
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
 
   validation {
     condition     = can(regex("^[a-z]{2}-[a-z]+-[0-9]$", var.aws_region))
-    error_message = "AWS region must be in valid format (e.g., us-east-1)"
+    error_message = "AWS region must be in valid format (e.g., ap-south-1)"
   }
 }
 

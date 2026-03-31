@@ -29,9 +29,9 @@ export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080',
   cognito: {
-    userPoolId: 'us-east-1_xxxxxxxxx',      // From terraform output or SSM
+    userPoolId: 'ap-south-1_xxxxxxxxx',      // From terraform output or SSM
     userPoolWebClientId: 'xxxxxxxxxx',      // From terraform output or SSM
-    region: 'us-east-1'
+    region: 'ap-south-1'
   }
 };
 ```

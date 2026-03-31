@@ -16,7 +16,7 @@ if [ -f "$PROJECT_ROOT/.env" ]; then
     set -a; source "$PROJECT_ROOT/.env"; set +a
 fi
 
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-1}"
 AWS_PROFILE="${AWS_PROFILE:-personal}"
 PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 ENVIRONMENT="prod_init"

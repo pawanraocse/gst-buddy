@@ -39,7 +39,7 @@ fi
 # Auto-configure Terraform variables if not set in .env
 export TF_VAR_project_name="${PROJECT_NAME:-gstbuddies}"
 export TF_VAR_environment="${ENVIRONMENT:-dev}"
-export TF_VAR_aws_region="${AWS_REGION:-us-east-1}"
+export TF_VAR_aws_region="${AWS_REGION:-ap-south-1}"
 
 # Set default callback/logout URLs for local development if not manually overridden
 if [ -z "${TF_VAR_callback_urls:-}" ]; then
@@ -74,7 +74,7 @@ fi
 log_info "AWS credentials verified"
 
 # Get AWS region from terraform.tfvars or use default
-AWS_REGION=$(grep 'aws_region' terraform.tfvars 2>/dev/null | cut -d'"' -f2 || echo "us-east-1")
+AWS_REGION=$(grep 'aws_region' terraform.tfvars 2>/dev/null | cut -d'"' -f2 || echo "ap-south-1")
 export AWS_REGION
 log_info "Target AWS Region: $AWS_REGION"
 
@@ -216,7 +216,7 @@ fi
 log_info "Verifying SSM parameters in AWS..."
 SSM_VERIFY=$(aws ssm get-parameters-by-path \
   --path "/${TF_VAR_project_name:-gstbuddies}/${TF_VAR_environment:-dev}/cognito" \
-  --region "${AWS_REGION:-us-east-1}" \
+  --region "${AWS_REGION:-ap-south-1}" \
   --query 'Parameters[*].Name' \
   --output text 2>/dev/null)
 
@@ -249,7 +249,7 @@ echo "  - Use the paths in $OUTPUT_FILE to reference them in your app"
 echo "  - The Modern UI provides a better UX with responsive design"
 echo ""
 echo "🔍 Verify SSM Parameters:"
-echo "  aws ssm get-parameters-by-path --path \"/${TF_VAR_project_name:-gstbuddies}/${TF_VAR_environment:-dev}/cognito\" --recursive --region ${AWS_REGION:-us-east-1}"
+echo "  aws ssm get-parameters-by-path --path \"/${TF_VAR_project_name:-gstbuddies}/${TF_VAR_environment:-dev}/cognito\" --recursive --region ${AWS_REGION:-ap-south-1}"
 echo ""
 echo "🔐 Security Notes:"
 echo "  - Client secret is stored securely in SSM Parameter Store"

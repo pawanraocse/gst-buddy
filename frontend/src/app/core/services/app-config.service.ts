@@ -35,7 +35,7 @@ export class AppConfigService {
                 this.cognitoConfig = {
                     userPoolId: config.userPoolId,
                     clientId: config.clientId,
-                    region: config.region || 'us-east-1',
+                    region: config.region || 'ap-south-1',
                     domain: config.domain || environment.cognito.domain
                 };
                 console.log('[AppConfig] Loaded Cognito config from gateway');

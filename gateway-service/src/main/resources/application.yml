@@ -62,8 +62,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${COGNITO_ISSUER_URI:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_placeholder}
-          jwk-set-uri: ${COGNITO_JWKS_URI:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_placeholder/.well-known/jwks.json}
+          issuer-uri: ${COGNITO_ISSUER_URI:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_placeholder}
+          jwk-set-uri: ${COGNITO_JWKS_URI:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_placeholder/.well-known/jwks.json}
 
 server:
   port: ${SERVER_PORT:8080}
@@ -77,7 +77,7 @@ cognito:
   spa:
     user-pool-id: ${COGNITO_USER_POOL_ID:}
     client-id: ${COGNITO_SPA_CLIENT_ID:}
-    region: ${AWS_REGION:us-east-1}
+    region: ${AWS_REGION:ap-south-1}
     domain: ${COGNITO_DOMAIN:}
 
 eureka:
@@ -94,7 +94,7 @@ eureka:
     lease-expiration-duration-in-seconds: 90
     metadata-map:
       version: ${project.version:1.0.0}
-      region: ${AWS_REGION:us-east-1}
+      region: ${AWS_REGION:ap-south-1}
 
 resilience4j:
   circuitbreaker:

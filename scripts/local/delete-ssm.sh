@@ -3,7 +3,7 @@ set -euo pipefail
 
 PROJECT_NAME="${TF_VAR_project_name:-gstbuddies}"
 ENVIRONMENT="${TF_VAR_environment:-dev}"
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-ap-south-1}"
 AWS_PROFILE="${AWS_PROFILE:-default}"
 
 aws sts get-caller-identity --profile "$AWS_PROFILE" --region "$AWS_REGION" >/dev/null 2>&1 || {

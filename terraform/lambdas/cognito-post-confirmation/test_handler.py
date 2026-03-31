@@ -27,7 +27,7 @@ class TestLambdaHandler:
         """Test successful flow with valid tenantId and role"""
         # Given
         event = {
-            'userPoolId': 'us-east-1_TEST123',
+            'userPoolId': 'ap-south-1_TEST123',
             'userName': 'test@example.com',
             'triggerSource': 'PostConfirmation_ConfirmSignUp',
             'request': {
@@ -45,7 +45,7 @@ class TestLambdaHandler:
             # Then
             assert result == event
             mock_update.assert_called_once_with(
-                'us-east-1_TEST123',
+                'ap-south-1_TEST123',
                 'test@example.com',
                 'tenant-123',
                 'tenant-admin'
@@ -55,7 +55,7 @@ class TestLambdaHandler:
         """Test graceful handling when tenantId is missing"""
         # Given
         event = {
-            'userPoolId': 'us-east-1_TEST123',
+            'userPoolId': 'ap-south-1_TEST123',
             'userName': 'test@example.com',
             'triggerSource': 'PostConfirmation_ConfirmSignUp',
             'request': {
@@ -78,7 +78,7 @@ class TestLambdaHandler:
         """Test that default role is used when not provided"""
         # Given
         event = {
-            'userPoolId': 'us-east-1_TEST123',
+            'userPoolId': 'ap-south-1_TEST123',
             'userName': 'test@example.com',
             'triggerSource': 'PostConfirmation_ConfirmSignUp',
             'request': {
@@ -95,7 +95,7 @@ class TestLambdaHandler:
             
             # Then
             mock_update.assert_called_once_with(
-                'us-east-1_TEST123',
+                'ap-south-1_TEST123',
                 'test@example.com',
                 'tenant-123',
                 'tenant-admin'  # Default role
@@ -105,7 +105,7 @@ class TestLambdaHandler:
         """Test that wrong trigger source is ignored"""
         # Given
         event = {
-            'userPoolId': 'us-east-1_TEST123',
+            'userPoolId': 'ap-south-1_TEST123',
             'userName': 'test@example.com',
             'triggerSource': 'PreSignUp_SignUp',  # Wrong trigger
             'request': {
@@ -127,7 +127,7 @@ class TestLambdaHandler:
         """Test that exceptions don't prevent user confirmation"""
         # Given
         event = {
-            'userPoolId': 'us-east-1_TEST123',
+            'userPoolId': 'ap-south-1_TEST123',
             'userName': 'test@example.com',
             'triggerSource': 'PostConfirmation_ConfirmSignUp',
             'request': {
@@ -156,7 +156,7 @@ class TestUpdateUserAttributes:
         
         # When
         update_user_attributes(
-            'us-east-1_TEST123',
+            'ap-south-1_TEST123',
             'test@example.com',
             'tenant-123',
             'tenant-admin'
@@ -164,7 +164,7 @@ class TestUpdateUserAttributes:
         
         # Then
         mock_cognito.admin_update_user_attributes.assert_called_once_with(
-            UserPoolId='us-east-1_TEST123',
+            UserPoolId='ap-south-1_TEST123',
             Username='test@example.com',
             UserAttributes=[
                 {'Name': 'custom:tenantId', 'Value': 'tenant-123'},
@@ -189,7 +189,7 @@ class TestUpdateUserAttributes:
         # When/Then
         with pytest.raises(ClientError):
             update_user_attributes(
-                'us-east-1_TEST123',
+                'ap-south-1_TEST123',
                 'test@example.com',
                 'tenant-123',
                 'tenant-admin'

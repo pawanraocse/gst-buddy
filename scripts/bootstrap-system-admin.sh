@@ -19,7 +19,7 @@ if [ -f "$PROJECT_ROOT/terraform/cognito-config.env" ]; then
 fi
 
 # Configuration
-REGION="${AWS_REGION:-us-east-1}"
+REGION="${AWS_REGION:-ap-south-1}"
 PROJECT_NAME="${PROJECT_NAME:-gstbuddies}"
 ENVIRONMENT="${3:-${ENVIRONMENT:-budget}}"
 ENV="${ENV:-local}"

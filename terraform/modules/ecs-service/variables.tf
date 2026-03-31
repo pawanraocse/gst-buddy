@@ -47,7 +47,7 @@ variable "container_image" {
 variable "aws_region" {
   description = "AWS region for CloudWatch logs"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
 }
 
 # =============================================================================

@@ -126,7 +126,7 @@ public final class TestConfig {
     /**
      * AWS Region for all AWS services.
      */
-    public static final String AWS_REGION = getEnv("AWS_REGION", "us-east-1");
+    public static final String AWS_REGION = getEnv("AWS_REGION", "ap-south-1");
 
     /**
      * Project name for SSM parameter path.

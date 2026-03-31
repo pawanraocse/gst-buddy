@@ -33,7 +33,7 @@ Production-ready Terraform configuration for AWS Cognito User Pool with **Modern
 Edit `/terraform.tfvars`:
 
 ```hcl
-aws_region   = "us-east-1"
+aws_region   = "ap-south-1"
 project_name = "GSTbuddies-lite"
 environment  = "dev"
 
@@ -71,7 +71,7 @@ The script will:
 
 After deployment:
 ```
-https://GSTbuddies-lite-dev-XXXXXXXX.auth.us-east-1.amazoncognito.com/oauth2/authorize?...
+https://GSTbuddies-lite-dev-XXXXXXXX.auth.ap-south-1.amazoncognito.com/oauth2/authorize?...
 ```
 
 ---
@@ -145,20 +145,20 @@ Replace `GSTbuddies-lite` and `dev` with your `project_name` and `environment`:
 # List all Cognito parameters
 aws ssm get-parameters-by-path \
   --path "/GSTbuddies-lite/dev/cognito" \
-  --region us-east-1 \
+  --region ap-south-1 \
   --profile personal
 
 # Get specific parameter
 aws ssm get-parameter \
   --name "/GSTbuddies-lite/dev/cognito/user_pool_id" \
-  --region us-east-1 \
+  --region ap-south-1 \
   --profile personal
 
 # Get client secret (encrypted)
 aws ssm get-parameter \
   --name "/GSTbuddies-lite/dev/cognito/client_secret" \
   --with-decryption \
-  --region us-east-1 \
+  --region ap-south-1 \
   --profile personal
 
 # View all parameters in table format
@@ -167,7 +167,7 @@ aws ssm get-parameters-by-path \
   --with-decryption \
   --query 'Parameters[*].{Name:Name,Value:Value}' \
   --output table \
-  --region us-east-1 \
+  --region ap-south-1 \
   --profile personal
 ```
 
@@ -179,7 +179,7 @@ aws ssm get-parameters-by-path \
 
 ```bash
 aws cognito-idp admin-create-user \
-  --user-pool-id us-east-1_6RGxkqTmA \
+  --user-pool-id ap-south-1_6RGxkqTmA \
   --username testuser@example.com \
   --user-attributes \
     Name=email,Value=testuser@example.com \
@@ -188,19 +188,19 @@ aws cognito-idp admin-create-user \
     Name=custom:role,Value=admin \
   --temporary-password "TempPass123!" \
   --profile personal \
-  --region us-east-1
+  --region ap-south-1
 ```
 
 ### 2. Set Permanent Password
 
 ```bash
 aws cognito-idp admin-set-user-password \
-  --user-pool-id us-east-1_6RGxkqTmA \
+  --user-pool-id ap-south-1_6RGxkqTmA \
   --username testuser@example.com \
   --password "MySecurePass123!" \
   --permanent \
   --profile personal \
-  --region us-east-1
+  --region ap-south-1
 ```
 
 ### 3. Login and Get Token
@@ -233,7 +233,7 @@ Decode the access token at https://jwt.io
 aws logs tail /aws/lambda/GSTbuddies-lite-dev-pre-token-generation \
   --follow \
   --profile personal \
-  --region us-east-1
+  --region ap-south-1
 ```
 
 ---
@@ -362,7 +362,7 @@ terraform/
 ```bash
 aws ssm get-parameter \
   --name "/GSTbuddies-lite/dev/cognito/user_pool_id" \
-  --region us-east-1 \
+  --region ap-south-1 \
   --profile personal
 ```
 
@@ -370,7 +370,7 @@ aws ssm get-parameter \
 
 **Check Lambda logs:**
 ```bash
-aws logs tail /aws/lambda/GSTbuddies-lite-dev-pre-token-generation --follow --profile personal --region us-east-1
+aws logs tail /aws/lambda/GSTbuddies-lite-dev-pre-token-generation --follow --profile personal --region ap-south-1
 ```
 
 ### Issue: JWT Missing Tenant ID
@@ -378,10 +378,10 @@ aws logs tail /aws/lambda/GSTbuddies-lite-dev-pre-token-generation --follow --pr
 **Verify user has custom attribute:**
 ```bash
 aws cognito-idp admin-get-user \
-  --user-pool-id us-east-1_6RGxkqTmA \
+  --user-pool-id ap-south-1_6RGxkqTmA \
   --username testuser@example.com \
   --profile personal \
-  --region us-east-1
+  --region ap-south-1
 ```
 
 ---
@@ -389,9 +389,9 @@ aws cognito-idp admin-get-user \
 ## 📚 Resources
 
 - **AWS Console Links** (Replace with your resources):
-  - [Lambda Function](https://console.aws.amazon.com/lambda/home?region=us-east-1#/functions/GSTbuddies-lite-dev-pre-token-generation)
-  - [Cognito User Pool](https://console.aws.amazon.com/cognito/v2/idp/user-pools/us-east-1_6RGxkqTmA)
-  - [CloudWatch Logs](https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups)
+  - [Lambda Function](https://console.aws.amazon.com/lambda/home?region=ap-south-1#/functions/GSTbuddies-lite-dev-pre-token-generation)
+  - [Cognito User Pool](https://console.aws.amazon.com/cognito/v2/idp/user-pools/ap-south-1_6RGxkqTmA)
+  - [CloudWatch Logs](https://console.aws.amazon.com/cloudwatch/home?region=ap-south-1#logsV2:log-groups)
 
 - **Documentation:**
   - [AWS Cognito Docs](https://docs.aws.amazon.com/cognito/)

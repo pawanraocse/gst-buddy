@@ -53,7 +53,7 @@ module "vpc" {
   environment   = "budget"
   
   vpc_cidr           = "10.0.0.0/16"
-  availability_zones = ["us-east-1a", "us-east-1b"]
+  availability_zones = ["ap-south-1a", "ap-south-1b"]
   
   # Budget: No NAT Gateway (EC2 in public subnet)
   enable_nat_gateway = false
@@ -73,7 +73,7 @@ module "vpc" {
   environment   = "production"
   
   vpc_cidr           = "10.0.0.0/16"
-  availability_zones = ["us-east-1a", "us-east-1b"]
+  availability_zones = ["ap-south-1a", "ap-south-1b"]
   
   # Production: Single NAT Gateway (cost-effective)
   enable_nat_gateway = true
@@ -95,7 +95,7 @@ module "vpc" {
   environment   = "production"
   
   vpc_cidr           = "10.0.0.0/16"
-  availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  availability_zones = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
   
   # HA: NAT Gateway per AZ
   enable_nat_gateway = true
@@ -110,7 +110,7 @@ module "vpc" {
 | `project_name` | string | - | ✅ | Project name for resource naming |
 | `environment` | string | - | ✅ | Environment (dev, staging, prod, budget, production) |
 | `vpc_cidr` | string | `10.0.0.0/16` | | VPC CIDR block |
-| `availability_zones` | list(string) | `["us-east-1a", "us-east-1b"]` | | AZs to use (min 2) |
+| `availability_zones` | list(string) | `["ap-south-1a", "ap-south-1b"]` | | AZs to use (min 2) |
 | `enable_nat_gateway` | bool | `true` | | Enable NAT Gateway |
 | `single_nat_gateway` | bool | `true` | | Use single NAT vs per-AZ |
 | `enable_flow_logs` | bool | `false` | | Enable VPC Flow Logs |

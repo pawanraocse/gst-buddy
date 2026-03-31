@@ -4,7 +4,7 @@ set -e
 # Configuration
 PROJECT="gstbuddies"
 ENVIRONMENT="prod_init"
-REGION="us-east-1"
+REGION="ap-south-1"
 BASTION_USER="ec2-user"
 SSH_KEY="~/.ssh/pawankeys"
 
