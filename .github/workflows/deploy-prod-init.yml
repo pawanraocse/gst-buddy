@@ -11,7 +11,7 @@ on:
 
 env:
   AWS_REGION: ap-south-1
-  PROJECT_NAME: GSTbuddies
+  PROJECT_NAME: gstbuddies
   ENVIRONMENT: prod_init
 
 jobs:
