@@ -99,7 +99,7 @@ cd "$PROJECT_ROOT"
 # Lowercase project name for Docker Compose
 DOCKER_PROJECT_NAME=$(echo "${PROJECT_NAME}" | tr '[:upper:]' '[:lower:]')
 
-sudo /usr/local/bin/docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml build --no-cache 2>&1 || {
+sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml build --no-cache 2>&1 || {
     log_error "Failed to build Docker images"
     exit 1
 }
@@ -115,7 +115,7 @@ wait_for_healthy() {
     local elapsed=0
     
     while [ $elapsed -lt $max_wait ]; do
-        status=$(sudo docker inspect --format='{{.State.Health.Status}}' "$service_name" 2>/dev/null || echo "not_found")
+        status=$(sudo -E docker inspect --format='{{.State.Health.Status}}' "$service_name" 2>/dev/null || echo "not_found")
         
         if [ "$status" = "healthy" ]; then
             log_success "$service_name is healthy! (${elapsed}s)"
@@ -138,7 +138,7 @@ wait_for_container() {
     local elapsed=0
     
     while [ $elapsed -lt $max_wait ]; do
-        if sudo docker ps --format '{{.Names}}' | grep -q "^${service_name}$"; then
+        if sudo -E docker ps --format '{{.Names}}' | grep -q "^${service_name}$"; then
             log_success "$service_name container started"
             return 0
         fi
@@ -158,21 +158,21 @@ echo ""
 
 # Phase 1: Infrastructure (Redis)
 log_info "Phase 1/3: Starting infrastructure services..."
-sudo /usr/local/bin/docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d redis 2>&1
+sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d redis 2>&1
 wait_for_container "${DOCKER_PROJECT_NAME}-redis" 30 || true
 
 # Phase 2: Service Discovery (Eureka - must be healthy before Java services)
 log_info "Phase 2/3: Starting Eureka (required for service discovery)..."
-sudo /usr/local/bin/docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d eureka-server 2>&1
+sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d eureka-server 2>&1
 wait_for_healthy "${DOCKER_PROJECT_NAME}-eureka-server" 300 || {
     log_error "Eureka failed to start. Cannot continue."
-    sudo docker logs "${DOCKER_PROJECT_NAME}-eureka-server" --tail 50
+    sudo -E docker logs "${DOCKER_PROJECT_NAME}-eureka-server" --tail 50
     exit 1
 }
 
 # Phase 3: All Java Services (in parallel - they all depend only on Eureka)
 log_info "Phase 3/3: Starting all Java services (parallel)..."
-sudo /usr/local/bin/docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d gateway-service auth-service backend-service 2>&1
+sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml up -d gateway-service auth-service backend-service 2>&1
 
 # Wait for all services with fast polling
 log_info "Waiting for services to become healthy (polling every 5s)..."
@@ -185,7 +185,7 @@ while [ $elapsed -lt $MAX_WAIT ]; do
     status_line=""
     
     for svc in "${SERVICES_TO_CHECK[@]}"; do
-        status=$(sudo docker inspect --format='{{.State.Health.Status}}' "$svc" 2>/dev/null || echo "starting")
+        status=$(sudo -E docker inspect --format='{{.State.Health.Status}}' "$svc" 2>/dev/null || echo "starting")
         status_line="$status_line $svc:$status"
         
         if [ "$status" != "healthy" ]; then
@@ -207,7 +207,7 @@ done
 
 if [ "$all_healthy" != true ]; then
     echo ""
-    log_warn "Some services may still be starting. Check with: sudo docker ps"
+    log_warn "Some services may still be starting. Check with: sudo -E docker ps"
 fi
 
 # =============================================================================
@@ -219,7 +219,7 @@ log_success "Production Environment Started!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "🐳 Services:"
-sudo /usr/local/bin/docker-compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml ps
+sudo -E docker compose -p "${DOCKER_PROJECT_NAME}" -f docker-compose.prod_init.yml ps
 echo ""
 echo "🌐 Endpoints (Internal access only via tunnels):"
 echo "  Gateway:  http://localhost:8080"
