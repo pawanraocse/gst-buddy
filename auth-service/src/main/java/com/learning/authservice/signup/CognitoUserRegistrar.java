@@ -6,11 +6,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.CognitoIdentityProviderException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ResendConfirmationCodeRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.SignUpResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserNotFoundException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserStatusType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UsernameExistsException;
 
 import javax.crypto.Mac;
@@ -43,13 +46,13 @@ public class CognitoUserRegistrar {
     }
 
     /**
-     * Check if a user exists in Cognito.
+     * Get user status from Cognito.
      * 
      * @param email user's email address
-     * @return true if user exists, false otherwise
+     * @return UserStatusType or null if not found
      */
-    public boolean userExists(String email) {
-        log.debug("Checking if user exists in Cognito: email={}", email);
+    public UserStatusType getUserStatus(String email) {
+        log.debug("Getting user status from Cognito: email={}", email);
 
         try {
             AdminGetUserRequest request = AdminGetUserRequest.builder()
@@ -57,18 +60,53 @@ public class CognitoUserRegistrar {
                     .username(email)
                     .build();
 
-            cognitoClient.adminGetUser(request);
-            log.debug("User exists in Cognito: email={}", email);
-            return true;
+            AdminGetUserResponse response = cognitoClient.adminGetUser(request);
+            log.info("User status for {}: {}", email, response.userStatus());
+            return response.userStatus();
 
         } catch (UserNotFoundException e) {
             log.debug("User does not exist in Cognito: email={}", email);
-            return false;
+            return null;
         } catch (CognitoIdentityProviderException e) {
-            log.error("Error checking user existence: email={} error={}",
+            log.error("Error checking user status: email={} error={}",
                     email, e.awsErrorDetails().errorMessage());
-            throw new RuntimeException("Failed to check user existence: " + e.awsErrorDetails().errorMessage());
+            throw new RuntimeException("Failed to check user status: " + e.awsErrorDetails().errorMessage());
         }
+    }
+
+    /**
+     * Resend verification code to user.
+     * 
+     * @param email user's email address
+     */
+    public void resendConfirmationCode(String email) {
+        log.info("Resending confirmation code to: {}", email);
+        try {
+            String secretHash = calculateSecretHash(email);
+            ResendConfirmationCodeRequest request = ResendConfirmationCodeRequest.builder()
+                    .clientId(cognitoProperties.getClientId())
+                    .username(email)
+                    .secretHash(secretHash)
+                    .build();
+
+            cognitoClient.resendConfirmationCode(request);
+            log.info("Confirmation code resent successfully to: {}", email);
+
+        } catch (CognitoIdentityProviderException e) {
+            log.error("Error resending confirmation code: email={} error={}",
+                    email, e.awsErrorDetails().errorMessage());
+            throw new RuntimeException("Failed to resend code: " + e.awsErrorDetails().errorMessage());
+        }
+    }
+
+    /**
+     * Check if a user exists in Cognito.
+     * 
+     * @param email user's email address
+     * @return true if user exists, false otherwise
+     */
+    public boolean userExists(String email) {
+        return getUserStatus(email) != null;
     }
 
     /**

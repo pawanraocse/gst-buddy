@@ -51,9 +51,8 @@ public class SignupPipeline {
                 ctx.getSignupType(), ctx.getEmail());
 
         for (SignupAction action : actions) {
-            // Skip if action doesn't apply to this signup type
             if (!action.supports(ctx)) {
-                log.debug("Skipping action {} (not supported for {})",
+                log.info("Skipping action {} (not supported for {})",
                         action.getName(), ctx.getSignupType());
                 continue;
             }
@@ -70,7 +69,7 @@ public class SignupPipeline {
                 log.info("Executing action: {} (order={})", action.getName(), action.getOrder());
                 action.execute(ctx);
                 ctx.markActionCompleted(action.getName());
-                log.debug("Action {} completed successfully", action.getName());
+                log.info("Action {} completed successfully", action.getName());
             } catch (Exception e) {
                 log.error("Action {} failed: {}", action.getName(), e.getMessage(), e);
 
@@ -90,7 +89,7 @@ public class SignupPipeline {
         return SignupResult.success(
                 "Signup completed successfully",
                 ctx.getTenantId(),
-                !ctx.isSsoSignup()); // SSO users are already verified
+                !ctx.isSsoSignup() && !ctx.isAlreadyVerified()); // Skip verification if user is already confirmed or is SSO
     }
 
     /**

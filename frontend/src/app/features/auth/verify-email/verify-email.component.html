@@ -52,11 +52,16 @@
             </form>
 
             <div class="auth-footer">
-                <p>Didn't receive the code?
+                <p *ngIf="!hasResent">Didn't receive the code?
                     <button pButton label="Resend" class="p-button-link p-0 vertical-align-baseline"
-                        (click)="resendCode()" [disabled]="resendTimer > 0"></button>
-                    <span *ngIf="resendTimer > 0"> ({{ resendTimer }}s)</span>
+                        (click)="resendCode()" [loading]="resending"></button>
                 </p>
+                <div *ngIf="hasResent" class="mb-3 text-green-500 font-medium">
+                    <i class="pi pi-check-circle mr-1"></i> {{ successMessage }}
+                </div>
+                <div *ngIf="errorMessage" class="mb-3 text-red-500 font-medium">
+                    <i class="pi pi-times-circle mr-1"></i> {{ errorMessage }}
+                </div>
                 <div class="mt-3">
                     <a routerLink="/auth/login">Back to Login</a>
                 </div>

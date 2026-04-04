@@ -27,16 +27,14 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   verifying: boolean = false;
   resending: boolean = false;
   verified: boolean = false;
+  hasResent: boolean = false;
   successMessage: string = '';
   errorMessage: string = '';
-  cooldownRemaining: number = 0;
   redirectCountdown: number = 3;
-  private cooldownInterval: any;
   private redirectInterval: any;
 
   // Expose for template
   isLoading() { return this.verifying; }
-  get resendTimer() { return this.cooldownRemaining; }
 
   constructor(
     private route: ActivatedRoute,
@@ -103,19 +101,18 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
   }
 
   resendCode(): void {
-    if (this.cooldownRemaining > 0) return;
+    if (this.hasResent) return;
 
     this.resending = true;
     this.errorMessage = '';
+    this.successMessage = '';
 
     this.http.post(`${environment.apiUrl}/auth/api/v1/auth/resend-verification`, { email: this.email })
       .subscribe({
         next: () => {
           this.resending = false;
-          this.successMessage = 'Verification code sent!';
-          this.startCooldown(60);
-          // Clear success message after 3 seconds
-          setTimeout(() => this.successMessage = '', 3000);
+          this.hasResent = true;
+          this.successMessage = 'Verification code has been resent to your email!';
         },
         error: (err) => {
           this.resending = false;
@@ -124,25 +121,7 @@ export class VerifyEmailComponent implements OnInit, OnDestroy {
       });
   }
 
-  private startCooldown(seconds: number): void {
-    this.cooldownRemaining = seconds;
-
-    if (this.cooldownInterval) {
-      clearInterval(this.cooldownInterval);
-    }
-
-    this.cooldownInterval = setInterval(() => {
-      this.cooldownRemaining--;
-      if (this.cooldownRemaining <= 0) {
-        clearInterval(this.cooldownInterval);
-      }
-    }, 1000);
-  }
-
   ngOnDestroy(): void {
-    if (this.cooldownInterval) {
-      clearInterval(this.cooldownInterval);
-    }
     if (this.redirectInterval) {
       clearInterval(this.redirectInterval);
     }

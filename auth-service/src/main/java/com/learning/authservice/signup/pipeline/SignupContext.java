@@ -40,6 +40,7 @@ public class SignupContext {
     private final List<String> completedActionNames = new ArrayList<>();
     private final Map<String, Object> metadata = new HashMap<>();
     private boolean emailSent = false;
+    private boolean alreadyVerified = false;
 
     /**
      * Signup types supported by the pipeline.
@@ -227,5 +228,13 @@ public class SignupContext {
 
     public void setReferralCode(String referralCode) {
         this.referralCode = referralCode;
+    }
+
+    public boolean isAlreadyVerified() {
+        return alreadyVerified;
+    }
+
+    public void setAlreadyVerified(boolean alreadyVerified) {
+        this.alreadyVerified = alreadyVerified;
     }
 }

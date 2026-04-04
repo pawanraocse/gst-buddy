@@ -114,6 +114,11 @@ public class EmailVerificationService {
             throw new AuthSignupException("USER_NOT_FOUND", "User not found", e);
 
         } catch (CognitoIdentityProviderException e) {
+            String msg = e.awsErrorDetails().errorMessage();
+            if (msg != null && msg.contains("Current status is CONFIRMED")) {
+                log.info("User already confirmed, treating as success: {}", email);
+                return;
+            }
             log.error("Failed to confirm signup: {}", e.getMessage());
             throw new AuthSignupException("CONFIRM_FAILED",
                     "Failed to confirm signup", e);

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserNotFoundException;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserStatusType;
 
 /**
  * Action to create Cognito user.
@@ -48,21 +49,23 @@ public class CreateCognitoUserAction implements SignupAction {
 
     @Override
     public boolean isAlreadyDone(SignupContext ctx) {
-        // Check if user already exists in Cognito
-        try {
-            cognitoClient.adminGetUser(AdminGetUserRequest.builder()
-                    .userPoolId(cognitoProperties.getUserPoolId())
-                    .username(ctx.getEmail())
-                    .build());
-
-            log.debug("Cognito user already exists: {}", ctx.getEmail());
-            return true;
-        } catch (UserNotFoundException e) {
-            return false;
-        } catch (Exception e) {
-            log.warn("Error checking Cognito user: {}", e.getMessage());
+        // We only consider it "done" if the user exists AND is already confirmed.
+        // If they exist but are UNCONFIRMED, we need to execute to trigger a resend.
+        UserStatusType status = cognitoUserRegistrar.getUserStatus(ctx.getEmail());
+        if (status == null) {
             return false;
         }
+
+        log.info("Cognito user status for {}: {}", ctx.getEmail(), status);
+
+        if (status == UserStatusType.CONFIRMED) {
+            log.info("User {} is already CONFIRMED in Cognito. Marking as already verified.", ctx.getEmail());
+            ctx.setAlreadyVerified(true);
+            return true;
+        }
+
+        // For UNCONFIRMED or other states, we return false to allow execute() to handle it
+        return false;
     }
 
     @Override
@@ -73,10 +76,16 @@ public class CreateCognitoUserAction implements SignupAction {
             String role = "admin"; // First user is always admin
             String tenantId = ctx.getTenantId();
             if (tenantId == null) {
-                // Fallback if GenerateTenantIdAction is removed
-                tenantId = ctx.getEmail().split("@")[0].replaceAll("[^a-zA-Z0-9]", "") + "-"
-                        + System.currentTimeMillis();
-                ctx.setTenantId(tenantId);
+                throw new IllegalStateException("TenantId cannot be null. GenerateTenantIdAction must be executed before CreateCognitoUserAction.");
+            }
+
+            UserStatusType status = cognitoUserRegistrar.getUserStatus(ctx.getEmail());
+
+            if (status == UserStatusType.UNCONFIRMED) {
+                log.info("User exists but is UNCONFIRMED. Resending confirmation code for: {}", ctx.getEmail());
+                cognitoUserRegistrar.resendConfirmationCode(ctx.getEmail());
+                ctx.setMetadata("cognitoResult", CognitoUserRegistrar.RegistrationResult.ALREADY_EXISTS);
+                return;
             }
 
             CognitoUserRegistrar.RegistrationResult result = cognitoUserRegistrar.registerIfNotExists(
@@ -90,7 +99,7 @@ public class CreateCognitoUserAction implements SignupAction {
             ctx.setMetadata("cognitoResult", result);
             ctx.setAssignedRole(role);
 
-            log.info("Cognito user created: {} (result: {})", ctx.getEmail(), result);
+            log.info("Cognito user action result for {}: {}", ctx.getEmail(), result);
 
         } catch (Exception e) {
             throw new SignupActionException(getName(),

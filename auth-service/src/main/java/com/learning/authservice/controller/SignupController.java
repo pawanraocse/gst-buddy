@@ -123,10 +123,17 @@ public class SignupController {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                         .body(SignupResponse.failure("Invalid verification code. Please try again."));
                 } catch (CognitoIdentityProviderException e) {
+                        String errorMessage = e.awsErrorDetails().errorMessage();
+                        if (errorMessage != null && errorMessage.contains("Current status is CONFIRMED")) {
+                                log.info("User already confirmed, treating as success: {}", request.getEmail());
+                                return ResponseEntity.ok(
+                                                SignupResponse.success("Email verified successfully. You can now log in.", null,
+                                                                true));
+                        }
                         log.error("Cognito verification error: email={} error={}", request.getEmail(), e.getMessage());
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                         .body(SignupResponse.failure(
-                                                        "Verification failed: " + e.awsErrorDetails().errorMessage()));
+                                                        "Verification failed: " + errorMessage));
                 }
         }
 
