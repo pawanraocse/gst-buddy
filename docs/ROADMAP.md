@@ -1,12 +1,12 @@
 # GSTbuddies — Product Roadmap
 **From Rule 37 MVP to India's Most Complete GST Audit Intelligence Platform**
-_Last updated: 2026-04-01 · Author: Antigravity (GST Expert) · Status: APPROVED_
+_Last updated: 2026-04-04 · Author: Antigravity (GST Expert) · Status: APPROVED_
 
 ---
 
 > [!IMPORTANT]
 > **MVP Deployed**: Rule 37 (ITC reversal on 180-day non-payment — Section 16(2), Rule 37 CGST Rules) is live in production (Mumbai ap-south-1).
-> This roadmap covers **17 audit modules** across 5 phases over 15 months, covering every major GST compliance risk a CA faces.
+> This roadmap covers **18 audit modules** across 5 phases over 15 months, covering every major GST compliance risk a CA faces.
 
 ---
 
@@ -36,11 +36,16 @@ GSTbuddies will become the **Single Source of Truth** for GST audits — a legal
 | Rule 37 ITC 180-day reversal engine | ✅ Done |
 | Credit consumption & wallet system | ✅ Done |
 | Multi-tenant architecture (tenant_id) | ✅ Done |
-| Export to Excel (Strategy pattern) | ✅ Done |
+| Export to Excel (Strategy pattern — Rule 37 + GSTR-3B Summary) | ✅ Done |
+| Razorpay payment integration (INR credit purchases) | ✅ Done |
+| RBAC + Admin panel (roles, permissions, super-admin bootstrap) | ✅ Done |
+| Referral system | ✅ Done |
+| Trial credit auto-grant (Grant-on-Login — covers signup + SSO) | ✅ Done |
+| Data retention & auto-cleanup (configurable `RetentionScheduler`) | ✅ Done |
 | AWS prod deployment (Mumbai, ap-south-1) | ✅ Done |
-| CI/CD via GitHub Actions | ✅ Done |
+| CI/CD via GitHub Actions (EC2 deploy + Amplify frontend) | ✅ Done |
 
-**Gap to fill before Phase 1**: Extract a unified `AuditRule<I, O>` interface + `AuditRuleRegistry` + `AuditFinding` DTO from the Rule 37 codebase. All future modules implement this contract.
+**⏳ Gap to fill before Phase 1 (NOT STARTED)**: Extract a unified `AuditRule<I, O>` interface + `AuditRuleRegistry` + `AuditFinding` DTO from the Rule 37 codebase. All future modules implement this contract.
 
 ---
 
@@ -271,7 +276,7 @@ GSTbuddies will become the **Single Source of Truth** for GST audits — a legal
 ---
 
 ## 🚀 Phase 4: Export, Concessional Rate & Advanced Compliance (Q1 2027)
-**Goal**: Cover complete GST compliance lifecycle. 3 modules.
+**Goal**: Cover complete GST compliance lifecycle. 4 modules.
 
 ### 4.1 Export Flagging & LUT Compliance
 **Legal Basis**: Section 16(3) IGST Act; Rule 89/96 CGST Rules; Notification 37/2017-CT
@@ -369,7 +374,7 @@ GSTbuddies will become the **Single Source of Truth** for GST audits — a legal
 
 ---
 
-## ⚙️ Engineering Architecture — Rule Engine Framework
+## ⚙️ Engineering Architecture — Rule Engine Framework (Java 21 / Spring Boot 3.5)
 
 Before Phase 1, extract a shared engine from Rule 37:
 
@@ -428,11 +433,11 @@ CREATE TABLE late_fee_relief_windows (
 
 | Phase | Modules | Timeline | Credits/Run | Strategic Impact |
 |---|---|---|---|---|
-| Phase 0 | Rule 37 (MVP) | ✅ Deployed | 1 | Foundation |
+| Phase 0 | Rule 37 (MVP) + Platform (payments, RBAC, referrals) | ✅ Deployed | 1 | Foundation |
 | Phase 1 | Late Fees (GSTR-1, 3B) + Interest + GSTR-9/9C | Q2 2026 | 1 each | Monthly CA retention |
 | Phase 2 | Cross-return recon + ITC recon + RCM + Late invoices | Q3 2026 | 2–3 each | Audit trigger prevention |
 | Phase 3 | Supplier risk + 16(4) deadline + Non-filer + 86B + POS | Q4 2026 | 2–3 each | ITC protection shield |
-| Phase 4 | Exports/LUT + Concessional rate + Rule 42/43 | Q1 2027 | 2–3 each | Full lifecycle |
+| Phase 4 | Exports/LUT + Concessional rate + Rule 42/43 + Job Work | Q1 2027 | 2–3 each | Full lifecycle |
 | Phase 5 | AI notice drafting + Compliance score + GSTR-9 delta | Q2 2027 | 5–10 | Premium tier |
 
 ---
@@ -460,11 +465,22 @@ All audit runs consume credits. No unlimited subscriptions — every run costs c
 | **Phase 4**: Export & LUT Compliance | 2 credits | Cross-document matching |
 | **Phase 4**: Concessional Rate Validator | 1 credit | HSN-rate lookup |
 | **Phase 4**: Rule 42/43 ITC Reversal | 3 credits | Most complex computation |
+| **Phase 4**: Job Work (ITC-04) Compliance | 2 credits | Time-limit tracking + deemed supply |
 | **Phase 5**: Notice Reply Generator | 5 credits | AI-powered, high-value output |
 | **Phase 5**: Annual Compliance Score | 3 credits | Full-FY aggregation |
 | **Phase 5**: GSTR-9 Delta Report | 3 credits | 12-month reconciliation |
 
-### Credit Packs (Recurring Revenue)
+### Current Plans (MVP — Live)
+
+| Plan | Credits | Price (INR) | Trial? | Notes |
+|---|---|---|---|---|
+| Trial | 2 | ₹0 | Yes | Auto-granted on first login (signup + SSO) |
+| Pro | 5 | ₹1,000 | No | Early adopter pack |
+| Ultra | 30 | ₹3,000 | No | Power user pack |
+
+### Target Credit Packs (Phase 2+ — Planned)
+
+Once multi-rule audit runs are available, transition to volume-based CA packs:
 
 | Pack | Credits | Price | Per-Credit Cost | Target User |
 |---|---|---|---|---|
@@ -474,9 +490,12 @@ All audit runs consume credits. No unlimited subscriptions — every run costs c
 | CA Enterprise | 500 credits | Rs 4,999 | Rs 10.00 | Large firm (50+ clients) |
 | Bulk | 1,500 credits | Rs 9,999 | Rs 6.67 | Enterprise / white-label partners |
 
-**Free tier**: 2 credits on signup (trial). No monthly free credits — drives conversion.
+**Free tier**: 2 credits auto-granted on first login (covers both signup pipeline AND SSO/social login via Grant-on-Login pattern). No monthly free credits — drives conversion.
 
-### Revenue Math (Conservative)
+### Revenue Math (Conservative — Based on Target Pricing)
+
+> **Note**: Projections below use target CA-tier pricing (Phase 2+), not current MVP plans.
+
 A CA with 25 clients running Phase 1 (4 modules × 1 credit × 12 months) + Phase 2 (3 modules × 2.5 avg credits × 4 quarters) = **~150 credits/quarter = Rs 1,999/quarter = Rs 8,000/year per CA**.
 At 500 active CAs = **Rs 40 lakhs/year ARR** from credits alone.
 
@@ -498,7 +517,7 @@ At 500 active CAs = **Rs 40 lakhs/year ARR** from credits alone.
 ### D1. Data Input — Dual Mode (Manual + API)
 **Decision**: Support **both** manual Excel/JSON upload AND GSP/ASP API auto-pull.
 - Phase 1–2: Manual upload only (Excel/JSON from GST portal downloads).
-- Phase 3+: Add optional GSP integration for auto-fetch (requires GSP empanelment or partnership with an existing GSP like ClearTax/Masters India). Auto-pull from GST portal requires **taxpayer consent via OTP** — this is legally permitted under the GSP framework but needs a registered ASP/GSP license.
+- Phase 3+: Add optional GSP integration for auto-fetch (requires GSP empanelment or partnership with an existing GSP like ClearTax/Masters India). Auto-pull from GST portal requires **taxpayer consent via OTP** — this is legally permitted under the GSP framework but needs a registered ASP/GSP license. See `docs/ASP.md` for integration planning.
 - **Rationale**: Manual-first reduces time-to-market. API is a Phase 3+ premium feature.
 
 ### D2. Credit Model — 1 Credit per Simple Rule

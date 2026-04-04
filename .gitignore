@@ -38,7 +38,11 @@ target/
 .settings
 .springBeans
 .sts4-cache
+### AI Agents ###
 .agent
+.agents/
+.antigravity/
+.memory/
 
 ### IntelliJ IDEA ###
 .idea
