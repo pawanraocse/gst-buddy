@@ -9,6 +9,14 @@ _Last updated: 2026-03-28_
 - [ ] Monitor production logs for any remaining CORS preflight failures.
 
 ## 🟢 Up Next (prioritised)
+- [ ] Implement GSTR-1 Late Fee Engine (PRD Ref: `resources/RULE ENGINE/LATE FEES GSTR-1/`)
+- [ ] Implement Export & LUT Compliance Engine
+- [ ] Implement Concessional Rate Validator
+- [ ] Implement Rule 42/43 Reversal Engine
+- [ ] Implement Job Work (ITC-04) Tracking Engine
+- [ ] Implement GSTR-3B Interest Engine (Net Tax Basis)
+- [ ] Implement GSTR-3B Late Fee Engine
+- [ ] Extract Rule Engine Core from Rule 37 logic for modularity
 - [ ] Verify GSTR-2A/2B reconciliation logic under the new UUID-based wallet system.
 - [ ] Stripe integration (US/international payments alongside Razorpay)
 - [ ] Audit logging for admin actions

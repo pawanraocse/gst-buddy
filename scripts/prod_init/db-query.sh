@@ -11,23 +11,13 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/../.."
 
-# Default values
-AWS_REGION="ap-south-1"
-AWS_PROFILE="personal"
-PROJECT_NAME="gstbuddies"
-ENVIRONMENT="prod_init"
-
 SQL_QUERY="${1:-}"
 
-# Get the script directory and source config
+# Load environment (SSM → SKILL.md → defaults)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/env-config.sh"
 
-# Default values if not in skill or env
-AWS_REGION="ap-south-1"
-AWS_PROFILE="personal"
-PROJECT_NAME="gstbuddies"
-ENVIRONMENT="prod_init"
+# Defaults not covered by env-config
 SECRET_ARN=""
 DB_PASSWORD=""
 

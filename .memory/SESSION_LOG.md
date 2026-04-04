@@ -1,3 +1,37 @@
+## Session: 2026-04-02 21:58 | Agent: Antigravity
+### What Was Done
+- **Resource Cross-Check**: Deep-dived into `resources/RULE ENGINE/` and unzipped `MASTER RULE ENGINE.docx` to extract 34+ specific rule requirements.
+- **Roadmap Finalization**: Updated `docs/ROADMAP.md` to include missing **Job Work (ITC-04)** module, **Section 16(5) Amnesty** logic, and **Rule 42 share/security valuation** rules.
+- **Decision Resolution**: Finalized all 5 open questions with the user, establishing a credit-based monetisation model and piecemeal return upload strategy.
+
+### Files Changed
+- `docs/ROADMAP.md` [UPDATED]
+- `.memory/TODO.md` [UPDATED]
+
+### Decisions
+- Added Job Work (ITC-04) as Module 4.4.
+- Confirmed Section 16(5) inclusion for historic ITC deadline extensions.
+- Finalized Credit Pack pricing (Rs 199 to Rs 9,999).
+
+---
+
+## Session: 2026-04-01 21:40 | Agent: Antigravity
+### What Was Done
+- **Roadmap Planning**: Conducted deep research into `resources/RULE ENGINE/` PRDs and Excel calculators.
+- **Updated ROADMAP.md**: Created a multi-phased product roadmap for expanding from Rule 37 to a full GST Audit platform.
+- **Audit Rules Prioritization**: Prioritized Late fees (GSTR-1, 3B), Net liability interest, and ITC reconciliation.
+- **Architecture Planning**: Proposed `AuditRule` engine abstraction to modularize backend-service.
+
+### Files Changed
+- `docs/ROADMAP.md` [UPDATED]
+- `.memory/TODO.md` [UPDATED]
+
+### Decisions
+- Standardizing on `AuditFinding` object for all rules to ensure uniform reporting and chaining.
+- Phase 1 focuses on high-frequency "Penalty Intelligence" for CA retention.
+
+---
+
 ## Session: 2026-03-31 16:50 | Agent: Antigravity
 
 ### What Was Done

@@ -7,15 +7,9 @@
 
 set -euo pipefail
 
-# Get the script directory and source config
+# Get the script directory and load environment (SSM → SKILL.md → defaults)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/env-config.sh"
-
-# Default values if not in skill or env
-AWS_REGION="ap-south-1"
-AWS_PROFILE="personal"
-PROJECT_NAME="gstbuddies"
-ENVIRONMENT="prod_init"
 
 echo "ℹ️  Using environment: $ENVIRONMENT (IP: $EC2_IP)"
 
@@ -34,11 +28,11 @@ ssh -o StrictHostKeyChecking=no -i "$SSH_KEY" ec2-user@"$EC2_IP" "timeout 2 bash
 
 echo ""
 echo "🔍 Checking Service Health Endpoints..."
-    for port in 8081 8082 8083; do
-        case $port in 
-            8081) name="auth-service";; 
-            8082) name="backend-service";; 
-            8083) name="gateway-service";; 
+    for port in 8080 8081 8082; do
+        case $port in
+            8080) name="gateway-service";;
+            8081) name="auth-service";;
+            8082) name="backend-service";;
         esac
         echo -n "  $name ($port): "
     ssh -o StrictHostKeyChecking=no -i "$SSH_KEY" ec2-user@"$EC2_IP" "curl -s -o /dev/null -w '%{http_code}' http://localhost:$port/actuator/health || echo 'FAILED'"

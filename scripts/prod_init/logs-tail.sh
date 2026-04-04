@@ -28,12 +28,6 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/env-config.sh"
 
-# Default values if not in skill or env
-AWS_REGION="ap-south-1"
-AWS_PROFILE="personal"
-PROJECT_NAME="gstbuddies"
-ENVIRONMENT="prod_init"
-
 echo "ℹ️  Using environment: $ENVIRONMENT (IP: $EC2_IP)"
 
 # Auto-detect SSH key
