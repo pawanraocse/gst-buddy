@@ -128,6 +128,13 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
+        <!-- UUID v7 generation (time-sorted, un-guessable — replaces BIGSERIAL) -->
+        <dependency>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+
         <!-- Apache POI for Excel parsing (Rule 37 ledger upload) -->
         <dependency>
             <groupId>org.apache.poi</groupId>

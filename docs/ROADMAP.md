@@ -1,6 +1,6 @@
 # GSTbuddies — Product Roadmap
 **From Rule 37 MVP to India's Most Complete GST Audit Intelligence Platform**
-_Last updated: 2026-04-04 · Author: Antigravity (GST Expert) · Status: APPROVED_
+_Last updated: 2026-04-05 · Author: Antigravity (GST Expert + Senior Architect) · Status: APPROVED_
 
 ---
 
@@ -425,6 +425,37 @@ CREATE TABLE late_fee_relief_windows (
   max_cap_cgst DECIMAL(12,2), max_cap_sgst DECIMAL(12,2),
   applies_to VARCHAR(20), notes TEXT
 );
+
+-- Parser Pipeline (D6/D7)
+CREATE TABLE parser_templates (
+  id SERIAL PRIMARY KEY,
+  template_id VARCHAR(100) UNIQUE NOT NULL,   -- e.g., 'CBIC_NOTIFICATION_V2'
+  doc_type VARCHAR(20) NOT NULL,              -- 'PDF' | 'EXCEL'
+  fingerprint JSONB NOT NULL,                 -- {"must_contain": [...], "min_pages": 1}
+  extraction_rules JSONB NOT NULL,            -- anchors, regex, column aliases, table configs
+  version INT DEFAULT 1,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TABLE parsed_documents (
+  id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL,
+  original_filename VARCHAR(500) NOT NULL,
+  doc_type VARCHAR(20) NOT NULL,              -- 'PDF' | 'EXCEL'
+  s3_raw_key VARCHAR(500) NOT NULL,           -- s3://gst-buddy-docs/raw/{tenant}/{file}
+  template_id VARCHAR(100),                   -- NULL if no template matched (exception queue)
+  parsed_json JSONB,                          -- normalised domain model output
+  parser_version VARCHAR(20) NOT NULL,        -- e.g., '1.0.3'
+  parse_status VARCHAR(20) NOT NULL,          -- 'SUCCESS' | 'PARTIAL' | 'FAILED' | 'PENDING_REVIEW'
+  parse_duration_ms INT,
+  error_message TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX idx_parsed_docs_tenant ON parsed_documents(tenant_id);
+CREATE INDEX idx_parsed_docs_status ON parsed_documents(parse_status);
 ```
 
 ---
@@ -435,6 +466,7 @@ CREATE TABLE late_fee_relief_windows (
 |---|---|---|---|---|
 | Phase 0 | Rule 37 (MVP) + Platform (payments, RBAC, referrals) | ✅ Deployed | 1 | Foundation |
 | Phase 1 | Late Fees (GSTR-1, 3B) + Interest + GSTR-9/9C | Q2 2026 | 1 each | Monthly CA retention |
+| **Infra** | **Python Parser Sidecar (D6) + Template Registry + S3 storage (D7)** | **Q2–Q3 2026** | — | **Cross-cutting prerequisite for Phase 2+** |
 | Phase 2 | Cross-return recon + ITC recon + RCM + Late invoices | Q3 2026 | 2–3 each | Audit trigger prevention |
 | Phase 3 | Supplier risk + 16(4) deadline + Non-filer + 86B + POS | Q4 2026 | 2–3 each | ITC protection shield |
 | Phase 4 | Exports/LUT + Concessional rate + Rule 42/43 + Job Work | Q1 2027 | 2–3 each | Full lifecycle |
@@ -546,6 +578,80 @@ At 500 active CAs = **Rs 40 lakhs/year ARR** from credits alone.
 - Annual true-up (September GSTR-3B) is auto-calculated when full-year data is available.
 - CA can **override** individual values (exempt turnover, non-business use %) before finalizing.
 - **GST Expert Rationale**: Rule 42/43 has clear formulas defined in law. The computation itself is deterministic — the subjectivity lies in classifying exempt vs. non-exempt turnover. Auto-compute with override gives CAs speed without sacrificing control. Flagging-only would be a missed opportunity since the math IS the value.
+
+### D6. Data Ingestion — Deterministic Extraction Pipeline (Python Sidecar)
+**Decision**: Use a Python-based HTTP sidecar (FastAPI) for robust, AI-free PDF/Excel parsing.
+
+**Deployment Topology (Option 2 — HTTP Sidecar on Same EC2)**:
+```
+┌─────────────── Single EC2 Instance ───────────────┐
+│                                                     │
+│   Java (Spring Boot)          Python (FastAPI)       │
+│   ┌──────────────┐           ┌──────────────┐       │
+│   │  Main API    │──HTTP────▶│  Parser API  │       │
+│   │  Port 8080   │◀──JSON────│  Port 8090   │       │
+│   └──────────────┘           └──────────────┘       │
+│                                                     │
+│   systemd: gst-api            systemd: gst-parser    │
+└─────────────────────────────────────────────────────┘
+```
+- Two independent `systemd` services on the same EC2. If the parser crashes on a malformed PDF, `systemd` auto-restarts it; the Java JVM is unaffected.
+- Java calls `POST http://localhost:8090/api/v1/extract` via `RestClient` with configurable timeout (default: 30s).
+- **Future scaling**: Change `parser.service.url` from `localhost:8090` to an internal ALB/ECS endpoint — zero Java code change.
+
+**Pipeline Architecture (4-Stage Deterministic Router)**:
+```
+File In → [1. Classify] → [2. Route] → [3. Extract] → [4. Validate] → JSON Out
+                                              │
+                                     ┌────────┴─────────┐
+                                     │ Exception Queue   │
+                                     │ (Human review UI) │
+                                     └──────────────────┘
+```
+1. **Classifier**: Reads first page text + MIME type. Matches against `parser_templates.fingerprint` (keyword sets like `"Government of Maharashtra"`, `"Notification No."`). Fast keyword matching — no ML.
+2. **Router**: If fingerprint matches a known `template_id` → route to deterministic extractor. If no match → route to Exception Queue.
+3. **Extractors** (format-specific, config-driven):
+   - **PDF — Spatial Anchoring**: Find anchor text (e.g., "Notification No.") by coordinates using `pdfplumber`, then extract data from a geometric bounding box relative to the anchor. Font-size heuristics detect section headers (bold / >14pt) vs. body text.
+   - **PDF — Table Extraction**: `camelot` (lattice mode) detects physical gridlines using CV; `pdfplumber` for borderless tables using text alignment.
+   - **Excel — Alias Mapping Engine**: Maintains a dictionary of column header aliases (e.g., `"Taxable Value"` → `["taxable val", "txbl val", "tax value", "base amount"]`). Scans first 50 rows for the row where ≥3 aliases match → that's the header row. Uses `pandas.read_excel(skiprows=N)` + `pd.to_numeric(errors='coerce')` for type coercion.
+4. **Validator**: Checks extracted output against domain rules (e.g., GST rate ∈ {0, 0.1, 5, 12, 18, 28}%, GSTIN checksum valid, notification number format matches `NN/YYYY-CT`). If validation fails → Exception Queue.
+
+**Template Registry** (`parser_templates` DB table — not hardcoded):
+- Each government document layout is described by a JSON configuration (fingerprint + extraction rules).
+- When a new format appears, an engineer adds a ~10-line JSON config — no Python code changes needed.
+- Templates are versioned (`version` column) for retroactive re-parsing.
+
+**LLM Policy**: LLMs are **not used** in the default pipeline. Documents that fail classification are routed to an Exception Queue for human review. Once a human identifies the layout, a new template config is added, and the file is re-processed deterministically. LLM-based extraction may be added as an optional premium fallback in Phase 5.
+
+**Key Python Libraries**:
+| Library | Purpose | GST Use Case |
+|---|---|---|
+| `PyMuPDF (fitz)` | Fastest text + coordinate extraction (C-backed) | Base PDF text layer — 3–5x faster than Java PDFBox |
+| `pdfplumber` | Table detection + visual debugging | Rate schedules, HSN tables, relief window tables |
+| `camelot` | ML-based table boundary detection (lattice/stream) | Complex multi-column tables in CBIC circulars |
+| `pandas` + `openpyxl` | Excel parsing with dynamic header detection | GSTR-2B offline utility, purchase registers, HSN master |
+
+**Rationale**: Python's PDF/Excel ecosystem is 3–5x faster and has native table detection that Java lacks entirely. HTTP sidecar gives crash isolation, independent restarts, and a clean migration path to ECS/Fargate.
+
+---
+
+### D7. Raw Document Storage — WORM (Write-Once, Read-Many) Pattern
+**Decision**: Store all raw government uploaded PDFs/Excels persistently alongside their parsed JSON representations.
+
+**Storage Layout**:
+```
+S3:   s3://gst-buddy-docs/raw/{tenant_id}/{doc_type}/{notification_no}_{date}.{ext}
+PSQL: parsed_documents table → parsed_json (JSONB) + s3_raw_key (reference)
+```
+- **Raw files** in AWS S3 Standard-IA (cost: ~₹2/month for thousands of files).
+- **Parsed output** in PostgreSQL `JSONB` (queryable, indexable).
+- **Never store raw binary blobs in PSQL** — it bloats DB backups.
+- `parser_version` column enables retroactive re-parsing: when a template is upgraded, re-run extraction on the original S3 file and update `parsed_json`.
+
+**Rationale**:
+- **Legal**: GST audits (Section 65/66) and demand proceedings (Section 73/74) may require proof of which version of a notification was relied upon. The raw file is evidence.
+- **Re-parsing**: Government PDF formats drift. When the parser template is improved, re-process the original file without re-downloading from an unreliable government portal.
+- **Portal Decoupling**: CBIC/GST portal has frequent downtime. Once ingested, the system is fully independent of portal availability.
 
 ---
 

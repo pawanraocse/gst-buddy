@@ -1,6 +1,6 @@
 package com.learning.backendservice.scheduler;
 
-import com.learning.backendservice.repository.Rule37RunRepository;
+import com.learning.backendservice.repository.AuditRunRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -12,9 +12,14 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Purges expired Rule 37 calculation runs daily.
- * Runs are marked with {@code expires_at} (default 7 days after creation).
- * This scheduler removes them to prevent unbounded storage growth.
+ * Purges expired audit runs daily at 2:00 AM UTC.
+ *
+ * <p>Audit runs are created with an {@code expires_at} timestamp
+ * (default: 7 days, configurable via {@code app.retention.days}).
+ * This scheduler removes expired runs to prevent unbounded storage growth.
+ *
+ * <p>The {@code idx_audit_runs_expires} partial index ensures the DELETE
+ * is O(expired_count) rather than a full-table scan.
  */
 @Component
 @EnableScheduling
@@ -22,25 +27,25 @@ public class RetentionScheduler {
 
     private static final Logger log = LoggerFactory.getLogger(RetentionScheduler.class);
 
-    private final Rule37RunRepository runRepository;
+    private final AuditRunRepository auditRunRepository;
 
-    public RetentionScheduler(Rule37RunRepository runRepository) {
-        this.runRepository = runRepository;
+    public RetentionScheduler(AuditRunRepository auditRunRepository) {
+        this.auditRunRepository = auditRunRepository;
     }
 
     /**
-     * Purge expired calculation runs daily at 2:00 AM UTC.
-     * Uses the {@code idx_rule37_runs_expires} index for efficient lookups.
+     * Purge expired audit runs daily at 2:00 AM UTC.
+     * Cascade delete removes associated {@code audit_findings} automatically.
      */
     @Scheduled(cron = "0 0 2 * * *", zone = "UTC")
     @Transactional
     public void purgeExpiredRuns() {
-        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
-        int deleted = runRepository.deleteByExpiresAtBefore(now);
+        OffsetDateTime cutoff = OffsetDateTime.now(ZoneOffset.UTC);
+        int deleted = auditRunRepository.deleteByExpiresAtBefore(cutoff);
         if (deleted > 0) {
-            log.info("Retention: purged {} expired calculation runs (cutoff={})", deleted, now);
+            log.info("Retention: purged {} expired audit run(s) (cutoff={})", deleted, cutoff);
         } else {
-            log.debug("Retention: no expired runs to purge");
+            log.debug("Retention: no expired audit runs to purge (cutoff={})", cutoff);
         }
     }
 }

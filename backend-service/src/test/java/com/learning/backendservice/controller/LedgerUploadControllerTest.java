@@ -2,7 +2,7 @@ package com.learning.backendservice.controller;
 
 import com.learning.backendservice.BaseControllerTest;
 import com.learning.backendservice.dto.UploadResult;
-import com.learning.backendservice.service.Rule37CalculationRunService;
+import com.learning.backendservice.service.AuditRunOrchestrator;
 import com.learning.common.constants.HeaderNames;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LedgerUploadControllerTest extends BaseControllerTest {
 
     @MockBean
-    private Rule37CalculationRunService runService;
+    private AuditRunOrchestrator orchestrator;
 
     @Test
     void uploadLedgers_validFiles_returns201() throws Exception {
@@ -34,10 +34,11 @@ class LedgerUploadControllerTest extends BaseControllerTest {
         );
 
         UploadResult mockResult = UploadResult.builder()
-                .runId(100L)
+                .stringRunId("018e6e9e-0000-7abc-9def-001122334455")
                 .build();
 
-        when(runService.processUpload(any(List.class), eq(LocalDate.parse("2024-03-31")), eq("user123")))
+        when(orchestrator.processUpload(any(List.class), eq(LocalDate.parse("2024-03-31")),
+                eq("RULE_37_ITC_REVERSAL"), eq("user123")))
                 .thenReturn(mockResult);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/ledgers/upload")
@@ -46,9 +47,8 @@ class LedgerUploadControllerTest extends BaseControllerTest {
                         .header(HeaderNames.USER_ID, "user123")
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.runId").value(100L));
+                .andExpect(jsonPath("$.stringRunId").value("018e6e9e-0000-7abc-9def-001122334455"));
     }
-
     @Test
     void uploadLedgers_invalidExtension_returns400() throws Exception {
         MockMultipartFile file = new MockMultipartFile(

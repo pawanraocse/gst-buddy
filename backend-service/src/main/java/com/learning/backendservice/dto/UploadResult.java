@@ -1,5 +1,6 @@
 package com.learning.backendservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +14,17 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UploadResult {
 
+    /** UUID v7 string — primary run identifier for all new runs */
+    private String stringRunId;
+
+    /**
+     * @deprecated Use {@link #stringRunId} instead. Kept for backward compatibility
+     *             during the frontend migration window.
+     */
+    @Deprecated
     private Long runId;
     private String filename;
     @Builder.Default
