@@ -22,6 +22,8 @@ import java.util.List;
 
 class Rule37ExportControllerTest extends BaseControllerTest {
 
+    private static final String TEST_USER_ID = "user-123";
+
     @MockBean
     private Rule37CalculationRunService runService;
 
@@ -38,11 +40,12 @@ class Rule37ExportControllerTest extends BaseControllerTest {
                 .filename("test.xlsx")
                 .build();
 
-        when(runService.getRunEntity(1L)).thenReturn(run);
+        when(runService.getRunEntity(1L, TEST_USER_ID)).thenReturn(run);
         when(excelExportStrategy.supports("pdf", "issues")).thenReturn(false);
         when(gstr3bExportStrategy.supports("pdf", "issues")).thenReturn(false);
 
         mockMvc.perform(get("/api/v1/rule37/runs/1/export?format=pdf&reportType=issues")
+                        .header("X-User-Id", TEST_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Unsupported export format or report type"));
@@ -57,13 +60,14 @@ class Rule37ExportControllerTest extends BaseControllerTest {
 
         byte[] fakeExcelContent = "fake excel bytes".getBytes();
 
-        when(runService.getRunEntity(2L)).thenReturn(run);
+        when(runService.getRunEntity(2L, TEST_USER_ID)).thenReturn(run);
         when(excelExportStrategy.supports("excel", "issues")).thenReturn(true);
         when(excelExportStrategy.generate(run.getCalculationData(), "details.xlsx", "issues")).thenReturn(fakeExcelContent);
         when(excelExportStrategy.getFileExtension()).thenReturn("xlsx");
         when(excelExportStrategy.getContentType()).thenReturn("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
         mockMvc.perform(get("/api/v1/rule37/runs/2/export?format=excel&reportType=issues")
+                        .header("X-User-Id", TEST_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"details.xlsx_Interest_Calculation.xlsx\""))
@@ -80,13 +84,14 @@ class Rule37ExportControllerTest extends BaseControllerTest {
 
         byte[] fakeExcelContent = "fake excel bytes".getBytes();
 
-        when(runService.getRunEntity(3L)).thenReturn(run);
+        when(runService.getRunEntity(3L, TEST_USER_ID)).thenReturn(run);
         when(excelExportStrategy.supports("excel", "issues")).thenReturn(true);
         when(excelExportStrategy.generate(run.getCalculationData(), "weird#file/name.xlsx", "issues")).thenReturn(fakeExcelContent);
         when(excelExportStrategy.getFileExtension()).thenReturn("xlsx");
         when(excelExportStrategy.getContentType()).thenReturn("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
         mockMvc.perform(get("/api/v1/rule37/runs/3/export?format=excel&reportType=issues")
+                        .header("X-User-Id", TEST_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"weird_file_name.xlsx_Interest_Calculation.xlsx\""))

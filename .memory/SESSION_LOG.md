@@ -221,3 +221,17 @@
   - Normalized `project_name` to `gstbuddies` (lowercase) in `terraform/envs/prod_init/terraform.tfvars`.
   - Removed redundant `Trigger Amplify Frontend Build` step from `.github/workflows/deploy-prod-init.yml`.
 - **Reasoning**: Case mismatch in SSM paths was causing retrieval failures, and manual `start-job` was conflicting with Amplify auto-build.
+
+## Session: April 10, 2026 · Antigravity · HIGH
+- **Fix 1**: Resolved localhost referral/share link issue by adding  and activating `prod` profile in docker-compose.
+- **Fix 2**: Resolved critical data leak by implementing  (createdBy) filtering in  Rule 37 repositories and controllers.
+- **Fix 3**: Updated frontend branding from "Gstbuddies" to "GSTBuddies" across all user-facing strings.
+- **Decision**: Endpoints now strictly require the `X-User-Id` header for all calculation-related operations.
+- **Status**: Code compiled successfully; project ready for deployment.
+
+## Session: April 10, 2026 · Antigravity · HIGH
+- **Fix 1**: Resolved localhost referral/share link issue by adding auth-service application-prod.yml and activating 'prod' profile in docker-compose.
+- **Fix 2**: Resolved critical data leak by implementing userId (createdBy) filtering in backend-service Rule 37 repositories and controllers.
+- **Fix 3**: Updated frontend branding from "Gstbuddies" to "GSTBuddies" across all user-facing strings.
+- **Decision**: Endpoints now strictly require the X-User-Id header for all calculation-related operations.
+- **Status**: Code compiled successfully; project ready for deployment.

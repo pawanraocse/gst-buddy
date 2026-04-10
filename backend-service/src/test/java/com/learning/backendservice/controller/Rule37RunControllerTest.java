@@ -16,6 +16,9 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -24,6 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class Rule37RunControllerTest extends BaseControllerTest {
+
+    private static final String TEST_USER_ID = "user-123";
 
     @MockBean
     private Rule37CalculationRunService runService;
@@ -39,9 +44,10 @@ class Rule37RunControllerTest extends BaseControllerTest {
                 .build();
 
         Page<Rule37RunResponse> page = new PageImpl<>(List.of(runResponse), PageRequest.of(0, 10), 1);
-        when(runService.listRuns(any(Pageable.class))).thenReturn(page);
+        when(runService.listRuns(eq(TEST_USER_ID), any(Pageable.class))).thenReturn(page);
 
         mockMvc.perform(get("/api/v1/rule37/runs")
+                        .header("X-User-Id", TEST_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1))
@@ -51,15 +57,23 @@ class Rule37RunControllerTest extends BaseControllerTest {
     }
 
     @Test
+    void listRuns_missingUserId_returns403() throws Exception {
+        mockMvc.perform(get("/api/v1/rule37/runs")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void getRun_found() throws Exception {
         Rule37RunResponse runResponse = Rule37RunResponse.builder()
                 .id(2L)
                 .filename("details.xlsx")
                 .build();
 
-        when(runService.getRun(2L)).thenReturn(runResponse);
+        when(runService.getRun(eq(2L), eq(TEST_USER_ID))).thenReturn(runResponse);
 
         mockMvc.perform(get("/api/v1/rule37/runs/2")
+                        .header("X-User-Id", TEST_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(2))
@@ -68,9 +82,10 @@ class Rule37RunControllerTest extends BaseControllerTest {
 
     @Test
     void deleteRun_success() throws Exception {
-        doNothing().when(runService).deleteRun(3L);
+        doNothing().when(runService).deleteRun(eq(3L), eq(TEST_USER_ID));
 
-        mockMvc.perform(delete("/api/v1/rule37/runs/3"))
+        mockMvc.perform(delete("/api/v1/rule37/runs/3")
+                        .header("X-User-Id", TEST_USER_ID))
                 .andExpect(status().isNoContent());
     }
 }

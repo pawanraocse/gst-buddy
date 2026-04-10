@@ -1,0 +1,25 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+# Disable Swagger UI in production
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+logging:
+  level:
+    root: INFO
+    com.learning.authservice: INFO
+    org.springframework.security: WARN
+  file:
+    name: /var/log/auth-service/auth-service.log
+
+# Production referral base URL — must end at the signup route
+# This fixes the localhost link bug in WhatsApp/email sharing
+app:
+  referral:
+    base-url: https://gstbuddies.com/#/auth/signup

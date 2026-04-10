@@ -26,31 +26,31 @@ public class Rule37CalculationRunService {
         return ledgerUploadOrchestrator.processUpload(files, asOnDate, createdBy);
     }
 
-    public Page<Rule37RunResponse> listRuns(Pageable pageable) {
+    public Page<Rule37RunResponse> listRuns(String userId, Pageable pageable) {
         String tenantId = TenantContext.getCurrentTenant();
-        return runRepository.findByTenantId(tenantId, pageable)
+        return runRepository.findByTenantIdAndCreatedBy(tenantId, userId, pageable)
                 .map(this::toResponse);
     }
 
-    public Rule37RunResponse getRun(Long id) {
+    public Rule37RunResponse getRun(Long id, String userId) {
         String tenantId = TenantContext.getCurrentTenant();
-        return runRepository.findByIdAndTenantId(id, tenantId)
+        return runRepository.findByIdAndTenantIdAndCreatedBy(id, tenantId, userId)
                 .map(this::toResponse)
                 .orElseThrow(() -> new NotFoundException("Rule37 run not found: " + id));
     }
 
     @Transactional
-    public void deleteRun(Long id) {
+    public void deleteRun(Long id, String userId) {
         String tenantId = TenantContext.getCurrentTenant();
-        if (!runRepository.existsByIdAndTenantId(id, tenantId)) {
+        if (!runRepository.existsByIdAndTenantIdAndCreatedBy(id, tenantId, userId)) {
             throw new NotFoundException("Rule37 run not found: " + id);
         }
         runRepository.deleteById(id);
     }
 
-    public Rule37CalculationRun getRunEntity(Long id) {
+    public Rule37CalculationRun getRunEntity(Long id, String userId) {
         String tenantId = TenantContext.getCurrentTenant();
-        return runRepository.findByIdAndTenantId(id, tenantId)
+        return runRepository.findByIdAndTenantIdAndCreatedBy(id, tenantId, userId)
                 .orElseThrow(() -> new NotFoundException("Rule37 run not found: " + id));
     }
 

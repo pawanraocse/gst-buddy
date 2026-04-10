@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
+import com.learning.common.constants.HeaderNames;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -35,11 +36,16 @@ public class Rule37ExportController {
     @ApiResponse(responseCode = "404", description = "Run not found")
     @GetMapping("/{id}/export")
     public ResponseEntity<byte[]> exportRun(
+            HttpServletRequest request,
             @Parameter(description = "Run ID") @PathVariable Long id,
             @RequestParam(value = "format", defaultValue = "excel") String format,
             @Parameter(description = "Report type: 'issues' (default) or 'complete'")
             @RequestParam(value = "reportType", defaultValue = "issues") String reportType) {
-        Rule37CalculationRun run = runService.getRunEntity(id);
+        String userId = request.getHeader(HeaderNames.USER_ID);
+        if (userId == null || userId.isBlank()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Rule37CalculationRun run = runService.getRunEntity(id, userId);
 
         ExportStrategy strategy = exportStrategies.stream()
                 .filter(s -> s.supports(format, reportType))
