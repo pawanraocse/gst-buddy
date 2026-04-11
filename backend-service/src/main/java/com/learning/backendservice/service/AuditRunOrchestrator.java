@@ -1,5 +1,7 @@
 package com.learning.backendservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learning.backendservice.config.MemoryGuard;
 import com.learning.backendservice.config.UploadProperties;
 import com.learning.backendservice.dto.CreditWalletResponse;
@@ -58,6 +60,7 @@ public class AuditRunOrchestrator {
     private final UploadProperties uploadProperties;
     private final CreditClient creditClient;
     private final MemoryGuard memoryGuard;
+    private final ObjectMapper objectMapper;
     private final Semaphore uploadSemaphore;
     private final int retentionDays;
     private final int maxRunsPerTenant;
@@ -69,6 +72,7 @@ public class AuditRunOrchestrator {
             UploadProperties uploadProperties,
             CreditClient creditClient,
             MemoryGuard memoryGuard,
+            ObjectMapper objectMapper,
             @Value("${app.retention.days:7}") int retentionDays,
             @Value("${app.retention.max-runs-per-tenant:50}") int maxRunsPerTenant) {
         this.ruleRegistry = ruleRegistry;
@@ -77,6 +81,7 @@ public class AuditRunOrchestrator {
         this.uploadProperties = uploadProperties;
         this.creditClient = creditClient;
         this.memoryGuard = memoryGuard;
+        this.objectMapper = objectMapper;
         this.retentionDays = retentionDays;
         this.maxRunsPerTenant = maxRunsPerTenant;
         this.uploadSemaphore = new Semaphore(uploadProperties.getMaxConcurrentUploads());
@@ -203,11 +208,11 @@ public class AuditRunOrchestrator {
                 .userId(userId)
                 .ruleId(ruleId)
                 .status("SUCCESS")
-                .inputMetadata(java.util.Map.of(
+                .inputMetadata(toJson(java.util.Map.of(
                         "asOnDate", asOnDate.toString(),
                         "filename", filename,
-                        "fileCount", validFiles.size()))
-                .resultData(ruleResult.ruleSpecificOutput())
+                        "fileCount", validFiles.size())))
+                .resultData(toJson(ruleResult.ruleSpecificOutput()))
                 .totalImpactAmount(ruleResult.totalImpact())
                 .creditsConsumed(totalLedgerCount)
                 .createdAt(now)
@@ -287,12 +292,23 @@ public class AuditRunOrchestrator {
 
         return UploadResult.builder()
                 .stringRunId(run.getId().toString())
-                .filename((String) ((java.util.Map<?,?>) run.getInputMetadata()).get("filename"))
+                .filename(extractFilenameFromMeta(run.getInputMetadata()))
                 .results(resultDtos)
                 .errors(errors)
                 .creditsConsumed(run.getCreditsConsumed())
                 .remainingCredits(remainingCredits)
                 .build();
+    }
+
+    private String extractFilenameFromMeta(String inputMetadataJson) {
+        try {
+            if (inputMetadataJson == null) return null;
+            java.util.Map<String, Object> meta = objectMapper.readValue(inputMetadataJson, new com.fasterxml.jackson.core.type.TypeReference<>() {});
+            Object f = meta.get("filename");
+            return f instanceof String s ? s : null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private static UploadResult.CalculationSummaryDto toSummaryDto(
@@ -324,5 +340,12 @@ public class AuditRunOrchestrator {
                                 .build())
                         .toList())
                 .build();
+    }
+    private String toJson(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Failed to serialize audit data to JSON", e);
+        }
     }
 }

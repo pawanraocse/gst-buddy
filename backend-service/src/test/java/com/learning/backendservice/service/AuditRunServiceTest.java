@@ -1,5 +1,6 @@
 package com.learning.backendservice.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learning.backendservice.dto.AuditRunResponse;
 import com.learning.backendservice.engine.AuditRule;
 import com.learning.backendservice.engine.AuditRuleRegistry;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -44,6 +46,9 @@ class AuditRunServiceTest {
     @Mock
     private AuditRule<?, ?> dummyRule;
 
+    @Spy
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @InjectMocks
     private AuditRunService auditRunService;
 
@@ -69,13 +74,13 @@ class AuditRunServiceTest {
         run.setCreatedAt(OffsetDateTime.now());
 
         Pageable pageable = PageRequest.of(0, 10);
-        when(runRepository.findByTenantId("tenant-123", pageable))
+        when(runRepository.findByTenantIdAndUserId("tenant-123", "user1", pageable))
                 .thenReturn(new PageImpl<>(List.of(run)));
 
         lenient().when(ruleRegistry.getRule("RULE_A")).thenReturn((AuditRule) dummyRule);
         lenient().when(dummyRule.getDisplayName()).thenReturn("Dummy Rule A");
 
-        Page<AuditRunResponse> responsePage = auditRunService.listRuns(null, pageable);
+        Page<AuditRunResponse> responsePage = auditRunService.listRuns("user1", null, pageable);
 
         assertNotNull(responsePage);
         assertEquals(1, responsePage.getTotalElements());
@@ -97,10 +102,10 @@ class AuditRunServiceTest {
         run.setTotalImpactAmount(BigDecimal.TEN);
         run.setResultData("{\"key\":\"value\"}");
 
-        when(runRepository.findByIdAndTenantId(runId, "tenant-123")).thenReturn(Optional.of(run));
+        when(runRepository.findByIdAndTenantIdAndUserId(runId, "tenant-123", "user1")).thenReturn(Optional.of(run));
         lenient().when(ruleRegistry.getRule("RULE_A")).thenThrow(new IllegalArgumentException("Unknown"));
 
-        AuditRunResponse res = auditRunService.getRun(runId);
+        AuditRunResponse res = auditRunService.getRun(runId, "user1");
 
         assertNotNull(res);
         assertEquals(runId.toString(), res.getId());
@@ -112,18 +117,18 @@ class AuditRunServiceTest {
     @DisplayName("Should throw NotFoundException when getting unknown run")
     void shouldThrowNotFoundOnGet() {
         UUID runId = UUID.randomUUID();
-        when(runRepository.findByIdAndTenantId(any(), any())).thenReturn(Optional.empty());
+        when(runRepository.findByIdAndTenantIdAndUserId(any(), any(), any())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> auditRunService.getRun(runId));
+        assertThrows(NotFoundException.class, () -> auditRunService.getRun(runId, "user1"));
     }
 
     @Test
     @DisplayName("Should delete run")
     void shouldDeleteRun() {
         UUID runId = UUID.randomUUID();
-        when(runRepository.existsByIdAndTenantId(runId, "tenant-123")).thenReturn(true);
+        when(runRepository.existsByIdAndTenantIdAndUserId(runId, "tenant-123", "user1")).thenReturn(true);
 
-        auditRunService.deleteRun(runId);
+        auditRunService.deleteRun(runId, "user1");
 
         verify(runRepository).deleteById(runId);
     }
@@ -132,9 +137,9 @@ class AuditRunServiceTest {
     @DisplayName("Should throw NotFoundException when deleting unknown run")
     void shouldThrowNotFoundOnDelete() {
         UUID runId = UUID.randomUUID();
-        when(runRepository.existsByIdAndTenantId(runId, "tenant-123")).thenReturn(false);
+        when(runRepository.existsByIdAndTenantIdAndUserId(runId, "tenant-123", "user1")).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> auditRunService.deleteRun(runId));
+        assertThrows(NotFoundException.class, () -> auditRunService.deleteRun(runId, "user1"));
         verify(runRepository, never()).deleteById(any());
     }
 

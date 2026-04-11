@@ -16,21 +16,29 @@ import java.util.UUID;
  * Repository for {@link AuditRun} entities.
  *
  * <p>All queries are scoped to {@code tenantId} for row-level multi-tenant isolation.
+ * User-facing API methods are additionally scoped to {@code userId} to prevent
+ * cross-user data leakage within the same tenant.
  */
 @Repository
 public interface AuditRunRepository extends JpaRepository<AuditRun, UUID> {
 
-    /** List runs for tenant (paginated, ordered by created_at DESC via Pageable sort). */
+    /** Tenant-only query — for scheduler/admin use only. Do NOT use for user-facing APIs. */
     Page<AuditRun> findByTenantId(String tenantId, Pageable pageable);
 
-    /** List runs for tenant filtered by ruleId. */
-    Page<AuditRun> findByTenantIdAndRuleId(String tenantId, String ruleId, Pageable pageable);
+    /** User-scoped list: returns only runs created by the given user within the tenant. */
+    Page<AuditRun> findByTenantIdAndUserId(String tenantId, String userId, Pageable pageable);
 
-    /** Fetch run only if it belongs to the specified tenant. */
+    /** User-scoped list filtered by ruleId. */
+    Page<AuditRun> findByTenantIdAndUserIdAndRuleId(String tenantId, String userId, String ruleId, Pageable pageable);
+
+    /** User-scoped get: returns run only if it belongs to the given user AND tenant. */
+    Optional<AuditRun> findByIdAndTenantIdAndUserId(UUID id, String tenantId, String userId);
+
+    /** Tenant-only get — for export/admin only, never call from user-facing list endpoints. */
     Optional<AuditRun> findByIdAndTenantId(UUID id, String tenantId);
 
-    /** Tenant-scoped existence check (used before delete to return 404 vs 403). */
-    boolean existsByIdAndTenantId(UUID id, String tenantId);
+    /** User-scoped existence check (used before delete to avoid info-disclosure). */
+    boolean existsByIdAndTenantIdAndUserId(UUID id, String tenantId, String userId);
 
     /** Count active runs per tenant (used to enforce maxRunsPerTenant limit). */
     long countByTenantId(String tenantId);

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +45,7 @@ class AuditRunControllerTest extends BaseControllerTest {
                 .createdAt(OffsetDateTime.now())
                 .build();
 
-        when(auditRunService.listRuns(any(), any())).thenReturn(new PageImpl<>(List.of(response)));
+        when(auditRunService.listRuns(any(), any(), any())).thenReturn(new PageImpl<>(List.of(response)));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/audit/runs")
                         .header(HeaderNames.USER_ID, "user123")
@@ -66,7 +67,7 @@ class AuditRunControllerTest extends BaseControllerTest {
                 .resultData(Map.of("key", "value"))
                 .build();
 
-        when(auditRunService.getRun(runId)).thenReturn(response);
+        when(auditRunService.getRun(eq(runId), any())).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/audit/runs/" + runId)
                         .header(HeaderNames.USER_ID, "user123")
@@ -80,7 +81,7 @@ class AuditRunControllerTest extends BaseControllerTest {
     @DisplayName("GET /runs/{id} should return 404 for unknown run")
     void shouldReturn404ForUnknownRun() throws Exception {
         UUID runId = UuidV7.generate();
-        when(auditRunService.getRun(runId)).thenThrow(new NotFoundException("Run not found"));
+        when(auditRunService.getRun(eq(runId), any())).thenThrow(new NotFoundException("Run not found"));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/audit/runs/" + runId)
                         .header(HeaderNames.USER_ID, "user123")

@@ -1,5 +1,6 @@
 package com.learning.backendservice.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learning.backendservice.config.MemoryGuard;
 import com.learning.backendservice.config.UploadProperties;
 import com.learning.backendservice.dto.CreditWalletResponse;
@@ -60,7 +61,7 @@ class AuditRunOrchestratorTest {
 
         orchestrator = new AuditRunOrchestrator(
                 ruleRegistry, runRepository, findingRepository,
-                uploadProperties, creditClient, memoryGuard, 7, 50);
+                uploadProperties, creditClient, memoryGuard, new ObjectMapper(), 7, 50);
                 
         TenantContext.setCurrentTenant("tenant123");
     }

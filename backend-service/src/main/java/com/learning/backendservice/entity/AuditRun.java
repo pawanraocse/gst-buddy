@@ -67,7 +67,7 @@ public class AuditRun implements TenantAware {
      */
     @Column(name = "input_metadata", columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Object inputMetadata;
+    private String inputMetadata;
 
     /**
      * Rule-specific output stored as JSONB.
@@ -76,7 +76,7 @@ public class AuditRun implements TenantAware {
      */
     @Column(name = "result_data", columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Object resultData;
+    private String resultData;
 
     /** Aggregate financial impact = ITC reversal + interest + penalties */
     @Column(name = "total_impact_amount", nullable = false, precision = 18, scale = 2)

@@ -1,5 +1,7 @@
 package com.learning.backendservice.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learning.backendservice.domain.rule37.LedgerResult;
 import com.learning.backendservice.entity.AuditRun;
 import com.learning.backendservice.service.AuditRunService;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -35,6 +38,7 @@ public class AuditExportController {
 
     private final AuditRunService auditRunService;
     private final List<ExportStrategy> exportStrategies;
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "Export audit run", description = "Download audit run results as Excel file")
     @ApiResponse(responseCode = "200", description = "Excel file returned")
@@ -76,23 +80,25 @@ public class AuditExportController {
 
     // ─── Private Helpers ────────────────────────────────────────────────────
 
-    @SuppressWarnings("unchecked")
     private List<LedgerResult> extractLedgerResults(AuditRun run) {
-        Object resultData = run.getResultData();
-        if (resultData instanceof List<?> list) {
-            // Hibernate deserialises JSONB as LinkedHashMap; cast to LedgerResult
-            // is handled by the ExportStrategy — pass through as-is
-            return (List<LedgerResult>) list;
+        try {
+            String json = run.getResultData();
+            return objectMapper.readValue(json, new TypeReference<List<LedgerResult>>() {});
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Cannot export run " + run.getId() + ": result_data is not a valid LedgerResult list (ruleId=" + run.getRuleId() + ")", e);
         }
-        throw new IllegalStateException(
-                "Cannot export run " + run.getId() + ": result_data is not a list (ruleId=" + run.getRuleId() + ")");
     }
 
     private String extractFilename(AuditRun run) {
-        if (run.getInputMetadata() instanceof java.util.Map<?, ?> meta) {
-            Object f = meta.get("filename");
-            if (f instanceof String s) return s;
-        }
+        try {
+            String json = run.getInputMetadata();
+            if (json != null && !json.isBlank()) {
+                Map<String, Object> meta = objectMapper.readValue(json, new TypeReference<>() {});
+                Object f = meta.get("filename");
+                if (f instanceof String s) return s;
+            }
+        } catch (Exception ignored) {}
         return "audit-run-" + run.getId();
     }
 

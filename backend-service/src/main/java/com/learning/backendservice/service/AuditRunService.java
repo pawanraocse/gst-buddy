@@ -1,5 +1,7 @@
 package com.learning.backendservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learning.backendservice.dto.AuditRunResponse;
 import com.learning.backendservice.entity.AuditRun;
 import com.learning.backendservice.engine.AuditRule;
@@ -30,16 +32,17 @@ public class AuditRunService {
 
     private final AuditRunRepository runRepository;
     private final AuditRuleRegistry ruleRegistry;
+    private final ObjectMapper objectMapper;
 
     /**
      * List audit runs for the current tenant, paginated.
      * Optionally filtered by ruleId.
      */
-    public Page<AuditRunResponse> listRuns(String ruleId, Pageable pageable) {
+    public Page<AuditRunResponse> listRuns(String userId, String ruleId, Pageable pageable) {
         String tenantId = TenantContext.getCurrentTenant();
         Page<AuditRun> page = (ruleId != null && !ruleId.isBlank())
-                ? runRepository.findByTenantIdAndRuleId(tenantId, ruleId, pageable)
-                : runRepository.findByTenantId(tenantId, pageable);
+                ? runRepository.findByTenantIdAndUserIdAndRuleId(tenantId, userId, ruleId, pageable)
+                : runRepository.findByTenantIdAndUserId(tenantId, userId, pageable);
         return page.map(run -> toResponse(run, false));
     }
 
@@ -48,9 +51,9 @@ public class AuditRunService {
      *
      * @throws NotFoundException if the run doesn't exist or belongs to another tenant
      */
-    public AuditRunResponse getRun(UUID id) {
+    public AuditRunResponse getRun(UUID id, String userId) {
         String tenantId = TenantContext.getCurrentTenant();
-        return runRepository.findByIdAndTenantId(id, tenantId)
+        return runRepository.findByIdAndTenantIdAndUserId(id, tenantId, userId)
                 .map(run -> toResponse(run, true))
                 .orElseThrow(() -> new NotFoundException("Audit run not found: " + id));
     }
@@ -61,9 +64,9 @@ public class AuditRunService {
      * @throws NotFoundException if the run doesn't exist or belongs to another tenant
      */
     @Transactional
-    public void deleteRun(UUID id) {
+    public void deleteRun(UUID id, String userId) {
         String tenantId = TenantContext.getCurrentTenant();
-        if (!runRepository.existsByIdAndTenantId(id, tenantId)) {
+        if (!runRepository.existsByIdAndTenantIdAndUserId(id, tenantId, userId)) {
             throw new NotFoundException("Audit run not found: " + id);
         }
         runRepository.deleteById(id);
@@ -102,8 +105,17 @@ public class AuditRunService {
                 .completedAt(run.getCompletedAt())
                 .expiresAt(run.getExpiresAt())
                 .userId(run.getUserId())
-                .inputMetadata(run.getInputMetadata())
-                .resultData(includeResultData ? run.getResultData() : null)
+                .inputMetadata(fromJson(run.getInputMetadata()))
+                .resultData(includeResultData ? fromJson(run.getResultData()) : null)
                 .build();
+    }
+
+    private Object fromJson(String json) {
+        if (json == null || json.isBlank()) return null;
+        try {
+            return objectMapper.readValue(json, Object.class);
+        } catch (JsonProcessingException e) {
+            return json; // fallback: return raw string
+        }
     }
 }

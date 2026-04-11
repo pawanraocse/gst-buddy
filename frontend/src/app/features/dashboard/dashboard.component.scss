@@ -144,7 +144,8 @@
 ═══════════════════════════════════════════════════════════════════════════ */
 
 .tab-toggle {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   gap: 0.25rem;
   padding: 0.3rem;
   background: var(--glass-bg);
@@ -196,6 +197,9 @@
 ═══════════════════════════════════════════════════════════════════════════ */
 
 ::ng-deep .howto-panel {
+  border: none !important;
+  box-shadow: none !important;
+
   .p-panel-header {
     background: var(--bg-app);
     border: 1px solid var(--border-color);
