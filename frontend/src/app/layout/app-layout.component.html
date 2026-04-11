@@ -1,100 +1,26 @@
-<div class="layout-wrapper" [class.layout-sidebar-active]="sidebarActive()" [class.layout-sidebar-collapsed]="sidebarCollapsed()">
+<div class="app-shell-container">
+  <!-- Desktop Sidebar -->
+  <app-sidebar 
+    class="hidden lg:block"
+    [collapsed]="sidebarCollapsed()" 
+    (toggle)="toggleSidebar()">
+  </app-sidebar>
 
-  <!-- Floating Sidebar (Glassmorphism) -->
-  <aside class="layout-sidebar">
-    <div class="sidebar-header" style="justify-content: space-between;">
-      <div class="logo-container">
-        <div class="logo-box">
-          <i class="pi pi-bolt"></i>
-        </div>
-        <span class="app-name">Gstbuddies</span>
-      </div>
-      <button class="sidebar-toggle-desktop hidden md:flex" (click)="toggleDesktopSidebar()" pTooltip="Toggle Sidebar" tooltipPosition="right">
-        <i class="pi" [ngClass]="sidebarCollapsed() ? 'pi-angle-right' : 'pi-angle-left'"></i>
-      </button>
+  <!-- Mobile Sidebar (Overlay) -->
+  <div class="mobile-sidebar-overlay" [class.active]="mobileSidebarActive()" (click)="closeMobileSidebar()"></div>
+  <app-sidebar 
+    class="mobile-sidebar"
+    [class.active]="mobileSidebarActive()"
+    [collapsed]="false"
+    (toggle)="closeMobileSidebar()">
+  </app-sidebar>
+
+  <main class="app-main-content" 
+        [style.padding-left]="sidebarCollapsed() ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)'">
+    <app-topbar (toggleMobileSidebar)="toggleMobileSidebar()"></app-topbar>
+    
+    <div class="content-canvas">
+      <router-outlet></router-outlet>
     </div>
-
-    <div class="sidebar-content">
-      <ul class="layout-menu">
-        @for (item of items(); track $index) {
-        @if (item.separator) {
-        <li class="menu-separator">
-          <span class="separator-label">Administration</span>
-        </li>
-        } @else {
-        <li class="menu-item" [class.active-menuitem]="isActive(item.routerLink)">
-          <a [routerLink]="item.routerLink" class="menu-link" (click)="onMenuClick()">
-            <i [class]="item.icon"></i>
-            <span>{{ item.label }}</span>
-          </a>
-        </li>
-        }
-        }
-      </ul>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="user-card" *ngIf="authService.user() as user">
-        <p-avatar icon="pi pi-user" shape="circle" styleClass="bg-primary-100 text-primary-700">
-        </p-avatar>
-        <div class="user-info">
-          <span class="user-name text-truncate">{{ user.name || user.email.split('@')[0] }}</span>
-          <span class="user-role">{{ user.tenantType === 'ORGANIZATION' ? 'Org' : 'Personal' }}</span>
-        </div>
-        <button class="logout-btn" (click)="logout()" pTooltip="Logout">
-          <i class="pi pi-power-off"></i>
-        </button>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Main Content Container -->
-  <div class="layout-main-container">
-    <!-- Floating Header -->
-    <header class="layout-header">
-      <button class="sidebar-toggle md:hidden" (click)="toggleSidebar()">
-        <i class="pi pi-bars"></i>
-      </button>
-
-      <div class="header-content">
-        <!-- Page context -->
-        <div class="hidden md:block">
-          <span class="text-secondary font-medium">
-            Welcome back,
-            <span style="color: var(--text-main)" class="font-semibold">{{ authService.user()?.name ||
-              authService.user()?.email?.split('@')?.[0] }}</span>
-          </span>
-          <span style="color: var(--text-light)" class="mx-2">•</span>
-          <span class="text-primary font-medium">Compliance Dashboard</span>
-        </div>
-
-        <!--<div class="header-actions">
-          <button pButton icon="pi pi-cog" class="header-action-btn" [rounded]="true" [text]="true"
-            routerLink="/app/settings/account" pTooltip="Settings"></button>
-        </div>-->
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="layout-content">
-      <div class="content-animation-wrapper">
-        <router-outlet></router-outlet>
-      </div>
-    </main>
-  </div>
-
-  <div class="layout-mask md:hidden" *ngIf="sidebarActive()" (click)="sidebarActive.set(false)"></div>
-  
-  <!-- Floating Support Button -->
-  <button 
-    pButton 
-    icon="pi pi-question-circle" 
-    class="floating-support-btn p-button-rounded p-button-raised"
-    (click)="openSupportDialog()"
-    pTooltip="Get Support & Feedback"
-    tooltipPosition="left">
-  </button>
-
-  <app-share-dialog #shareDialog></app-share-dialog>
-  <app-support-ticket-dialog #supportDialog [isAuthenticated]="true"></app-support-ticket-dialog>
+  </main>
 </div>

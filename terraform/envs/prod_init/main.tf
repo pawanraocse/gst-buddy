@@ -340,8 +340,16 @@ module "cognito_user_pool" {
   aws_account_id = data.aws_caller_identity.current.account_id
 
   # Cognito requires HTTPS or localhost - using localhost for budget
-  callback_urls = ["http://localhost:4200/auth/callback", var.callback_url]
-  logout_urls   = ["http://localhost:4200", var.logout_redirect_url]
+  callback_urls = [
+    "http://localhost:4200/auth/callback", 
+    var.callback_url,
+    replace(var.callback_url, "https://", "https://www.")
+  ]
+  logout_urls   = [
+    "http://localhost:4200", 
+    var.logout_redirect_url,
+    replace(var.logout_redirect_url, "https://", "https://www.")
+  ]
 
   enable_google_social_login = var.enable_google_social_login
   google_client_id           = var.google_client_id

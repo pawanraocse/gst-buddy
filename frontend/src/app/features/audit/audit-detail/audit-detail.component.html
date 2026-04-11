@@ -1,0 +1,119 @@
+<div class="audit-detail-container">
+    <!-- Header Section -->
+    <div class="flex justify-content-between align-items-center mb-6">
+        <div class="flex align-items-center gap-4">
+            <button pButton icon="pi pi-arrow-left" 
+                    class="p-button-text p-button-secondary p-button-rounded" 
+                    routerLink="/app/audit/history"></button>
+            <div>
+                <div class="flex align-items-center gap-2 mb-1">
+                    <h1 class="m-0 text-3xl font-bold tracking-tight">{{ run()?.ruleId }}</h1>
+                    <p-tag [value]="run()?.status" [severity]="run()?.status === 'COMPLETED' ? 'success' : 'info'"></p-tag>
+                </div>
+                <p class="text-secondary m-0">Run ID: <span class="font-mono text-xs">{{ run()?.runId }}</span> • {{ formatDate(run()?.createdAt) }}</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button pButton label="Detailed Excel" icon="pi pi-file-excel" 
+                    class="p-button-outlined" [loading]="exporting()" (click)="exportExcel('complete')"></button>
+            <button pButton label="GSTR-3B Summary" icon="pi pi-download" 
+                    class="p-button-primary glow-on-hover" [loading]="exporting()" (click)="exportExcel('gstr3b')"></button>
+        </div>
+    </div>
+
+    <!-- Findings Dashboard -->
+    <div class="grid mb-6" *ngIf="run()?.status === 'COMPLETED'">
+        <div class="col-12 xl:col-4">
+            <p-card header="Severity Distribution" styleClass="h-full">
+                <div class="flex flex-column gap-3 mt-4">
+                    <div class="severity-stat critical">
+                        <span>Critical Issues</span>
+                        <span class="count">{{ severityStats().critical }}</span>
+                    </div>
+                    <div class="severity-stat high">
+                        <span>High Priority</span>
+                        <span class="count">{{ severityStats().high }}</span>
+                    </div>
+                    <div class="severity-stat medium">
+                        <span>Medium Priority</span>
+                        <span class="count">{{ severityStats().medium }}</span>
+                    </div>
+                    <div class="severity-stat low">
+                        <span>Low Priority</span>
+                        <span class="count">{{ severityStats().low }}</span>
+                    </div>
+                </div>
+            </p-card>
+        </div>
+        <div class="col-12 xl:col-8">
+            <p-card header="Key Summary Metrics" styleClass="h-full">
+                <div class="grid text-center mt-4">
+                    <div class="col-4 border-right-1 border-color">
+                        <div class="text-secondary text-sm mb-1 uppercase tracking-wider font-bold">Total ITC Risk</div>
+                        <div class="text-3xl font-bold text-error-500">₹{{ run()?.resultData?.summary?.totalItcReversal | number:'1.0-0' }}</div>
+                    </div>
+                    <div class="col-4 border-right-1 border-color">
+                        <div class="text-secondary text-sm mb-1 uppercase tracking-wider font-bold">Interest (Est.)</div>
+                        <div class="text-3xl font-bold text-warning-500">₹{{ run()?.resultData?.summary?.totalInterest | number:'1.0-0' }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-secondary text-sm mb-1 uppercase tracking-wider font-bold">Files Audited</div>
+                        <div class="text-3xl font-bold text-main">{{ run()?.metadata?.fileCount }}</div>
+                    </div>
+                </div>
+            </p-card>
+        </div>
+    </div>
+
+    <!-- Processing State -->
+    <div *ngIf="run()?.status === 'PROCESSING'" class="py-8 text-center flex flex-column align-items-center gap-4">
+        <i class="pi pi-spin pi-spinner text-5xl text-primary-500"></i>
+        <div>
+            <h2 class="m-0">Audit is being processed</h2>
+            <p class="text-secondary">We're checking your ledgers against GST rule sets. This usually takes 1-2 minutes.</p>
+        </div>
+        <button pButton label="Refresh Page" icon="pi pi-refresh" (click)="loadRun(run()!.runId)"></button>
+    </div>
+
+    <!-- Findings Table -->
+    <p-card *ngIf="run()?.status === 'COMPLETED'" styleClass="p-0 overflow-hidden shadow-2">
+        <p-table [value]="findings()" 
+                 [paginator]="true" 
+                 [rows]="10" 
+                 [tableStyle]="{ 'min-width': '60rem' }"
+                 styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Severity</th>
+                    <th>GSTIN / Legal Name</th>
+                    <th>Invoice / ID</th>
+                    <th>Reason / Category</th>
+                    <th class="text-right">Risk Amount</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-finding>
+                <tr>
+                    <td>
+                        <p-tag [value]="finding.severity" [severity]="getSeverityBadge(finding.severity)"></p-tag>
+                    </td>
+                    <td>
+                        <div class="flex flex-column">
+                            <span class="font-bold text-main">{{ finding.gstin || 'N/A' }}</span>
+                            <span class="text-xs text-light" *ngIf="finding.legalName">{{ finding.legalName }}</span>
+                        </div>
+                    </td>
+                    <td>{{ finding.id || '-' }}</td>
+                    <td>
+                        <div class="flex flex-column">
+                            <span class="text-sm font-medium">{{ finding.reason }}</span>
+                            <span class="text-xs text-light" *ngIf="finding.category">{{ finding.category }}</span>
+                        </div>
+                    </td>
+                    <td class="text-right font-bold" [class.text-error-500]="finding.severity === 'CRITICAL'">
+                        ₹{{ finding.amount | number:'1.2-2' }}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-card>
+</div>

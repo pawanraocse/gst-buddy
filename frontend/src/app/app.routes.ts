@@ -47,6 +47,30 @@ export const routes: Routes = [
         loadComponent: () => import('./features/referral/referral.component').then(m => m.ReferralComponent)
       },
       {
+        path: 'audit',
+        children: [
+          { path: '', redirectTo: 'history', pathMatch: 'full' },
+          {
+            path: 'history',
+            loadComponent: () => import('./features/audit/audit-history/audit-history.component').then(m => m.AuditHistoryComponent)
+          },
+          {
+            path: 'history/:id',
+            loadComponent: () => import('./features/audit/audit-detail/audit-detail.component').then(m => m.AuditDetailComponent)
+          },
+          {
+            path: 'upload',
+            loadComponent: () => import('./features/audit/audit-upload/audit-upload.component').then(m => m.AuditUploadComponent)
+          }
+        ]
+      },
+      {
+        path: 'rule37',
+        children: [
+            { path: '**', redirectTo: '/app/audit/upload' }
+        ]
+      },
+      {
         path: 'admin',
         canActivate: [adminGuard],
         children: [

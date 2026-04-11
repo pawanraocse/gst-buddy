@@ -1,186 +1,148 @@
 <div class="auth-page-container">
+  <!-- Left: Brand Panel -->
+  <div class="auth-brand-panel">
+    <div class="brand-content">
+      <div class="brand-logo" routerLink="/">
+        <i class="pi pi-shield"></i>
+        <span>GSTbuddies</span>
+      </div>
+      
+      <div class="brand-illustration-slot">
+        <i class="pi pi-user-plus text-8xl opacity-20 absolute-center"></i>
+        <div class="floating-blobs">
+            <div class="signup-blob-1"></div>
+            <div class="signup-blob-2"></div>
+        </div>
+      </div>
 
-    <!-- Left: Brand Panel -->
-    <div class="auth-brand-panel">
-        <div class="bg-decoration">
-            <div class="circle circle-1"></div>
-            <div class="circle circle-2"></div>
-            <div class="circle circle-3"></div>
-        </div>
-        <div class="brand-content">
-            <div class="brand-logo">
-                <i class="pi pi-calculator"></i>
-                <span>Gstbuddies</span>
-            </div>
-            <div class="brand-illustration-slot">
-                <img src="assets/images/auth/auth-signup-illustration.png" alt="Signup Illustration"
-                    class="w-full h-auto drop-shadow-lg" />
-            </div>
-            <h2>Join the smarter way to handle GST</h2>
-            <p>Create your account in 30 seconds. No credit card required.</p>
-            <div class="trust-signal">
-                <i class="pi pi-check-circle"></i>
-                <span>2 free compliance checks</span>
-            </div>
-        </div>
+      <h2>Simple GST for Modern Business.</h2>
+      <p>Save 50+ hours every month on reconciliation and audits. Start your 14-day free trial today.</p>
+
+      <div class="trust-signal">
+        <i class="pi pi-verified"></i>
+        <span>Trusted by 10,000+ CA & Business owners</span>
+      </div>
     </div>
+  </div>
 
-    <!-- Right: Form Panel -->
-    <div class="auth-form-panel">
-        <div class="glass-card">
+  <!-- Right: Form Panel -->
+  <div class="auth-form-panel">
+    <a routerLink="/" class="back-to-home">
+      <i class="pi pi-arrow-left"></i> Home
+    </a>
 
-            <!-- Back to Home Link -->
-            <a routerLink="/" class="back-to-home">
-                <i class="pi pi-arrow-left"></i> Back to Home
-            </a>
-
-            <!-- Header -->
-            <div class="text-center mb-5">
-                <div class="icon-container mb-4">
-                    <div class="icon-ring">
-                        <i class="pi pi-user-plus text-3xl text-white"></i>
-                    </div>
-                </div>
-
-                <h1 class="text-3xl font-bold text-900 mb-2 m-0" style="letter-spacing: -0.5px;">Create Account</h1>
-                <p class="text-secondary font-medium m-0 line-height-3">
-                    Join us as a personal user
-                </p>
-            </div>
-
-            <!-- Messages -->
-            @if (referralCode()) {
-            <div class="flex align-items-center gap-2 mb-3 p-3 border-round-lg surface-100 animate-fade-in"
-                style="border-left: 3px solid var(--primary-color);">
-                <i class="pi pi-gift text-primary text-xl"></i>
-                <span class="text-700 font-medium">You've been referred by a friend! Both of you will receive bonus
-                    credits 🎉</span>
-            </div>
-            }
-            @if (error()) {
-            <p-message severity="error" [text]="error()!" styleClass="w-full mb-4 animate-fade-in"></p-message>
-            }
-
-            <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-4 animate-fade-in">
-
-                <div class="flex flex-column gap-2">
-                    <label for="name" class="font-semibold text-700">Full Name</label>
-                    <span class="p-input-icon-left w-full">
-                        <i class="pi pi-user text-primary"></i>
-                        <input pInputText id="name" formControlName="name" class="w-full" placeholder="John Doe" />
-                    </span>
-                    @if (signupForm.get('name')?.invalid && (signupForm.get('name')?.dirty || signupForm.get('name')?.touched)) {
-                        <small class="text-red-500 font-medium animate-fade-in">
-                            <i class="pi pi-exclamation-circle mr-1"></i> Name must move at least 2 characters
-                        </small>
-                    }
-                </div>
-
-                <div class="flex flex-column gap-2">
-                    <label for="email" class="font-semibold text-700">Email Address</label>
-                    <span class="p-input-icon-left w-full">
-                        <i class="pi pi-envelope text-primary"></i>
-                        <input pInputText id="email" formControlName="email" class="w-full"
-                            placeholder="name@example.com" />
-                    </span>
-                    @if (signupForm.get('email')?.invalid && (signupForm.get('email')?.dirty || signupForm.get('email')?.touched)) {
-                        <small class="text-red-500 font-medium animate-fade-in">
-                            <i class="pi pi-exclamation-circle mr-1"></i> Please enter a valid email address
-                        </small>
-                    }
-                </div>
-
-                <div class="flex flex-column gap-2">
-                    <label for="password" class="font-semibold text-700">Password</label>
-                    <p-password id="password" formControlName="password" [toggleMask]="true" styleClass="w-full"
-                        inputStyleClass="w-full p-inputtext-lg" placeholder="Min 8 chars">
-                        <!-- Password Suggestions Template -->
-                        <ng-template pTemplate="header">
-                            <div class="font-semibold text-sm mb-2">Password Requirements</div>
-                        </ng-template>
-                        <ng-template pTemplate="footer">
-                            <ul class="pl-3 ml-1 mt-0 text-sm text-secondary" style="line-height: 1.6">
-                                <li>At least one lowercase</li>
-                                <li>At least one uppercase</li>
-                                <li>At least one numeric</li>
-                                <li>Minimum 8 characters</li>
-                            </ul>
-                        </ng-template>
-                    </p-password>
-                    @if (signupForm.get('password')?.invalid && (signupForm.get('password')?.dirty || signupForm.get('password')?.touched)) {
-                        <small class="text-red-500 font-medium animate-fade-in">
-                            <i class="pi pi-exclamation-circle mr-1"></i>
-                            @if (signupForm.get('password')?.hasError('required')) {
-                                Password is required
-                            } @else if (signupForm.get('password')?.hasError('minlength')) {
-                                Password must be at least 8 characters long
-                            } @else if (signupForm.get('password')?.hasError('pattern')) {
-                                Must include uppercase, lowercase, and a number
-                            }
-                        </small>
-                    }
-                </div>
-
-                <div class="flex flex-column gap-2">
-                    <label for="confirmPassword" class="font-semibold text-700">Confirm Password</label>
-                    <p-password id="confirmPassword" formControlName="confirmPassword" [toggleMask]="true"
-                        [feedback]="false" styleClass="w-full" inputStyleClass="w-full p-inputtext-lg"
-                        placeholder="Re-enter password">
-                    </p-password>
-                    @if (signupForm.hasError('mismatch') && (signupForm.get('confirmPassword')?.dirty || signupForm.get('confirmPassword')?.touched)) {
-                    <small class="text-red-500 font-medium animate-fade-in">
-                        <i class="pi pi-exclamation-circle mr-1"></i> Passwords do not match
-                    </small>
-                    }
-                </div>
-
-                <!-- Referral Code -->
-                <div class="flex flex-column gap-2">
-                    @if (!referralCode()) {
-                    <a href="javascript:void(0)" class="text-primary font-medium text-sm no-underline hover:underline"
-                        (click)="showReferralInput.set(!showReferralInput())">
-                        <i class="pi pi-gift mr-1"></i>Have a referral code?
-                    </a>
-                    }
-                    @if (referralCode() || showReferralInput()) {
-                    <label for="referralCode" class="font-semibold text-700">
-                        <i class="pi pi-gift mr-1 text-primary"></i>Referral Code
-                    </label>
-                    <span class="p-input-icon-left w-full">
-                        <i class="pi pi-tag text-primary"></i>
-                        <input pInputText id="referralCode" [value]="referralCode() || ''"
-                            (input)="onReferralInput($any($event.target).value)" class="w-full"
-                            placeholder="Enter code, e.g. ABC12345" />
-                    </span>
-                    <small class="text-500">Enter just the referral code (not the full URL). You can edit it until you
-                        sign up.</small>
-                    @if (referralCode()) {
-                    <small class="text-green-600 font-medium">
-                        <i class="pi pi-check-circle mr-1"></i>Referral code: {{ referralCode() }}
-                    </small>
-                    }
-                    }
-                </div>
-
-                <div class="flex flex-column gap-2 mt-2">
-                    <p-button type="submit" label="Create Account" [loading]="loading()" [disabled]="signupForm.invalid"
-                        styleClass="w-full p-button-lg shadow-2">
-                    </p-button>
-                    @if (signupForm.invalid && (signupForm.dirty || signupForm.touched)) {
-                    <small class="text-center text-500 text-xs animate-fade-in">
-                        <i class="pi pi-info-circle mr-1"></i> Please fulfill all requirements above
-                    </small>
-                    }
-                </div>
-
-                <div class="text-center mt-4">
-                    <span class="text-secondary">Already have an account? </span>
-                    <a routerLink="/auth/login"
-                        class="font-bold text-primary hover:text-primary-700 no-underline transition-colors">Sign In</a>
-                </div>
-            </form>
-
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="icon-ring">
+          <i class="pi pi-user-plus"></i>
         </div>
-    </div>
+        <h1>Create Account</h1>
+        <p>Join GSTbuddies and simplify your filing.</p>
+      </div>
 
+      <!-- Referral Banner -->
+      @if (referralCode()) {
+        <div class="p-3 mb-4 surface-elevated border-left-3 border-primary-500 flex align-items-center gap-2">
+            <i class="pi pi-gift text-primary-500 text-xl"></i>
+            <span class="text-sm font-medium">Referral applied! You'll get bonus credits after signup.</span>
+        </div>
+      }
+
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="form-field">
+          <label for="name">Full Name</label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-user"></i>
+            <input id="name" type="text" pInputText formControlName="name" class="w-full" placeholder="John Doe">
+          </span>
+          @if (signupForm.get('name')?.invalid && (signupForm.get('name')?.dirty || signupForm.get('name')?.touched)) {
+            <small class="text-red-500">Name is required (min 2 chars).</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="email">Email address</label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-envelope"></i>
+            <input id="email" type="email" pInputText formControlName="email" class="w-full" placeholder="name@company.com">
+          </span>
+          @if (signupForm.get('email')?.invalid && (signupForm.get('email')?.dirty || signupForm.get('email')?.touched)) {
+            <small class="text-red-500">Please enter a valid email address.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="password">Password</label>
+          <p-password id="password" 
+                      formControlName="password" 
+                      [toggleMask]="true" 
+                      [feedback]="true" 
+                      styleClass="w-full" 
+                      inputStyleClass="w-full" 
+                      placeholder="••••••••">
+            <ng-template pTemplate="footer">
+                <p-divider></p-divider>
+                <p class="mt-2 text-xs font-semibold">Requirements</p>
+                <ul class="pl-2 ml-2 mt-0 text-xs line-height-3 text-secondary">
+                    <li>At least 8 characters</li>
+                    <li>One uppercase letter</li>
+                    <li>One number</li>
+                </ul>
+            </ng-template>
+          </p-password>
+        </div>
+
+        <div class="form-field">
+          <label for="confirmPassword">Confirm Password</label>
+          <p-password id="confirmPassword" 
+                      formControlName="confirmPassword" 
+                      [toggleMask]="true" 
+                      [feedback]="false" 
+                      styleClass="w-full" 
+                      inputStyleClass="w-full" 
+                      placeholder="••••••••">
+          </p-password>
+          @if (signupForm.hasError('mismatch') && (signupForm.get('confirmPassword')?.dirty || signupForm.get('confirmPassword')?.touched)) {
+            <small class="text-red-500">Passwords do not match.</small>
+          }
+        </div>
+
+        <!-- Referral Input (Toggleable) -->
+        <div class="mt-2">
+            @if (!referralCode() && !showReferralInput()) {
+                <button type="button" pButton label="Have a referral code?" icon="pi pi-gift" 
+                        class="p-button-link p-button-sm p-0 text-primary-600 font-bold" 
+                        (click)="showReferralInput.set(true)">
+                </button>
+            }
+            @if (showReferralInput()) {
+                <div class="form-field">
+                    <label for="ref">Referral Code</label>
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-tag"></i>
+                        <input id="ref" type="text" pInputText (input)="onReferralInput($any($event.target).value)" 
+                               [value]="referralCode() || ''" class="w-full" placeholder="REF123">
+                    </span>
+                </div>
+            }
+        </div>
+
+        <div class="auth-actions mt-4">
+          <p-button label="Create Free Account" 
+                    type="submit" 
+                    [loading]="loading()" 
+                    [disabled]="signupForm.invalid"
+                    styleClass="w-full p-button-primary p-button-lg glow-on-hover">
+          </p-button>
+        </div>
+
+        <p-message *ngIf="error()" severity="error" [text]="error() || ''" styleClass="w-full mt-2"></p-message>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? 
+        <a routerLink="/auth/login">Sign In</a>
+      </div>
+    </div>
+  </div>
 </div>

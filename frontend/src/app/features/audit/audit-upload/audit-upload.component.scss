@@ -1,0 +1,91 @@
+@use "theme.scss" as *;
+
+.audit-upload-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Selectable Rule Card */
+.selectable-rule-card {
+    background-color: var(--bg-surface);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-xl);
+    padding: var(--space-6);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    position: relative;
+
+    &:hover {
+        border-color: var(--primary-300);
+        background-color: var(--surface-hover);
+        transform: translateY(-2px);
+    }
+
+    &.selected {
+        border-color: var(--primary-500);
+        background-color: var(--primary-50);
+        box-shadow: var(--glow-primary);
+        
+        .rule-badge { background-color: var(--primary-500); color: white; }
+    }
+}
+
+.rule-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.selection-check {
+    width: 24px;
+    height: 24px;
+    background: var(--primary-500);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+/* Config & Upload Tweak */
+:host ::ng-deep .p-fileupload-custom {
+    .p-fileupload-buttonbar {
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin-bottom: var(--space-4);
+    }
+
+    .p-fileupload-content {
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+
+    .p-fileupload-file {
+        padding: var(--space-2) var(--space-4);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-md);
+        margin-bottom: var(--space-2);
+        background: var(--bg-surface);
+    }
+}
+
+:host ::ng-deep .p-stepper {
+    .p-stepper-header {
+        background: transparent;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .selectable-rule-card.selected {
+        background-color: rgba(99, 102, 241, 0.1);
+    }
+}

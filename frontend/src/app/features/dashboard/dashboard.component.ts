@@ -1,224 +1,87 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
-import { Rule37ApiService } from '../../core/services/rule37-api.service';
-import { CreditApiService, WalletDto } from '../../core/services/credit-api.service';
-import { DocumentUploadComponent } from '../rule37/document-upload/document-upload.component';
-import { ComplianceViewComponent } from '../rule37/compliance-view/compliance-view.component';
-import { CalculationHistoryComponent } from '../rule37/calculation-history/calculation-history.component';
+import { AuditApiService } from '../../core/services/audit-api.service';
+import { CreditApiService } from '../../core/services/credit-api.service';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { MessageModule } from 'primeng/message';
-import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
-import { PanelModule } from 'primeng/panel';
-import { LedgerResult, UploadResult } from '../../shared/models/rule37.model';
-import { MessageService } from 'primeng/api';
+import { SkeletonModule } from 'primeng/skeleton';
+import { AuditRuleInfo, AuditRunResponse } from '../../shared/models/audit.model';
+import { forkJoin, finalize } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    CardModule,
-    ButtonModule,
-    MessageModule,
-    InputTextModule,
-    TooltipModule,
-    DocumentUploadComponent,
-    ComplianceViewComponent,
-    CalculationHistoryComponent,
-    PanelModule
+    CommonModule, 
+    RouterModule, 
+    CardModule, 
+    ButtonModule, 
+    TableModule, 
+    TagModule, 
+    TooltipModule, 
+    SkeletonModule
   ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   authService = inject(AuthService);
-  private api = inject(Rule37ApiService);
+  private auditApi = inject(AuditApiService);
   private creditApi = inject(CreditApiService);
-  private messageService = inject(MessageService);
 
-  // Credit wallet
-  creditTotal = signal(0);
-  creditUsed = signal(0);
-  creditRemaining = signal(0);
-  walletLoaded = signal(false);
+  loading = signal(true);
+  rules = signal<AuditRuleInfo[]>([]);
+  recentRuns = signal<AuditRunResponse[]>([]);
+  wallet = signal({ total: 0, used: 0, remaining: 0 });
 
-  activeTab = signal<'new' | 'history'>('new');
-  asOnDate = signal<string>(new Date().toISOString().split('T')[0]);
-  results = signal<LedgerResult[]>([]);
-  runId = signal<number | null>(null);
-  isProcessing = signal(false);
-  error = signal<string | null>(null);
-  fileNames = signal<string[]>([]);
-  scopeConfirmed = signal(false);
-
-  // At-risk KPIs
-  atRiskCount = computed(() => {
-    return this.results().reduce((s, x) => s + (x.summary.atRiskCount ?? 0), 0);
-  });
-
-  atRiskAmount = computed(() => {
-    return this.results().reduce((s, x) => s + (x.summary.atRiskAmount ?? 0), 0);
-  });
-
-  /**
-   * 3-state banner: 'clear' | 'watchlist' | 'action'
-   * - action: breached invoices exist (ITC reversal or interest > 0)
-   * - watchlist: no breaches but at-risk invoices (150–180 days)
-   * - clear: no issues at all
-   */
-  bannerState = computed<'clear' | 'watchlist' | 'action'>(() => {
-    const r = this.results();
-    if (r.length === 0) return 'clear';
-    const totalItc = r.reduce((s, x) => s + x.summary.totalItcReversal, 0);
-    const totalInterest = r.reduce((s, x) => s + x.summary.totalInterest, 0);
-    if (totalItc > 0 || totalInterest > 0) return 'action';
-    if (this.atRiskCount() > 0) return 'watchlist';
-    return 'clear';
-  });
-
-  statusMessage = computed(() => {
-    const state = this.bannerState();
-    if (this.results().length === 0) return '';
-    if (state === 'clear') return 'All Clear — No estimated liability';
-    if (state === 'watchlist') return `Watchlist — ${this.atRiskCount()} invoice(s) due soon`;
-    return 'Action Needed';
-  });
-
-  statusSeverity = computed(() => {
-    const state = this.bannerState();
-    if (state === 'action') return 'red';
-    if (state === 'watchlist') return 'amber';
-    return 'teal';
-  });
-
-  // KPI Summary computed values
-  totalItcReversal = computed(() => {
-    return this.results().reduce((s, x) => s + x.summary.totalItcReversal, 0);
-  });
-
-  totalInterest = computed(() => {
-    return this.results().reduce((s, x) => s + x.summary.totalInterest, 0);
-  });
-
-  filesProcessed = computed(() => this.results().length);
-
-  formatCurrency(value: number): string {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  }
+  // Dashboard Stats (Calculated from recent runs/wallet)
+  stats = computed(() => [
+    { label: 'Total Audits', value: this.recentRuns().length, icon: 'pi pi-check-circle', color: 'var(--primary-500)' },
+    { label: 'Rules Available', value: this.rules().length, icon: 'pi pi-shield', color: 'var(--success-500)' },
+    { label: 'Remaining Credits', value: this.wallet().remaining, icon: 'pi pi-bolt', color: 'var(--warning-500)' },
+    { label: 'Credits Used', value: this.wallet().used, icon: 'pi pi-chart-line', color: 'var(--info-500)' }
+  ]);
 
   ngOnInit(): void {
-    this.loadWallet();
+    this.refreshData();
   }
 
-  private loadWallet(): void {
-    this.creditApi.getWallet().subscribe({
-      next: (w) => {
-        this.creditTotal.set(w.total);
-        this.creditUsed.set(w.used);
-        this.creditRemaining.set(w.remaining);
-        this.walletLoaded.set(true);
+  refreshData() {
+    this.loading.set(true);
+    forkJoin({
+      rules: this.auditApi.getAvailableRules(),
+      runs: this.auditApi.listRuns(0, 5),
+      wallet: this.creditApi.getWallet()
+    }).pipe(
+      finalize(() => this.loading.set(false))
+    ).subscribe({
+      next: (data) => {
+        this.rules.set(data.rules);
+        this.recentRuns.set(data.runs.content);
+        this.wallet.set(data.wallet);
       },
-      error: () => { /* wallet unavailable, keep defaults */ }
+      error: (err) => console.error('Dashboard load failed', err)
     });
   }
 
-  onFilesSelected(files: File[]) {
-    this.isProcessing.set(true);
-    this.error.set(null);
-    this.results.set([]);
-    this.fileNames.set(files.map((f) => f.name));
-
-    this.api.uploadLedgers(files, this.asOnDate()).subscribe({
-      next: (res: UploadResult) => {
-        this.runId.set(res.runId);
-        this.results.set(
-          res.results.map((r) => ({
-            ledgerName: r.ledgerName,
-            summary: {
-              totalInterest: r.summary.totalInterest,
-              totalItcReversal: r.summary.totalItcReversal,
-              atRiskCount: r.summary.atRiskCount ?? 0,
-              atRiskAmount: r.summary.atRiskAmount ?? 0,
-              breachedCount: r.summary.breachedCount ?? 0,
-              calculationDate: r.summary.calculationDate ?? new Date().toISOString().split('T')[0],
-              details: r.summary.details.map((d) => ({
-                ...d,
-                purchaseDate: d.purchaseDate ?? '',
-                paymentDate: d.paymentDate ?? null,
-              })),
-            },
-          }))
-        );
-        this.fileNames.set(res.results.map((r) => r.ledgerName));
-        if (res.errors.length > 0) {
-          this.error.set(res.errors.map((e) => `${e.filename}: ${e.message}`).join('; '));
-        } else {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Files processed successfully' });
-        }
-        this.isProcessing.set(false);
-      },
-      error: (err) => {
-        if (err?.status === 402) {
-          const body = err?.error;
-          const detail = body?.message || body?.error || 'You do not have enough credits to process these files. Please purchase more credits.';
-          this.error.set(detail);
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Insufficient Credits',
-            detail,
-            life: 8000,
-          });
-          this.loadWallet();
-        } else {
-          const detail = err?.error?.message || err?.message || 'Failed to process files';
-          this.error.set(detail);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Upload Failed',
-            detail,
-          });
-        }
-        this.fileNames.set([]);
-        this.isProcessing.set(false);
-      },
-    });
+  getStatusSeverity(status: string): 'success' | 'warn' | 'danger' | 'info' {
+    switch (status?.toLowerCase()) {
+      case 'completed': return 'success';
+      case 'processing': return 'info';
+      case 'failed': return 'danger';
+      default: return 'warn';
+    }
   }
 
-  downloadExport(reportType: string = 'issues') {
-    const rt = (['issues', 'complete', 'gstr3b'].includes(reportType) ? reportType : 'issues') as 'issues' | 'complete' | 'gstr3b';
-    const id = this.runId();
-    const r = this.results();
-    if (!id || r.length === 0) return;
-    const filename = r.length === 1 ? r[0].ledgerName : `${r.length} files`;
-    const suffix = rt === 'gstr3b' ? '_GSTR3B_Summary' : '_Interest_Calculation';
-    this.api.exportRun(id, rt).subscribe({
-      next: (blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename + suffix + '.xlsx';
-        a.click();
-        URL.revokeObjectURL(url);
-      },
-      error: (err) => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Export failed: ' + (err?.message || 'Unknown error') }),
-    });
-  }
-
-  onExportLedger(ev: { ledgerName: string; summary: LedgerResult['summary'] }) {
-    this.downloadExport('issues');
-  }
-
-  switchToHistory() {
-    this.activeTab.set('history');
+  formatDate(date: string | Date): string {
+    if (!date) return 'N/A';
+    return new Intl.DateTimeFormat('en-IN', {
+      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    }).format(new Date(date));
   }
 }

@@ -1,0 +1,38 @@
+<div class="topbar-wrapper">
+  <div class="topbar-left">
+    <button class="mobile-toggle p-button-text p-button-secondary lg:hidden" 
+            pButton icon="pi pi-bars" 
+            (click)="onMobileMenuClick()">
+    </button>
+    <p-breadcrumb [model]="breadcrumbItems" class="hidden md:block"></p-breadcrumb>
+  </div>
+
+  <div class="topbar-right">
+    <!-- Theme Toggle -->
+    <button pButton 
+            [icon]="isDark() ? 'pi pi-sun' : 'pi pi-moon'" 
+            class="p-button-rounded p-button-text p-button-secondary"
+            (click)="toggleTheme()"
+            [pTooltip]="isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+            tooltipPosition="bottom">
+    </button>
+
+    <!-- Notifications Stub -->
+    <button pButton icon="pi pi-bell" class="p-button-rounded p-button-text p-button-secondary p-ml-2"></button>
+
+    <div class="divider"></div>
+
+    <!-- User Menu -->
+    <div class="user-profile" (click)="menu.toggle($event)" *ngIf="authService.currentUser()">
+      <p-avatar [label]="(authService.currentUser()?.email ?? '').substring(0, 1).toUpperCase()" 
+                shape="circle" 
+                styleClass="user-avatar">
+      </p-avatar>
+      <div class="user-details hidden sm:flex">
+        <span class="user-name">{{ (authService.currentUser()?.email ?? '').split('@')[0] }}</span>
+        <i class="pi pi-chevron-down ml-2 text-xs"></i>
+      </div>
+    </div>
+    <p-menu #menu [model]="userMenuItems" [popup]="true"></p-menu>
+  </div>
+</div>

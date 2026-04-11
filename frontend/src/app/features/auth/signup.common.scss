@@ -1,3 +1,48 @@
 @use "auth-shared.scss" as *;
 
-/* Signup specific overrides if any */
+.floating-blobs {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+
+  div {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    filter: blur(50px);
+    opacity: 0.3;
+  }
+
+  .signup-blob-1 {
+    background: var(--success-500);
+    top: 20%;
+    left: 15%;
+    animation: drift-1 18s ease-in-out infinite alternate;
+  }
+
+  .signup-blob-2 {
+    background: var(--primary-400);
+    bottom: 20%;
+    right: 15%;
+    animation: drift-2 22s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes drift-1 {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(40px, 30px) scale(1.2); }
+}
+
+@keyframes drift-2 {
+  from { transform: translate(0, 0) scale(1.2); }
+  to { transform: translate(-30px, -40px) scale(0.9); }
+}
+
+.absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

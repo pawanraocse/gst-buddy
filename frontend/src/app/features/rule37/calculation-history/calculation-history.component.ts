@@ -2,11 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
-import { Rule37ApiService } from '../../../core/services/rule37-api.service';
+import { AuditApiService } from '../../../core/services/audit-api.service';
 import {
-  Rule37RunResponse,
+  AuditRunResponse,
   LedgerResult,
-} from '../../../shared/models/rule37.model';
+} from '../../../shared/models/audit.model';
 import { ComplianceViewComponent } from '../compliance-view/compliance-view.component';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
@@ -19,14 +19,14 @@ import { PaginatorModule } from 'primeng/paginator';
   styleUrls: ['./calculation-history.component.scss']
 })
 export class CalculationHistoryComponent {
-  private api = inject(Rule37ApiService);
+  private api = inject(AuditApiService);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
 
-  runs = signal<Rule37RunResponse[]>([]);
+  runs = signal<AuditRunResponse[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
-  viewingRun = signal<Rule37RunResponse | null>(null);
+  viewingRun = signal<AuditRunResponse | null>(null);
 
   currentPage = signal(0);
   pageSize = signal(10);
@@ -59,7 +59,7 @@ export class CalculationHistoryComponent {
     this.loadRuns(event.page, event.rows);
   }
 
-  deleteRun(id: number) {
+  deleteRun(id: string) {
     this.confirmationService.confirm({
       message: 'Are you sure you want to delete this calculation?',
       header: 'Confirm Deletion',
@@ -71,8 +71,8 @@ export class CalculationHistoryComponent {
       accept: () => {
         this.api.deleteRun(id).subscribe({
           next: () => {
-            this.runs.update((list) => list.filter((r) => r.id !== id));
-            if (this.viewingRun()?.id === id) {
+            this.runs.update((list) => list.filter((r) => r.runId !== id));
+            if (this.viewingRun()?.runId === id) {
               this.viewingRun.set(null);
             }
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Calculation deleted' });
@@ -85,7 +85,7 @@ export class CalculationHistoryComponent {
     });
   }
 
-  downloadExport(id: number, filename: string, reportType: string = 'issues') {
+  downloadExport(id: string, filename: string, reportType: string = 'issues') {
     const rt = (['issues', 'complete', 'gstr3b'].includes(reportType) ? reportType : 'issues') as 'issues' | 'complete' | 'gstr3b';
     const suffix = rt === 'gstr3b' ? '_GSTR3B_Summary' : '_Interest_Calculation';
     this.api.exportRun(id, rt).subscribe({
@@ -105,7 +105,7 @@ export class CalculationHistoryComponent {
 
   onExportLedger(
     _ev: { ledgerName: string; summary: LedgerResult['summary'] },
-    runId: number,
+    runId: string,
     filename: string
   ) {
     this.downloadExport(runId, filename);
@@ -147,15 +147,27 @@ export class CalculationHistoryComponent {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   }
 
-  countDistinctSuppliers(run: Rule37RunResponse): number {
+  countDistinctSuppliers(run: AuditRunResponse): number {
     const suppliers = new Set<string>();
-    run.calculationData?.forEach(lr =>
+    const results: LedgerResult[] = (run.resultData as LedgerResult[]) ?? [];
+    results.forEach(lr =>
       lr.summary.details.forEach(d => suppliers.add(d.supplier))
     );
     return Math.max(1, suppliers.size);
   }
 
-  countTransactions(run: Rule37RunResponse): number {
-    return run.calculationData?.reduce((s, lr) => s + lr.summary.details.length, 0) ?? 0;
+  countTransactions(run: AuditRunResponse): number {
+    const results: LedgerResult[] = (run.resultData as LedgerResult[]) ?? [];
+    return results.reduce((s, lr) => s + lr.summary.details.length, 0);
+  }
+
+  /** Resolve display filename from inputMetadata or fall back to run ID */
+  getFilename(run: AuditRunResponse): string {
+    return run.inputMetadata?.filename ?? run.runId.slice(0, 8);
+  }
+
+  /** Resolve results from resultData (only populated on detail view) */
+  getResults(run: AuditRunResponse): LedgerResult[] {
+    return (run.resultData as LedgerResult[]) ?? [];
   }
 }

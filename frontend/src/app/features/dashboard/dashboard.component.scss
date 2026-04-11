@@ -1,343 +1,138 @@
-@use '../../../theme.scss' as *;
-@use '../../../animations.scss';
+@use "theme.scss" as *;
 
 .dashboard-container {
-  min-height: 100vh;
-  position: relative;
-  /* Add subtle background decoration for dashboard if needed, or keep clean */
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-/* Buddy status cards (Teal/Amber palette) - Now with Glass effect */
-.buddy-status-card {
-  @include glass-card;
-  border-width: 0 0 0 4px;
-  /* Left accent border */
-  border-style: solid;
-  transition: transform var(--duration-fast) var(--ease-default);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-
-  &.buddy-status-teal {
-    background: linear-gradient(to right, var(--buddy-teal-light), var(--glass-bg));
-    border-color: var(--buddy-teal);
-    color: var(--buddy-teal-dark);
-
-    .pi {
-      color: var(--buddy-teal);
-    }
-  }
-
-  &.buddy-status-amber {
-    background: linear-gradient(to right, var(--buddy-amber-light), var(--glass-bg));
-    border-color: var(--buddy-amber);
-    color: var(--buddy-amber-dark);
-
-    .pi {
-      color: var(--buddy-amber);
-    }
-  }
-}
-
-.buddy-info-card {
-  @include glass-card;
-  background: var(--bg-surface-glass);
-  border: 1px solid var(--border-color);
-}
-
-.buddy-success-card {
-  @include glass-card;
-  background: var(--success-bg);
-  border: 1px solid var(--success-500);
-}
-
-/* Override default surface cards with glass panels */
-.surface-50 {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border) !important;
-}
-
-/* Custom Table Styles for Dashboard */
-:host ::ng-deep {
-  .p-datatable {
-    .p-datatable-header {
-      background: transparent;
-      border: none;
-      padding: 1.5rem;
-    }
-
-    .p-datatable-thead>tr>th {
-      background: var(--bg-app);
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
-      font-weight: 600;
-      padding: 1rem;
-    }
-
-    .p-datatable-tbody>tr {
-      background: transparent;
-
-      >td {
-        border-bottom: 1px solid var(--surface-100);
-        padding: 1.25rem 1rem;
-      }
-
-      &:last-child>td {
-        border-bottom: none;
-      }
-
-      &:hover {
-        background: var(--primary-50) !important;
-      }
-    }
-  }
-}
-
-/* Animations */
-.col-12 {
-  animation: fadeInUp 0.5s ease-out forwards;
-  opacity: 0;
-
-  &:nth-child(1) {
-    animation-delay: 0.1s;
-  }
-
-  &:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-
-  &:nth-child(3) {
-    animation-delay: 0.3s;
-  }
-}
-
-/* Remove local fadeInUp — use global from animations.scss */
-
-/* Verdict Banner */
-.verdict-banner {
-  @include glass-card;
-  border-width: 0 0 0 4px;
-  border-style: solid;
-  transition: transform var(--duration-fast) var(--ease-default);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-
-  &.verdict-action {
-    background: linear-gradient(to right, rgba(var(--warning-rgb, 245, 158, 11), 0.1), var(--glass-bg));
-    border-color: var(--warning-500);
-  }
-
-  &.verdict-clear {
-    background: linear-gradient(to right, rgba(var(--success-rgb, 20, 184, 166), 0.1), var(--glass-bg));
-    border-color: var(--success-500);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   🔀 TAB TOGGLE — Modern Pill Segmented Control
-═══════════════════════════════════════════════════════════════════════════ */
-
-.tab-toggle {
-  display: inline-flex;
-  gap: 0.25rem;
-  padding: 0.3rem;
-  background: var(--glass-bg);
-  backdrop-filter: blur(8px);
-  border-radius: 14px;
-  border: 1px solid var(--border-color);
-  margin-bottom: 1.5rem;
-}
-
-.tab-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.25rem;
-  border-radius: 11px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.25s var(--ease-default);
-
-  i {
-    font-size: 0.85rem;
-  }
-
-  &:hover:not(.active) {
-    color: var(--text-main);
-    background: var(--surface-hover);
-  }
-
-  &.active {
-    background: var(--bg-surface);
-    color: var(--primary-600);
-    box-shadow: var(--shadow-sm), 0 0 0 1px var(--border-color);
-    
-    @media (prefers-color-scheme: dark) {
-        background: var(--primary-600);
-        color: white;
-        box-shadow: var(--shadow-glow-primary);
-    }
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   📖 HOW IT WORKS — Rich Step Cards
-═══════════════════════════════════════════════════════════════════════════ */
-
-::ng-deep .howto-panel {
-  .p-panel-header {
-    background: var(--bg-app);
+/* Stats Cards */
+.stats-card {
     border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-300);
+    }
+}
+
+.stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
     border-radius: 12px;
-    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    i { font-size: 1.5rem; }
+}
+
+.chart-mini-sparkline {
+    height: 4px;
+    width: 100%;
+}
+
+/* Rule Catalog */
+.rule-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xl);
+    padding: var(--space-5);
     transition: all 0.3s ease;
+    height: 100%;
 
     &:hover {
-      background: var(--bg-surface);
+        border-color: var(--primary-400);
+        background-color: var(--surface-elevated);
+        box-shadow: var(--glow-primary);
+        transform: scale(1.02);
     }
-  }
+}
 
-  .p-panel-content {
-    background: var(--bg-surface-glass);
-    backdrop-filter: blur(8px);
+.rule-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--primary-50);
+    color: var(--primary-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    i { font-size: 1.25rem; }
+}
+
+/* Recent Activity */
+.recent-runs-card {
     border: 1px solid var(--border-color);
-    border-top: none;
-    border-radius: 0 0 12px 12px;
-    padding: 1.25rem 1.5rem;
-  }
-
-  &.p-panel-expanded .p-panel-header {
-    border-radius: 12px 12px 0 0;
-  }
+    background-color: var(--bg-surface);
 }
 
-.howto-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
+.activity-list {
+    display: flex;
+    flex-direction: column;
 }
 
-.howto-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.85rem 0;
-  position: relative;
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background-color 0.2s;
 
-  // Connecting line between steps
-  &:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    left: 14px;
-    top: calc(0.85rem + 28px);
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, var(--primary-200), var(--border-color));
-  }
-}
-
-.step-number {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--primary-gradient);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 800;
-  flex-shrink: 0;
-  z-index: 1;
-}
-
-.step-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  i {
-    font-size: 0.95rem;
-  }
-
-  &.upload {
-    background: rgba(20, 184, 166, 0.1);
-
-    i {
-      color: var(--success-500);
+    &:last-child { border-bottom: none; }
+    
+    &:hover {
+        background-color: var(--surface-hover);
     }
-  }
-
-  &.process {
-    background: rgba(99, 102, 241, 0.1);
-
-    i {
-      color: var(--primary-500);
-    }
-  }
-
-  &.calculate {
-    background: rgba(245, 158, 11, 0.1);
-
-    i {
-      color: var(--warning-500);
-    }
-  }
-
-  &.download {
-    background: rgba(139, 92, 246, 0.1);
-
-    i {
-      color: #7c3aed;
-    }
-  }
 }
 
-.step-body {
-  flex: 1;
-  min-width: 0;
+.activity-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
 
-  h4 {
-    margin: 0 0 0.15rem;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--text-main);
-  }
+    &.COMPLETED {
+        background-color: #ecfdf5;
+        color: #059669;
+    }
 
-  p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    line-height: 1.5;
-  }
+    &.PROCESSING, &.PENDING {
+        background-color: #eff6ff;
+        color: #2563eb;
+        i { animation: spin 2s linear infinite; }
+    }
+
+    &.FAILED {
+        background-color: #fef2f2;
+        color: #dc2626;
+    }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   📤 UPLOAD AREA — Enhanced Drag Zone
-═══════════════════════════════════════════════════════════════════════════ */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
-.surface-50 {
-  border-radius: 12px !important;
-  transition: all 0.2s ease;
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
 
-  &:hover {
-    border-color: var(--primary-200) !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.06);
-  }
+@media (prefers-color-scheme: dark) {
+    .rule-icon {
+        background: rgba(99, 102, 241, 0.1);
+    }
+    
+    .activity-icon-box.COMPLETED { background-color: rgba(16, 185, 129, 0.1); }
+    .activity-icon-box.PROCESSING { background-color: rgba(59, 130, 246, 0.1); }
+    .activity-icon-box.FAILED { background-color: rgba(239, 68, 68, 0.1); }
 }

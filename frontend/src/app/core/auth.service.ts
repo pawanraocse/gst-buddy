@@ -23,6 +23,7 @@ export class AuthService {
 
   /** Current authenticated user */
   readonly user = signal<UserInfo | null>(null);
+  readonly currentUser = this.user; // Alias for Phase 5 components
 
   /** Authentication state */
   readonly isAuthenticated = signal<boolean>(false);

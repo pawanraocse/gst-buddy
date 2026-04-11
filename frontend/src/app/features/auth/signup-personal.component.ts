@@ -8,6 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
+import { DividerModule } from 'primeng/divider';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -15,7 +16,7 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterModule,
-    CardModule, ButtonModule, InputTextModule, PasswordModule, MessageModule
+    CardModule, ButtonModule, InputTextModule, PasswordModule, MessageModule, DividerModule
   ],
   templateUrl: './signup-personal.component.html',
   styleUrls: ['./signup.common.scss']

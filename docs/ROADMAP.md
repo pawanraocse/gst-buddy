@@ -1,6 +1,6 @@
 # GSTbuddies — Product Roadmap
 **From Rule 37 MVP to India's Most Complete GST Audit Intelligence Platform**
-_Last updated: 2026-04-05 · Author: Antigravity (GST Expert + Senior Architect) · Status: APPROVED_
+_Last updated: 2026-04-11 · Author: Antigravity (GST Expert + Senior Architect) · Status: ACTIVE — Phase 1 in progress_
 
 ---
 
@@ -33,7 +33,7 @@ GSTbuddies will become the **Single Source of Truth** for GST audits — a legal
 | Capability | Status |
 |---|---|
 | Excel ledger ingestion & parsing | ✅ Done |
-| Rule 37 ITC 180-day reversal engine | ✅ Done |
+| Rule 37 ITC 180-day reversal engine (Section 16(2), 18% interest on reversed ITC) | ✅ Done |
 | Credit consumption & wallet system | ✅ Done |
 | Multi-tenant architecture (tenant_id) | ✅ Done |
 | Export to Excel (Strategy pattern — Rule 37 + GSTR-3B Summary) | ✅ Done |
@@ -45,7 +45,41 @@ GSTbuddies will become the **Single Source of Truth** for GST audits — a legal
 | AWS prod deployment (Mumbai, ap-south-1) | ✅ Done |
 | CI/CD via GitHub Actions (EC2 deploy + Amplify frontend) | ✅ Done |
 
-**⏳ Gap to fill before Phase 1 (NOT STARTED)**: Extract a unified `AuditRule<I, O>` interface + `AuditRuleRegistry` + `AuditFinding` DTO from the Rule 37 codebase. All future modules implement this contract.
+---
+
+## 🏗️ Phase 0.5: Generic Audit Engine Foundation (COMPLETED)
+**Status**: Deployed — 2026-04-11
+**Ref**: `IMPLEMENTATION_PLAN.md` (archived — fully executed)
+
+This phase extracted the engine from Rule 37 and built the generic infrastructure all future modules will plug into.
+
+### Backend Engine (Java 21 / Spring Boot)
+| Capability | Status |
+|---|---|
+| `AuditRule<I,O>` generic interface (Strategy Pattern) | ✅ Done |
+| `AuditRuleRegistry` — Spring auto-discovery of all rules | ✅ Done |
+| `AuditContext` + `AuditRuleResult` + `AuditFinding` records | ✅ Done |
+| `Rule37AuditRule` — adapts existing domain logic into the engine | ✅ Done |
+| `AuditRunOrchestrator` — 5-layer OOM-safe processing with S3 + credits | ✅ Done |
+| `AuditRunService` — paginated CRUD with tenant isolation | ✅ Done |
+| `AuditRunController` + `AuditExportController` + `AuditRunResponse` DTO | ✅ Done |
+| Flyway `V2__audit_engine_foundation.sql` — `audit_runs`, `audit_findings`, `late_fee_relief_windows`, parser tables | ✅ Done |
+| UUID v7 primary keys via `java-uuid-generator` | ✅ Done |
+| Data migration: `rule37_calculation_runs` → `audit_runs` | ✅ Done |
+| Legacy files deleted: `Rule37CalculationRunService`, `LedgerUploadOrchestrator`, `Rule37RunController`, `Rule37ExportController`, `Rule37RunResponse`, `Rule37CalculationRun`, `Rule37RunRepository` | ✅ Done |
+| All Phase 6 tests created and passing | ✅ Done |
+
+### Frontend (Angular 19 / PrimeNG 21)
+| Capability | Status |
+|---|---|
+| Premium App Shell — Glassmorphism Topbar + Collapsible Sidebar + Dark/Light toggle | ✅ Done |
+| Dashboard — KPI cards, Rule Catalog, Recent Audit Runs feed | ✅ Done |
+| `AuditUploadComponent` — Multi-step wizard (Rule Selection → Config → Upload) | ✅ Done |
+| `AuditHistoryComponent` — Paginated, searchable audit run ledger | ✅ Done |
+| `AuditDetailComponent` — Severity distribution + exportable findings table | ✅ Done |
+| `audit.model.ts` + `audit-api.service.ts` (replacing legacy Rule 37 models/services) | ✅ Done |
+| Legacy route redirects: `/app/rule37/*` → `/app/audit/*` | ✅ Done |
+| PrimeNG 21 migration (Stepper component-based API) | ✅ Done |
 
 ---
 
@@ -376,7 +410,7 @@ GSTbuddies will become the **Single Source of Truth** for GST audits — a legal
 
 ## ⚙️ Engineering Architecture — Rule Engine Framework (Java 21 / Spring Boot 3.5)
 
-Before Phase 1, extract a shared engine from Rule 37:
+> **✅ Engine Extracted** (Phase 0.5 — 2026-04-11): The `AuditRule<I,O>` interface, `AuditRuleRegistry`, `AuditFinding`, `AuditContext`, `AuditRuleResult`, and all DB tables are live. New rules only need to implement the interface below and register as a Spring `@Component`.
 
 ```java
 // All modules implement this contract
@@ -533,14 +567,18 @@ At 500 active CAs = **Rs 40 lakhs/year ARR** from credits alone.
 
 ---
 
-## 📋 Immediate Next Steps (Phase 1 Kick-off)
-- [ ] Extract `AuditRule` interface + `AuditRuleRegistry` from Rule 37 codebase
-- [ ] Create Flyway migration for `audit_runs`, `audit_findings`, `late_fee_relief_windows`
-- [ ] Implement GSTR-1 Late Fee Engine (PRD: `resources/RULE ENGINE/LATE FEES GSTR-1/`)
-- [ ] Implement GSTR-3B Late Fee Engine (PRD: `resources/RULE ENGINE/LATE FEES GSTR-3B/`)
-- [ ] Implement Section 50 Interest Engine (PRD: `resources/RULE ENGINE/Interest late filing GSTR3B/`)
-- [ ] Implement GSTR-9/9C Late Fee Calculator (PRD: `resources/RULE ENGINE/GSTR 9 and 9C Late Fess/`)
-- [ ] Upgrade Frontend Audit Dashboard for multi-rule result display
+## 📋 Current Status & Next Steps
+
+### ✅ Completed (Phase 0.5 — 2026-04-11)
+- [x] Extract `AuditRule` interface + `AuditRuleRegistry` from Rule 37 codebase
+- [x] Create Flyway migration for `audit_runs`, `audit_findings`, `late_fee_relief_windows`
+- [x] Upgrade Frontend Audit Dashboard for multi-rule result display
+
+### 🚀 Phase 1 — Next Up
+- [ ] **GSTR-1 Late Fee Engine** → Section 47(1); PRD: `resources/RULE ENGINE/LATE FEES GSTR-1/`
+- [ ] **GSTR-3B Late Fee Engine** → Section 47(2); PRD: `resources/RULE ENGINE/LATE FEES GSTR-3B/`
+- [ ] **Section 50 Interest Engine** (GSTR-3B late payment) → PRD: `resources/RULE ENGINE/Interest late filing GSTR3B/`
+- [ ] **GSTR-9/9C Late Fee Calculator** → PRD: `resources/RULE ENGINE/GSTR 9 and 9C Late Fess/`
 
 ---
 

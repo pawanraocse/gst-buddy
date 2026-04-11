@@ -145,6 +145,38 @@ body {
   margin-bottom: 1.5rem;
 }
 
+/* App Shell Layout Utilities */
+.app-shell-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: padding-left var(--duration-normal) ease;
+  background-color: var(--bg-app);
+}
+
+.content-canvas {
+  padding: var(--space-8);
+  flex: 1;
+}
+
+/* Shared Component Elevators */
+.surface-elevated {
+  background-color: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+}
+
+.glow-on-hover:hover {
+  box-shadow: var(--glow-primary);
+}
+
 /* Text Utilities */
 .text-center {
   text-align: center;
@@ -192,6 +224,35 @@ a:hover {
   position: relative;
   overflow: hidden;
   padding: 1rem;
+}
+
+/* Theme Override Helpers */
+.dark-theme-manual {
+  --bg-app: #0f172a;
+  --bg-surface: #1e293b;
+  --text-main: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-light: #64748b;
+  --border-color: #334155;
+  --glass-bg: rgba(30, 41, 59, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 16px;
+  --surface-elevated: #1e293b;
+  --glow-primary: 0 0 25px rgba(99, 102, 241, 0.45);
+}
+
+.light-theme-manual {
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --text-main: #0f172a;
+  --text-secondary: #64748b;
+  --text-light: #94a3b8;
+  --border-color: #e2e8e0;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-blur: 12px;
+  --surface-elevated: #fcfdfe;
+  --glow-primary: 0 0 20px rgba(99, 102, 241, 0.35);
 }
 
 /* Animations moved to animations.scss */

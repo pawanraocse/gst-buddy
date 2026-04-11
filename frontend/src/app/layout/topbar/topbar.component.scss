@@ -1,0 +1,102 @@
+@use "theme.scss" as *;
+
+.topbar-wrapper {
+  height: var(--topbar-height);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  .divider {
+    height: 24px;
+    width: 1px;
+    background-color: var(--border-color);
+    margin: 0 var(--space-4);
+  }
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--border-radius-md);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  .user-details {
+    display: flex;
+    align-items: center;
+    
+    .user-name {
+      font-weight: 600;
+      color: var(--text-main);
+      font-size: var(--text-sm);
+    }
+  }
+}
+
+:host ::ng-deep .user-avatar {
+  background: var(--primary-gradient);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .p-breadcrumb {
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  .p-breadcrumb-list {
+    li {
+      .p-menuitem-link {
+        color: var(--text-secondary);
+        font-size: var(--text-sm);
+        
+        &:hover {
+          color: var(--primary-500);
+        }
+      }
+
+      &.p-breadcrumb-chevron {
+        color: var(--text-light);
+        font-size: 0.75rem;
+      }
+
+      &:last-child .p-menuitem-link {
+        color: var(--text-main);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@media (max-width: 991px) {
+  .topbar-wrapper {
+    padding: 0 var(--space-4);
+  }
+}

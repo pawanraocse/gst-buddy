@@ -24,6 +24,13 @@
     --error-500: #f43f5e;
     --info-500: #0ea5e9;
 
+    /* Severity Palette (Audit Findings) */
+    --color-critical: #ef4444;
+    --color-high: #f97316;
+    --color-medium: #f59e0b;
+    --color-low: #6366f1;
+    --color-info: #0ea5e9;
+
     /* ========== 2. Adaptive Surface & Typography (LIGHT) ========== */
     --bg-app: #f8fafc;
     --bg-surface: #ffffff;
@@ -73,9 +80,18 @@
     --space-10: 2.5rem;
     --space-12: 3rem;
 
+    /* Shell Dimensions */
+    --sidebar-width: 240px;
+    --sidebar-collapsed-width: 68px;
+    --topbar-height: 72px;
+
     /* App-specific utility surfaces */
     --bg-surface-glass: rgba(255, 255, 255, 0.6);
     --surface-hover: rgba(0, 0, 0, 0.04);
+    --surface-elevated: #fcfdfe;
+
+    /* Special Effects */
+    --glow-primary: 0 0 20px rgba(99, 102, 241, 0.35);
 }
 
 /* ========== DARK MODE OVERRIDES ========== */
@@ -100,6 +116,10 @@
         /* App-specific utility surfaces (Dark) */
         --bg-surface-glass: rgba(15, 23, 42, 0.4);
         --surface-hover: rgba(255, 255, 255, 0.08);
+        --surface-elevated: #1e293b;
+
+        /* Special Effects (Dark) */
+        --glow-primary: 0 0 25px rgba(99, 102, 241, 0.45);
     }
 }
 

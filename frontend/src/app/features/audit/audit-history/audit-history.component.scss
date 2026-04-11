@@ -1,0 +1,58 @@
+@use "theme.scss" as *;
+
+.audit-history-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+:host ::ng-deep .p-datatable {
+    .p-datatable-header {
+        background: var(--bg-surface);
+        border: none;
+        padding: var(--space-4) var(--space-6);
+    }
+
+    .p-datatable-thead > tr > th {
+        background: var(--bg-surface);
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: var(--text-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--border-color);
+        padding: var(--space-4) var(--space-6);
+    }
+
+    .p-datatable-tbody > tr {
+        background: var(--bg-surface);
+        transition: background-color 0.2s;
+
+        &:last-child > td { border-bottom: none; }
+
+        > td {
+            padding: var(--space-4) var(--space-6);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-size: var(--text-sm);
+        }
+    }
+
+    .p-paginator {
+        background: var(--bg-surface);
+        border: none;
+        border-top: 1px solid var(--border-color);
+        padding: var(--space-4);
+    }
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 991px) {
+    .audit-history-container {
+        padding: 0;
+    }
+}

@@ -21,16 +21,16 @@
     <!-- Viewing a run detail -->
     @if (viewingRun()) {
     <div class="run-detail">
-        <app-compliance-view [results]="normalizeResults(viewingRun()!.calculationData)" [runId]="viewingRun()!.id"
-            [filename]="viewingRun()!.filename || 'Calculation #' + viewingRun()!.id" [date]="viewingRun()!.createdAt"
+        <app-compliance-view [results]="normalizeResults(getResults(viewingRun()!))" [runId]="viewingRun()!.runId"
+            [filename]="getFilename(viewingRun()!)" [date]="viewingRun()!.createdAt"
             [showExportAll]="true" [showBack]="true" (back)="viewingRun.set(null)"
-            (exportAll)="downloadExport(viewingRun()!.id, viewingRun()!.filename || 'export', $event)" />
+            (exportAll)="downloadExport(viewingRun()!.runId, getFilename(viewingRun()!), $event)" />
     </div>
     } @else {
 
     <!-- Run list -->
     <div class="history-list">
-        @for (run of runs(); track run.id) {
+        @for (run of runs(); track run.runId) {
         <div class="history-card" (click)="viewingRun.set(run)">
             <!-- Card Header: File icon + Filename + Date -->
             <div class="card-header-row">
@@ -39,7 +39,7 @@
                         <i class="pi pi-file-excel"></i>
                     </div>
                     <div class="card-title-block">
-                        <span class="card-filename">{{ run.filename || 'Calculation #' + run.id }}</span>
+                        <span class="card-filename">{{ getFilename(run) }}</span>
                         <span class="card-date">{{ formatDate(run.createdAt) }}</span>
                     </div>
                 </div>
@@ -50,10 +50,10 @@
                     </span>
                     <button pButton icon="pi pi-download" pTooltip="Export"
                         class="p-button-text p-button-rounded p-button-sm"
-                        (click)="downloadExport(run.id, run.filename || run.calculationData[0]?.ledgerName || 'export'); $event.stopPropagation()"></button>
+                        (click)="downloadExport(run.runId, getFilename(run)); $event.stopPropagation()"></button>
                     <button pButton icon="pi pi-trash" pTooltip="Delete"
                         class="p-button-text p-button-rounded p-button-danger p-button-sm"
-                        (click)="deleteRun(run.id); $event.stopPropagation()"></button>
+                        (click)="deleteRun(run.runId); $event.stopPropagation()"></button>
                 </div>
             </div>
 
@@ -72,11 +72,11 @@
                 <div class="stat-divider"></div>
                 <div class="stat-amount itc">
                     <span class="stat-amount-label">ITC Reversal</span>
-                    <span class="stat-amount-value">{{ formatCurrency(run.totalItcReversal || 0) }}</span>
+                    <span class="stat-amount-value">{{ formatCurrency(run.totalImpactAmount || 0) }}</span>
                 </div>
                 <div class="stat-amount interest">
-                    <span class="stat-amount-label">Interest</span>
-                    <span class="stat-amount-value">{{ formatCurrency(run.totalInterest || 0) }}</span>
+                    <span class="stat-amount-label">Rule</span>
+                    <span class="stat-amount-value">{{ run.ruleDisplayName }}</span>
                 </div>
             </div>
         </div>

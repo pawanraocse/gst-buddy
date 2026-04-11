@@ -7,7 +7,7 @@ import { PanelModule } from 'primeng/panel';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { LedgerResult, InterestRow } from '../../../shared/models/rule37.model';
+import { LedgerResult, InterestRow } from '../../../shared/models/audit.model';
 import { MenuItem } from 'primeng/api';
 
 type StatusFilter = 'ALL' | 'UNPAID' | 'PAID_LATE' | 'PAID_ON_TIME';
@@ -44,7 +44,7 @@ interface SupplierGroup {
 })
 export class ComplianceViewComponent {
   results = input.required<LedgerResult[]>();
-  runId = input<number | null>(null);
+  runId = input<string | null>(null);
   filename = input<string>('');
   date = input<string>('');
   showExportAll = input<boolean>(true);
