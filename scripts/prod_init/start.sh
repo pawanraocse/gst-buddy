@@ -80,9 +80,19 @@ export CORS_ALLOWED_ORIGINS="${FRONTEND_URL},https://gstbuddies.com,https://www.
 export INTERNAL_API_KEY=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/api/internal_key" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
 
 # Razorpay Payment Gateway (Live Keys)
+# CRITICAL: Both ID and Secret are SecureStrings in SSM and MUST be decrypted
 export RAZORPAY_KEY_ID=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/razorpay/key_id" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
 export RAZORPAY_KEY_SECRET=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/razorpay/key_secret" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
 export RAZORPAY_WEBHOOK_SECRET=$(aws ssm get-parameter --name "/${PROJECT_NAME}/${ENVIRONMENT}/razorpay/webhook_secret" --with-decryption --query 'Parameter.Value' --output text --region "$AWS_REGION" 2>/dev/null || echo "")
+
+# Validate Razorpay Keys
+if [[ "$RAZORPAY_KEY_ID" == AQICAH* ]]; then
+    log_warn "RAZORPAY_KEY_ID appears to be encrypted (KMS blob). This will cause payment failures."
+fi
+
+if [[ "$RAZORPAY_KEY_SECRET" == "CHANGE_ME" ]] || [ -z "$RAZORPAY_KEY_SECRET" ]; then
+    log_warn "RAZORPAY_KEY_SECRET is missing or set to default (CHANGE_ME). Payments will fail."
+fi
 
 log_success "Configuration loaded from SSM"
 echo ""

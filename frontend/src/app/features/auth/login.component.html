@@ -6,7 +6,7 @@
         <i class="pi pi-shield"></i>
         <span>GSTbuddies</span>
       </div>
-      
+
       <div class="brand-illustration-slot">
         <!-- Using a placeholder pattern if image not found, but trying to keep it premium -->
         <i class="pi pi-calculator text-8xl opacity-20 absolute-center"></i>
@@ -55,20 +55,20 @@
             <label for="password">Password</label>
             <a routerLink="/auth/forgot-password" class="text-xs font-bold text-primary-600 hover:underline">Forgot password?</a>
           </div>
-          <p-password id="password" 
-                      formControlName="password" 
-                      [toggleMask]="true" 
-                      [feedback]="false" 
-                      styleClass="w-full" 
-                      inputStyleClass="w-full" 
+          <p-password id="password"
+                      formControlName="password"
+                      [toggleMask]="true"
+                      [feedback]="false"
+                      styleClass="w-full"
+                      inputStyleClass="w-full"
                       placeholder="••••••••">
           </p-password>
         </div>
 
         <div class="auth-actions">
-          <p-button label="Sign In" 
-                    type="submit" 
-                    [loading]="loading()" 
+          <p-button label="Sign In"
+                    type="submit"
+                    [loading]="loading()"
                     styleClass="w-full p-button-primary p-button-lg glow-on-hover">
           </p-button>
         </div>
@@ -80,15 +80,15 @@
         <span>Or continue with</span>
       </div>
 
-      <button pButton 
-              label="Google" 
-              icon="pi pi-google" 
-              class="w-full google-btn p-button-lg" 
+      <button pButton
+              label="Google"
+              icon="pi pi-google"
+              class="w-full google-btn p-button-lg"
               (click)="loginWithGoogle()">
       </button>
 
       <div class="auth-footer">
-        Don't have an account? 
+        Don't have an account?
         <a routerLink="/auth/signup/personal">Create account</a>
       </div>
     </div>

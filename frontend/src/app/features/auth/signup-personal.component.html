@@ -6,7 +6,7 @@
         <i class="pi pi-shield"></i>
         <span>GSTbuddies</span>
       </div>
-      
+
       <div class="brand-illustration-slot">
         <i class="pi pi-user-plus text-8xl opacity-20 absolute-center"></i>
         <div class="floating-blobs">
@@ -73,12 +73,12 @@
 
         <div class="form-field">
           <label for="password">Password</label>
-          <p-password id="password" 
-                      formControlName="password" 
-                      [toggleMask]="true" 
-                      [feedback]="true" 
-                      styleClass="w-full" 
-                      inputStyleClass="w-full" 
+          <p-password id="password"
+                      formControlName="password"
+                      [toggleMask]="true"
+                      [feedback]="true"
+                      styleClass="w-full"
+                      inputStyleClass="w-full"
                       placeholder="••••••••">
             <ng-template pTemplate="footer">
                 <p-divider></p-divider>
@@ -94,12 +94,12 @@
 
         <div class="form-field">
           <label for="confirmPassword">Confirm Password</label>
-          <p-password id="confirmPassword" 
-                      formControlName="confirmPassword" 
-                      [toggleMask]="true" 
-                      [feedback]="false" 
-                      styleClass="w-full" 
-                      inputStyleClass="w-full" 
+          <p-password id="confirmPassword"
+                      formControlName="confirmPassword"
+                      [toggleMask]="true"
+                      [feedback]="false"
+                      styleClass="w-full"
+                      inputStyleClass="w-full"
                       placeholder="••••••••">
           </p-password>
           @if (signupForm.hasError('mismatch') && (signupForm.get('confirmPassword')?.dirty || signupForm.get('confirmPassword')?.touched)) {
@@ -110,8 +110,8 @@
         <!-- Referral Input (Toggleable) -->
         <div class="mt-2">
             @if (!referralCode() && !showReferralInput()) {
-                <button type="button" pButton label="Have a referral code?" icon="pi pi-gift" 
-                        class="p-button-link p-button-sm p-0 text-primary-600 font-bold" 
+                <button type="button" pButton label="Have a referral code?" icon="pi pi-gift"
+                        class="p-button-link p-button-sm p-0 text-primary-600 font-bold"
                         (click)="showReferralInput.set(true)">
                 </button>
             }
@@ -120,7 +120,7 @@
                     <label for="ref">Referral Code</label>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-tag"></i>
-                        <input id="ref" type="text" pInputText (input)="onReferralInput($any($event.target).value)" 
+                        <input id="ref" type="text" pInputText (input)="onReferralInput($any($event.target).value)"
                                [value]="referralCode() || ''" class="w-full" placeholder="REF123">
                     </span>
                 </div>
@@ -128,9 +128,9 @@
         </div>
 
         <div class="auth-actions mt-4">
-          <p-button label="Create Free Account" 
-                    type="submit" 
-                    [loading]="loading()" 
+          <p-button label="Create Free Account"
+                    type="submit"
+                    [loading]="loading()"
                     [disabled]="signupForm.invalid"
                     styleClass="w-full p-button-primary p-button-lg glow-on-hover">
           </p-button>
@@ -140,7 +140,7 @@
       </form>
 
       <div class="auth-footer">
-        Already have an account? 
+        Already have an account?
         <a routerLink="/auth/login">Sign In</a>
       </div>
     </div>

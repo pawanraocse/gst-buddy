@@ -519,6 +519,7 @@ resource "aws_ssm_parameter" "razorpay_key_id" {
   description = "Razorpay Live Key ID"
   type        = "SecureString"
   value       = "CHANGE_ME" # Set manually in console
+  overwrite   = true
 
   lifecycle {
     ignore_changes = [value]
@@ -532,6 +533,7 @@ resource "aws_ssm_parameter" "razorpay_key_secret" {
   description = "Razorpay Live Key Secret"
   type        = "SecureString"
   value       = "CHANGE_ME" # Set manually in console
+  overwrite   = true
 
   lifecycle {
     ignore_changes = [value]

@@ -21,7 +21,7 @@ import { ReferralApiService, ReferralCodeDto, ReferralStatsDto } from '../../cor
           <i class="pi pi-users mr-2 text-primary"></i>Refer & Earn
         </h1>
         <p class="text-secondary mt-2 text-lg m-0">
-          Invite friends to Gstbuddies and both of you earn bonus credits!
+          Invite friends to GSTBuddies and both of you earn bonus credits!
         </p>
       </div>
 
@@ -192,7 +192,7 @@ export class ReferralComponent implements OnInit {
     shareWhatsApp(): void {
         const link = this.referralLink();
         if (link) {
-            const msg = encodeURIComponent(`Hey! Try Gstbuddies for Rule 37 compliance checks. Sign up with my link and we both get bonus credits: ${link}`);
+            const msg = encodeURIComponent(`Hey! Try GSTBuddies for Rule 37 compliance checks. Sign up with my link and we both get bonus credits: ${link}`);
             window.open(`https://wa.me/?text=${msg}`, '_blank');
         }
     }
@@ -200,8 +200,8 @@ export class ReferralComponent implements OnInit {
     shareEmail(): void {
         const link = this.referralLink();
         if (link) {
-            const subject = encodeURIComponent('Try Gstbuddies — we both get bonus credits!');
-            const body = encodeURIComponent(`Hey,\n\nI've been using Gstbuddies for Rule 37 compliance checks and it's great. Sign up with my referral link and we both get bonus credits:\n\n${link}\n\nCheers!`);
+            const subject = encodeURIComponent('Try GSTBuddies — we both get bonus credits!');
+            const body = encodeURIComponent(`Hey,\n\nI've been using GSTBuddies for Rule 37 compliance checks and it's great. Sign up with my referral link and we both get bonus credits:\n\n${link}\n\nCheers!`);
             window.open(`mailto:?subject=${subject}&body=${body}`, '_self');
         }
     }

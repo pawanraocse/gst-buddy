@@ -154,6 +154,15 @@ resource "aws_iam_role_policy" "bastion_app_access" {
         {
           Effect = "Allow"
           Action = [
+            "kms:Decrypt"
+          ]
+          Resource = [
+            "*" # Required for default SSM key alias/aws/ssm
+          ]
+        },
+        {
+          Effect = "Allow"
+          Action = [
             "secretsmanager:GetSecretValue"
           ]
           Resource = [

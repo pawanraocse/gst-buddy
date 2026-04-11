@@ -136,7 +136,7 @@ services:
     entrypoint: ["java", "-Xmx256m", "-Xms128m", "-XX:+UseSerialGC", "-XX:+TieredCompilation", "-XX:TieredStopAtLevel=1", "-XX:+UseContainerSupport", "-jar", "/app/app.jar"]
     environment:
       SPRING_APPLICATION_NAME: auth-service
-      SPRING_PROFILES_ACTIVE: ${AUTH_PROFILE:-}
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=require
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}

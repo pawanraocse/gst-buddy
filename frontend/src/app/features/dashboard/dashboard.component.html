@@ -70,11 +70,11 @@
                 <h2 class="text-xl font-bold m-0">Recent Activity</h2>
                 <a routerLink="/app/audit/history" class="text-sm font-bold text-primary-500 hover:underline">View All</a>
             </div>
-            
+
             <p-card styleClass="p-0 overflow-hidden recent-runs-card">
                 <div *ngIf="recentRuns().length > 0; else noRuns" class="activity-list">
-                    <div *ngFor="let run of recentRuns()" 
-                         class="activity-item" 
+                    <div *ngFor="let run of recentRuns()"
+                         class="activity-item"
                          [routerLink]="['/app/audit/history', run.runId]">
                         <div class="activity-icon-box" [ngClass]="run.status">
                             <i class="pi" [ngClass]="run.status === 'COMPLETED' ? 'pi-check' : 'pi-sync'"></i>

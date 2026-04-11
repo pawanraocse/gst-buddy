@@ -180,7 +180,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             name: 'Rajesh Kumar',
             title: 'CA Partner',
             company: 'Kumar & Associates, Mumbai',
-            quote: 'Gstbuddies saved us 10+ hours every month. Our clients love the professional reports.',
+            quote: 'GSTBuddies saved us 10+ hours every month. Our clients love the professional reports.',
             avatar: 'assets/images/landing/avatars/avatar-1.png',
             savings: 'Saved ₹2.5L in ITC',
             rating: 5
@@ -207,12 +207,12 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
 
     faqs: FAQ[] = [
         {
-            question: 'What GST rules does Gstbuddies support?',
+            question: 'What GST rules does GSTBuddies support?',
             answer: 'We currently support <strong>Rule 37 (180-day ITC reversal)</strong> with Rule 36(4), 86B, 16(4), and GSTR-9 reconciliation coming soon. We add new rules automatically as CBIC releases notifications.',
             helpfulCount: 42
         },
         {
-            question: 'Is Gstbuddies free to try?',
+            question: 'Is GSTBuddies free to try?',
             answer: 'Yes! Sign up for free and get <strong>5 full compliance checks</strong> at no cost — no credit card required. Try before you buy.',
             helpfulCount: 38
         },
@@ -223,7 +223,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
         },
         {
             question: 'How is this different from other GST tools?',
-            answer: 'Unlike fragmented tools that make you run separate checks for each rule, Gstbuddies provides a <strong>unified dashboard</strong>. One upload, all rules checked. Plus our premium UI makes compliance actually pleasant.',
+            answer: 'Unlike fragmented tools that make you run separate checks for each rule, GSTBuddies provides a <strong>unified dashboard</strong>. One upload, all rules checked. Plus our premium UI makes compliance actually pleasant.',
             helpfulCount: 56
         },
         {
