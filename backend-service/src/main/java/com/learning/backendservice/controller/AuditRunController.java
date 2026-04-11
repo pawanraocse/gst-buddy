@@ -44,9 +44,12 @@ public class AuditRunController {
         List<Map<String, Object>> catalog = ruleRegistry.getAllRules().stream()
                 .map(rule -> Map.<String, Object>of(
                         "ruleId", rule.getRuleId(),
+                        "name", rule.getName(),
                         "displayName", rule.getDisplayName(),
+                        "description", rule.getDescription(),
+                        "category", rule.getCategory(),
                         "legalBasis", rule.getLegalBasis(),
-                        "creditsRequired", rule.getCreditsRequired()))
+                        "creditCost", rule.getCreditsRequired()))
                 .toList();
         return ResponseEntity.ok(catalog);
     }

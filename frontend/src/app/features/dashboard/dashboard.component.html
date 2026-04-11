@@ -43,7 +43,7 @@
                             </div>
                             <div class="flex-1">
                                 <div class="flex justify-content-between align-items-start mb-1">
-                                    <h3 class="m-0 text-md font-bold">{{ rule.name }}</h3>
+                                    <h3 class="m-0 text-md font-bold">{{ rule.displayName || rule.name }}</h3>
                                     <p-tag [value]="rule.category" severity="info" class="text-xs"></p-tag>
                                 </div>
                                 <p class="text-sm text-secondary m-0 line-height-3">{{ rule.description }}</p>

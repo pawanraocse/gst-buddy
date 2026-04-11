@@ -10,7 +10,7 @@
   </div>
 
   <div class="sidebar-content">
-    <ul class="nav-list">
+    <ul class="nav-list pb-2">
       <li *ngFor="let item of navItems()" class="nav-item-wrapper">
         <a [routerLink]="item.link" 
            routerLinkActive="active" 
@@ -23,6 +23,7 @@
           <p-badge *ngIf="!collapsed && item.badge" [value]="item.badge" severity="info" class="nav-badge"></p-badge>
         </a>
       </li>
+      <!-- Previous nav items ... -->
     </ul>
 
     <p-divider *ngIf="!collapsed" class="mx-3 my-2"></p-divider>
@@ -50,8 +51,15 @@
       </div>
     </div>
     
-    <div class="credit-chip-wrapper" [class.collapsed-chip]="collapsed">
-       <p-chip icon="pi pi-bolt" label="12" class="credits-chip" pTooltip="Remaining Credits" tooltipPosition="right"></p-chip>
+    <div class="footer-actions flex flex-column gap-2">
+      <button pButton 
+              [label]="collapsed ? '' : 'Logout'" 
+              icon="pi pi-power-off" 
+              class="p-button-text p-button-danger w-full logout-btn"
+              (click)="authService.logout()"
+              [pTooltip]="collapsed ? 'Logout' : ''"
+              tooltipPosition="right">
+      </button>
     </div>
   </div>
 </div>

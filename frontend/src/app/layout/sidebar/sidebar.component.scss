@@ -190,21 +190,29 @@
   }
 }
 
-.credit-chip-wrapper {
-  &.collapsed-chip {
-    display: flex;
-    justify-content: center;
+.logout-btn {
+  justify-content: flex-start;
+  padding: var(--space-3) var(--space-4);
+  font-weight: 600;
+  
+  &:hover {
+    background-color: rgba(239, 68, 68, 0.05) !important;
   }
 }
 
-:host ::vp-chip {
-  background: var(--primary-50);
-  color: var(--primary-700);
-  font-weight: 600;
-  border: 1px solid var(--primary-100);
-  
-  .pi {
-    color: var(--warning-500);
+.sidebar-wrapper.collapsed {
+  .sidebar-footer {
+    padding: var(--space-4) 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .logout-btn {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    justify-content: center;
+    border-radius: 50%;
   }
 }
 

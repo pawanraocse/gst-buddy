@@ -22,17 +22,5 @@
 
     <div class="divider"></div>
 
-    <!-- User Menu -->
-    <div class="user-profile" (click)="menu.toggle($event)" *ngIf="authService.currentUser()">
-      <p-avatar [label]="(authService.currentUser()?.email ?? '').substring(0, 1).toUpperCase()" 
-                shape="circle" 
-                styleClass="user-avatar">
-      </p-avatar>
-      <div class="user-details hidden sm:flex">
-        <span class="user-name">{{ (authService.currentUser()?.email ?? '').split('@')[0] }}</span>
-        <i class="pi pi-chevron-down ml-2 text-xs"></i>
-      </div>
-    </div>
-    <p-menu #menu [model]="userMenuItems" [popup]="true"></p-menu>
   </div>
 </div>

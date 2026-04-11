@@ -4,41 +4,50 @@
         <p class="text-secondary m-0 mt-1">Upload your ledger files and select an audit rule to execute.</p>
     </div>
 
-    <p-card styleClass="p-0 overflow-hidden shadow-2">
-        <div class="p-6">
+    <p-card styleClass="p-0 overflow-hidden shadow-3 border-round-xl">
+        <div class="p-0">
             <p-stepper>
-                <p-step-panel header="Select Rule">
+                <p-step-panel header="1. Select Audit Rule">
                     <ng-template pTemplate="content" let-nextCallback="nextCallback">
-                        <div class="flex flex-column gap-6">
-                            <div class="grid">
+                        <div class="p-5 flex flex-column gap-6">
+                            <div class="grid g-4">
                                 <div *ngFor="let rule of rules()" class="col-12 md:col-6 lg:col-4">
-                                    <div class="selectable-rule-card" 
+                                    <div class="selectable-rule-card h-full" 
                                          [class.selected]="selectedRule()?.ruleId === rule.ruleId"
                                          (click)="selectedRule.set(rule)">
-                                        <div class="flex justify-content-between align-items-center mb-3">
+                                        <div class="flex justify-content-between align-items-start mb-4">
                                             <div class="rule-badge" [ngClass]="rule.category">
                                                 {{ rule.category }}
                                             </div>
-                                            <div class="selection-check" *ngIf="selectedRule()?.ruleId === rule.ruleId">
+                                            <div class="selection-check scalein animation-duration-200" *ngIf="selectedRule()?.ruleId === rule.ruleId">
                                                 <i class="pi pi-check"></i>
                                             </div>
                                         </div>
-                                        <h3 class="m-0 text-lg font-bold mb-2">{{ rule.name }}</h3>
-                                        <p class="text-sm text-secondary m-0 line-height-3">{{ rule.description }}</p>
-                                        <div class="mt-4 flex align-items-center justify-content-between">
-                                            <span class="text-xs font-bold text-light uppercase tracking-wider">
-                                                {{ rule.creditCost }} Credits
+                                        <h3 class="m-0 text-xl font-bold mb-2 text-main">{{ rule.displayName }}</h3>
+                                        <p class="text-sm text-secondary m-0 line-height-4">{{ rule.description }}</p>
+                                        
+                                        <p-divider styleClass="my-4"></p-divider>
+                                        
+                                        <div class="flex align-items-center justify-content-between">
+                                            <div class="flex align-items-center gap-2">
+                                                <i class="pi pi-bolt text-warning-500"></i>
+                                                <span class="text-xs font-bold uppercase tracking-wider text-secondary">
+                                                    {{ rule.creditCost }} Credits
+                                                </span>
+                                            </div>
+                                            <span class="text-xs font-medium text-light border-1 surface-border border-round px-2 py-1">
+                                                {{ rule.legalBasis }}
                                             </span>
-                                            <i class="pi pi-info-circle text-light hover:text-primary-500 cursor-help" [pTooltip]="rule.name"></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="flex pt-4 justify-content-end">
+                            <div class="flex pt-4 justify-content-end border-top-1 surface-border">
                                 <p-button label="Next: Upload Files" 
                                           icon="pi pi-arrow-right" 
-                                          iconPos="right" 
+                                          iconPos="right"
+                                          size="large"
                                           [disabled]="!selectedRule()"
                                           (onClick)="nextCallback.emit()">
                                 </p-button>
@@ -47,12 +56,17 @@
                     </ng-template>
                 </p-step-panel>
 
-                <p-step-panel header="Upload & Configure">
+                <p-step-panel header="2. Upload & Configure">
                     <ng-template pTemplate="content" let-prevCallback="prevCallback">
-                        <div class="flex flex-column gap-6">
-                            <div class="grid">
-                                <div class="col-12 lg:col-8">
-                                    <div class="upload-section p-4 border-2 border-dashed border-round-xl surface-border text-center">
+                        <div class="p-5 flex flex-column gap-5">
+                            <div class="grid flex-grow-1">
+                                <div class="col-12 lg:col-7 xl:col-8">
+                                    <div class="upload-container h-full p-4 border-2 border-dashed border-round-xl surface-border flex flex-column gap-4 bg-alt">
+                                        <div class="flex align-items-center justify-content-between">
+                                            <h3 class="m-0 text-lg font-bold">Step 2: Upload Ledgers</h3>
+                                            <span class="text-sm text-light">{{ files().length }} files selected</span>
+                                        </div>
+                                        
                                         <p-fileUpload 
                                             name="ledgers" 
                                             [multiple]="true" 
@@ -63,51 +77,67 @@
                                             (onRemove)="onFileRemove($event)"
                                             [showUploadButton]="false"
                                             [showCancelButton]="false"
-                                            chooseLabel="Select Files"
+                                            chooseLabel="Click to Browse"
                                             chooseIcon="pi pi-plus"
-                                            styleClass="p-fileupload-custom">
+                                            styleClass="p-fileupload-custom-v2">
                                             <ng-template pTemplate="content">
-                                                <div *ngIf="files().length === 0" class="py-6">
-                                                    <i class="pi pi-cloud-upload text-5xl text-light mb-4"></i>
-                                                    <p class="text-secondary">Drag and drop your Excel/CSV ledgers here</p>
+                                                <div *ngIf="files().length === 0" class="flex flex-column align-items-center justify-content-center py-8 opacity-60">
+                                                    <div class="upload-icon-circle mb-4">
+                                                        <i class="pi pi-cloud-upload text-4xl"></i>
+                                                    </div>
+                                                    <p class="font-medium text-main mb-1">Drag and drop files here</p>
+                                                    <p class="text-xs text-secondary mt-0">Support: .xlsx, .xls, .csv (Max 10MB)</p>
                                                 </div>
                                             </ng-template>
                                         </p-fileUpload>
                                     </div>
                                 </div>
-                                <div class="col-12 lg:col-4">
-                                    <div class="config-panel p-4 surface-elevated border-round-xl border-1 border-color">
-                                        <h3 class="m-0 text-sm font-bold text-secondary uppercase tracking-widest mb-4">Settings</h3>
+                                
+                                <div class="col-12 lg:col-5 xl:col-4">
+                                    <div class="config-panel h-full p-4 surface-card border-round-xl border-1 surface-border shadow-1 flex flex-column">
+                                        <h3 class="m-0 text-sm font-bold text-secondary uppercase tracking-widest mb-4">Audit Settings</h3>
                                         
-                                        <div class="flex flex-column gap-2 mb-4">
-                                            <label class="font-bold text-sm">Target Date (As-On)</label>
-                                            <input type="date" pInputText [ngModel]="asOnDate()" (ngModelChange)="asOnDate.set($event)" class="w-full">
-                                            <small class="text-light">Used for interest calculations</small>
+                                        <div class="flex flex-column gap-3 mb-auto">
+                                            <div class="field mb-0">
+                                                <label class="block font-bold text-sm mb-2">Target Computation Date</label>
+                                                <input type="date" pInputText [ngModel]="asOnDate()" (ngModelChange)="asOnDate.set($event)" class="w-full">
+                                                <small class="text-light mt-1 block">Interest will be calculated up to this date.</small>
+                                            </div>
+
+                                            <div class="surface-hover border-round-lg p-3 mt-4 border-left-3 border-primary">
+                                                <p class="m-0 text-xs font-bold text-secondary uppercase mb-2">Active Rule</p>
+                                                <p class="m-0 font-bold text-main">{{ selectedRule()?.displayName || 'None' }}</p>
+                                            </div>
                                         </div>
 
                                         <p-divider></p-divider>
 
                                         <div class="flex flex-column gap-2 py-2">
-                                            <div class="flex justify-content-between text-sm">
-                                                <span>Rule:</span>
-                                                <span class="font-bold text-main">{{ selectedRule()?.name }}</span>
+                                            <div class="flex justify-content-between align-items-center">
+                                                <span class="text-secondary">Files Added:</span>
+                                                <span class="font-bold">{{ files().length }}</span>
                                             </div>
-                                            <div class="flex justify-content-between text-sm">
-                                                <span>Estimated Cost:</span>
-                                                <span class="font-bold text-warning-500">{{ (selectedRule()?.creditCost || 0) * (files().length || 1) }} Credits</span>
+                                            <div class="flex justify-content-between align-items-center">
+                                                <span class="text-secondary">Est. Credit Cost:</span>
+                                                <div class="flex align-items-center gap-1">
+                                                    <i class="pi pi-bolt text-warning-500 text-xs"></i>
+                                                    <span class="font-bold text-xl text-primary-500">{{ (selectedRule()?.creditCost || 0) * (files().length || 1) }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="flex pt-4 justify-content-between">
-                                <p-button label="Back" icon="pi pi-arrow-left" severity="secondary" (onClick)="prevCallback.emit()"></p-button>
-                                <p-button label="Run Audit Now" 
+                            <div class="flex pt-4 justify-content-between border-top-1 surface-border">
+                                <p-button label="Back" icon="pi pi-arrow-left" severity="secondary" pButtonText (onClick)="prevCallback.emit()"></p-button>
+                                <p-button label="Start Audit Engine" 
                                           icon="pi pi-bolt" 
-                                          class="p-button-primary glow-on-hover"
+                                          size="large"
                                           [loading]="executing()"
                                           [disabled]="files().length === 0"
+                                          severity="success"
+                                          class="glow-on-hover"
                                           (onClick)="executeAudit()">
                                 </p-button>
                             </div>

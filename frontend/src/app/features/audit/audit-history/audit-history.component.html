@@ -31,7 +31,7 @@
                 <tr class="cursor-pointer hover:surface-hover" [routerLink]="['/app/audit/history', run.runId]">
                     <td>
                         <div class="flex flex-column">
-                            <span class="font-bold text-main">{{ run.ruleId }}</span>
+                            <span class="font-bold text-main">{{ run.ruleDisplayName || run.ruleId }}</span>
                             <span class="text-xs text-light font-mono">{{ run.runId | slice:0:8 }}...</span>
                         </div>
                     </td>

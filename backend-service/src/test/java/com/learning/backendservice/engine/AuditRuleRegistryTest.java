@@ -13,7 +13,10 @@ class AuditRuleRegistryTest {
 
     static class DummyRuleA implements AuditRule<String, String> {
         @Override public String getRuleId() { return "RULE_A"; }
-        @Override public String getDisplayName() { return "Rule A"; }
+        @Override public String getName() { return "Rule A"; }
+        @Override public String getDisplayName() { return "Rule A Display"; }
+        @Override public String getDescription() { return "Description A"; }
+        @Override public String getCategory() { return "CAT_A"; }
         @Override public String getLegalBasis() { return "None"; }
         @Override public AuditRuleResult<String> execute(String input, AuditContext ctx) {
             return new AuditRuleResult<>(List.of(), input, BigDecimal.ZERO, 1);
@@ -22,7 +25,10 @@ class AuditRuleRegistryTest {
 
     static class DummyRuleB implements AuditRule<String, String> {
         @Override public String getRuleId() { return "RULE_B"; }
-        @Override public String getDisplayName() { return "Rule B"; }
+        @Override public String getName() { return "Rule B"; }
+        @Override public String getDisplayName() { return "Rule B Display"; }
+        @Override public String getDescription() { return "Description B"; }
+        @Override public String getCategory() { return "CAT_B"; }
         @Override public String getLegalBasis() { return "None"; }
         @Override public AuditRuleResult<String> execute(String input, AuditContext ctx) {
             return new AuditRuleResult<>(List.of(), input, BigDecimal.ZERO, 1);
@@ -42,7 +48,7 @@ class AuditRuleRegistryTest {
         
         AuditRule<String, String> ruleA = registry.getRule("RULE_A");
         assertNotNull(ruleA);
-        assertEquals("Rule A", ruleA.getDisplayName());
+        assertEquals("Rule A Display", ruleA.getDisplayName());
     }
 
     @Test

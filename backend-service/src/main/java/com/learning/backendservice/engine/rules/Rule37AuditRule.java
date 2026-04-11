@@ -48,7 +48,18 @@ public class Rule37AuditRule implements AuditRule<List<MultipartFile>, List<Ledg
     public String getRuleId() { return RULE_ID; }
 
     @Override
+    public String getName() { return "Rule 37"; }
+
+    @Override
     public String getDisplayName() { return DISPLAY_NAME; }
+
+    @Override
+    public String getDescription() {
+        return "Identify invoices where payment is pending for >180 days to avoid ITC reversal with interest.";
+    }
+
+    @Override
+    public String getCategory() { return "COMPLIANCE"; }
 
     @Override
     public String getLegalBasis() { return LEGAL_BASIS; }

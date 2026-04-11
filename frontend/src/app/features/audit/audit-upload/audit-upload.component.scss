@@ -7,60 +7,92 @@
 
 /* Selectable Rule Card */
 .selectable-rule-card {
-    background-color: var(--bg-surface);
-    border: 2px solid var(--border-color);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
     border-radius: var(--border-radius-xl);
     padding: var(--space-6);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    height: 100%;
-    position: relative;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 
     &:hover {
         border-color: var(--primary-300);
-        background-color: var(--surface-hover);
-        transform: translateY(-2px);
+        background: var(--surface-hover);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
     }
 
     &.selected {
         border-color: var(--primary-500);
-        background-color: var(--primary-50);
-        box-shadow: var(--glow-primary);
+        background: linear-gradient(135deg, var(--bg-surface) 0%, var(--primary-50) 100%);
+        box-shadow: var(--glow-primary), 0 15px 30px rgba(99, 102, 241, 0.1);
         
-        .rule-badge { background-color: var(--primary-500); color: white; }
+        .rule-badge { background: var(--primary-500); color: white; }
     }
 }
 
 .rule-badge {
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background-color: var(--border-color);
+    letter-spacing: 0.8px;
+    background: var(--surface-ground);
     color: var(--text-secondary);
+    border: 1px solid var(--border-color);
 }
 
 .selection-check {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     background: var(--primary-500);
     color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
 }
 
-/* Config & Upload Tweak */
-:host ::ng-deep .p-fileupload-custom {
+/* Upload V2 Styles */
+.upload-container {
+    background: var(--surface-ground);
+    
+    &.bg-alt {
+        background: rgba(var(--primary-rgb), 0.02);
+    }
+}
+
+.upload-icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-500);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+}
+
+:host ::ng-deep .p-fileupload-custom-v2 {
     .p-fileupload-buttonbar {
         background: transparent;
         border: none;
         padding: 0;
         margin-bottom: var(--space-4);
+        display: flex;
+        justify-content: center;
+        
+        .p-button {
+            border-radius: var(--border-radius-full);
+            padding-left: var(--space-6);
+            padding-right: var(--space-6);
+            font-weight: 600;
+        }
     }
 
     .p-fileupload-content {
@@ -70,22 +102,41 @@
     }
 
     .p-fileupload-file {
-        padding: var(--space-2) var(--space-4);
+        padding: 1rem;
         border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-md);
-        margin-bottom: var(--space-2);
+        border-radius: var(--border-radius-lg);
+        margin-bottom: var(--space-3);
         background: var(--bg-surface);
+        display: flex;
+        align-items: center;
+        transition: all 0.2s;
+        
+        &:hover {
+            border-color: var(--primary-200);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .p-fileupload-file-name {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .p-fileupload-file-size {
+            color: var(--text-light);
+            font-size: var(--text-xs);
+        }
     }
 }
 
-:host ::ng-deep .p-stepper {
-    .p-stepper-header {
-        background: transparent;
-    }
+.config-panel {
+    background: var(--bg-surface);
 }
 
 @media (prefers-color-scheme: dark) {
     .selectable-rule-card.selected {
-        background-color: rgba(99, 102, 241, 0.1);
+        background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(99, 102, 241, 0.1) 100%);
+    }
+    .upload-container.bg-alt {
+        background: rgba(255, 255, 255, 0.01);
     }
 }

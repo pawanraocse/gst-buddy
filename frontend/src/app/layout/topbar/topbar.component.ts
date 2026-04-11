@@ -3,16 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { ButtonModule } from 'primeng/button';
-import { MenuModule } from 'primeng/menu';
-import { AvatarModule } from 'primeng/avatar';
-import { MenuItem } from 'primeng/api';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { TooltipModule } from 'primeng/tooltip';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonModule, MenuModule, AvatarModule, BreadcrumbModule, TooltipModule],
+  imports: [CommonModule, RouterModule, ButtonModule, BreadcrumbModule, TooltipModule],
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss']
 })
@@ -26,13 +24,6 @@ export class TopbarComponent {
   breadcrumbItems: MenuItem[] = [
     { label: 'App', routerLink: '/app' },
     { label: 'Dashboard' }
-  ];
-
-  userMenuItems: MenuItem[] = [
-    { label: 'Profile', icon: 'pi pi-user', routerLink: '/app/settings/account' },
-    { label: 'Billing', icon: 'pi pi-wallet' },
-    { separator: true },
-    { label: 'Logout', icon: 'pi pi-power-off', command: () => this.logout() }
   ];
 
   constructor() {
@@ -53,10 +44,6 @@ export class TopbarComponent {
       }
       return newVal;
     });
-  }
-
-  logout() {
-    this.authService.logout();
   }
 
   onMobileMenuClick() {

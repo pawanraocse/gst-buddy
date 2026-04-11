@@ -29,10 +29,26 @@ public interface AuditRule<I, O> {
     String getRuleId();
 
     /**
+     * Human-readable name (shorter than displayName).
+     * Used as a unique identifying name in some UI components.
+     */
+    String getName();
+
+    /**
      * Human-readable label displayed in the UI rule catalog.
      * Example: {@code "Rule 37 — 180-Day ITC Reversal"}
      */
     String getDisplayName();
+
+    /**
+     * Detailed description of what the rule does.
+     */
+    String getDescription();
+
+    /**
+     * Rule category (e.g. COMPLIANCE, RECONCILIATION, ANALYTICS).
+     */
+    String getCategory();
 
     /**
      * Legal citation for this rule.
