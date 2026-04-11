@@ -1,19 +1,28 @@
-import { Component, inject, signal, HostListener } from '@angular/core';
+import { Component, computed, inject, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { TopbarComponent } from './topbar/topbar.component';
+import { AuthService } from '../core/auth.service';
+import { MenubarModule } from 'primeng/menubar';
+import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from 'primeng/avatar';
+import { TooltipModule } from 'primeng/tooltip';
+import { MenuItem } from 'primeng/api';
+import { ShareDialogComponent } from '../shared/components/share-dialog/share-dialog.component';
+import { SupportTicketDialogComponent } from '../shared/components/support-ticket-dialog/support-ticket-dialog.component';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, SidebarComponent, TopbarComponent],
+  imports: [CommonModule, RouterModule, MenubarModule, ButtonModule, AvatarModule, TooltipModule, ShareDialogComponent, SupportTicketDialogComponent],
   templateUrl: './app-layout.component.html',
   styleUrls: ['./app-layout.component.scss']
 })
 export class AppLayoutComponent {
+  authService = inject(AuthService);
+  router = inject(RouterModule); // To track active route if needed, or stick to simple logic
+
+  sidebarActive = signal(false);
   sidebarCollapsed = signal(false);
-  mobileSidebarActive = signal(false);
 
   constructor() {
     const savedState = localStorage.getItem('sidebar_collapsed');
@@ -22,7 +31,22 @@ export class AppLayoutComponent {
     }
   }
 
+  @ViewChild('shareDialog') shareDialog!: ShareDialogComponent;
+  @ViewChild('supportDialog') supportDialog!: SupportTicketDialogComponent;
+
+  openShareDialog() {
+    this.shareDialog.show();
+  }
+
+  openSupportDialog() {
+    this.supportDialog.show();
+  }
+
   toggleSidebar() {
+    this.sidebarActive.update(v => !v);
+  }
+
+  toggleDesktopSidebar() {
     this.sidebarCollapsed.update(v => {
       const newState = !v;
       localStorage.setItem('sidebar_collapsed', String(newState));
@@ -30,18 +54,39 @@ export class AppLayoutComponent {
     });
   }
 
-  toggleMobileSidebar() {
-    this.mobileSidebarActive.update(v => !v);
+  // Helper to check active route roughly
+  isActive(path: string): boolean {
+    return window.location.pathname.includes(path);
   }
 
-  closeMobileSidebar() {
-    this.mobileSidebarActive.set(false);
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    if (window.innerWidth >= 992) {
-      this.mobileSidebarActive.set(false);
+  // Close sidebar on menu click (mobile)
+  onMenuClick() {
+    if (window.innerWidth < 992) {
+      this.sidebarActive.set(false);
     }
+  }
+
+  items = computed<MenuItem[]>(() => {
+    const base: MenuItem[] = [
+      { label: 'Compliance Check', icon: 'pi pi-shield', routerLink: '/app/dashboard' },
+      { label: 'Settings', icon: 'pi pi-cog', routerLink: '/app/settings/account' }
+    ];
+
+    if (this.authService.isSuperAdmin()) {
+      base.push(
+        { separator: true },
+        { label: 'Admin Dashboard', icon: 'pi pi-chart-bar', routerLink: '/app/admin/dashboard' },
+        { label: 'Manage Users', icon: 'pi pi-users', routerLink: '/app/admin/users' },
+        { label: 'Manage Plans', icon: 'pi pi-credit-card', routerLink: '/app/admin/plans' },
+        { label: 'Credit Overview', icon: 'pi pi-wallet', routerLink: '/app/admin/credits' },
+        { label: 'Support Queries', icon: 'pi pi-envelope', routerLink: '/app/admin/support' }
+      );
+    }
+
+    return base;
+  });
+
+  logout() {
+    this.authService.logout();
   }
 }

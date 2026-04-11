@@ -341,12 +341,12 @@ module "cognito_user_pool" {
 
   # Cognito requires HTTPS or localhost - using localhost for budget
   callback_urls = [
-    "http://localhost:4200/auth/callback", 
+    "http://localhost:4200/auth/callback",
     var.callback_url,
     replace(var.callback_url, "https://", "https://www.")
   ]
-  logout_urls   = [
-    "http://localhost:4200", 
+  logout_urls = [
+    "http://localhost:4200",
     var.logout_redirect_url,
     replace(var.logout_redirect_url, "https://", "https://www.")
   ]

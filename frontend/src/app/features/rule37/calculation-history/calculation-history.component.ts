@@ -149,25 +149,13 @@ export class CalculationHistoryComponent {
 
   countDistinctSuppliers(run: AuditRunResponse): number {
     const suppliers = new Set<string>();
-    const results: LedgerResult[] = (run.resultData as LedgerResult[]) ?? [];
-    results.forEach(lr =>
+    run.resultData?.ledgerResults?.forEach(lr =>
       lr.summary.details.forEach(d => suppliers.add(d.supplier))
     );
     return Math.max(1, suppliers.size);
   }
 
   countTransactions(run: AuditRunResponse): number {
-    const results: LedgerResult[] = (run.resultData as LedgerResult[]) ?? [];
-    return results.reduce((s, lr) => s + lr.summary.details.length, 0);
-  }
-
-  /** Resolve display filename from inputMetadata or fall back to run ID */
-  getFilename(run: AuditRunResponse): string {
-    return run.inputMetadata?.filename ?? run.runId.slice(0, 8);
-  }
-
-  /** Resolve results from resultData (only populated on detail view) */
-  getResults(run: AuditRunResponse): LedgerResult[] {
-    return (run.resultData as LedgerResult[]) ?? [];
+    return run.resultData?.ledgerResults?.reduce((s, lr) => s + lr.summary.details.length, 0) ?? 0;
   }
 }

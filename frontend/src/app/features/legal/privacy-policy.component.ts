@@ -21,7 +21,7 @@ import { RouterLink } from '@angular/router';
         <div class="legal-body">
           <section>
             <h2>1. Information We Collect</h2>
-            <p>When you use GSTBuddies, we collect the following information to provide our GST compliance services:</p>
+            <p>When you use Gstbuddies, we collect the following information to provide our GST compliance services:</p>
             <ul>
               <li><strong>Account Information:</strong> Name, email address, and GSTIN (if provided).</li>
               <li><strong>Uploaded Files:</strong> Excel ledger files you upload for Rule 37 and other GST compliance checks.</li>

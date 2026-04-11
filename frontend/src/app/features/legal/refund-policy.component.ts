@@ -21,7 +21,7 @@ import { RouterLink } from '@angular/router';
         <div class="legal-body">
           <section>
             <h2>Our Commitment</h2>
-            <p>We want you to be completely satisfied with GSTBuddies. Our credit-based model means you only pay for what you use — here's how refunds work.</p>
+            <p>We want you to be completely satisfied with Gstbuddies. Our credit-based model means you only pay for what you use — here's how refunds work.</p>
           </section>
 
           <section>

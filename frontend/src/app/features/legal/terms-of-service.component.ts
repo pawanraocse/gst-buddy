@@ -21,12 +21,12 @@ import { RouterLink } from '@angular/router';
         <div class="legal-body">
           <section>
             <h2>1. Acceptance of Terms</h2>
-            <p>By accessing or using GSTBuddies ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, please do not use the Service.</p>
+            <p>By accessing or using Gstbuddies ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, please do not use the Service.</p>
           </section>
 
           <section>
             <h2>2. Description of Service</h2>
-            <p>GSTBuddies provides automated GST compliance tools for Indian businesses, including but not limited to Rule 37 (180-day ITC reversal) calculations, ledger analysis, and compliance reporting ("the Service").</p>
+            <p>Gstbuddies provides automated GST compliance tools for Indian businesses, including but not limited to Rule 37 (180-day ITC reversal) calculations, ledger analysis, and compliance reporting ("the Service").</p>
             <p>The Service is intended as a <strong>decision-support tool</strong>. Output should be reviewed by a qualified Chartered Accountant before filing any GST return.</p>
           </section>
 
@@ -63,12 +63,12 @@ import { RouterLink } from '@angular/router';
 
           <section>
             <h2>6. Disclaimer of Warranties</h2>
-            <p>The Service is provided "as is." While we strive for 99.9% accuracy, GSTBuddies does not warrant that calculations are free from error or that the Service will be uninterrupted. Tax compliance decisions should always be verified with a qualified CA.</p>
+            <p>The Service is provided "as is." While we strive for 99.9% accuracy, Gstbuddies does not warrant that calculations are free from error or that the Service will be uninterrupted. Tax compliance decisions should always be verified with a qualified CA.</p>
           </section>
 
           <section>
             <h2>7. Limitation of Liability</h2>
-            <p>To the maximum extent permitted by law, GSTBuddies shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Service.</p>
+            <p>To the maximum extent permitted by law, Gstbuddies shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Service.</p>
           </section>
 
           <section>

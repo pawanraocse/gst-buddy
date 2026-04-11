@@ -15,9 +15,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         '/auth/api/v1/auth/me',       // Called during auth check
         '/auth/api/v1/auth/lookup',   // Tenant lookup
         '/auth/api/v1/plans',         // Public plans (landing page)
-        '/auth/api/v1/credits',       // Wallet status (non-blocking)
         '/platform/api/v1/tenants/',  // Tenant type lookup
-        '/auth/api/v1/referral/'      // Referral (non-blocking)
+        '/auth/api/v1/referral/'      // Referral (non-blocking, may 401 before gateway config)
     ];
 
     return next(req).pipe(
