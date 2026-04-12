@@ -104,6 +104,11 @@ export class AccountSettingsComponent implements OnInit {
     return Math.round((w.used / w.total) * 100);
   }
 
+  getDiscountPercent(plan: PlanDto): number {
+    if (!plan.isSaleActive || !plan.salePriceInr || plan.priceInr <= 0) return 0;
+    return Math.round((1 - (plan.salePriceInr / plan.priceInr)) * 100);
+  }
+
   openPlansDialog(): void {
     this.showPlansDialog = true;
     if (this.plans().length === 0) {

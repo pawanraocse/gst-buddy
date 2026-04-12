@@ -692,12 +692,14 @@
                         </a>
                     </div>
 
+                    @if (maxDiscountPercent() > 0) {
                     <div class="sale-promo-banner animate-on-scroll">
                         <div class="sale-icon">🔥</div>
                         <div class="promo-content">
-                            <strong>Limited Time Offer:</strong> Save <span class="highlight">20% on all plans</span> today. Secure your compliance for less!
+                            <strong>Limited Time Offer:</strong> Save <span class="highlight">{{ maxDiscountPercent() }}% on all plans</span> today. Secure your compliance for less!
                         </div>
                     </div>
+                    }
                 </div>
 
                 <div class="pricing-grid">

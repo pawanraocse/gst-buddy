@@ -1,4 +1,4 @@
-import { Component, signal, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
+import { Component, signal, computed, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -77,6 +77,20 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
 
     // Pricing
     isYearly = signal(false);
+
+    maxDiscountPercent = computed(() => {
+        let max = 0;
+        const plans = this.pricingPlans();
+        if (plans) {
+            for (const plan of plans) {
+                if (plan.isSaleActive && plan.salePrice && plan.price > 0) {
+                    const pct = Math.round((1 - plan.salePrice / plan.price) * 100);
+                    if (pct > max) max = pct;
+                }
+            }
+        }
+        return max;
+    });
 
     // ============================================
     // DATA

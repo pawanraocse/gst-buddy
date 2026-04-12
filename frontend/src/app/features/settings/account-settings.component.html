@@ -285,13 +285,21 @@
         <div class="plans-grid">
             @for (plan of plans(); track plan.id) {
             <div class="plan-card" [class.plan-featured]="plan.name === 'ultra'">
-                @if (plan.name === 'ultra') {
+                @if (plan.isSaleActive) {
+                <div class="plan-badge" style="background: linear-gradient(135deg, #ef4444, #f97316);">-{{ getDiscountPercent(plan) }}% OFF</div>
+                } @else if (plan.name === 'ultra') {
                 <div class="plan-badge">Popular</div>
                 }
                 <h3 class="plan-name">{{ plan.displayName }}</h3>
                 <div class="plan-price">
-                    <span class="price-currency">₹</span>
-                    <span class="price-amount">{{ plan.priceInr }}</span>
+                    @if (plan.isSaleActive && plan.salePriceInr) {
+                        <div class="price-strikethrough" style="text-decoration: line-through; color: var(--text-secondary); font-size: 0.9rem; margin-right: 8px;">₹{{ plan.priceInr }}</div>
+                        <span class="price-currency">₹</span>
+                        <span class="price-amount">{{ plan.salePriceInr }}</span>
+                    } @else {
+                        <span class="price-currency">₹</span>
+                        <span class="price-amount">{{ plan.priceInr }}</span>
+                    }
                 </div>
                 <div class="plan-credits">
                     <i class="pi pi-bolt"></i>
