@@ -2,6 +2,7 @@ package com.learning.backendservice.domain.ledger;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Interface for parsing ledger data from various formats.
@@ -21,19 +22,34 @@ public interface LedgerParser {
      */
     List<LedgerEntry> parse(InputStream inputStream, String filename);
 
+
     /**
-     * Counts the number of distinct ledgers (unique suppliers) in the file.
-     * Default implementation parses the file and counts distinct supplier names.
+     * Counts the number of distinct ledgers (unique supplier names) in the entry list.
      *
-     * @param entries already-parsed ledger entries
-     * @return number of distinct suppliers (minimum 1)
+     * @param entries parsed ledger entries; must not be null or empty
+     * @return number of distinct supplier names; always ≥ 1 for a non-empty list
+     * @throws IllegalArgumentException if entries is null or empty — callers must
+     *         validate before invoking; use {@code validateEntries()} in the parser
      */
     default int countLedgers(List<LedgerEntry> entries) {
-        long count = entries.stream()
+        if (entries == null || entries.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "countLedgers requires a non-empty entry list; "
+                            + "ensure the file was parsed successfully before calling this method.");
+        }
+
+        int count = entries.stream()
                 .map(LedgerEntry::getSupplier)
-                .distinct()
-                .count();
-        return Math.max(1, (int) count);
+                .filter(s -> s != null && !s.isBlank())
+                .collect(Collectors.toUnmodifiableSet())
+                .size();
+
+        if (count == 0) {
+            throw new IllegalStateException(
+                    "No valid supplier names found in entries; "
+                            + "parser fallback supplier should always assign a name.");
+        }
+        return count;
     }
 }
 
