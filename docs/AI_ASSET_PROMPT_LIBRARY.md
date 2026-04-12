@@ -273,22 +273,22 @@ Professional 3D rendering of a modern financial dashboard interface made of tier
 - **Style:** Photorealistic, cinematic lighting, modern corporate office environments
 - **In-App Location:** Auth page left brand panel
 
-### 6.1 Login — Robot Waving
+### 6.1 Login — Professional Relief
 
 **Filename:** `auth-login-illustration.png`  
 **Output Path:** `frontend/src/assets/images/auth/auth-login-illustration.png`
-**Prompt (Leonardo.ai - Phoenix):**
+**Prompt (Leonardo.ai / Midjourney):**
 ```
-Highly realistic, cinematic medium shot of a confident Indian male Chartered Accountant (30s) in a modern, glass-walled office boardroom. He is looking at the camera with a subtle, trustworthy smile. He wears a sharp navy-blue suit. Soft morning sunlight filters through the window. Shallow depth of field, premium corporate photography style, indigo color grading.
+Highly realistic, cinematic medium shot of a confident, happy Indian female business owner (30s) in a modern, sun-lit home office. She is smiling with deep relief and achievement, looking at her laptop which shows a success state. The atmosphere is calm, successful, and professional. Soft morning sunlight filters through large windows. Shallow depth of field, premium corporate photography style, indigo color grading. No text. 8k resolution.
 ```
 
-### 6.2 Signup — Robot Holding Checkmark
+### 6.2 Signup — Empowerment & Success
 
 **Filename:** `auth-signup-illustration.png`  
 **Output Path:** `frontend/src/assets/images/auth/auth-signup-illustration.png`
-**Prompt (Leonardo.ai - Phoenix):**
+**Prompt (Leonardo.ai / Midjourney):**
 ```
-Highly realistic, cinematic medium shot of an Indian female Finance Director (30s) standing in a high-tech modern office space. She is smiling confidently, holding a sleek silver tablet. Soft, elegant lighting with subtle teal and indigo ambient glows in the background. Shallow depth of field, premium corporate photography style.
+Highly realistic, cinematic medium shot of a confident Indian female Finance Director (30s) standing in a high-tech modern office space. She is smiling empoweringly, holding a sleek silver tablet, looking forward to a bright future. Soft morning sunlight filters through large glass windows. Shallow depth of field, premium corporate photography style, indigo color grading. No text. 8k resolution.
 ```
 
 ### 6.3 Verify Email — Envelope with Sparkles

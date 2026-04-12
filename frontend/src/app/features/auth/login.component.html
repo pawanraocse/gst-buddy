@@ -1,94 +1,91 @@
 <div class="auth-page-container">
-
-  <!-- Left: Brand Panel -->
-  <div class="auth-brand-panel">
-    <div class="bg-decoration">
-      <div class="circle circle-1"></div>
-      <div class="circle circle-2"></div>
-      <div class="circle circle-3"></div>
-    </div>
-    <div class="brand-content">
-      <div class="brand-logo">
-        <i class="pi pi-calculator"></i>
-        <span>GSTBuddies</span>
-      </div>
-      <div class="brand-illustration-slot">
-        <img src="assets/images/auth/auth-login-illustration.png" alt="Login Illustration" />
-      </div>
-      <h2>Welcome back to peace of mind</h2>
-      <p>Your GST compliance is just one login away</p>
-      <div class="trust-signal glass-panel">
-        <i class="pi pi-verified"></i>
-        <span>Trusted by 1,000+ businesses</span>
-      </div>
-    </div>
+  <!-- 🌌 Background Layer -->
+  <div class="auth-bg-visual">
+    <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?auto=format&fit=crop&q=80&w=1200" alt="Professional Success" />
   </div>
+  <div class="auth-dot-pattern"></div>
 
-  <!-- Right: Form Panel -->
-  <div class="auth-form-panel">
-    <div class="auth-card">
-      <!-- Back to Home Link -->
-      <a routerLink="/" class="back-to-home">
-        <i class="pi pi-arrow-left"></i> Back to Home
-      </a>
-
-      <div class="text-center mb-4">
-        <div class="icon-container">
-          <div class="icon-ring">
-            <i class="pi pi-calculator text-3xl text-white"></i>
-          </div>
+  <!-- 🏛️ Content Wrapper -->
+  <div class="auth-main-content">
+    
+    <!-- Left: Brand Info Side -->
+    <div class="auth-brand-side">
+      <div class="brand-content">
+        <div class="brand-logo">
+          <i class="pi pi-calculator"></i>
+          <span>GSTBuddies</span>
         </div>
-        <h1 class="auth-title">Welcome to GSTBuddies</h1>
-        <div class="auth-subtitle">
-          Tax shouldn't be scary. Let's get you signed in.
+        <h2>The smartest way to stay compliant.</h2>
+        <p>Automate your GST reconciliation and save hours of manual work every month.</p>
+        
+        <div class="trust-signal">
+          <i class="pi pi-verified"></i>
+          <span>Trusted by 1,000+ businesses</span>
         </div>
       </div>
+    </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="mb-4">
-          <label for="email" class="block text-900 font-medium mb-2">Email Address</label>
-          <div class="p-input-icon-left w-full">
-            <i class="pi pi-envelope"></i>
-            <input id="email" type="text" pInputText formControlName="email" class="w-full"
-              placeholder="you@company.com">
+    <!-- Right: Form Sidebar Side -->
+    <div class="auth-form-side">
+      <div class="auth-card">
+        <!-- Back to Home Link -->
+        <a routerLink="/" class="back-to-home">
+          <i class="pi pi-arrow-left"></i> Back to Home
+        </a>
+
+        <div class="text-center mb-5">
+          <h1 class="auth-title">Welcome Back</h1>
+          <div class="auth-subtitle">
+            Tax shouldn't be scary. Enter your credentials to continue.
           </div>
         </div>
 
-        <div class="mb-2">
-          <label for="password" class="block text-900 font-medium mb-2">Password</label>
-          <p-password id="password" formControlName="password" [toggleMask]="true" [feedback]="false"
-            styleClass="w-full" inputStyleClass="w-full" placeholder="••••••••"></p-password>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="mb-4">
+            <label for="email" class="block text-900 font-medium mb-2">Email Address</label>
+            <div class="p-input-icon-left w-full">
+              <i class="pi pi-envelope"></i>
+              <input id="email" type="text" pInputText formControlName="email" class="w-full"
+                placeholder="you@company.com">
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label for="password" class="block text-900 font-medium mb-2">Password</label>
+            <p-password id="password" formControlName="password" [toggleMask]="true" [feedback]="false"
+              styleClass="w-full" inputStyleClass="w-full" placeholder="••••••••"></p-password>
+          </div>
+
+          <div class="flex align-items-center justify-content-end mb-5">
+            <a routerLink="/auth/forgot-password"
+              class="text-sm font-medium text-primary-600 hover:text-primary-700 no-underline cursor-pointer transition-colors">
+              Forgot password?
+            </a>
+          </div>
+
+          <p-button label="Sign In" type="submit" styleClass="w-full p-button-lg" [loading]="loading()"></p-button>
+
+          <p-message *ngIf="error()" severity="error" [text]="error() || ''" styleClass="w-full mt-3 block"></p-message>
+        </form>
+
+        <div class="flex align-items-center my-4">
+          <div class="flex-grow-1 border-top-1 surface-border"></div>
+          <span class="mx-3 text-600 text-sm">Or continue with</span>
+          <div class="flex-grow-1 border-top-1 surface-border"></div>
         </div>
 
-        <div class="flex align-items-center justify-content-end mb-5">
-          <a routerLink="/auth/forgot-password"
-            class="text-sm font-medium text-primary-600 hover:text-primary-700 no-underline cursor-pointer transition-colors">
-            Forgot password?
+        <button pButton pRipple label="Google" icon="pi pi-google"
+          class="w-full p-button-outlined p-button-secondary mb-4" (click)="loginWithGoogle()"></button>
+
+        <div class="text-center text-sm text-600">
+          Don't have an account?
+          <a routerLink="/auth/signup/personal"
+            class="font-bold text-primary-600 hover:text-primary-700 no-underline cursor-pointer ml-1">
+            Create free account
           </a>
         </div>
-
-        <p-button label="Sign In" type="submit" styleClass="w-full p-button-lg" [loading]="loading()"></p-button>
-
-        <p-message *ngIf="error()" severity="error" [text]="error() || ''" styleClass="w-full mt-3 block"></p-message>
-      </form>
-
-      <div class="flex align-items-center my-4">
-        <div class="flex-grow-1 border-top-1 surface-border"></div>
-        <span class="mx-3 text-600 text-sm">Or continue with</span>
-        <div class="flex-grow-1 border-top-1 surface-border"></div>
-      </div>
-
-      <button pButton pRipple label="Google" icon="pi pi-google"
-        class="w-full p-button-outlined p-button-secondary mb-4" (click)="loginWithGoogle()"></button>
-
-      <div class="text-center text-sm text-600">
-        Don't have an account?
-        <a routerLink="/auth/signup/personal"
-          class="font-bold text-primary-600 hover:text-primary-700 no-underline cursor-pointer ml-1">
-          Create free account
-        </a>
       </div>
     </div>
   </div>
-
 </div>
+
