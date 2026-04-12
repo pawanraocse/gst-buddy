@@ -10,6 +10,8 @@ export interface PlanDto {
   name: string;
   displayName: string;
   priceInr: number;
+  salePriceInr?: number;
+  isSaleActive?: boolean;
   credits: number;
   isTrial: boolean;
   description: string;

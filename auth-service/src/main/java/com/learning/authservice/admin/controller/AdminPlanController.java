@@ -43,6 +43,8 @@ public class AdminPlanController {
                 .name(req.name())
                 .displayName(req.displayName())
                 .priceInr(req.priceInr())
+                .salePriceInr(req.salePriceInr())
+                .isSaleActive(req.isSaleActive())
                 .credits(req.credits())
                 .isTrial(req.isTrial())
                 .description(req.description())
@@ -67,6 +69,8 @@ public class AdminPlanController {
 
         if (req.displayName() != null) plan.setDisplayName(req.displayName());
         if (req.priceInr() != null) plan.setPriceInr(req.priceInr());
+        if (req.salePriceInr() != null) plan.setSalePriceInr(req.salePriceInr());
+        if (req.isSaleActive() != null) plan.setIsSaleActive(req.isSaleActive());
         if (req.credits() != null) plan.setCredits(req.credits());
         if (req.isTrial() != null) plan.setIsTrial(req.isTrial());
         if (req.isActive() != null) plan.setIsActive(req.isActive());
@@ -107,6 +111,8 @@ public class AdminPlanController {
                 .name(plan.getName())
                 .displayName(plan.getDisplayName())
                 .priceInr(plan.getPriceInr())
+                .salePriceInr(plan.getSalePriceInr())
+                .isSaleActive(plan.getIsSaleActive() != null && plan.getIsSaleActive())
                 .credits(plan.getCredits())
                 .isTrial(plan.getIsTrial())
                 .isActive(plan.getIsActive())

@@ -47,6 +47,51 @@ class PlanServiceTest {
     }
 
     @Test
+    @DisplayName("getActivePlans returns sorted plan DTOs with sale prices")
+    void getActivePlansWithSale() {
+        var pro = Plan.builder().id(2L).name("pro").displayName("Pro")
+                .priceInr(BigDecimal.valueOf(149))
+                .salePriceInr(BigDecimal.valueOf(119))
+                .isSaleActive(true)
+                .credits(5).isTrial(false).description("5 analyses").build();
+
+        when(planRepository.findByIsActiveTrueOrderBySortOrderAsc())
+                .thenReturn(List.of(pro));
+
+        List<PlanDto> plans = planService.getActivePlans();
+
+        assertThat(plans).hasSize(1);
+        assertThat(plans.get(0).name()).isEqualTo("pro");
+        assertThat(plans.get(0).priceInr()).isEqualByComparingTo(BigDecimal.valueOf(149));
+        assertThat(plans.get(0).salePriceInr()).isEqualByComparingTo(BigDecimal.valueOf(119));
+        assertThat(plans.get(0).isSaleActive()).isTrue();
+    }
+
+    @Test
+    @DisplayName("getEffectivePrice returns sale price when active")
+    void getEffectivePriceWhenSaleActive() {
+        var plan = Plan.builder()
+                .priceInr(BigDecimal.valueOf(149))
+                .salePriceInr(BigDecimal.valueOf(119))
+                .isSaleActive(true)
+                .build();
+
+        assertThat(plan.getEffectivePrice()).isEqualByComparingTo(BigDecimal.valueOf(119));
+    }
+
+    @Test
+    @DisplayName("getEffectivePrice returns base price when sale inactive")
+    void getEffectivePriceWhenSaleInactive() {
+        var plan = Plan.builder()
+                .priceInr(BigDecimal.valueOf(149))
+                .salePriceInr(BigDecimal.valueOf(119))
+                .isSaleActive(false)
+                .build();
+
+        assertThat(plan.getEffectivePrice()).isEqualByComparingTo(BigDecimal.valueOf(149));
+    }
+
+    @Test
     @DisplayName("getActivePlanByName returns plan entity")
     void getActivePlanByName() {
         var ultra = Plan.builder().id(3L).name("ultra").displayName("Ultra")

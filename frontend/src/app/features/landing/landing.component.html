@@ -681,36 +681,55 @@
                     <p>1 credit = 1 ledger analysis. No subscriptions. Pay as you go.</p>
                 </div>
 
-                <!-- Trial Promotional Banner -->
-                <div class="trial-promo-banner animate-on-scroll">
-                    <div class="promo-content">
-                        <strong>Not sure yet?</strong> Sign up and get <span class="highlight">2 Free Compliance Checks</span> on us. No credit card required.
+                <!-- Trial & Sale Promotional Banners -->
+                <div class="promo-banners">
+                    <div class="trial-promo-banner animate-on-scroll">
+                        <div class="promo-content">
+                            <strong>Not sure yet?</strong> Sign up and get <span class="highlight">2 Free Compliance Checks</span> on us. No credit card required.
+                        </div>
+                        <a [routerLink]="'/auth/signup/personal'">
+                            <button pButton label="Start Free Trial" class="p-button-outlined promo-btn"></button>
+                        </a>
                     </div>
-                    <a [routerLink]="'/auth/signup/personal'">
-                        <button pButton label="Start Free Trial" class="p-button-outlined promo-btn"></button>
-                    </a>
+
+                    <div class="sale-promo-banner animate-on-scroll">
+                        <div class="sale-icon">🔥</div>
+                        <div class="promo-content">
+                            <strong>Limited Time Offer:</strong> Save <span class="highlight">20% on all plans</span> today. Secure your compliance for less!
+                        </div>
+                    </div>
                 </div>
 
                 <div class="pricing-grid">
                     @for (plan of pricingPlans(); track plan.name) {
                     <div class="pricing-card animate-on-scroll"
                          [class.popular]="selectedPlan() === plan.name"
+                         [class.on-sale]="plan.isSaleActive"
                          (click)="selectedPlan.set(plan.name)"
                          style="cursor: pointer;">
-                        @if (selectedPlan() === plan.name) {
-                        <div class="popular-badge">Selected Plan</div>
+                        
+                        @if (plan.isSaleActive) {
+                            <div class="sale-badge">-{{ getDiscountPercent(plan) }}% OFF</div>
+                        } @else if (selectedPlan() === plan.name) {
+                            <div class="popular-badge">Selected Plan</div>
                         }
+
                         <div class="card-header">
                             <h3>{{ plan.name }}</h3>
                             <p class="tagline">{{ plan.tagline }}</p>
                         </div>
                         <div class="price">
-                            @if (plan.price > 0) {
-                            <span class="currency">₹</span>
-                            <span class="amount">{{ getPrice(plan) }}</span>
-                            <span class="period">one-time</span>
+                            @if (plan.isSaleActive && plan.salePrice) {
+                                <div class="price-strikethrough">₹{{ plan.price }}</div>
+                                <span class="currency">₹</span>
+                                <span class="amount">{{ plan.salePrice.toLocaleString('en-IN') }}</span>
+                                <span class="period">sale price</span>
+                            } @else if (plan.price > 0) {
+                                <span class="currency">₹</span>
+                                <span class="amount">{{ getPrice(plan) }}</span>
+                                <span class="period">one-time</span>
                             } @else {
-                            <span class="amount custom">FREE</span>
+                                <span class="amount custom">FREE</span>
                             }
                         </div>
                         <div class="credits-badge"

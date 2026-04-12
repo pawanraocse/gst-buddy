@@ -62,7 +62,15 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${COGNITO_ISSUER_URI:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_placeholder}
+          # Only jwk-set-uri is configured here. DO NOT add issuer-uri alongside it.
+          # Spring Security auto-configuration would create two ReactiveJwtDecoder beans
+          # (jwtDecoder + jwtDecoderByIssuerUri), causing a startup crash:
+          # "required a single bean, but 2 were found".
+          #
+          # Issuer claim validation is instead handled by the explicit ReactiveJwtDecoder
+          # @Bean in SecurityConfig.java, which reads COGNITO_ISSUER_URI via relaxed binding
+          # (env var COGNITO_ISSUER_URI → property cognito.issuer-uri) and attaches a
+          # JwtIssuerValidator programmatically. This gives identical security with no conflict.
           jwk-set-uri: ${COGNITO_JWKS_URI:https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_placeholder/.well-known/jwks.json}
 
 server:

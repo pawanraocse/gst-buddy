@@ -91,39 +91,124 @@
 }
 
 .sample-format {
-    margin-top: 1.5rem;
-    padding: 1rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
     background: var(--bg-surface);
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px solid var(--border-color);
     text-align: left;
+    box-shadow: var(--shadow-sm);
 
     h4 {
-        margin: 0 0 0.75rem;
-        font-size: 0.9rem;
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
         color: var(--text-main);
     }
+
+    h5 {
+        margin: 0 0 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary-600);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+.sample-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .p-button-outlined {
+        font-size: 0.8rem;
+    }
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
 }
 
 .sample-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8rem;
+    white-space: nowrap;
 
     th,
     td {
-        padding: 0.5rem;
-        border: 1px solid var(--border-color);
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color);
     }
 
     th {
-        background: var(--primary-50);
+        background: var(--bg-light);
         font-weight: 600;
-        color: var(--text-main);
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
         text-align: left;
     }
 
     td {
+        color: var(--text-main);
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.mapping-guide {
+    background: rgba(var(--primary-rgb), 0.03);
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
+    border-radius: 8px;
+    padding: 1.25rem;
+
+    .mapping-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .mapping-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        .label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .value {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+        }
+    }
+
+    .mapping-note {
+        margin: 0.5rem 0 0;
+        font-size: 0.75rem;
         color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+
+        i {
+            color: var(--primary-500);
+        }
     }
 }

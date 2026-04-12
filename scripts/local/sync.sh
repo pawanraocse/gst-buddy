@@ -30,6 +30,9 @@ CLIENT_ID=$(terraform output -raw client_id 2>/dev/null || echo "")
 SPA_CLIENT_ID=$(terraform output -raw spa_client_id 2>/dev/null || echo "")
 CLIENT_SECRET=$(terraform output -raw client_secret 2>/dev/null || echo "")
 ISSUER_URI=$(terraform output -raw issuer_uri 2>/dev/null || echo "")
+JWKS_URI=$(terraform output -raw jwks_uri 2>/dev/null || echo "")
+CALLBACK_URL=$(terraform output -raw callback_url 2>/dev/null || echo "")
+LOGOUT_REDIRECT_URL=$(terraform output -raw logout_redirect_url 2>/dev/null || echo "")
 DOMAIN=$(terraform output -raw cognito_domain 2>/dev/null || echo "")
 AWS_REGION=$(grep 'aws_region' terraform.tfvars 2>/dev/null | cut -d'"' -f2 || echo "ap-south-1")
 
@@ -44,8 +47,12 @@ cat > "$OUTPUT_FILE" <<EOF
 COGNITO_USER_POOL_ID=$USER_POOL_ID
 COGNITO_CLIENT_ID=$CLIENT_ID
 COGNITO_CLIENT_SECRET=$CLIENT_SECRET
+COGNITO_SPA_CLIENT_ID=$SPA_CLIENT_ID
 COGNITO_ISSUER_URI=$ISSUER_URI
+COGNITO_JWKS_URI=$JWKS_URI
 COGNITO_DOMAIN=$DOMAIN
+COGNITO_REDIRECT_URI=$CALLBACK_URL
+COGNITO_LOGOUT_REDIRECT_URL=$LOGOUT_REDIRECT_URL
 AWS_REGION=$AWS_REGION
 EOF
 log_info "Config saved to $OUTPUT_FILE"

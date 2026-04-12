@@ -25,31 +25,76 @@
 
         @if (showSample()) {
         <div class="sample-format">
-            <h4>Expected Format:</h4>
-            <table class="sample-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Particulars</th>
-                        <th>Debit (Payment)</th>
-                        <th>Credit (Purchase)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>01-Apr-2024</td>
-                        <td>Opening Balance</td>
-                        <td></td>
-                        <td>50,000</td>
-                    </tr>
-                    <tr>
-                        <td>15-Apr-2024</td>
-                        <td>Payment Made</td>
-                        <td>25,000</td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="sample-header">
+                <h4>Recommended Ledger Format:</h4>
+                <button type="button" pButton class="p-button-outlined p-button-sm" (click)="downloadSample()">
+                    <i class="pi pi-download"></i>
+                    Download Sample CSV
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="sample-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Particulars</th>
+                            <th>Vch No.</th>
+                            <th>Debit (Payment)</th>
+                            <th>Credit (Purchase)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01-Apr-24</td>
+                            <td>Opening Balance</td>
+                            <td></td>
+                            <td></td>
+                            <td>50,000.00</td>
+                        </tr>
+                        <tr>
+                            <td>05-Apr-24</td>
+                            <td>By Purchase</td>
+                            <td>PI/24-25/001</td>
+                            <td></td>
+                            <td>1,18,000.00</td>
+                        </tr>
+                        <tr>
+                            <td>15-Apr-24</td>
+                            <td>To Bank</td>
+                            <td>452102</td>
+                            <td>1,00,000.00</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mapping-guide">
+                <h5><i class="pi pi-map"></i> What we look for:</h5>
+                <div class="mapping-grid">
+                    <div class="mapping-item">
+                        <span class="label">Date:</span>
+                        <span class="value">"Date"</span>
+                    </div>
+                    <div class="mapping-item">
+                        <span class="label">Vch No:</span>
+                        <span class="value">"Invoice No", "Bill No", "Vch No"</span>
+                    </div>
+                    <div class="mapping-item">
+                        <span class="label">Amount:</span>
+                        <span class="value">"Debit" / "Credit" or "Amount"</span>
+                    </div>
+                    <div class="mapping-item">
+                        <span class="label">Supplier:</span>
+                        <span class="value">"Party Name", "Ledger Name", "Supplier"</span>
+                    </div>
+                </div>
+                <p class="mapping-note">
+                    <i class="pi pi-info-circle"></i>
+                    We automatically handle Tally "Multi-Ledger" exports and various date formats.
+                </p>
+            </div>
         </div>
         }
     </div>

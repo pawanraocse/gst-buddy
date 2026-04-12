@@ -44,6 +44,8 @@ public class PlanService {
                 .name(plan.getName())
                 .displayName(plan.getDisplayName())
                 .priceInr(plan.getPriceInr())
+                .salePriceInr(plan.getSalePriceInr())
+                .isSaleActive(plan.getIsSaleActive() != null && plan.getIsSaleActive())
                 .credits(plan.getCredits())
                 .isTrial(plan.getIsTrial())
                 .isActive(plan.getIsActive())

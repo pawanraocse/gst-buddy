@@ -17,6 +17,19 @@ export class DocumentUploadComponent {
   disabled = input<boolean>(false);
   showSample = signal(false);
 
+  downloadSample() {
+    const link = document.createElement('a');
+    link.href = 'assets/samples/ledger-template.csv';
+    link.download = 'ledger-template-sample.csv';
+    link.click();
+
+    this.messageService.add({
+        severity: 'success',
+        summary: 'Download Started',
+        detail: 'Sample ledger template is downloading.'
+    });
+  }
+
   private validateFiles(files: FileList | File[]): void {
     const validFiles: File[] = [];
     const invalidFiles: string[] = [];

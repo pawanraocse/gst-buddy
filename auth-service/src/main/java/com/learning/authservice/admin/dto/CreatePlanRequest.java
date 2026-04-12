@@ -13,6 +13,8 @@ public record CreatePlanRequest(
         @NotBlank String name,
         @NotBlank String displayName,
         @NotNull @Min(0) BigDecimal priceInr,
+        @Min(0) BigDecimal salePriceInr,
+        boolean isSaleActive,
         @NotNull @Min(1) Integer credits,
         boolean isTrial,
         String description,

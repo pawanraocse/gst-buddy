@@ -34,6 +34,13 @@ public class Plan {
     @Builder.Default
     private BigDecimal priceInr = BigDecimal.ZERO;
 
+    @Column(name = "sale_price_inr", precision = 10, scale = 2)
+    private BigDecimal salePriceInr;
+
+    @Column(name = "is_sale_active", nullable = false)
+    @Builder.Default
+    private Boolean isSaleActive = false;
+
     @Column(nullable = false)
     private Integer credits;
 
@@ -59,4 +66,12 @@ public class Plan {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    /**
+     * Returns the price that should be charged.
+     * Prefers sale price if sale is active.
+     */
+    public BigDecimal getEffectivePrice() {
+        return (isSaleActive != null && isSaleActive && salePriceInr != null) ? salePriceInr : priceInr;
+    }
 }

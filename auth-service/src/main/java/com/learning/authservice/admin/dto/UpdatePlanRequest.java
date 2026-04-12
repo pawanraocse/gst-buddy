@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 public record UpdatePlanRequest(
         String displayName,
         BigDecimal priceInr,
+        BigDecimal salePriceInr,
+        Boolean isSaleActive,
         Integer credits,
         Boolean isTrial,
         Boolean isActive,

@@ -1,0 +1,6 @@
+Date,Particulars,Vch Type,Vch No.,Debit,Credit,Supplier Name
+01-Apr-24,Opening Balance,,,0.00,50000.00,ABC Traders Private Limited
+05-Apr-24,By Purchase,Purchase,PI/24-25/001,,118000.00,ABC Traders Private Limited
+15-Apr-24,To Bank,Payment,452102,100000.00,,ABC Traders Private Limited
+20-Apr-24,By Purchase,Purchase,PI/24-25/112,,59000.00,ABC Traders Private Limited
+25-Apr-24,To Bank,Payment,452103,118000.00,,ABC Traders Private Limited

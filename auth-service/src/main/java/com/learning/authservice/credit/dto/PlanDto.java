@@ -13,6 +13,8 @@ public record PlanDto(
         String name,
         String displayName,
         BigDecimal priceInr,
+        BigDecimal salePriceInr,
+        boolean isSaleActive,
         int credits,
         boolean isTrial,
         boolean isActive,

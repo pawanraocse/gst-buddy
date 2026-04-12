@@ -52,7 +52,7 @@ public class RazorpayPaymentService implements PaymentService {
         }
 
         // Razorpay expects amount in paise (smallest currency unit)
-        int amountInPaise = plan.getPriceInr().multiply(BigDecimal.valueOf(100)).intValue();
+        int amountInPaise = plan.getEffectivePrice().multiply(BigDecimal.valueOf(100)).intValue();
 
         try {
             var orderRequest = new JSONObject();
@@ -71,7 +71,7 @@ public class RazorpayPaymentService implements PaymentService {
             return new PaymentOrder(
                     order.get("id"),
                     "INR",
-                    plan.getPriceInr(),
+                    plan.getEffectivePrice(),
                     order.get("status"));
 
         } catch (RazorpayException e) {

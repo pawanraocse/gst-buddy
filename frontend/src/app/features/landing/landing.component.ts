@@ -247,6 +247,8 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
         name: string;
         tagline: string;
         price: number;
+        salePrice?: number;
+        isSaleActive: boolean;
         credits: number;
         features: Array<{ text: string; included: boolean }>;
         cta: string;
@@ -256,6 +258,8 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             name: 'Pro',
             tagline: 'Perfect for small stores',
             price: 149,
+            salePrice: 119,
+            isSaleActive: true,
             credits: 2,
             features: [
                 { text: '2 ledger analyses', included: true },
@@ -270,6 +274,8 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             name: 'Ultra',
             tagline: 'Best value for frequent use',
             price: 999,
+            salePrice: 799,
+            isSaleActive: true,
             credits: 20,
             features: [
                 { text: '20 ledger analyses', included: true },
@@ -284,6 +290,8 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             name: 'Max',
             tagline: 'For high volume processing',
             price: 3499,
+            salePrice: 2799,
+            isSaleActive: true,
             credits: 100,
             features: [
                 { text: '100 ledger analyses', included: true },
@@ -669,6 +677,11 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
         return plan.price.toLocaleString('en-IN');
     }
 
+    getDiscountPercent(plan: { price: number, salePrice?: number, isSaleActive: boolean }): number {
+        if (!plan.isSaleActive || !plan.salePrice) return 0;
+        return Math.round((1 - plan.salePrice / plan.price) * 100);
+    }
+
     private loadPlans(): void {
         this.creditApi.getPlans().subscribe({
             next: (plans) => {
@@ -677,6 +690,8 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
                     name: p.displayName,
                     tagline: p.description || `${p.credits} ledger analyses`,
                     price: p.priceInr,
+                    salePrice: p.salePriceInr,
+                    isSaleActive: p.isSaleActive || false,
                     credits: p.credits,
                     features: this.buildFeatures(p),
                     cta: 'Buy Credits',
