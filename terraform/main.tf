@@ -28,17 +28,13 @@ terraform {
     }
   }
 
-  # IMPORTANT: Uncomment and configure backend for production
-  # backend "s3" {
-  #   bucket         = "your-terraform-state-bucket"
-  #   key            = "cognito/terraform.tfstate"
-  #   region         = "ap-south-1"
-  #   encrypt        = true
-  #   dynamodb_table = "terraform-state-lock"
-  # }
-
-  backend "local" {
-    path = "terraform.tfstate"
+  # IMPORTANT: Use S3 for remote state
+  backend "s3" {
+    bucket         = "gstbuddies-terraform-state-045084720221-ap-south-1"
+    key            = "local/terraform.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
+    dynamodb_table = "gstbuddies-terraform-locks"
   }
 }
 
