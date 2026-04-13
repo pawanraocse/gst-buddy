@@ -13,21 +13,21 @@
 }
 
 .disclaimer-banner-inline {
-    background: linear-gradient(135deg, rgba(var(--primary-rgb, 99, 102, 241), 0.08), rgba(var(--primary-rgb, 99, 102, 241), 0.05));
+    background: var(--bg-surface-glass);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 0.85rem 1.25rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: #0369a1;
+    color: var(--text-main);
     font-size: 0.85rem;
     font-weight: 500;
     margin-bottom: -0.5rem;
 
     i {
         font-size: 1rem;
-        color: #0ea5e9;
+        color: var(--primary-500);
     }
 }
 
@@ -137,19 +137,21 @@
     }
 
     &.suppliers {
-        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        background: var(--surface-50);
+        border: 1px solid var(--border-color);
 
         i {
-            color: #059669;
+            color: var(--success-500);
         }
 
         .stat-value {
-            color: #065f46;
+            color: var(--text-main);
         }
     }
 
     &.transactions {
-        background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+        background: var(--surface-50);
+        border: 1px solid var(--border-color);
 
         i {
             color: var(--primary-500);
@@ -189,11 +191,11 @@
     }
 
     &.itc .stat-amount-value {
-        color: #d97706;
+        color: var(--warning-500);
     }
 
     &.interest .stat-amount-value {
-        color: #dc2626;
+        color: var(--error-500);
     }
 }
 
@@ -395,11 +397,11 @@
     gap: 0.35rem;
     padding: 0.4rem 0.75rem;
     border-radius: 8px;
-    border: 1px solid #fca5a5;
-    background: #fef2f2;
+    border: 1px solid var(--error-500);
+    background: transparent;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #dc2626;
+    color: var(--error-500);
     cursor: pointer;
     transition: all 0.2s ease;
 
@@ -408,8 +410,8 @@
     }
 
     &:hover {
-        background: #fee2e2;
-        border-color: #f87171;
+        background: var(--error-500);
+        color: white;
     }
 }
 
@@ -514,26 +516,26 @@
     }
 
     &.risk-breached {
-        background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        background: rgba(var(--error-rgb, 244, 63, 94), 0.1);
 
         i {
-            color: #dc2626;
+            color: var(--error-500);
         }
     }
 
     &.risk-at_risk {
-        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        background: rgba(var(--warning-rgb, 245, 158, 11), 0.1);
 
         i {
-            color: #d97706;
+            color: var(--warning-500);
         }
     }
 
     &.risk-safe {
-        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        background: rgba(var(--success-rgb, 20, 184, 166), 0.1);
 
         i {
-            color: #16a34a;
+            color: var(--success-500);
         }
     }
 }
@@ -762,13 +764,13 @@
     }
 
     &.unpaid {
-        background: linear-gradient(135deg, #fef2f2, #fee2e2);
-        color: #dc2626;
+        background: rgba(var(--error-rgb, 244, 63, 94), 0.1);
+        color: var(--error-500);
     }
 
     &.paid_late {
-        background: linear-gradient(135deg, #fffbeb, #fef3c7);
-        color: #d97706;
+        background: rgba(var(--warning-rgb, 245, 158, 11), 0.1);
+        color: var(--warning-500);
     }
 }
 
@@ -811,18 +813,18 @@
     font-variant-numeric: tabular-nums;
 
     &.risk-breached {
-        background: linear-gradient(135deg, #fef2f2, #fee2e2);
-        color: #dc2626;
+        background: var(--error-500);
+        color: white;
     }
 
     &.risk-at-risk {
-        background: linear-gradient(135deg, #fffbeb, #fef3c7);
-        color: #d97706;
+        background: var(--warning-500);
+        color: white;
     }
 
     &.risk-safe {
-        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-        color: #059669;
+        background: var(--success-500);
+        color: white;
     }
 }
 
@@ -1064,9 +1066,9 @@
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem 1rem;
-        background: rgba(14, 165, 233, 0.05);
-        border-left: 3px solid #0ea5e9;
-        color: #0369a1;
+        background: rgba(var(--primary-rgb, 99, 102, 241), 0.05);
+        border-left: 3px solid var(--primary-500);
+        color: var(--text-main);
         font-size: 0.8rem;
         margin-bottom: 4px;
 

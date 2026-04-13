@@ -108,39 +108,57 @@
         </div>
       </p-panel>
 
-      <!-- Rule Selection -->
-      <div class="surface-50 border-1 surface-border border-round p-4 mb-4">
-        <label class="block mb-2 font-medium text-800">
-          Select Audit Rule
-        </label>
-        <select
-          [ngModel]="selectedRule()"
-          (ngModelChange)="selectedRule.set($event)"
-          class="w-full p-inputtext p-component mb-2"
-          [disabled]="isProcessing() || rules().length === 0"
-          style="padding: 0.75rem;">
-          <option [ngValue]="null" disabled selected>Select a Rule</option>
-          <option *ngFor="let rule of rules()" [ngValue]="rule">
-            {{ rule.displayName }}
-          </option>
-        </select>
-        <div class="mt-2 text-sm text-600 border-round p-2" style="background-color: #f8fafc;" *ngIf="selectedRule()">
-          <i class="pi pi-info-circle mr-1 text-primary"></i>
-          {{ selectedRule()?.description }}
-        </div>
-      </div>
+      <!-- Audit Configuration (Merged & Compact) -->
+      <div class="surface-50 border-1 surface-border border-round p-3 mb-4 audit-config-card">
+        <div class="flex flex-column gap-3">
+          <!-- Rule Selection -->
+          <div class="config-group">
+            <label class="block mb-2 font-medium text-800 text-xs uppercase">
+              Audit Rule
+            </label>
+            <p-select
+              [options]="rules()"
+              [ngModel]="selectedRule()"
+              (ngModelChange)="selectedRule.set($event)"
+              optionLabel="displayName"
+              placeholder="Select Rule"
+              styleClass="w-full"
+              appendTo="body"
+              [disabled]="isProcessing() || rules().length === 0">
+            </p-select>
+          </div>
 
-      <!-- As on Date -->
-      <div class="surface-50 border-1 surface-border border-round p-4 mb-4">
-        <label class="block mb-2 font-medium text-800">
-          Calculation Date
-          <i class="pi pi-question-circle text-500 ml-1 cursor-pointer"
-            pTooltip="The cutoff date for checking unpaid invoices. Usually today's date or the end of your return period."
-            tooltipPosition="right"></i>
-        </label>
-        <input type="date" pInputText [ngModel]="asOnDate()" (ngModelChange)="asOnDate.set($event)"
-          [disabled]="isProcessing()" class="w-full" />
-        <p class="text-sm text-500 mt-2 m-0">Invoices unpaid beyond 180 days from this date will be flagged</p>
+          <!-- As on Date -->
+          <div class="config-group">
+            <label class="block mb-2 font-medium text-800 text-xs uppercase">
+              Calculation Date
+              <i class="pi pi-question-circle text-500 ml-1 cursor-pointer"
+                pTooltip="The cutoff date for checking unpaid invoices. Usually today's date or the end of your return period."
+                tooltipPosition="right"></i>
+            </label>
+            <p-datepicker
+              [ngModel]="asOnDate()"
+              (ngModelChange)="asOnDate.set($event)"
+              [showIcon]="true"
+              iconDisplay="input"
+              dateFormat="yy-mm-dd"
+              dataType="string"
+              placeholder="Select Date"
+              styleClass="w-full"
+              appendTo="body"
+              [disabled]="isProcessing()">
+            </p-datepicker>
+          </div>
+
+          <!-- Rule Info -->
+          <div class="text-sm border-round p-2"
+               style="background-color: var(--bg-app); color: var(--text-secondary);"
+               *ngIf="selectedRule()"
+               @slideDown>
+            <i class="pi pi-info-circle mr-1 text-primary"></i>
+            {{ selectedRule()?.description }}
+          </div>
+        </div>
       </div>
 
       <!-- Scope Declaration (GST-009 + GST-010) -->

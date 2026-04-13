@@ -1,4 +1,5 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
@@ -14,6 +15,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { PanelModule } from 'primeng/panel';
 import { LedgerResult, UploadResult, AuditRuleInfo } from '../../shared/models/audit.model';
+import { Select } from 'primeng/select';
+import { DatePicker } from 'primeng/datepicker';
 import { MessageService } from 'primeng/api';
 
 @Component({
@@ -30,10 +33,23 @@ import { MessageService } from 'primeng/api';
     DocumentUploadComponent,
     ComplianceViewComponent,
     CalculationHistoryComponent,
-    PanelModule
+    PanelModule,
+    Select,
+    DatePicker
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  animations: [
+    trigger('slideDown', [
+      transition(':enter', [
+        style({ opacity: 0, height: 0, overflow: 'hidden' }),
+        animate('300ms ease-out', style({ opacity: 1, height: '*' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, height: 0 }))
+      ])
+    ])
+  ]
 })
 export class DashboardComponent implements OnInit {
   authService = inject(AuthService);

@@ -345,3 +345,101 @@
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.06);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   🎯 AUDIT CONFIGURATION — Compact & Smart Card
+═══════════════════════════════════════════════════════════════════════════ */
+
+.audit-config-card {
+  transition: all 0.3s var(--ease-default);
+  position: relative;
+  border-color: var(--surface-200) !important;
+
+  &:hover {
+    border-color: var(--primary-300) !important;
+    box-shadow: var(--shadow-md);
+  }
+
+  .config-group {
+    label {
+      font-size: 0.65rem !important;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      opacity: 0.8;
+    }
+  }
+}
+
+:host ::ng-deep {
+  .p-select, .p-datepicker {
+    max-width: 320px; /* Smart width constraint */
+    
+    @media screen and (max-width: 768px) {
+      max-width: 100%;
+    }
+  }
+
+  .p-select {
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+    &:hover {
+      border-color: var(--primary-400);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+    }
+
+    &.p-focus {
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    }
+
+    .p-select-label {
+      padding: 0.6rem 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .p-select-trigger {
+      width: 2.5rem;
+      color: var(--text-secondary);
+    }
+  }
+
+  /* Datepicker override for compact look */
+  .p-datepicker {
+    .p-inputtext {
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      color: var(--text-main);
+
+      &:hover { border-color: var(--primary-400); }
+      &:focus { border-color: var(--primary-500); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
+    }
+
+    .p-datepicker-trigger {
+      color: var(--primary-500);
+      width: 2.5rem;
+    }
+  }
+
+  /* Shared Overlay Styles */
+  .p-select-overlay, .p-datepicker-panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    margin-top: 0.5rem;
+    backdrop-filter: blur(12px);
+  }
+}
