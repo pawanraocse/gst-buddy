@@ -147,6 +147,25 @@ open http://localhost:4200
 
 ---
 
+## 🔄 Agent State Sync
+
+Synchronize agent memory, skills, and environment files across machines without committing to Git.
+
+```bash
+# 1. Backup local state to S3
+./scripts/local/agent-state.sh push
+
+# 2. On another machine: pull state
+./scripts/local/agent-state.sh pull
+
+# 3. Optional: Cleanup S3 after transfer
+./scripts/local/agent-state.sh cleanup
+```
+
+**Included Patterns**: `.memory/`, `.agents/`, `.agent-skills`, `.env*`, `terraform/cognito-config.env`.
+
+---
+
 ## 💰 Budget Deployment (EC2 + RDS)
 
 Runs Docker Compose on a single EC2 instance with managed RDS and ElastiCache.

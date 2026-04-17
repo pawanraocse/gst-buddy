@@ -103,3 +103,4 @@ terraform/lambda/*.zip
 *credentials*
 /scripts/.api-key
 /.agents/
+.agent-skills
