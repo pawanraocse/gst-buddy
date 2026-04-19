@@ -1110,21 +1110,116 @@ The pipeline execution order matters because of legal interdependencies:
 3. `Gstr9LateFeeAuditRule` + `Gstr9LateFeeInputResolver`
 4. Frontend: Analysis mode selector + comprehensive report view
 
-### Phase C: Cross-Document Reconciliation
+### Phase C: Cross-Document Reconciliation + Late Reporting (GSTR-1)
 
-- [ ] **C1** — Parser: Extract Table 3.1 & 6.1 liability values from GSTR-3B PDF [MODIFY]
-- [ ] **C2** — Parser: Extract Liability Summary (Table 4/5/6/7) from GSTR-1 PDF [MODIFY]
-- [ ] **C3** — Rule: `Gstr1Vs3bReconciliationRule` + `RECON_1_VS_3B` InputResolver [NEW]
-- [ ] **C4** — Rule: `LateReportingGstr1Rule` + input extraction logic [NEW]
-- [ ] **C5** — Frontend: "Unlockable Rules" panel in dashboard + multi-doc hints [MODIFY]
+> Scope: Two rules — `RECON_1_VS_3B` (cross-doc) and `LATE_REPORTING_GSTR1` (single-doc, interest under Section 50(1) for belated outward supply declaration). Requires parser table-extraction upgrades and a new Flyway migration for reconciliation-tolerance config.
+
+#### C.HLD — High-Level Design
+
+| Aspect | RECON_1_VS_3B | LATE_REPORTING_GSTR1 |
+|---|---|---|
+| Rule ID | `RECON_1_VS_3B` | `LATE_REPORTING_GSTR1` |
+| Legal basis | Section 37 + Section 39, CGST Act 2017 (return consistency) | Section 50(1), CGST Act 2017 (interest on delayed tax remittance) |
+| Required docs | `GSTR_1` + `GSTR_3B` (same tax period) | `GSTR_1` (with per-invoice detail) |
+| Execution order | `50` (reconciliation tier) | `20` (interest tier) |
+| Input source | Parsed liability totals from both docs | Per-invoice rows from GSTR-1 Tables 4/5/6 |
+| Output | Delta findings (CGST / SGST / IGST / CESS); severity by delta % | Interest findings per belated invoice |
+| PRD | `resources/RULE ENGINE/1 vs 3B vs 9/PRD for SD.docx` | `resources/RULE ENGINE/Late reporting of invoice in GSTR1 interest and penalty/PRD to SD.docx` |
+
+**Pipeline integration:**
+- `RECON_1_VS_3B` auto-unlocks only when both GSTR-1 + GSTR-3B for matching `taxPeriod` are present (both docs must share the same `YearMonth`).
+- Multi-period uploads → one reconciliation finding per matched period pair.
+- `LATE_REPORTING_GSTR1` fires whenever GSTR-1 is uploaded; scans invoices where `invoice_date.period ≠ gstr1.tax_period` (declared in later return).
+- Both rules are DB-free; all reference data flows through `SharedResources`.
+
+**Parser contract (sidecar):**
+- `gstr3b_pdf.py` → must additionally emit `table_3_1` (outward taxable summary) and `table_6_1` (tax paid) as structured JSON.
+- `gstr1_pdf.py` → must emit `liability_summary` (aggregated CGST/SGST/IGST/CESS per rate) and `invoices[]` (per-row: `invoice_no`, `invoice_date`, `place_of_supply`, `taxable_value`, `cgst`, `sgst`, `igst`, `cess`, `rate`).
+
+#### C.LLD — File-Level Task List
+
+- [ ] **C1** — Parser `gstr3b_pdf.py`: implement `_parse_table_3_1()` + `_parse_table_6_1()`; extend `_parse_text()` return shape with `table_3_1`, `table_6_1` [MODIFY]
+- [ ] **C2** — Parser `gstr1_pdf.py`: implement `_parse_liability_summary()` + `_parse_invoices()`; extend return shape with `liability_summary`, `invoices[]` [MODIFY]
+- [ ] **C3** — Parser tests: add fixtures under `gst-parser/tests/fixtures/` + unit tests for both extractors [NEW]
+- [ ] **C4** — Domain: `domain/recon/Gstr1Vs3bInput.java` + `Gstr1Vs3bResult.java` + `ReconDelta.java` records [NEW]
+- [ ] **C5** — Service: `domain/recon/Gstr1Vs3bReconciliationService.java` — pure calculator, delta + severity classification [NEW]
+- [ ] **C6** — Rule: `engine/rules/Gstr1Vs3bReconciliationRule.java` (`RECON_1_VS_3B`, order=50, requires `{GSTR_1, GSTR_3B}`) [NEW]
+- [ ] **C7** — Resolver: `engine/resolvers/Gstr1Vs3bReconciliationInputResolver.java` — matches docs by `taxPeriod`, extracts liability totals [NEW]
+- [ ] **C8** — Domain: `domain/gstr1/LateReportingGstr1Input.java` + `LateReportingGstr1Result.java` + `BelatedInvoice.java` records [NEW]
+- [ ] **C9** — Service: `domain/gstr1/LateReportingGstr1CalculatorService.java` — Section 50(1) interest at 18% p.a. per invoice, day-count from original due date → declared date [NEW]
+- [ ] **C10** — Rule: `engine/rules/LateReportingGstr1Rule.java` (`LATE_REPORTING_GSTR1`, order=20, requires `{GSTR_1}`) [NEW]
+- [ ] **C11** — Resolver: `engine/resolvers/LateReportingGstr1InputResolver.java` — extracts `invoices[]` from document, derives expected period from `invoice_date` [NEW]
+- [ ] **C12** — Flyway `V6__recon_config.sql`: `recon_tolerance_config` table (per-tenant override of match tolerance in ₹ + %) — seeded with default (±1 ₹ / ±0.01%) [NEW]
+- [ ] **C13** — Entity: `entity/ReconToleranceConfig.java` + repository; wire into `ContextEnricher` → `SharedResources.reconTolerance` [NEW]
+- [ ] **C14** — Extend `SharedResources` record with `reconTolerance` field (backward-compat default) [MODIFY]
+- [ ] **C15** — Unit tests: `Gstr1Vs3bReconciliationServiceTest` (match / under-report / over-report / multi-period / tolerance) — ≥ 6 tests [NEW]
+- [ ] **C16** — Unit tests: `LateReportingGstr1CalculatorServiceTest` (on-time / 1-day belated / multi-month belated / nil invoices / mixed) — ≥ 5 tests [NEW]
+- [ ] **C17** — Unit tests: both resolvers (`Gstr1Vs3bReconciliationInputResolverTest`, `LateReportingGstr1InputResolverTest`) — missing-doc, period-mismatch, happy-path [NEW]
+- [ ] **C18** — Frontend: `features/audit/components/unlockable-rules-panel/` (PrimeNG `Card` + `Chip`) — shows "Upload GSTR-3B to unlock RECON_1_VS_3B" [NEW]
+- [ ] **C19** — Frontend: extend `comprehensive-report` view with a **Reconciliation** section rendering `ReconDelta` rows in PrimeNG `Table` with severity badges [MODIFY]
+- [ ] **C20** — Frontend: audit service DTO types — add `reconFindings`, `belatedInvoiceFindings` to `UploadResult` type [MODIFY]
+- [ ] **C21** — E2E smoke: upload matched GSTR-1 + GSTR-3B pair → assert one `RECON_1_VS_3B` finding; upload GSTR-1 with belated invoice → assert `LATE_REPORTING_GSTR1` finding with non-zero interest [NEW]
 
 ---
 
-### Phase D: Future Compliance Rules (Backlog)
-- [ ] **D1** — `POS_VALIDATION_GSTR1` (Place of Supply checks)
-- [ ] **D2** — `RULE_86B_RESTRICTION` (99% tax payment limitation)
-- [ ] **D3** — `SUPPLIER_RISK` (GSTR-2A compliance)
-- [ ] **D4** — `SECTION_16_4_GUARD` (ITC deadline detection)
+### Phase D: Advanced Compliance Rules
+
+> Scope: Four single-/cross-document rules extending the pipeline into ITC integrity, place-of-supply validation, and taxpayer-restriction checks. Each rule is independent; order of delivery is `D-A → D-B → D-C → D-D` but they do not depend on each other.
+
+#### D.HLD — Rule Matrix
+
+| ID | Rule | Required Docs | Legal Basis | Order | Severity Driver |
+|---|---|---|---|---|---|
+| D-A | `POS_VALIDATION_GSTR1` | `GSTR_1` | Sections 10–13, IGST Act 2017 | 50 | Wrong CGST/SGST vs IGST split |
+| D-B | `RULE_86B_RESTRICTION` | `GSTR_3B` (+ optional `PURCHASE_REGISTER`) | Rule 86B, CGST Rules 2017 (w.e.f. 01-Jan-2021) | 40 | Cash ledger % below 1% threshold |
+| D-C | `SUPPLIER_RISK_2A` | `GSTR_2A` | Section 16(2)(c), CGST Act 2017 | 60 | Supplier non-filer / cancelled GSTIN count |
+| D-D | `SECTION_16_4_GUARD` | `GSTR_2B` | Section 16(4), CGST Act 2017 | 30 | ITC past 30-Nov-following-FY cut-off |
+
+**Design invariants:**
+- All rules obey the existing `AuditRule<I, O>` + `InputResolver<I>` + `SharedResources` contract — zero pipeline changes.
+- Parser work is additive to engines already extended in Phase C.
+- `SUPPLIER_RISK_2A` introduces an **external lookup cache** (`gstin_status_cache`) to avoid repeated GSTN portal calls; cache TTL enforced in `ContextEnricher`.
+- `RULE_86B_RESTRICTION` threshold (₹50 lakh monthly taxable outward supply) is read from `SharedResources` — never hard-coded.
+
+#### D.LLD — File-Level Task List
+
+**D-A · POS_VALIDATION_GSTR1**
+- [ ] **D1** — Domain: `domain/pos/PosValidationInput.java` + `PosValidationResult.java` + `PosMismatch.java` records [NEW]
+- [ ] **D2** — Service: `domain/pos/PosValidationService.java` — for each invoice, compare `place_of_supply` state vs supplier state vs tax split (IGST if inter-state, CGST+SGST if intra-state) [NEW]
+- [ ] **D3** — Rule + Resolver: `engine/rules/PosValidationGstr1Rule.java` (order=50) + `engine/resolvers/PosValidationGstr1InputResolver.java` [NEW]
+- [ ] **D4** — Unit tests: service (intra-state correct / intra-state wrong split / inter-state correct / inter-state wrong / SEZ / export) — ≥ 6 tests [NEW]
+
+**D-B · RULE_86B_RESTRICTION**
+- [ ] **D5** — Flyway `V7__rule86b_config.sql`: `rule_86b_threshold_config` reference table (turnover threshold ₹, cash-ledger-% floor, effective-from date) — seeded with Notification 94/2020-CT defaults [NEW]
+- [ ] **D6** — Domain: `domain/rule86b/Rule86bInput.java` + `Rule86bResult.java` records [NEW]
+- [ ] **D7** — Service: `domain/rule86b/Rule86bEvaluatorService.java` — applies exemptions (govt entities, ≥ ₹1 lakh IT refund, export with refund claim) before flagging [NEW]
+- [ ] **D8** — Rule + Resolver: `engine/rules/Rule86bRestrictionRule.java` (order=40) + `engine/resolvers/Rule86bInputResolver.java` [NEW]
+- [ ] **D9** — Extend `SharedResources` with `rule86bConfig`; load in `ContextEnricher` [MODIFY]
+- [ ] **D10** — Unit tests: evaluator (below threshold / above threshold compliant / above threshold breach / each exemption path) — ≥ 6 tests [NEW]
+
+**D-C · SUPPLIER_RISK_2A**
+- [ ] **D11** — Parser: `gst-parser/app/engines/gstr2a_pdf.py` (+ `json_engine.py` route) — extract supplier GSTINs + invoice totals [NEW]
+- [ ] **D12** — Flyway `V8__gstin_status_cache.sql`: `gstin_status_cache` (gstin PK, status, last_filing_period, fetched_at, ttl_expires_at) [NEW]
+- [ ] **D13** — Entity + repo: `entity/GstinStatusCache.java` + `GstinStatusCacheRepository` [NEW]
+- [ ] **D14** — Service: `service/GstinStatusLookupService.java` — TTL-aware read-through cache; portal client stubbed behind an interface for this phase [NEW]
+- [ ] **D15** — Domain: `domain/gstr2a/SupplierRiskInput.java` + `SupplierRiskResult.java` + `RiskySupplier.java` records [NEW]
+- [ ] **D16** — Service: `domain/gstr2a/SupplierRiskScorerService.java` — scores each supplier (non-filer / cancelled / composition mismatch / ITC at risk) [NEW]
+- [ ] **D17** — Rule + Resolver: `engine/rules/SupplierRisk2aRule.java` (order=60) + `engine/resolvers/SupplierRisk2aInputResolver.java` [NEW]
+- [ ] **D18** — Extend `ContextEnricher` to batch-load cached GSTIN statuses into `SharedResources` [MODIFY]
+- [ ] **D19** — Unit tests: scorer + cache service (hit / miss / expired / portal failure fallback) — ≥ 8 tests [NEW]
+
+**D-D · SECTION_16_4_GUARD**
+- [ ] **D20** — Parser: `gst-parser/app/engines/gstr2b_pdf.py` — extract ITC rows with invoice_date + tax values [NEW]
+- [ ] **D21** — Domain: `domain/itc/Section16_4Input.java` + `Section16_4Result.java` + `ExpiredItc.java` records [NEW]
+- [ ] **D22** — Service: `domain/itc/Section16_4GuardService.java` — deadline = `30-Nov of FY following invoice_date.fy` (or annual return filing date, whichever earlier per Section 16(4)) [NEW]
+- [ ] **D23** — Rule + Resolver: `engine/rules/Section16_4GuardRule.java` (order=30) + `engine/resolvers/Section16_4InputResolver.java` [NEW]
+- [ ] **D24** — Unit tests: service (within window / exactly on deadline / past deadline / FY boundary / annual-return-filed-earlier edge) — ≥ 6 tests [NEW]
+
+**Shared D-phase tasks**
+- [ ] **D25** — Frontend: per-rule report cards for the 4 new rules in `comprehensive-report` view — one PrimeNG `Panel` per rule with severity-coloured chips [MODIFY]
+- [ ] **D26** — Update `DocumentType` enum usage in `AuditAnalyzeController` preview endpoint to include `GSTR_2A`, `GSTR_2B`, `PURCHASE_REGISTER` [MODIFY]
+- [ ] **D27** — Cross-check each rule's LLD against `resources/RULE ENGINE/*/PRD to SD.docx` before PR merge [VERIFY]
+- [ ] **D28** — E2E smoke: upload GSTR-3B with 0% cash → expect `RULE_86B_RESTRICTION` BREACHED; upload GSTR-2A with cancelled GSTIN → expect `SUPPLIER_RISK_2A` HIGH finding [NEW]
 
 ---
 
