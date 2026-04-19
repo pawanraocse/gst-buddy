@@ -48,6 +48,20 @@ public class LateFeeReliefWindow {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
+    /**
+     * Inclusive start of the tax period this relief covers.
+     * NULL = applies to all tax periods within the filing date window.
+     */
+    @Column(name = "tax_period_from")
+    private LocalDate taxPeriodFrom;
+
+    /**
+     * Inclusive end of the tax period this relief covers.
+     * NULL = applies to all tax periods within the filing date window.
+     */
+    @Column(name = "tax_period_to")
+    private LocalDate taxPeriodTo;
+
     /** CGST late fee per day during this window (null = waived) */
     @Column(name = "fee_cgst_per_day", precision = 8, scale = 2)
     private BigDecimal feeCgstPerDay;

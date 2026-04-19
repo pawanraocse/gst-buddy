@@ -1,0 +1,148 @@
+<section class="gstr1-results">
+
+  <!-- ── CLEAN STATE (Fully Compliant) ────────────────────────────────────── -->
+  @if (result() !== null && isClean()) {
+    <div class="clean-state">
+      <div class="clean-icon">
+        <i class="pi pi-check-circle"></i>
+      </div>
+      <h2>No Late Fee Exposure</h2>
+      <p>
+        All GSTR-1 returns were filed on or before the statutory due date.<br>
+        <strong>No late fee is payable per Section 47(1), CGST Act 2017.</strong>
+      </p>
+      <p-button label="Audit Another Return" icon="pi pi-arrow-left" outlined (onClick)="goBack()" />
+    </div>
+  }
+
+  <!-- ── FINDINGS VIEW ─────────────────────────────────────────────────────── -->
+  @if (result() !== null && !isClean()) {
+
+    <!-- Header -->
+    <header class="results-header">
+      <div>
+        <h1>Audit Findings</h1>
+        <p>
+          <span class="mono">Run ID: {{ result()!.stringRunId }}</span>
+          &nbsp;·&nbsp; {{ result()!.filename }}
+        </p>
+      </div>
+      <p-button label="New Audit" icon="pi pi-arrow-left" outlined (onClick)="goBack()" size="small" />
+    </header>
+
+    <!-- KPI Row -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-label">Total Late Fee Exposure</span>
+        <span class="kpi-value kpi-danger">{{ formatAmountInr(totalImpact()) }}</span>
+        <span class="kpi-note">CGST + SGST combined</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Credits Used</span>
+        <span class="kpi-value">{{ result()!.creditsConsumed }}</span>
+        <span class="kpi-note">{{ result()!.remainingCredits }} remaining</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Findings</span>
+        <span class="kpi-value">{{ findings().length }}</span>
+        <span class="kpi-note">{{ findings().filter(f => f.severity === 'HIGH').length }} HIGH severity</span>
+      </div>
+    </div>
+
+    <!-- Findings Table -->
+    <div class="findings-card">
+      <p-table
+        [value]="findings()"
+        styleClass="p-datatable-sm"
+        [tableStyle]="{ 'min-width': '800px' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 100px">Severity</th>
+            <th style="width: 180px">Period</th>
+            <th style="width: 160px; text-align:right">Impact Amount</th>
+            <th>Description</th>
+            <th style="width: 140px">Legal Basis</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-f>
+          <tr [class.row-high]="f.severity === 'HIGH'">
+
+            <!-- Severity -->
+            <td>
+              <p-tag
+                [value]="f.severity"
+                [severity]="severityTag(f.severity)"
+              />
+            </td>
+
+            <!-- Period -->
+            <td class="period-cell">{{ f.compliancePeriod }}</td>
+
+            <!-- Amount -->
+            <td class="amount-cell">
+              <span
+                [class.amount-danger]="f.impactAmount > 0"
+                [pTooltip]="f.recommendedAction"
+                tooltipPosition="left"
+                tooltipStyleClass="recommendation-tooltip"
+              >
+                {{ formatAmountInr(f.impactAmount) }}
+              </span>
+            </td>
+
+            <!-- Description -->
+            <td class="desc-cell">{{ f.description }}</td>
+
+            <!-- Legal Basis -->
+            <td>
+              <span class="legal-cite">{{ f.legalBasis }}</span>
+            </td>
+
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+          <tr>
+            <td colspan="2" class="footer-label">Total Late Fee Exposure</td>
+            <td class="amount-cell footer-total">{{ formatAmountInr(totalImpact()) }}</td>
+            <td colspan="2"></td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--p-text-muted-color);">
+              No findings found.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Recommendation Banner -->
+    @if (findings().some(f => f.severity === 'HIGH')) {
+      <div class="recommendation-banner">
+        <i class="pi pi-exclamation-triangle"></i>
+        <div>
+          <strong>Action Required</strong>
+          <p>
+            Pay outstanding late fee via the GST portal under
+            <em>Services → Ledgers → Electronic Cash Ledger → Payment of Tax</em>.
+            Late fee must be paid before filing subsequent returns.
+          </p>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ── LOADING (no result yet) ───────────────────────────────────────────── -->
+  @if (result() === null) {
+    <div class="loading-state">
+      <i class="pi pi-spinner pi-spin"></i>
+      <p>Loading findings…</p>
+    </div>
+  }
+
+</section>

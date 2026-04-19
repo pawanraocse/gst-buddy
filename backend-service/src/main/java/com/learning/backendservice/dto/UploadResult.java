@@ -32,6 +32,14 @@ public class UploadResult {
     @Builder.Default
     private List<FileUploadError> errors = new ArrayList<>();
 
+    /**
+     * Generic findings list — populated for rules that do NOT produce LedgerResultDto
+     * (e.g. GSTR-1 Late Fee, GSTR-3B Late Fee). Each entry is a summary of one
+     * {@link com.learning.backendservice.engine.AuditFinding}.
+     */
+    @Builder.Default
+    private List<FindingSummaryDto> findingsSummary = new ArrayList<>();
+
     @Builder.Default
     private Integer creditsConsumed = 0;
 
@@ -40,6 +48,20 @@ public class UploadResult {
 
     public boolean hasErrors() {
         return !errors.isEmpty();
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FindingSummaryDto {
+        private String ruleId;
+        private String severity;
+        private String legalBasis;
+        private String compliancePeriod;
+        private BigDecimal impactAmount;
+        private String description;
+        private String recommendedAction;
     }
 
     @Data

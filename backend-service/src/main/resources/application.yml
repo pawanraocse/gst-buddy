@@ -137,6 +137,9 @@ app:
     max-file-size: 10MB             # Max ledger Excel size per file
     max-files: 20                   # Max files per multi-file upload
     max-concurrent-uploads: ${APP_MAX_CONCURRENT_UPLOADS:2}  # Semaphore permits for upload throttling
+  parser:
+    enabled: true
+    url: ${PARSER_SERVICE_URL:http://localhost:8090}
 
 # OpenAPI Documentation
 

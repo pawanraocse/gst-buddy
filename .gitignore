@@ -40,7 +40,7 @@ target/
 .sts4-cache
 ### AI Agents ###
 .agent
-.agents/
+agents-bak/
 .antigravity/
 .memory/
 
@@ -102,5 +102,6 @@ terraform/lambda/*.zip
 *password*
 *credentials*
 /scripts/.api-key
-/.agents/
+/agents-bak/
 .agent-skills
+/.agents/

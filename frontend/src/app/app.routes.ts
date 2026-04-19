@@ -39,6 +39,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
+        path: 'gstr1-late-fee',
+        loadChildren: () =>
+          import('./features/gstr1-late-fee/gstr1-late-fee.routes').then(m => m.gstr1LateFeeRoutes)
+      },
+      {
         path: 'settings/account',
         loadComponent: () => import('./features/settings/account-settings.component').then(m => m.AccountSettingsComponent)
       },

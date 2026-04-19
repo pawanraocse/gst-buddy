@@ -1,0 +1,240 @@
+:host { display: block; }
+
+.gstr1-results {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+// ── Clean State ───────────────────────────────────────────────────────────────
+.clean-state {
+  text-align: center;
+  padding: 4rem 2rem;
+
+  .clean-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: hsla(142, 72%, 50%, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+
+    i { font-size: 2.25rem; color: var(--p-green-500); }
+  }
+
+  h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--p-text-color);
+    margin: 0 0 0.75rem;
+  }
+
+  p {
+    color: var(--p-text-muted-color);
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
+    max-width: 480px;
+    margin-inline: auto;
+  }
+}
+
+// ── Loading State ─────────────────────────────────────────────────────────────
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem;
+  color: var(--p-text-muted-color);
+
+  i { font-size: 2rem; }
+}
+
+// ── Results Header ────────────────────────────────────────────────────────────
+.results-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--p-text-color);
+    margin: 0 0 0.25rem;
+  }
+
+  p {
+    font-size: 0.8rem;
+    color: var(--p-text-muted-color);
+    margin: 0;
+  }
+
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: -0.02em;
+  }
+}
+
+// ── KPI Row ───────────────────────────────────────────────────────────────────
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card {
+  background: var(--p-surface-card);
+  border: 1px solid var(--p-surface-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: box-shadow 200ms ease-out, transform 200ms ease-out;
+
+  &:hover { box-shadow: 0 2px 12px rgba(0,0,0,.08); transform: translateY(-2px); }
+
+  .kpi-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--p-text-muted-color);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .kpi-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--p-text-color);
+    font-variant-numeric: tabular-nums;
+
+    &.kpi-danger { color: var(--p-red-500); }
+  }
+
+  .kpi-note {
+    font-size: 0.75rem;
+    color: var(--p-text-muted-color);
+  }
+}
+
+// ── Findings Table ────────────────────────────────────────────────────────────
+.findings-card {
+  background: var(--p-surface-card);
+  border: 1px solid var(--p-surface-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+:host ::ng-deep {
+  .p-datatable .p-datatable-thead > tr > th {
+    background: var(--p-surface-0);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--p-text-muted-color);
+    border-bottom: 1px solid var(--p-surface-border);
+    padding: 0.75rem 1rem;
+  }
+
+  .p-datatable .p-datatable-tbody > tr {
+    transition: background 150ms ease-out;
+
+    &:hover td { background: hsla(220, 90%, 56%, 0.03); }
+    &.row-high td { border-left: 3px solid var(--p-red-500); }
+  }
+
+  .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--p-surface-border);
+    font-size: 0.875rem;
+    vertical-align: middle;
+  }
+
+  .p-datatable .p-datatable-tfoot > tr > td {
+    padding: 0.75rem 1rem;
+    background: var(--p-surface-0);
+    border-top: 2px solid var(--p-surface-border);
+  }
+}
+
+.period-cell {
+  font-size: 0.82rem;
+  color: var(--p-text-muted-color);
+}
+
+.amount-cell {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+
+  .amount-danger {
+    color: var(--p-red-500);
+    font-weight: 600;
+    cursor: help;
+  }
+}
+
+.desc-cell {
+  font-size: 0.82rem;
+  color: var(--p-text-muted-color);
+  line-height: 1.5;
+  max-width: 360px;
+}
+
+.legal-cite {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--p-primary-color);
+  font-style: italic;
+}
+
+.footer-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--p-text-color);
+}
+
+.footer-total {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--p-red-500);
+}
+
+// ── Recommendation Banner ─────────────────────────────────────────────────────
+.recommendation-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 1.25rem;
+  background: hsla(0, 80%, 56%, 0.06);
+  border: 1px solid hsla(0, 80%, 56%, 0.2);
+  border-radius: 12px;
+
+  > i { color: var(--p-red-500); font-size: 1.1rem; margin-top: 0.1rem; flex-shrink: 0; }
+
+  strong { display: block; font-size: 0.9rem; color: var(--p-text-color); margin-bottom: 0.25rem; }
+  p { font-size: 0.82rem; color: var(--p-text-muted-color); margin: 0; line-height: 1.5; }
+}
+
+// ── Tooltip override ──────────────────────────────────────────────────────────
+:host ::ng-deep .recommendation-tooltip {
+  max-width: 280px;
+  font-size: 0.78rem;
+}
+
+// ── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .kpi-row { grid-template-columns: 1fr; }
+}

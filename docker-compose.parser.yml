@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  parser:
+    build:
+      context: ./gst-parser
+      dockerfile: Dockerfile
+    container_name: gstbuddies-parser-${ENV:-dev}
+    ports:
+      - "8090:8090"
+    environment:
+      - LOG_LEVEL=INFO
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

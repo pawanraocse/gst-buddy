@@ -12,6 +12,8 @@ import com.learning.backendservice.engine.AuditRuleResult;
 import com.learning.backendservice.entity.AuditRun;
 import com.learning.backendservice.repository.AuditFindingRepository;
 import com.learning.backendservice.repository.AuditRunRepository;
+import com.learning.backendservice.repository.LateFeeReliefWindowRepository;
+import com.learning.backendservice.service.ingestion.ParserOrchestrator;
 import com.learning.common.tenant.TenantContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +48,8 @@ class AuditRunOrchestratorTest {
     @Mock private UploadProperties uploadProperties;
     @Mock private CreditClient creditClient;
     @Mock private MemoryGuard memoryGuard;
+    @Mock private ParserOrchestrator parserOrchestrator;
+    @Mock private LateFeeReliefWindowRepository reliefWindowRepository;
 
     @Mock private AuditRule<List<MultipartFile>, Object> dummyRule;
 
@@ -61,7 +65,9 @@ class AuditRunOrchestratorTest {
 
         orchestrator = new AuditRunOrchestrator(
                 ruleRegistry, runRepository, findingRepository,
-                uploadProperties, creditClient, memoryGuard, new ObjectMapper(), 7, 50);
+                uploadProperties, creditClient, memoryGuard, new ObjectMapper(),
+                parserOrchestrator, reliefWindowRepository, 7, 50);
+
                 
         TenantContext.setCurrentTenant("tenant123");
     }

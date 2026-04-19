@@ -1,0 +1,339 @@
+:host {
+  display: block;
+}
+
+.gstr1-upload {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+// ── Header ──────────────────────────────────────────────────────────────────
+.upload-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .header-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, hsl(220 90% 56%), hsl(260 80% 60%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px hsla(220, 90%, 56%, 0.35);
+
+    i { font-size: 1.4rem; color: #fff; }
+  }
+
+  h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--p-text-color);
+    margin: 0 0 0.2rem;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// ── Card ─────────────────────────────────────────────────────────────────────
+.upload-card {
+  background: var(--p-surface-card);
+  border: 1px solid var(--p-surface-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,.06);
+  transition: box-shadow 200ms ease-out;
+
+  &:hover { box-shadow: 0 4px 28px rgba(0,0,0,.10); }
+}
+
+// ── Drop Zone ────────────────────────────────────────────────────────────────
+.drop-zone {
+  margin: 1.5rem 1.5rem 0;
+  border: 2px dashed var(--p-surface-border);
+  border-radius: 12px;
+  transition: border-color 200ms ease-out, background 200ms ease-out;
+  cursor: pointer;
+
+  &.drag-over {
+    border-color: var(--p-primary-color);
+    background: hsla(220, 90%, 56%, 0.04);
+  }
+
+  &.has-file {
+    border-style: solid;
+    border-color: var(--p-primary-color);
+    cursor: default;
+  }
+}
+
+.drop-zone-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 1rem;
+  text-align: center;
+
+  .drop-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: hsla(220, 90%, 56%, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    i { font-size: 1.5rem; color: var(--p-primary-color); }
+  }
+
+  .drop-primary {
+    font-weight: 600;
+    color: var(--p-text-color);
+    margin: 0 0 0.25rem;
+  }
+
+  .drop-secondary {
+    color: var(--p-text-muted-color);
+    font-size: .8rem;
+    margin: 0 0 0.75rem;
+  }
+
+  .browse-btn {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    background: var(--p-primary-color);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 150ms;
+    margin-bottom: 0.75rem;
+
+    &:hover { opacity: 0.88; }
+  }
+
+  .drop-hint {
+    font-size: 0.78rem;
+    color: var(--p-text-muted-color);
+    margin: 0;
+    code {
+      background: var(--p-surface-0);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-size: 0.76rem;
+    }
+  }
+}
+
+.drop-zone-file {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+
+  .file-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: hsla(220, 90%, 56%, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    i { font-size: 1.25rem; color: var(--p-primary-color); }
+  }
+
+  .file-meta {
+    flex: 1;
+    min-width: 0;
+
+    .file-name {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--p-text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-size {
+      font-size: 0.78rem;
+      color: var(--p-text-muted-color);
+    }
+  }
+
+  .remove-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--p-text-muted-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 150ms, color 150ms;
+
+    &:hover {
+      background: hsla(0, 80%, 56%, 0.1);
+      color: var(--p-red-500);
+    }
+  }
+}
+
+// ── Toggles Section ──────────────────────────────────────────────────────────
+.toggles-section {
+  padding: 1.5rem;
+  border-top: 1px solid var(--p-surface-border);
+  margin-top: 1.5rem;
+
+  .toggles-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--p-text-color);
+    margin: 0 0 0.3rem;
+  }
+
+  .toggles-subtitle {
+    font-size: 0.8rem;
+    color: var(--p-text-muted-color);
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+  }
+}
+
+.toggle-row {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--p-surface-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.toggle-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  gap: 0.75rem;
+
+  .toggle-label-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .toggle-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--p-text-color);
+  }
+
+  :deep(.confidence-tag) {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+}
+
+.toggle-divider {
+  width: 1px;
+  background: var(--p-surface-border);
+  flex-shrink: 0;
+}
+
+// ── Date Row ─────────────────────────────────────────────────────────────────
+.date-row {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .date-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--p-text-color);
+    white-space: nowrap;
+  }
+
+  .date-input {
+    border: 1px solid var(--p-surface-border);
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--p-text-color);
+    background: var(--p-surface-0);
+    outline: none;
+    transition: border-color 150ms;
+
+    &:focus { border-color: var(--p-primary-color); }
+  }
+}
+
+// ── Fee Preview ───────────────────────────────────────────────────────────────
+.fee-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.9rem 1.5rem;
+  background: hsla(220, 90%, 56%, 0.04);
+  border-top: 1px solid var(--p-surface-border);
+  font-size: 0.8rem;
+  color: var(--p-text-muted-color);
+  line-height: 1.6;
+
+  i { color: var(--p-primary-color); margin-top: 0.05rem; flex-shrink: 0; }
+
+  strong { color: var(--p-text-color); }
+}
+
+// ── Submit ────────────────────────────────────────────────────────────────────
+.submit-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--p-surface-border);
+
+  :deep(.run-btn) {
+    min-width: 148px;
+  }
+
+  .credit-hint {
+    font-size: 0.78rem;
+    color: var(--p-text-muted-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    i { font-size: 0.85rem; }
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────────────────────
+:host-context(.p-dark) {
+  .upload-card {
+    box-shadow: 0 2px 20px rgba(0,0,0,.3);
+  }
+  .drop-zone-empty .drop-icon {
+    background: hsla(220, 70%, 60%, 0.12);
+  }
+}

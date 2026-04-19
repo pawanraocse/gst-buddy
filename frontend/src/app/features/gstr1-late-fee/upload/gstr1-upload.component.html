@@ -1,0 +1,160 @@
+<section class="gstr1-upload">
+
+  <!-- ── PAGE HEADER ──────────────────────────────────────────────────────── -->
+  <header class="upload-header">
+    <div class="header-icon">
+      <i class="pi pi-file-check"></i>
+    </div>
+    <div class="header-text">
+      <h1>GSTR-1 Late Fee Audit</h1>
+      <p>Upload your GSTR-1 PDF or JSON to compute late fee exposure per <strong>Section 47(1), CGST Act 2017</strong>.</p>
+    </div>
+  </header>
+
+  <!-- ── UPLOAD CARD ──────────────────────────────────────────────────────── -->
+  <div class="upload-card">
+
+    <!-- Drop Zone -->
+    <div
+      class="drop-zone"
+      [class.drag-over]="isDragOver()"
+      [class.has-file]="selectedFile() !== null"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      @if (selectedFile() === null) {
+        <!-- Empty State -->
+        <div class="drop-zone-empty">
+          <div class="drop-icon"><i class="pi pi-cloud-upload"></i></div>
+          <p class="drop-primary">Drag &amp; drop your GSTR-1 file here</p>
+          <p class="drop-secondary">or</p>
+          <label class="browse-btn" for="gstr1-file-input">
+            Browse File
+          </label>
+          <input
+            id="gstr1-file-input"
+            type="file"
+            accept=".pdf,.json"
+            hidden
+            (change)="onFileChange($event)"
+          />
+          <p class="drop-hint">Supported: <code>.pdf</code> &amp; <code>.json</code> from GST Portal</p>
+        </div>
+      } @else {
+        <!-- File Selected State -->
+        <div class="drop-zone-file">
+          <div class="file-icon">
+            <i [class]="selectedFile()!.name.endsWith('.pdf') ? 'pi pi-file-pdf' : 'pi pi-file'"></i>
+          </div>
+          <div class="file-meta">
+            <span class="file-name">{{ selectedFile()!.name }}</span>
+            <span class="file-size">{{ formatBytes(selectedFile()!.size) }}</span>
+          </div>
+          <button class="remove-btn" (click)="removeFile()" aria-label="Remove file">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- ── METADATA TOGGLES ──────────────────────────────────────────────── -->
+    <div class="toggles-section">
+      <h2 class="toggles-title">Filing Classification</h2>
+      <p class="toggles-subtitle">
+        Confirm the filer type. These affect the <strong>due date</strong> (11th or 13th) and <strong>fee caps</strong>.
+      </p>
+
+      <div class="toggle-row">
+        <div class="toggle-item">
+          <div class="toggle-label-group">
+            <span class="toggle-label">QRMP Filer</span>
+            <p-tag
+              [value]="qrmpConfidence() === 'auto' ? 'Auto-detected' : 'Please confirm'"
+              [severity]="qrmpConfidence() === 'auto' ? 'success' : 'warn'"
+              styleClass="confidence-tag"
+              [pTooltip]="isQrmp()
+                ? 'Due date: 13th of month after quarter-end'
+                : 'Due date: 11th of the following month'"
+              tooltipPosition="top"
+            />
+          </div>
+          <p-toggleSwitch
+            id="qrmp-toggle"
+            [(ngModel)]="isQrmp"
+            (ngModelChange)="qrmpConfidence.set('manual')"
+          />
+        </div>
+
+        <div class="toggle-divider"></div>
+
+        <div class="toggle-item">
+          <div class="toggle-label-group">
+            <span class="toggle-label">Nil Return</span>
+            <p-tag
+              [value]="nilReturnConfidence() === 'auto' ? 'Auto-detected' : 'Please confirm'"
+              [severity]="nilReturnConfidence() === 'auto' ? 'success' : 'warn'"
+              styleClass="confidence-tag"
+              [pTooltip]="isNilReturn()
+                ? 'Rate: ₹10/day CGST + ₹10/day SGST. Cap: ₹250 each.'
+                : 'Rate: ₹25/day CGST + ₹25/day SGST. Cap: ₹5,000 each.'"
+              tooltipPosition="top"
+            />
+          </div>
+          <p-toggleSwitch
+            id="nil-return-toggle"
+            [(ngModel)]="isNilReturn"
+            (ngModelChange)="nilReturnConfidence.set('manual')"
+          />
+        </div>
+      </div>
+
+      <!-- Compliance Date -->
+      <div class="date-row">
+        <label for="as-on-date" class="date-label">Compliance As-On Date</label>
+        <input
+          id="as-on-date"
+          type="date"
+          class="date-input"
+          [ngModel]="asOnDate()"
+          (ngModelChange)="asOnDate.set($event)"
+        />
+      </div>
+    </div>
+
+    <!-- ── FEE PREVIEW (contextual helper) ──────────────────────────────── -->
+    <div class="fee-preview">
+      <i class="pi pi-info-circle"></i>
+      <span>
+        @if (isNilReturn()) {
+          Nil return: <strong>₹10/day</strong> CGST + <strong>₹10/day</strong> SGST,
+          capped at <strong>₹250</strong> each per return.
+        } @else {
+          Normal return: <strong>₹25/day</strong> CGST + <strong>₹25/day</strong> SGST,
+          capped at <strong>₹5,000</strong> each per return.
+        }
+        Due date: <strong>{{ isQrmp() ? '13th' : '11th' }}</strong> of following
+        {{ isQrmp() ? 'quarter-end month' : 'month' }}.
+      </span>
+    </div>
+
+    <!-- ── SUBMIT ─────────────────────────────────────────────────────────── -->
+    <div class="submit-row">
+      <p-button
+        id="run-audit-btn"
+        [label]="stateLabel"
+        icon="pi pi-play"
+        [loading]="isLoading"
+        [disabled]="selectedFile() === null || isLoading"
+        (onClick)="runAudit()"
+        styleClass="run-btn"
+      />
+      <p class="credit-hint">
+        <i class="pi pi-credit-card"></i>
+        1 credit will be consumed per audit run.
+      </p>
+    </div>
+
+  </div> <!-- /.upload-card -->
+
+</section>
