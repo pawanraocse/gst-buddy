@@ -50,6 +50,10 @@ class AuditRunOrchestratorTest {
     @Mock private MemoryGuard memoryGuard;
     @Mock private ParserOrchestrator parserOrchestrator;
     @Mock private LateFeeReliefWindowRepository reliefWindowRepository;
+    @Mock private com.learning.backendservice.engine.RuleResolutionEngine ruleResolutionEngine;
+    @Mock private com.learning.backendservice.engine.PipelineExecutor pipelineExecutor;
+    @Mock private ContextEnricher contextEnricher;
+    @Mock private com.learning.backendservice.repository.AuditRunRuleResultRepository ruleResultRepository;
 
     @Mock private AuditRule<List<MultipartFile>, Object> dummyRule;
 
@@ -66,7 +70,9 @@ class AuditRunOrchestratorTest {
         orchestrator = new AuditRunOrchestrator(
                 ruleRegistry, runRepository, findingRepository,
                 uploadProperties, creditClient, memoryGuard, new ObjectMapper(),
-                parserOrchestrator, reliefWindowRepository, 7, 50);
+                parserOrchestrator, reliefWindowRepository,
+                ruleResolutionEngine, pipelineExecutor, contextEnricher, ruleResultRepository,
+                7, 50);
 
                 
         TenantContext.setCurrentTenant("tenant123");
@@ -113,7 +119,7 @@ class AuditRunOrchestratorTest {
         
         ArgumentCaptor<AuditRun> runCaptor = ArgumentCaptor.forClass(AuditRun.class);
         verify(runRepository).save(runCaptor.capture());
-        assertEquals(ruleId, runCaptor.getValue().getRuleId());
+        assertArrayEquals(new String[]{ruleId}, runCaptor.getValue().getRulesExecuted());
         assertEquals("tenant123", runCaptor.getValue().getTenantId());
     }
 

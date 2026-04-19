@@ -69,7 +69,8 @@ class AuditRunServiceTest {
         AuditRun run = new AuditRun();
         run.setId(runId);
         run.setTenantId("tenant-123");
-        run.setRuleId("RULE_A");
+        run.setRulesExecuted(new String[]{"RULE_A"});
+        run.setAnalysisMode("LEDGER_ANALYSIS");
         run.setTotalImpactAmount(BigDecimal.TEN);
         run.setCreatedAt(OffsetDateTime.now());
 
@@ -98,7 +99,8 @@ class AuditRunServiceTest {
         AuditRun run = new AuditRun();
         run.setId(runId);
         run.setTenantId("tenant-123");
-        run.setRuleId("RULE_A");
+        run.setRulesExecuted(new String[]{"RULE_A"});
+        run.setAnalysisMode("LEDGER_ANALYSIS");
         run.setTotalImpactAmount(BigDecimal.TEN);
         run.setResultData("{\"key\":\"value\"}");
 

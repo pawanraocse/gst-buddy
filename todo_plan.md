@@ -2,18 +2,44 @@
 
 **Goal**: Transform from rule-centric (user picks one rule → one file → one result) to document-centric (user picks analysis mode → uploads documents → system auto-discovers all applicable rules → generates comprehensive compliance report).
 
+
 ---
 
-## User Review Required
+## 🚀 Implementation Progress — Phase A
 
-> [!IMPORTANT]
-> **Two-mode UX**: User selects either **Ledger Analysis** (Rule 37 — Excel upload) or **GSTR Rules Analysis** (PDF/JSON upload → all applicable GST rules auto-fire). Confirm this is the desired product UX.
+> Last updated: 19-04-2026
 
-> [!WARNING]
-> **`AuditRun.ruleId` → `rules_executed TEXT[]`**: Schema migration. Existing data migrated: `ruleId` → `rules_executed = ARRAY[ruleId]`. Old column kept as deprecated during transition.
+### Phase A: Pipeline Foundation
 
-> [!IMPORTANT]
-> **Credits deferred**: Per your feedback, credit logic stays as-is for now. The pipeline will compute `totalCredits = Σ rule.getCreditsRequired()` but won't change the pricing model. We focus on rule execution first.
+- `[x]` **A1** — `DocumentType` + `AnalysisMode` enums [NEW]
+- `[x]` **A2** — `AuditDocument` + `AuditUserParams` + `SharedResources` records [NEW]
+- `[x]` **A3** — `AuditContext` evolution — add documents, userParams, sharedResources, stateCode [MODIFY]
+- `[x]` **A4** — `AuditRule` — add 4 default methods (zero breaking changes) [MODIFY]
+- `[x]` **A5** — `InputResolver<I>` interface + `InputResolverRegistry` [NEW]
+- `[x]` **A6** — `RuleResolutionEngine` [NEW]
+- `[x]` **A7** — `ContextEnricher` [NEW]
+- `[x]` **A8** — `PipelineExecutor` + `PipelineResult` + `RuleExecutionResult` records [NEW]
+- `[x]` **A9** — `AuditRunOrchestrator.analyzeDocuments()` — unified entry point [MODIFY]
+- `[x]` **A10** — `AuditAnalyzeController` — `POST /api/v1/audit/analyze` [NEW]
+- `[x]` **A11** — Flyway `V5__pipeline_architecture.sql` (migrate + drop `rule_id`) [NEW]
+- `[x]` **A12** — `AuditRun` entity — add `rulesExecuted`, `analysisMode`; `AuditRunRuleResult` entity [MODIFY/NEW]
+- `[x]` **A13** — `Rule37AuditRule` + `Gstr1LateFeeAuditRule` overrides [MODIFY]
+- `[x]` **A14** — `Rule37InputResolver` + `Gstr1LateFeeInputResolver` [NEW]
+- `[x]` **A15** — Old controllers deleted; frontend services redirected to `/api/v1/audit/analyze` [REMOVE]
+- `[x]` **A16** — Unit tests: `RuleResolutionEngineTest` (6), `PipelineExecutorTest` (5), `InputResolverRegistryTest` (5) — 27 total, all green
+
+---
+
+## 🚀 Implementation Progress — Phase B
+
+> Last updated: 19-04-2026
+
+### Phase B: GSTR-3B + GSTR-9 Rules
+
+- `[x]` **B1** — `Gstr3bLateFeeAuditRule` + domain types + calculator service + `Gstr3bLateFeeInputResolver` — 12 tests green [NEW]
+- `[/]` **B2** — `Gstr3bInterestAuditRule` + `Gstr3bInterestInputResolver` [NEW]
+- `[ ]` **B3** — `Gstr9LateFeeAuditRule` + domain types + calculator + `Gstr9LateFeeInputResolver` [NEW]
+- `[ ]` **B4** — Frontend: Analysis mode selector + comprehensive report view [MODIFY]
 
 ---
 
@@ -534,7 +560,7 @@ public class RuleResolutionEngine {
                 Set<DocumentType> missing = new HashSet<>(rule.getRequiredDocumentTypes());
                 missing.removeAll(available);
                 return new UnlockableRule(rule.getRuleId(), rule.getDisplayName(),
-                    missing, rule.getCreditsRequired());
+                    missing);
             })
             .filter(u -> !u.missingDocuments().isEmpty())
             .toList();
@@ -544,7 +570,7 @@ public class RuleResolutionEngine {
 // engine/UnlockableRule.java
 public record UnlockableRule(
     String ruleId, String displayName,
-    Set<DocumentType> missingDocuments, int credits
+    Set<DocumentType> missingDocuments
 ) {}
 ```
 
@@ -649,11 +675,10 @@ public class PipelineExecutor {
                 ruleResults.add(new RuleExecutionResult(
                     ruleId, rule.getDisplayName(), rule.getLegalBasis(),
                     "SUCCESS", result.findings(), result.totalImpact(),
-                    result.creditsConsumed(), (int) durationMs, null));
+                    (int) durationMs, null));
 
                 allFindings.addAll(result.findings());
                 totalImpact = totalImpact.add(result.totalImpact());
-                totalCredits += result.creditsConsumed();
                 rulesExecuted.add(ruleId);
 
                 log.info("Pipeline rule={} status=SUCCESS duration={}ms findings={} impact={}",
@@ -671,7 +696,7 @@ public class PipelineExecutor {
         }
 
         return new PipelineResult(rulesExecuted, ruleResults, allFindings,
-            totalImpact, totalCredits);
+            totalImpact);
     }
 }
 ```
@@ -687,8 +712,7 @@ public record PipelineResult(
     List<String> rulesExecuted,
     List<RuleExecutionResult> ruleResults,
     List<AuditFinding> allFindings,
-    BigDecimal totalImpact,
-    int totalCredits
+    BigDecimal totalImpact
 ) {}
 
 public record RuleExecutionResult(
@@ -698,14 +722,13 @@ public record RuleExecutionResult(
     String status,       // SUCCESS | FAILED
     List<AuditFinding> findings,
     BigDecimal impact,
-    int creditsConsumed,
     int durationMs,
     String errorMessage  // null if SUCCESS
 ) {
     public static RuleExecutionResult failed(
             String ruleId, String name, String error, int durationMs) {
         return new RuleExecutionResult(ruleId, name, null, "FAILED",
-            List.of(), BigDecimal.ZERO, 0, durationMs, error);
+            List.of(), BigDecimal.ZERO, durationMs, error);
     }
 }
 ```
@@ -756,8 +779,8 @@ public UploadResult analyzeDocuments(
     }
 
     // ── 6. Pre-validate credits ──
-    int totalCreditsNeeded = rules.stream()
-        .mapToInt(AuditRule::getCreditsRequired).sum();
+    // Flat credit model: 20 per GSTR run, 1 per Ledger run
+    int totalCreditsNeeded = mode == AnalysisMode.GSTR_RULES_ANALYSIS ? 20 : 1;
     creditClient.checkBalance(userId, totalCreditsNeeded);
 
     // ── 7. Execute pipeline ──
@@ -769,7 +792,7 @@ public UploadResult analyzeDocuments(
 
     // ── 9. Consume credits ──
     CreditWalletResponse wallet = creditClient.consumeCredits(
-        userId, pipelineResult.totalCredits(),
+        userId, totalCreditsNeeded,
         "audit-" + run.getId(), "audit-" + run.getId());
 
     // ── 10. Build response with unlockable rules ──
@@ -821,6 +844,7 @@ public UploadResult processUpload(
 ```sql
 -- Rollback: ALTER TABLE audit_runs DROP COLUMN IF EXISTS rules_executed;
 --           ALTER TABLE audit_runs DROP COLUMN IF EXISTS analysis_mode;
+--           ALTER TABLE audit_runs ADD COLUMN rule_id VARCHAR(100);
 --           DROP TABLE IF EXISTS audit_run_rule_results;
 
 -- ── 1. Evolve audit_runs ──
@@ -837,8 +861,8 @@ SET rules_executed = ARRAY[rule_id],
     END
 WHERE rule_id IS NOT NULL AND rules_executed = ARRAY[]::TEXT[];
 
--- Keep rule_id column during transition period (deprecated)
-COMMENT ON COLUMN audit_runs.rule_id IS 'DEPRECATED: Use rules_executed array instead';
+-- Drop deprecated rule_id completely
+ALTER TABLE audit_runs DROP COLUMN IF EXISTS rule_id;
 
 -- ── 2. Per-rule execution tracking ──
 CREATE TABLE IF NOT EXISTS audit_run_rule_results (
@@ -925,10 +949,6 @@ public class AuditRunRuleResult implements TenantAware {
     @Column(name = "impact_amount", precision = 18, scale = 2)
     @Builder.Default
     private BigDecimal impactAmount = BigDecimal.ZERO;
-
-    @Column(name = "credits_consumed")
-    @Builder.Default
-    private Integer creditsConsumed = 0;
 
     @Column(name = "findings_count")
     @Builder.Default
@@ -1103,7 +1123,7 @@ The pipeline execution order matters because of legal interdependencies:
 |---|---|
 | `POST /api/v1/ledger/upload` | Kept — internally calls `analyzeDocuments(LEDGER_ANALYSIS)` |
 | `POST /api/v1/gstr/upload` | Kept — internally calls `analyzeDocuments(GSTR_RULES_ANALYSIS)` |
-| `AuditRun.ruleId` column | Kept deprecated. `rules_executed[0]` backfills it. |
+| `AuditRun.ruleId` column | Dropped. `rules_executed` array replaces it. |
 | `AuditContext.of()` factory | Preserved — existing tests pass unchanged |
 | `AuditRule<I, O>` contract | All new methods are `default` — zero changes to existing rules |
 | Frontend routes | Old routes redirect to unified `/app/audit/new` |

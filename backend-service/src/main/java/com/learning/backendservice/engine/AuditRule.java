@@ -1,5 +1,7 @@
 package com.learning.backendservice.engine;
 
+import java.util.Set;
+
 /**
  * Strategy interface for a single GST compliance audit rule.
  *
@@ -68,6 +70,57 @@ public interface AuditRule<I, O> {
     }
 
     /**
+     * Document types required for this rule to be applicable.
+     * Used by {@link RuleResolutionEngine} to auto-discover eligible rules per upload.
+     *
+     * <p>Default: empty set — rule is not filtered by document type (used for mode-based
+     * filtering instead, e.g. {@link AnalysisMode#LEDGER_ANALYSIS} rules like Rule 37).
+     */
+    default Set<DocumentType> getRequiredDocumentTypes() {
+        return Set.of();
+    }
+
+    /**
+     * Analysis modes in which this rule is applicable.
+     * Default: {@link AnalysisMode#GSTR_RULES_ANALYSIS}.
+     * Rule 37 overrides this to {@link AnalysisMode#LEDGER_ANALYSIS}.
+     */
+    default Set<AnalysisMode> getApplicableModes() {
+        return Set.of(AnalysisMode.GSTR_RULES_ANALYSIS);
+    }
+
+    /**
+     * Whether this rule can execute given the current context.
+     * Default: all required document types are present in the context.
+     * Override for rules with extra preconditions (turnover threshold, FY-specific, etc.).
+     *
+     * @param context the current audit context
+     * @return {@code true} if this rule should be included in the pipeline run
+     */
+    default boolean canExecute(AuditContext context) {
+        return context.getAvailableDocumentTypes().containsAll(getRequiredDocumentTypes());
+    }
+
+    /**
+     * Execution priority within the pipeline. Lower value = runs earlier.
+     *
+     * <p>Guidelines:
+     * <ul>
+     *   <li>0–9   = Pre-checks (GSTIN validation, data quality)</li>
+     *   <li>10–19 = Late fee rules (Section 47)</li>
+     *   <li>20–29 = Interest rules (Section 50)</li>
+     *   <li>30–39 = Deadline guards (Section 16(4))</li>
+     *   <li>40–49 = Restriction checks (Rule 86B)</li>
+     *   <li>50–59 = Reconciliation rules (cross-document)</li>
+     *   <li>60–69 = Supplier risk (external GSTIN lookups)</li>
+     *   <li>100   = Default — no ordering preference</li>
+     * </ul>
+     */
+    default int getExecutionOrder() {
+        return 100;
+    }
+
+    /**
      * Execute the audit rule.
      *
      * <p><b>Implementations must:</b>
@@ -78,7 +131,7 @@ public interface AuditRule<I, O> {
      * </ul>
      *
      * @param input   rule-specific input (files, portal data, etc.)
-     * @param context immutable execution context (tenantId, userId, asOnDate, FY)
+     * @param context immutable execution context (tenantId, userId, asOnDate, FY, documents)
      * @return standardized {@link AuditRuleResult} containing findings and rule-specific output
      */
     AuditRuleResult<O> execute(I input, AuditContext context);

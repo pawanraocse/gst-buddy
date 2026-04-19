@@ -53,4 +53,20 @@ public interface LateFeeReliefWindowRepository extends JpaRepository<LateFeeReli
             @Param("periodEndDate") LocalDate periodEndDate,
             @Param("appliesTo")     String appliesTo
     );
+    /**
+     * Load all relief windows for a given return type and filer type.
+     * Used by {@code ContextEnricher} to pre-load all windows in bulk before pipeline execution.
+     *
+     * @param returnType the GSTR return type string: "GSTR1", "GSTR3B", "GSTR9"
+     * @param appliesTo  "NIL", "NON_NIL", or "ALL"
+     * @return all matching relief windows ordered by id DESC (most specific first)
+     */
+    @Query("SELECT r FROM LateFeeReliefWindow r " +
+           "WHERE r.returnType = :returnType " +
+           "AND (r.appliesTo = :appliesTo OR r.appliesTo = 'ALL') " +
+           "ORDER BY r.id DESC")
+    List<LateFeeReliefWindow> findByReturnTypeAndAppliesTo(
+            @Param("returnType") String returnType,
+            @Param("appliesTo")  String appliesTo
+    );
 }

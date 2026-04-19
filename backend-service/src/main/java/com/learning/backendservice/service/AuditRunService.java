@@ -86,17 +86,20 @@ public class AuditRunService {
     // ─── Mapping ─────────────────────────────────────────────────────────────
 
     private AuditRunResponse toResponse(AuditRun run, boolean includeResultData) {
+        // Derive primary ruleId from rulesExecuted array for backward compat display
+        String primaryRuleId = (run.getRulesExecuted() != null && run.getRulesExecuted().length > 0)
+                ? run.getRulesExecuted()[0] : "UNKNOWN";
         String displayName = null;
         try {
-            AuditRule<?, ?> rule = ruleRegistry.getRule(run.getRuleId());
+            AuditRule<?, ?> rule = ruleRegistry.getRule(primaryRuleId);
             displayName = rule.getDisplayName();
         } catch (IllegalArgumentException ex) {
-            displayName = run.getRuleId(); // fallback for unknown/deleted rules
+            displayName = primaryRuleId; // fallback for unknown/deleted rules
         }
 
         return AuditRunResponse.builder()
                 .id(run.getId().toString())
-                .ruleId(run.getRuleId())
+                .ruleId(primaryRuleId)
                 .ruleDisplayName(displayName)
                 .status(run.getStatus())
                 .totalImpactAmount(run.getTotalImpactAmount())

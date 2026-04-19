@@ -49,6 +49,19 @@ public class Gstr1LateFeeAuditRule implements AuditRule<Gstr1LateFeeInput, Gstr1
     @Override public String getLegalBasis()  { return LEGAL_BASIS; }
 
     @Override
+    public java.util.Set<com.learning.backendservice.engine.AnalysisMode> getApplicableModes() {
+        return java.util.Set.of(com.learning.backendservice.engine.AnalysisMode.GSTR_RULES_ANALYSIS);
+    }
+
+    @Override
+    public java.util.Set<com.learning.backendservice.engine.DocumentType> getRequiredDocumentTypes() {
+        return java.util.Set.of(com.learning.backendservice.engine.DocumentType.GSTR_1);
+    }
+
+    @Override
+    public int getExecutionOrder() { return 10; }
+
+    @Override
     public String getDescription() {
         return "Identifies delayed GSTR-1 filings and computes the applicable late fee "
              + "(₹25/day CGST + ₹25/day SGST, max ₹5,000 each; ₹10/day each for Nil returns, max ₹250 each) "

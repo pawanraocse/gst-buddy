@@ -28,8 +28,15 @@ public interface AuditRunRepository extends JpaRepository<AuditRun, UUID> {
     /** User-scoped list: returns only runs created by the given user within the tenant. */
     Page<AuditRun> findByTenantIdAndUserId(String tenantId, String userId, Pageable pageable);
 
-    /** User-scoped list filtered by ruleId. */
-    Page<AuditRun> findByTenantIdAndUserIdAndRuleId(String tenantId, String userId, String ruleId, Pageable pageable);
+    /** User-scoped list filtered by ruleId (checks rulesExecuted array). */
+    @Query(value = "SELECT * FROM audit_runs WHERE tenant_id = :tenantId AND user_id = :userId AND :ruleId = ANY(rules_executed)",
+           countQuery = "SELECT COUNT(*) FROM audit_runs WHERE tenant_id = :tenantId AND user_id = :userId AND :ruleId = ANY(rules_executed)",
+           nativeQuery = true)
+    Page<AuditRun> findByTenantIdAndUserIdAndRuleId(
+            @org.springframework.data.repository.query.Param("tenantId") String tenantId,
+            @org.springframework.data.repository.query.Param("userId") String userId,
+            @org.springframework.data.repository.query.Param("ruleId") String ruleId,
+            Pageable pageable);
 
     /** User-scoped get: returns run only if it belongs to the given user AND tenant. */
     Optional<AuditRun> findByIdAndTenantIdAndUserId(UUID id, String tenantId, String userId);

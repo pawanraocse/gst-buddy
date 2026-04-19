@@ -48,9 +48,16 @@ public class AuditRun implements TenantAware {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
-    /** Identifies the AuditRule implementation; e.g. "RULE_37_ITC_REVERSAL" */
-    @Column(name = "rule_id", nullable = false, length = 100)
-    private String ruleId;
+    /** LEDGER_ANALYSIS | GSTR_RULES_ANALYSIS */
+    @Column(name = "analysis_mode", nullable = false, length = 30)
+    @Builder.Default
+    private String analysisMode = "LEDGER_ANALYSIS";
+
+    /** Rule IDs executed in this run (e.g. ["RULE_37_ITC_REVERSAL"] or multiple GSTR rules). */
+    @Column(name = "rules_executed", columnDefinition = "text[]")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Builder.Default
+    private String[] rulesExecuted = new String[]{};
 
     /** PENDING | RUNNING | SUCCESS | FAILED */
     @Column(name = "status", nullable = false, length = 20)
@@ -101,4 +108,8 @@ public class AuditRun implements TenantAware {
     @OneToMany(mappedBy = "auditRun", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<AuditRunFinding> findings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "auditRun", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<AuditRunRuleResult> ruleResults = new ArrayList<>();
 }

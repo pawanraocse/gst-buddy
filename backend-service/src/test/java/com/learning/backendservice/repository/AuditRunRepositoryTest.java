@@ -34,7 +34,8 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         AuditRun run = new AuditRun();
         run.setId(UuidV7.generate());
         run.setTenantId("tenant-123");
-        run.setRuleId("DUMMY_RULE");
+        run.setRulesExecuted(new String[]{"DUMMY_RULE"});
+        run.setAnalysisMode("LEDGER_ANALYSIS");
         run.setUserId("user-123");
         run.setCreatedAt(OffsetDateTime.now());
         run.setExpiresAt(OffsetDateTime.now().plusDays(7));
@@ -44,7 +45,7 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         finding.setId(UuidV7.generate());
         finding.setAuditRun(run);
         finding.setTenantId(run.getTenantId());
-        finding.setRuleId(run.getRuleId());
+        finding.setRuleId("DUMMY_RULE");
         finding.setSeverity("HIGH");
         finding.setImpactAmount(new BigDecimal("150.50"));
         finding.setDescription("Violation");
@@ -63,7 +64,7 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         
         AuditRun retrieved = retrievedOpt.get();
         assertEquals("tenant-123", retrieved.getTenantId());
-        assertEquals("DUMMY_RULE", retrieved.getRuleId());
+        assertArrayEquals(new String[]{"DUMMY_RULE"}, retrieved.getRulesExecuted());
         assertEquals(0, new BigDecimal("150.50").compareTo(retrieved.getTotalImpactAmount()));
         assertEquals(1, retrieved.getFindings().size());
 
@@ -79,7 +80,8 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         AuditRun run = new AuditRun();
         run.setId(UuidV7.generate());
         run.setTenantId("tenant-A");
-        run.setRuleId("RULE_X");
+        run.setRulesExecuted(new String[]{"RULE_X"});
+        run.setAnalysisMode("LEDGER_ANALYSIS");
         run.setUserId("user-a");
         run.setCreatedAt(OffsetDateTime.now());
         run.setExpiresAt(OffsetDateTime.now().plusDays(7));
@@ -101,7 +103,8 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         run1.setUserId("list-user");
         run1.setCreatedAt(OffsetDateTime.now());
         run1.setExpiresAt(OffsetDateTime.now().plusDays(7));
-        run1.setRuleId("RULE_A");
+        run1.setRulesExecuted(new String[]{"RULE_A"});
+        run1.setAnalysisMode("LEDGER_ANALYSIS");
         
         // Ensure UUID generation produces distinct timestamps by sleeping briefly
         try { Thread.sleep(10); } catch (InterruptedException e) {}
@@ -113,7 +116,8 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         run2.setUserId("list-user");
         run2.setCreatedAt(OffsetDateTime.now());
         run2.setExpiresAt(OffsetDateTime.now().plusDays(7));
-        run2.setRuleId("RULE_B");
+        run2.setRulesExecuted(new String[]{"RULE_B"});
+        run2.setAnalysisMode("LEDGER_ANALYSIS");
 
         auditRunRepository.saveAllAndFlush(List.of(run1, run2));
 
@@ -131,7 +135,8 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         AuditRun expiredRun = new AuditRun();
         expiredRun.setId(UuidV7.generate());
         expiredRun.setTenantId("tenant-expire");
-        expiredRun.setRuleId("RULE_A");
+        expiredRun.setRulesExecuted(new String[]{"RULE_A"});
+        expiredRun.setAnalysisMode("LEDGER_ANALYSIS");
         expiredRun.setUserId("expire-user");
         expiredRun.setCreatedAt(OffsetDateTime.now().minusDays(5));
         expiredRun.setStatus("SUCCESS");
@@ -141,7 +146,7 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         finding1.setId(UuidV7.generate());
         finding1.setAuditRun(expiredRun);
         finding1.setTenantId(expiredRun.getTenantId());
-        finding1.setRuleId(expiredRun.getRuleId());
+        finding1.setRuleId("RULE_A");
         finding1.setSeverity("HIGH");
         finding1.setImpactAmount(new BigDecimal("150.50"));
         finding1.setDescription("Violation");
@@ -153,7 +158,8 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         AuditRun activeRun = new AuditRun();
         activeRun.setId(UuidV7.generate());
         activeRun.setTenantId("tenant-expire");
-        activeRun.setRuleId("RULE_A");
+        activeRun.setRulesExecuted(new String[]{"RULE_A"});
+        activeRun.setAnalysisMode("LEDGER_ANALYSIS");
         activeRun.setUserId("expire-user");
         activeRun.setCreatedAt(OffsetDateTime.now());
         activeRun.setStatus("SUCCESS");
@@ -163,7 +169,7 @@ class AuditRunRepositoryTest extends BaseIntegrationTest {
         finding2.setId(UuidV7.generate());
         finding2.setAuditRun(activeRun);
         finding2.setTenantId(activeRun.getTenantId());
-        finding2.setRuleId(activeRun.getRuleId());
+        finding2.setRuleId("RULE_A");
         finding2.setSeverity("HIGH");
         finding2.setImpactAmount(new BigDecimal("100.00"));
         finding2.setDescription("Violation");

@@ -85,8 +85,10 @@ public class AuditExportController {
             String json = run.getResultData();
             return objectMapper.readValue(json, new TypeReference<List<LedgerResult>>() {});
         } catch (Exception e) {
+            String primaryRuleId = (run.getRulesExecuted() != null && run.getRulesExecuted().length > 0)
+                    ? run.getRulesExecuted()[0] : "UNKNOWN";
             throw new IllegalStateException(
-                    "Cannot export run " + run.getId() + ": result_data is not a valid LedgerResult list (ruleId=" + run.getRuleId() + ")", e);
+                    "Cannot export run " + run.getId() + ": result_data is not a valid LedgerResult list (ruleId=" + primaryRuleId + ")", e);
         }
     }
 

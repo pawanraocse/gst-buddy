@@ -64,6 +64,19 @@ public class Rule37AuditRule implements AuditRule<List<MultipartFile>, List<Ledg
     @Override
     public String getLegalBasis() { return LEGAL_BASIS; }
 
+    @Override
+    public java.util.Set<com.learning.backendservice.engine.AnalysisMode> getApplicableModes() {
+        return java.util.Set.of(com.learning.backendservice.engine.AnalysisMode.LEDGER_ANALYSIS);
+    }
+
+    @Override
+    public java.util.Set<com.learning.backendservice.engine.DocumentType> getRequiredDocumentTypes() {
+        return java.util.Set.of(com.learning.backendservice.engine.DocumentType.PURCHASE_LEDGER);
+    }
+
+    @Override
+    public int getExecutionOrder() { return 100; }
+
     /**
      * 1 credit per distinct supplier/ledger in the uploaded files.
      * The orchestrator reads the actual count from the result.

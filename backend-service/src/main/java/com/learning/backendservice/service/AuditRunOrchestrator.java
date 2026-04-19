@@ -74,6 +74,11 @@ public class AuditRunOrchestrator {
     private final int maxRunsPerTenant;
     private final ParserOrchestrator parserOrchestrator;
     private final LateFeeReliefWindowRepository reliefWindowRepository;
+    // ── New pipeline dependencies ──
+    private final com.learning.backendservice.engine.RuleResolutionEngine ruleResolutionEngine;
+    private final com.learning.backendservice.engine.PipelineExecutor pipelineExecutor;
+    private final ContextEnricher contextEnricher;
+    private final com.learning.backendservice.repository.AuditRunRuleResultRepository ruleResultRepository;
 
     public AuditRunOrchestrator(
             AuditRuleRegistry ruleRegistry,
@@ -85,6 +90,10 @@ public class AuditRunOrchestrator {
             ObjectMapper objectMapper,
             ParserOrchestrator parserOrchestrator,
             LateFeeReliefWindowRepository reliefWindowRepository,
+            com.learning.backendservice.engine.RuleResolutionEngine ruleResolutionEngine,
+            com.learning.backendservice.engine.PipelineExecutor pipelineExecutor,
+            ContextEnricher contextEnricher,
+            com.learning.backendservice.repository.AuditRunRuleResultRepository ruleResultRepository,
             @Value("${app.retention.days:7}") int retentionDays,
             @Value("${app.retention.max-runs-per-tenant:50}") int maxRunsPerTenant) {
         this.ruleRegistry = ruleRegistry;
@@ -96,12 +105,205 @@ public class AuditRunOrchestrator {
         this.objectMapper = objectMapper;
         this.parserOrchestrator = parserOrchestrator;
         this.reliefWindowRepository = reliefWindowRepository;
+        this.ruleResolutionEngine = ruleResolutionEngine;
+        this.pipelineExecutor = pipelineExecutor;
+        this.contextEnricher = contextEnricher;
+        this.ruleResultRepository = ruleResultRepository;
         this.retentionDays = retentionDays;
         this.maxRunsPerTenant = maxRunsPerTenant;
         this.uploadSemaphore = new Semaphore(uploadProperties.getMaxConcurrentUploads());
 
         log.info("AuditRunOrchestrator initialized: maxFiles={}, maxConcurrentUploads={}, retentionDays={}",
                 uploadProperties.getMaxFiles(), uploadProperties.getMaxConcurrentUploads(), retentionDays);
+    }
+
+    // ─── Unified Pipeline Entry Point ────────────────────────────────────────
+
+    /**
+     * Unified document-centric analysis entry point.
+     * Replaces per-rule {@link #processUpload} and {@link #processGstrUpload}.
+     *
+     * <p>Credit model: 20 credits flat for GSTR_RULES_ANALYSIS; 1 for LEDGER_ANALYSIS.
+     *
+     * @param files      uploaded document files (Excel, PDF, or JSON)
+     * @param mode       analysis mode selected by the user
+     * @param asOnDate   compliance evaluation date
+     * @param userId     Keycloak user subject
+     * @param userParams typed user-supplied parameters (QRMP flag, nil-return, etc.)
+     * @return comprehensive upload result with per-rule findings and unlockable rules preview
+     */
+    @Transactional
+    public UploadResult analyzeDocuments(
+            List<MultipartFile> files,
+            com.learning.backendservice.engine.AnalysisMode mode,
+            LocalDate asOnDate,
+            String userId,
+            com.learning.backendservice.engine.AuditUserParams userParams) {
+
+        String tenantId = TenantContext.getCurrentTenant();
+        validateFiles(files);
+        memoryGuard.checkMemoryBudget(files);
+
+        if (!uploadSemaphore.tryAcquire()) {
+            throw new TooManyRequestsException(
+                    "Server is processing other uploads. Please retry. "
+                    + "(Max " + uploadProperties.getMaxConcurrentUploads() + " concurrent)");
+        }
+
+        try {
+            return doAnalyzeDocuments(files, mode, asOnDate, userId, userParams, tenantId);
+        } finally {
+            uploadSemaphore.release();
+        }
+    }
+
+    @Transactional
+    private UploadResult doAnalyzeDocuments(
+            List<MultipartFile> files,
+            com.learning.backendservice.engine.AnalysisMode mode,
+            LocalDate asOnDate, String userId,
+            com.learning.backendservice.engine.AuditUserParams userParams,
+            String tenantId) {
+
+        // ── 1. Build initial context (documents populated by DocumentTypeResolver in Phase B) ──
+        // For Phase A: LEDGER_ANALYSIS wraps raw files as PURCHASE_LEDGER docs.
+        List<com.learning.backendservice.engine.AuditDocument> documents = buildDocuments(files, mode);
+        com.learning.backendservice.engine.AuditContext ctx =
+                com.learning.backendservice.engine.AuditContext.forAnalysis(
+                        tenantId, userId, asOnDate, mode, documents,
+                        userParams, com.learning.backendservice.engine.SharedResources.empty());
+
+        // ── 2. Enrich context with shared DB resources ──
+        com.learning.backendservice.engine.SharedResources resources = contextEnricher.loadResources(ctx);
+        ctx = ctx.withSharedResources(resources);
+
+        // ── 3. Resolve applicable rules ──
+        List<com.learning.backendservice.engine.AuditRule<?, ?>> rules =
+                ruleResolutionEngine.resolveExecutableRules(ctx);
+        if (rules.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "No applicable rules for the uploaded documents. "
+                    + "Detected document types: " + ctx.getAvailableDocumentTypes());
+        }
+
+        // ── 4. Flat credit check (20 for GSTR, 1 for Ledger) ──
+        int creditsNeeded = (mode == com.learning.backendservice.engine.AnalysisMode.GSTR_RULES_ANALYSIS) ? 20 : 1;
+        creditClient.checkBalance(userId, creditsNeeded);
+
+        // ── 5. Execute pipeline ──
+        com.learning.backendservice.engine.PipelineResult pipelineResult =
+                pipelineExecutor.execute(rules, ctx);
+
+        // ── 6. Persist run ──
+        UUID runId = UuidV7.generate();
+        OffsetDateTime now = OffsetDateTime.now();
+        AuditRun run = AuditRun.builder()
+                .id(runId)
+                .tenantId(tenantId)
+                .userId(userId)
+                .analysisMode(mode.name())
+                .rulesExecuted(pipelineResult.rulesExecuted().toArray(new String[0]))
+                .status("SUCCESS")
+                .inputMetadata(toJson(java.util.Map.of(
+                        "asOnDate", asOnDate.toString(),
+                        "mode", mode.name(),
+                        "fileCount", files.size())))
+                .totalImpactAmount(pipelineResult.totalImpact())
+                .creditsConsumed(creditsNeeded)
+                .createdAt(now)
+                .completedAt(now)
+                .expiresAt(now.plus(retentionDays, java.time.temporal.ChronoUnit.DAYS))
+                .build();
+        run = runRepository.save(run);
+
+        // ── 7. Persist per-rule results ──
+        List<com.learning.backendservice.entity.AuditRunRuleResult> ruleResultEntities = new ArrayList<>();
+        for (com.learning.backendservice.engine.RuleExecutionResult rr : pipelineResult.ruleResults()) {
+            ruleResultEntities.add(com.learning.backendservice.entity.AuditRunRuleResult.builder()
+                    .id(UuidV7.generate())
+                    .auditRun(run)
+                    .tenantId(tenantId)
+                    .ruleId(rr.ruleId())
+                    .ruleName(rr.ruleName())
+                    .legalBasis(rr.legalBasis())
+                    .status(rr.status())
+                    .impactAmount(rr.impact())
+                    .findingsCount(rr.findings().size())
+                    .executionDurationMs(rr.durationMs())
+                    .errorMessage(rr.errorMessage())
+                    .createdAt(now)
+                    .build());
+        }
+        ruleResultRepository.saveAll(ruleResultEntities);
+
+        // ── 8. Persist findings ──
+        List<AuditRunFinding> findingEntities = new ArrayList<>();
+        for (com.learning.backendservice.engine.AuditFinding f : pipelineResult.allFindings()) {
+            findingEntities.add(AuditRunFinding.builder()
+                    .id(UuidV7.generate())
+                    .auditRun(run)
+                    .tenantId(tenantId)
+                    .ruleId(f.ruleId())
+                    .severity(f.severity().name())
+                    .legalBasis(f.legalBasis())
+                    .compliancePeriod(f.compliancePeriod())
+                    .impactAmount(f.impactAmount())
+                    .description(f.description())
+                    .recommendedAction(f.recommendedAction())
+                    .autoFixAvailable(f.autoFixAvailable())
+                    .createdAt(now)
+                    .build());
+        }
+        findingRepository.saveAll(findingEntities);
+
+        // ── 9. Consume credits ──
+        String idempotencyKey = "audit-" + runId;
+        CreditWalletResponse wallet = creditClient.consumeCredits(
+                userId, creditsNeeded, idempotencyKey, idempotencyKey);
+
+        // ── 10. Build response ──
+        List<com.learning.backendservice.engine.UnlockableRule> unlockable =
+                ruleResolutionEngine.previewUnlockableRules(ctx);
+
+        log.info("analyzeDocuments completed: runId={}, mode={}, rules={}, findings={}, impact={}, creditsRemaining={}",
+                runId, mode, pipelineResult.rulesExecuted().size(),
+                pipelineResult.allFindings().size(), pipelineResult.totalImpact(), wallet.getRemaining());
+
+        return UploadResult.builder()
+                .stringRunId(runId.toString())
+                .findingsSummary(pipelineResult.allFindings().stream()
+                        .map(f -> UploadResult.FindingSummaryDto.builder()
+                                .ruleId(f.ruleId())
+                                .severity(f.severity().name())
+                                .legalBasis(f.legalBasis())
+                                .compliancePeriod(f.compliancePeriod())
+                                .impactAmount(f.impactAmount())
+                                .description(f.description())
+                                .recommendedAction(f.recommendedAction())
+                                .build())
+                        .toList())
+                .creditsConsumed(creditsNeeded)
+                .remainingCredits(wallet.getRemaining())
+                .build();
+    }
+
+    /**
+     * Phase A bridge: wrap raw MultipartFiles in AuditDocument records.
+     * Phase B will replace this with a full DocumentTypeResolver call.
+     */
+    private List<com.learning.backendservice.engine.AuditDocument> buildDocuments(
+            List<MultipartFile> files,
+            com.learning.backendservice.engine.AnalysisMode mode) {
+        return files.stream()
+                .map(f -> new com.learning.backendservice.engine.AuditDocument(
+                        mode == com.learning.backendservice.engine.AnalysisMode.LEDGER_ANALYSIS
+                                ? com.learning.backendservice.engine.DocumentType.PURCHASE_LEDGER
+                                : com.learning.backendservice.engine.DocumentType.GSTR_1,
+                        f.getOriginalFilename(),
+                        null,
+                        java.util.Map.of("rawFile", f),
+                        null, null))
+                .toList();
     }
 
     /**
@@ -220,7 +422,8 @@ public class AuditRunOrchestrator {
                 .id(runId)
                 .tenantId(tenantId)
                 .userId(userId)
-                .ruleId(ruleId)
+                .analysisMode("LEDGER_ANALYSIS")
+                .rulesExecuted(new String[]{ruleId})
                 .status("SUCCESS")
                 .inputMetadata(toJson(java.util.Map.of(
                         "asOnDate", asOnDate.toString(),
@@ -361,7 +564,8 @@ public class AuditRunOrchestrator {
                 .id(runId)
                 .tenantId(tenantId)
                 .userId(userId)
-                .ruleId("LATE_FEE_GSTR1")
+                .analysisMode("GSTR_RULES_ANALYSIS")
+                .rulesExecuted(new String[]{"LATE_FEE_GSTR1"})
                 .status("SUCCESS")
                 .inputMetadata(toJson(java.util.Map.of(
                         "asOnDate", asOnDate.toString(),

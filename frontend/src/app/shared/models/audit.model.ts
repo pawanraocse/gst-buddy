@@ -1,10 +1,17 @@
 /**
- * Generic Audit Engine models — Phase 5 migration.
+ * Generic Audit Engine models — Phase A pipeline migration.
  *
  * Replaces rule37.model.ts.
  * All run IDs are UUID v7 strings (replaces numeric BIGSERIAL).
  * Backend source: AuditRunResponse.java, UploadResult.java
  */
+
+// ─────────────────────────────────────────────
+//  Analysis mode (selects the pipeline branch)
+// ─────────────────────────────────────────────
+
+/** Selects the analysis mode for POST /api/v1/audit/analyze. */
+export type AnalysisMode = 'LEDGER_ANALYSIS' | 'GSTR_RULES_ANALYSIS';
 
 // ─────────────────────────────────────────────
 //  Rule 37 domain types (UNCHANGED — pure domain)
@@ -46,17 +53,31 @@ export interface LedgerResult {
 }
 
 // ─────────────────────────────────────────────
-//  Upload response (POST /api/v1/ledgers/upload)
+//  Upload response (POST /api/v1/audit/analyze)
 // ─────────────────────────────────────────────
+
+/** Per-rule finding returned in the analysis response. */
+export interface FindingSummary {
+  ruleId: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
+  legalBasis: string;
+  compliancePeriod: string;
+  impactAmount: number;
+  description: string;
+  recommendedAction: string;
+}
 
 export interface UploadResult {
   /** UUID v7 string — primary identifier for all new runs */
   stringRunId: string;
   /** @deprecated Use stringRunId. Kept for one-version backward compat. */
   runId?: number;
-  filename: string;
-  results: { ledgerName: string; summary: CalculationSummary }[];
-  errors: { filename: string; message: string }[];
+  filename?: string;
+  /** Rule 37 specific — present for LEDGER_ANALYSIS runs only. */
+  results?: { ledgerName: string; summary: CalculationSummary }[];
+  errors?: { filename: string; message: string }[];
+  /** Multi-rule findings summary — present for all pipeline runs. */
+  findingsSummary?: FindingSummary[];
   creditsConsumed: number;
   remainingCredits: number;
 }

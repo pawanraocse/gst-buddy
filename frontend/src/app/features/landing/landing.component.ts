@@ -113,6 +113,20 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
         },
         {
             image: 'assets/images/landing/icons/rule-36-4.png',
+            rule: 'Sec 47 (GSTR-1)',
+            title: 'GSTR-1 Late Fee',
+            description: 'Automatic calculation of late fees with relief window support.',
+            status: 'live'
+        },
+        {
+            image: 'assets/images/landing/icons/rule-86b.png',
+            rule: 'Sec 47 & 50',
+            title: 'GSTR-3B Late Fee & Interest',
+            description: 'Parallel computation of late fees and Section 50 interest.',
+            status: 'coming'
+        },
+        {
+            image: 'assets/images/landing/icons/rule-16-4.png',
             rule: 'Rule 36(4)',
             title: 'ITC Matching',
             description: 'Match claimed ITC with GSTR-2A/2B and identify mismatches instantly.',
