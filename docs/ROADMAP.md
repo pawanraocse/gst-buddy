@@ -575,7 +575,7 @@ At 500 active CAs = **Rs 40 lakhs/year ARR** from credits alone.
 - [x] Upgrade Frontend Audit Dashboard for multi-rule result display
 
 ### 🚀 Phase 1 — Next Up
-- [ ] **GSTR-1 Late Fee Engine** → Section 47(1); PRD: `resources/RULE ENGINE/LATE FEES GSTR-1/`
+- [x] **GSTR-1 Late Fee Engine** → Section 47(1); PRD: `resources/RULE ENGINE/LATE FEES GSTR-1/`
 - [ ] **GSTR-3B Late Fee Engine** → Section 47(2); PRD: `resources/RULE ENGINE/LATE FEES GSTR-3B/`
 - [ ] **Section 50 Interest Engine** (GSTR-3B late payment) → PRD: `resources/RULE ENGINE/Interest late filing GSTR3B/`
 - [ ] **GSTR-9/9C Late Fee Calculator** → PRD: `resources/RULE ENGINE/GSTR 9 and 9C Late Fess/`
