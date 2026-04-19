@@ -5,7 +5,7 @@
       <div>
         <h1 class="text-3xl font-bold text-900 m-0 tracking-tight">GSTBuddies</h1>
         <p class="text-secondary mt-2 text-lg m-0">
-          Check if you owe interest or need to reverse ITC on late payments
+          Run automated compliance checks and ledger analysis to avoid penalties.
         </p>
       </div>
 
@@ -108,25 +108,40 @@
         </div>
       </p-panel>
 
+      <!-- Analysis Mode Selector -->
+      <div class="surface-50 border-1 surface-border border-round p-3 mb-4">
+        <label class="block mb-2 font-medium text-800 text-xs uppercase">Analysis Mode</label>
+        <div class="flex flex-wrap gap-4">
+          <div class="flex align-items-center">
+            <input type="radio" id="modeLedger" name="analysisMode" value="LEDGER_ANALYSIS" [ngModel]="analysisMode()" (ngModelChange)="analysisMode.set($event)" class="mr-2" />
+            <label for="modeLedger" class="cursor-pointer text-sm font-medium">Ledger Analysis (ITC Reversal)</label>
+          </div>
+          <div class="flex align-items-center">
+            <input type="radio" id="modeGstr" name="analysisMode" value="GSTR_RULES_ANALYSIS" [ngModel]="analysisMode()" (ngModelChange)="analysisMode.set($event)" class="mr-2" />
+            <label for="modeGstr" class="cursor-pointer text-sm font-medium">GSTR Compliance (Late Fee & Interest)</label>
+          </div>
+        </div>
+      </div>
+
       <!-- Audit Configuration (Merged & Compact) -->
       <div class="surface-50 border-1 surface-border border-round p-3 mb-4 audit-config-card">
         <div class="flex flex-column gap-3">
-          <!-- Rule Selection -->
-          <div class="config-group">
-            <label class="block mb-2 font-medium text-800 text-xs uppercase">
-              Audit Rule
-            </label>
-            <p-select
-              [options]="rules()"
-              [ngModel]="selectedRule()"
-              (ngModelChange)="selectedRule.set($event)"
-              optionLabel="displayName"
-              placeholder="Select Rule"
-              styleClass="w-full"
-              appendTo="body"
-              [disabled]="isProcessing() || rules().length === 0">
-            </p-select>
+          
+          <!-- Ledger Specific configs -->
+          @if (analysisMode() === 'LEDGER_ANALYSIS') {
+            <!-- Target Rule Info (Static) -->
+            <div class="config-group">
+            <label class="block mb-2 font-medium text-800 text-xs uppercase">Target Rule</label>
+            <div class="p-3 surface-100 border-round flex align-items-center gap-2">
+              <i class="pi pi-shield text-primary"></i>
+              <span class="font-semibold text-900">Rule 37 (ITC Reversal)</span>
+            </div>
+            <div class="text-sm mt-2 text-500">
+              <i class="pi pi-info-circle mr-1 text-primary"></i>
+              Auto-calculate ITC reversals for invoices unpaid > 180 days.
+            </div>
           </div>
+          }
 
           <!-- As on Date -->
           <div class="config-group">
@@ -150,36 +165,49 @@
             </p-datepicker>
           </div>
 
-          <!-- Rule Info -->
-          <div class="text-sm border-round p-2"
-               style="background-color: var(--bg-app); color: var(--text-secondary);"
-               *ngIf="selectedRule()"
-               @slideDown>
-            <i class="pi pi-info-circle mr-1 text-primary"></i>
-            {{ selectedRule()?.description }}
+          <!-- GSTR Specific configs -->
+          @if (analysisMode() === 'GSTR_RULES_ANALYSIS') {
+          <div class="configuration-fields grid mt-2">
+            <div class="col-12 md:col-4">
+              <label class="block mb-2 font-medium text-800 text-xs uppercase cursor-pointer">
+                <input type="checkbox" [ngModel]="isQrmp()" (ngModelChange)="isQrmp.set($event)" class="mr-1" />
+                QRMP Filer
+              </label>
+            </div>
+            <div class="col-12 md:col-4">
+              <label class="block mb-2 font-medium text-800 text-xs uppercase cursor-pointer">
+                <input type="checkbox" [ngModel]="isNilReturn()" (ngModelChange)="isNilReturn.set($event)" class="mr-1" />
+                Nil Return
+              </label>
+            </div>
+            <div class="col-12 md:col-4">
+              <label class="block mb-2 font-medium text-800 text-xs uppercase">Aggregate Turnover (Optional)</label>
+              <input pInputText type="number" [ngModel]="aggregateTurnover()" (ngModelChange)="aggregateTurnover.set($event)" placeholder="e.g. 50000000" class="w-full" />
+            </div>
           </div>
+          }
+
         </div>
       </div>
 
-      <!-- Scope Declaration (GST-009 + GST-010) -->
+      <!-- Scope Declaration & Documents Rules -->
       <div class="surface-50 border-1 surface-border border-round p-4 mb-4">
         <div class="flex align-items-center gap-2 mb-3">
           <i class="pi pi-info-circle text-primary"></i>
           <span class="font-semibold text-800">Supported Inputs & Scope</span>
         </div>
+        
+        @if (analysisMode() === 'LEDGER_ANALYSIS') {
         <div class="grid">
           <div class="col-12 md:col-6">
             <div class="flex flex-column gap-2 text-sm">
               <span class="text-green-600"><i class="pi pi-check mr-1"></i> Tally / Busy creditor ledger (Excel)</span>
               <span class="text-green-600"><i class="pi pi-check mr-1"></i> Tax-inclusive amounts at 18% GST</span>
-              <span class="text-green-600"><i class="pi pi-check mr-1"></i> FIFO purchase-payment matching</span>
             </div>
           </div>
           <div class="col-12 md:col-6">
             <div class="flex flex-column gap-2 text-sm">
               <span class="text-500"><i class="pi pi-times mr-1"></i> Reverse charge (RCM) not supported</span>
-              <span class="text-500"><i class="pi pi-times mr-1"></i> Cess / exempt / nil-rated not supported</span>
-              <span class="text-500"><i class="pi pi-times mr-1"></i> Mixed GST rates not supported</span>
             </div>
           </div>
         </div>
@@ -187,17 +215,27 @@
           <label class="flex align-items-start gap-2 cursor-pointer">
             <input type="checkbox" [checked]="scopeConfirmed()" (change)="scopeConfirmed.set(!scopeConfirmed())"
               class="mt-1" />
-            <span class="text-sm text-700">I confirm the uploaded ledger(s) contain <strong>tax-inclusive amounts at 18% GST</strong>, do not include reverse charge entries, and represent standard B2B supplier creditor ledgers.</span>
+            <span class="text-sm text-700">I confirm the uploaded ledger(s) contain <strong>tax-inclusive amounts at 18% GST</strong>, do not include reverse charge entries, and represent B2B supplier ledgers.</span>
           </label>
         </div>
+        } @else {
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <div class="flex flex-column gap-2 text-sm">
+              <span class="text-green-600"><i class="pi pi-check mr-1"></i> GSTR-1, GSTR-3B, GSTR-9 Returns</span>
+              <span class="text-green-600"><i class="pi pi-check mr-1"></i> JSON or PDF format downloaded from portal</span>
+            </div>
+          </div>
+        </div>
+        }
       </div>
 
       <!-- Document Upload -->
       <div class="surface-50 border-1 surface-border border-round p-4 mb-4">
-        <app-document-upload [disabled]="isProcessing() || !scopeConfirmed()" (filesSelected)="onFilesSelected($event)" />
-        @if (!scopeConfirmed() && !isProcessing()) {
+        <app-document-upload [disabled]="isProcessing() || (analysisMode() === 'LEDGER_ANALYSIS' && !scopeConfirmed())" (filesSelected)="onFilesSelected($event)" />
+        @if (analysisMode() === 'LEDGER_ANALYSIS' && !scopeConfirmed() && !isProcessing()) {
         <p class="text-sm text-orange-500 text-center mt-2 m-0">
-          <i class="pi pi-lock mr-1"></i> Please confirm the scope declaration above to enable upload
+          <i class="pi pi-lock mr-1"></i> Please confirm the scope declaration to enable upload
         </p>
         }
         @if (fileNames().length > 0 && !error()) {
@@ -223,7 +261,7 @@
       }
 
       <!-- Results -->
-      @if (results().length > 0 && !isProcessing()) {
+      @if ((results().length > 0 || gstrFindings().length > 0) && !isProcessing()) {
       <div class="mt-6 pt-6 border-top-1 surface-border">
         <!-- Verdict Banner (3-state: action / watchlist / clear) -->
         <div class="verdict-banner mb-4 p-4 border-round-xl"
@@ -262,9 +300,53 @@
           </div>
         </div>
 
-        <app-compliance-view [results]="results()" [runId]="runId()" [filename]="fileNames().join(', ')"
-          [date]="asOnDate()" [showExportAll]="true" (exportAll)="downloadExport($event)"
-          (exportLedger)="onExportLedger($event)" />
+        @if (analysisMode() === 'LEDGER_ANALYSIS') {
+          <app-compliance-view [results]="results()" [runId]="runId()" [filename]="fileNames().join(', ')"
+            [date]="asOnDate()" [showExportAll]="true" (exportAll)="downloadExport($event)"
+            (exportLedger)="onExportLedger($event)" />
+        } @else {
+          <!-- Comprehensive GSTR Findings Report -->
+          <div class="surface-card border-1 surface-border border-round-xl p-4 mt-4 shadow-1">
+            <h3 class="text-xl font-semibold mb-4 text-800"><i class="pi pi-table mr-2 text-primary"></i> Comprehensive Audit Report</h3>
+            @if (gstrFindings().length === 0) {
+              <div class="text-center p-5 text-500">
+                <i class="pi pi-check-circle text-4xl mb-3" style="color: var(--teal-500);"></i>
+                <p>No critical or high-severity compliance issues detected.</p>
+              </div>
+            } @else {
+              <div class="flex flex-column gap-3">
+                @for (finding of gstrFindings(); track finding.ruleId) {
+                  <div class="p-3 border-round-lg border-1" 
+                    [ngClass]="{'border-red-200 bg-red-50': finding.severity === 'CRITICAL' || finding.severity === 'HIGH', 
+                                'border-amber-200 bg-orange-50': finding.severity === 'MEDIUM' || finding.severity === 'LOW',
+                                'border-teal-200 bg-teal-50': finding.severity === 'INFO'}">
+                    <div class="flex justify-content-between align-items-start mb-2">
+                      <div class="font-bold flex align-items-center gap-2">
+                        <span class="px-2 py-1 text-xs border-round font-semibold"
+                          [ngClass]="{'bg-red-100 text-red-700': finding.severity === 'CRITICAL' || finding.severity === 'HIGH',
+                                      'bg-orange-100 text-orange-700': finding.severity === 'MEDIUM' || finding.severity === 'LOW',
+                                      'bg-teal-100 text-teal-700': finding.severity === 'INFO'}">
+                          {{ finding.severity }}
+                        </span>
+                        <span>{{ finding.ruleId.replace(/_/g, ' ') }}</span>
+                      </div>
+                      <div class="font-bold text-lg" style="color: var(--text-color);">
+                        {{ formatCurrency(finding.impactAmount) }}
+                      </div>
+                    </div>
+                    <p class="my-2 text-sm text-700">{{ finding.description }}</p>
+                    <div class="flex flex-wrap gap-3 mt-3 pt-3 border-top-1 border-gray-300 text-xs text-600">
+                      <div><i class="pi pi-book mr-1"></i> <span class="font-semibold">Legal Basis:</span> {{ finding.legalBasis }}</div>
+                      <div><i class="pi pi-calendar mr-1"></i> <span class="font-semibold">Period:</span> {{ finding.compliancePeriod }}</div>
+                      <div><i class="pi pi-sparkles mr-1 text-primary"></i> <span class="font-semibold">Recommendation:</span> {{ finding.recommendedAction }}</div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
         <div class="buddy-success-card mt-4 p-4">
           <p class="text-700 text-sm m-0">
             <span class="font-semibold">Saved!</span> Your calculation has been saved and will be available in the

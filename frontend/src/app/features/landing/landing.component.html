@@ -110,9 +110,8 @@
 
                     <!-- Subheadline -->
                     <p class="hero-subtitle">
-                        Upload your <mark>Creditors ledger</mark>. We handle
-                        <mark>Rule 37 calculations</mark> in seconds—so you can
-                        <strong>stop worrying</strong> and <strong>start growing</strong>.
+                        Upload your **GSTR PDFs** or **Ledgers**. Our engine auto-discovers 
+                        all applicable rules to generate a **comprehensive audit report** in seconds.
                     </p>
 
                     <!-- CTA Group with Magnetic Effect -->
@@ -183,16 +182,16 @@
                                 loading="eager">
                         </div>
                         <div class="card-header">
-                            <span class="label">Potential ITC Savings</span>
+                            <span class="label">Identified Liabilities</span>
                         </div>
                         <div class="card-value">
                             <span class="currency">₹</span>
                             <span class="amount">{{ savingsValue().toLocaleString('en-IN') }}</span>
                         </div>
                         <div class="card-footer">
-                            <div class="badge">
-                                <i class="pi pi-bolt"></i>
-                                <span>Found in 30s</span>
+                            <div class="badge warning">
+                                <i class="pi pi-exclamation-triangle"></i>
+                                <span>Action Required</span>
                             </div>
                         </div>
                     </div>
@@ -222,16 +221,16 @@
                             <!-- Rules Status -->
                             <div class="rules-status">
                                 <div class="rule-row">
-                                    <span>Rule 37</span>
-                                    <span class="badge success">✓ Compliant</span>
-                                </div>
-                                <div class="rule-row">
-                                    <span>Rule 36(4)</span>
-                                    <span class="badge success">✓ Matched</span>
+                                    <span>GSTR-1</span>
+                                    <span class="badge success">✓ Audited</span>
                                 </div>
                                 <div class="rule-row">
                                     <span>GSTR-3B</span>
-                                    <span class="badge warning">⚠ 2 Non-Filers</span>
+                                    <span class="badge success">✓ Audited</span>
+                                </div>
+                                <div class="rule-row">
+                                    <span>Rule 37</span>
+                                    <span class="badge warning">⚠ 2 Invoices Pending</span>
                                 </div>
                             </div>
                         </div>

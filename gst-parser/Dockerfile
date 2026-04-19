@@ -2,7 +2,8 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install system dependencies needed for PyMuPDF if any
+# pdfplumber (default) needs no extra system libs on slim.
+# PyMuPDF (fallback/classifier) needs build-essential for its C extensions.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*

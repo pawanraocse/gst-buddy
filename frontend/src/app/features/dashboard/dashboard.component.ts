@@ -14,7 +14,7 @@ import { MessageModule } from 'primeng/message';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { PanelModule } from 'primeng/panel';
-import { LedgerResult, UploadResult, AuditRuleInfo } from '../../shared/models/audit.model';
+import { LedgerResult, UploadResult, AuditRuleInfo, AnalysisMode, FindingSummary } from '../../shared/models/audit.model';
 import { Select } from 'primeng/select';
 import { DatePicker } from 'primeng/datepicker';
 import { MessageService } from 'primeng/api';
@@ -72,9 +72,14 @@ export class DashboardComponent implements OnInit {
   fileNames = signal<string[]>([]);
   scopeConfirmed = signal(false);
 
-  // Audit rules
-  rules = signal<AuditRuleInfo[]>([]);
-  selectedRule = signal<AuditRuleInfo | null>(null);
+  analysisMode = signal<AnalysisMode>('LEDGER_ANALYSIS');
+  isQrmp = signal(false);
+  isNilReturn = signal(false);
+  aggregateTurnover = signal<number | null>(null);
+
+  gstrFindings = signal<FindingSummary[]>([]);
+
+
 
   // At-risk KPIs
   atRiskCount = computed(() => {
@@ -92,21 +97,36 @@ export class DashboardComponent implements OnInit {
    * - clear: no issues at all
    */
   bannerState = computed<'clear' | 'watchlist' | 'action'>(() => {
-    const r = this.results();
-    if (r.length === 0) return 'clear';
-    const totalItc = r.reduce((s, x) => s + x.summary.totalItcReversal, 0);
-    const totalInterest = r.reduce((s, x) => s + x.summary.totalInterest, 0);
-    if (totalItc > 0 || totalInterest > 0) return 'action';
-    if (this.atRiskCount() > 0) return 'watchlist';
-    return 'clear';
+    if (this.analysisMode() === 'GSTR_RULES_ANALYSIS') {
+      const gstr = this.gstrFindings();
+      if (gstr.length === 0) return 'clear';
+      if (gstr.some(f => f.severity === 'CRITICAL' || f.severity === 'HIGH')) return 'action';
+      if (gstr.some(f => f.severity === 'MEDIUM' || f.severity === 'LOW')) return 'watchlist';
+      return 'clear';
+    } else {
+      const r = this.results();
+      if (r.length === 0) return 'clear';
+      const totalItc = r.reduce((s, x) => s + x.summary.totalItcReversal, 0);
+      const totalInterest = r.reduce((s, x) => s + x.summary.totalInterest, 0);
+      if (totalItc > 0 || totalInterest > 0) return 'action';
+      if (this.atRiskCount() > 0) return 'watchlist';
+      return 'clear';
+    }
   });
 
   statusMessage = computed(() => {
     const state = this.bannerState();
-    if (this.results().length === 0) return '';
-    if (state === 'clear') return 'All Clear — No estimated liability';
-    if (state === 'watchlist') return `Watchlist — ${this.atRiskCount()} invoice(s) due soon`;
-    return 'Action Needed';
+    if (this.analysisMode() === 'LEDGER_ANALYSIS') {
+      if (this.results().length === 0) return '';
+      if (state === 'clear') return 'All Clear — No estimated liability';
+      if (state === 'watchlist') return `Watchlist — ${this.atRiskCount()} invoice(s) due soon`;
+      return 'Action Needed';
+    } else {
+      if (this.fileNames().length === 0) return '';
+      if (state === 'clear') return 'All Clear — No compliance issues detected';
+      if (state === 'watchlist') return 'Attention — Non-critical issues or manual checks needed';
+      return 'Action Needed — High severity issues detected';
+    }
   });
 
   statusSeverity = computed(() => {
@@ -138,18 +158,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadWallet();
-    this.loadRules();
-  }
-
-  private loadRules(): void {
-    this.api.getAvailableRules().subscribe({
-      next: (rules) => {
-        this.rules.set(rules);
-        // Default to Rule 37 if available, else first rule
-        const r37 = rules.find(r => r.ruleId === 'RULE_37_ITC_REVERSAL');
-        this.selectedRule.set(r37 || rules[0] || null);
-      }
-    });
   }
 
   private loadWallet(): void {
@@ -165,38 +173,47 @@ export class DashboardComponent implements OnInit {
   }
 
   onFilesSelected(files: File[]) {
-    if (!this.selectedRule()) {
-      this.error.set("Please select an audit rule first.");
-      return;
-    }
+    // Rules check not strictly necessary for ledger mode as the orchestrator defaults to Rule 37.
     this.isProcessing.set(true);
     this.error.set(null);
     this.results.set([]);
+    this.gstrFindings.set([]);
     this.fileNames.set(files.map((f) => f.name));
 
-    this.api.uploadLedgers(files, this.asOnDate(), this.selectedRule()!.ruleId).subscribe({
+    const obs$ = this.analysisMode() === 'LEDGER_ANALYSIS' 
+      ? this.api.uploadLedgers(files, this.asOnDate())
+      : this.api.uploadGstrDocuments(files, this.asOnDate(), this.isQrmp(), this.isNilReturn(), this.aggregateTurnover() ?? undefined);
+
+    obs$.subscribe({
       next: (res: UploadResult) => {
         this.runId.set(res.stringRunId);
-        this.results.set(
-          res.results.map((r) => ({
-            ledgerName: r.ledgerName,
-            summary: {
-              totalInterest: r.summary.totalInterest,
-              totalItcReversal: r.summary.totalItcReversal,
-              atRiskCount: r.summary.atRiskCount ?? 0,
-              atRiskAmount: r.summary.atRiskAmount ?? 0,
-              breachedCount: r.summary.breachedCount ?? 0,
-              calculationDate: r.summary.calculationDate ?? new Date().toISOString().split('T')[0],
-              details: r.summary.details.map((d) => ({
-                ...d,
-                purchaseDate: d.purchaseDate ?? '',
-                paymentDate: d.paymentDate ?? null,
-              })),
-            },
-          }))
-        );
-        this.fileNames.set(res.results.map((r) => r.ledgerName));
-        if (res.errors.length > 0) {
+        
+        if (this.analysisMode() === 'LEDGER_ANALYSIS') {
+          this.results.set(
+            res.results?.map((r) => ({
+              ledgerName: r.ledgerName,
+              summary: {
+                totalInterest: r.summary.totalInterest,
+                totalItcReversal: r.summary.totalItcReversal,
+                atRiskCount: r.summary.atRiskCount ?? 0,
+                atRiskAmount: r.summary.atRiskAmount ?? 0,
+                breachedCount: r.summary.breachedCount ?? 0,
+                calculationDate: r.summary.calculationDate ?? new Date().toISOString().split('T')[0],
+                details: r.summary.details.map((d) => ({
+                  ...d,
+                  purchaseDate: d.purchaseDate ?? '',
+                  paymentDate: d.paymentDate ?? null,
+                })),
+              },
+            })) ?? []
+          );
+        } else {
+          this.gstrFindings.set(res.findingsSummary ?? []);
+        }
+
+        this.fileNames.set(files.map((f) => f.name));
+        
+        if (res.errors && res.errors.length > 0) {
           this.error.set(res.errors.map((e) => `${e.filename}: ${e.message}`).join('; '));
         } else {
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Files processed successfully' });

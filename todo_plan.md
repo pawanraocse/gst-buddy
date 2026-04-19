@@ -1,4 +1,4 @@
-# Document-Centric Audit Pipeline — HLD + LLD (v2)
+ # Document-Centric Audit Pipeline — HLD + LLD (v2)
 
 **Goal**: Transform from rule-centric (user picks one rule → one file → one result) to document-centric (user picks analysis mode → uploads documents → system auto-discovers all applicable rules → generates comprehensive compliance report).
 
@@ -37,9 +37,9 @@
 ### Phase B: GSTR-3B + GSTR-9 Rules
 
 - `[x]` **B1** — `Gstr3bLateFeeAuditRule` + domain types + calculator service + `Gstr3bLateFeeInputResolver` — 12 tests green [NEW]
-- `[/]` **B2** — `Gstr3bInterestAuditRule` + `Gstr3bInterestInputResolver` [NEW]
-- `[ ]` **B3** — `Gstr9LateFeeAuditRule` + domain types + calculator + `Gstr9LateFeeInputResolver` [NEW]
-- `[ ]` **B4** — Frontend: Analysis mode selector + comprehensive report view [MODIFY]
+- `[x]` **B2** — `Gstr3bInterestAuditRule` + `Gstr3bInterestInputResolver` [NEW]
+- `[x]` **B3** — `Gstr9LateFeeAuditRule` + domain types + calculator + `Gstr9LateFeeInputResolver` [NEW]
+- `[x]` **B4** — Frontend: Analysis mode selector + comprehensive report view [MODIFY]
 
 ---
 
@@ -1111,9 +1111,20 @@ The pipeline execution order matters because of legal interdependencies:
 4. Frontend: Analysis mode selector + comprehensive report view
 
 ### Phase C: Cross-Document Reconciliation
-1. `Gstr1Vs3bReconciliationRule` — first multi-document rule
-2. `LateReportingGstr1Rule`
-3. Frontend: "Unlockable rules" panel
+
+- [ ] **C1** — Parser: Extract Table 3.1 & 6.1 liability values from GSTR-3B PDF [MODIFY]
+- [ ] **C2** — Parser: Extract Liability Summary (Table 4/5/6/7) from GSTR-1 PDF [MODIFY]
+- [ ] **C3** — Rule: `Gstr1Vs3bReconciliationRule` + `RECON_1_VS_3B` InputResolver [NEW]
+- [ ] **C4** — Rule: `LateReportingGstr1Rule` + input extraction logic [NEW]
+- [ ] **C5** — Frontend: "Unlockable Rules" panel in dashboard + multi-doc hints [MODIFY]
+
+---
+
+### Phase D: Future Compliance Rules (Backlog)
+- [ ] **D1** — `POS_VALIDATION_GSTR1` (Place of Supply checks)
+- [ ] **D2** — `RULE_86B_RESTRICTION` (99% tax payment limitation)
+- [ ] **D3** — `SUPPLIER_RISK` (GSTR-2A compliance)
+- [ ] **D4** — `SECTION_16_4_GUARD` (ITC deadline detection)
 
 ---
 

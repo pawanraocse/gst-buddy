@@ -26,7 +26,7 @@ export class Gstr1ApiService {
     return this.auditApi
       .uploadGstrDocuments([file], asOnDate, isQrmp, isNilReturn)
       .pipe(
-        map((result) => ({
+        map((result) => <any>({
           stringRunId: result.stringRunId,
           filename: result.filename ?? file.name,
           findingsSummary: result.findingsSummary ?? [],

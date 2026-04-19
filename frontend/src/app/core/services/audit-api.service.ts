@@ -81,8 +81,9 @@ export class AuditApiService {
     asOnDate: string,
     isQrmp = false,
     isNilReturn = false,
+    aggregateTurnover?: number,
   ): Observable<UploadResult> {
-    return this.analyze(files, 'GSTR_RULES_ANALYSIS', asOnDate, isQrmp, isNilReturn);
+    return this.analyze(files, 'GSTR_RULES_ANALYSIS', asOnDate, isQrmp, isNilReturn, aggregateTurnover);
   }
 
   /**

@@ -50,7 +50,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
 
     // Typewriter
     typewriterText = '';
-    private typewriterFullText = 'Handled by a Friend.';
+    private typewriterFullText = 'Audit Ready. Document Centric. Automated.';
     private typewriterIndex = 0;
     private typewriterInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -98,7 +98,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
 
     stats = [
         { value: 500, suffix: '+', icon: 'pi-users', label: 'Active Users' },
-        { value: 50000, suffix: '+', icon: 'pi-file', label: 'Ledgers Processed' },
+        { value: 50000, suffix: '+', icon: 'pi-file-pdf', label: 'Documents Audited' },
         { value: 99.9, suffix: '%', icon: 'pi-shield', label: 'Accuracy Rate' },
         { value: 24, suffix: '/7', icon: 'pi-clock', label: 'Support' }
     ];
@@ -108,42 +108,42 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             image: 'assets/images/landing/icons/rule-37.png',
             rule: 'Rule 37',
             title: '180-Day ITC Reversal',
-            description: 'Auto-calculate ITC reversals for unpaid invoices exceeding 180 days.',
+            description: 'Auto-calculate ITC reversals for unpaid invoices exceeding 180 days from Ledgers.',
             status: 'live'
         },
         {
             image: 'assets/images/landing/icons/rule-36-4.png',
-            rule: 'Sec 47 (GSTR-1)',
-            title: 'GSTR-1 Late Fee',
-            description: 'Automatic calculation of late fees with relief window support.',
+            rule: 'GSTR-1 Audit',
+            title: 'Late Fee & Delayed Reporting',
+            description: 'Intelligent calculation of late fees and delayed reporting interest for GSTR-1 PDFs.',
             status: 'live'
         },
         {
             image: 'assets/images/landing/icons/rule-86b.png',
-            rule: 'Sec 47 & 50',
-            title: 'GSTR-3B Late Fee & Interest',
-            description: 'Parallel computation of late fees and Section 50 interest.',
+            rule: 'GSTR-3B Audit',
+            title: 'Late Fee & Section 50 Interest',
+            description: 'Parallel computation of late fees and interest based on actual filing dates from PDFs.',
+            status: 'live'
+        },
+        {
+            image: 'assets/images/landing/icons/rule-16-4.png',
+            rule: 'GSTR-9 Audit',
+            title: 'Annual Return Late Fees',
+            description: 'Audit your GSTR-9 filings and detect potential late fee liabilities automatically.',
+            status: 'live'
+        },
+        {
+            image: 'assets/images/landing/icons/rule-86b.png',
+            rule: 'Reconciliation',
+            title: 'GSTR-1 vs 3B Recon',
+            description: 'Cross-document liability reconciliation to detect tax payment gaps.',
             status: 'coming'
         },
         {
             image: 'assets/images/landing/icons/rule-16-4.png',
             rule: 'Rule 36(4)',
             title: 'ITC Matching',
-            description: 'Match claimed ITC with GSTR-2A/2B and identify mismatches instantly.',
-            status: 'coming'
-        },
-        {
-            image: 'assets/images/landing/icons/rule-86b.png',
-            rule: 'Rule 86B',
-            title: 'Credit Restriction',
-            description: 'Monitor the 99% credit utilization threshold automatically.',
-            status: 'coming'
-        },
-        {
-            image: 'assets/images/landing/icons/rule-16-4.png',
-            rule: 'Rule 16(4)',
-            title: 'ITC Time Limit',
-            description: 'Track ITC claims against due dates to avoid lapses.',
+            description: 'Match claimed ITC with GSTR-2B and identify over-claims instantly.',
             status: 'coming'
         }
     ];
@@ -182,24 +182,24 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
     steps = [
         {
             number: 1,
-            icon: 'pi-download',
+            icon: 'pi-cloud-upload',
             image: 'assets/images/steps/step-1-export.png',
-            title: 'Export Ledger',
-            description: 'Export your party ledger from Tally or Busy. Takes 2 minutes.'
+            title: 'Upload Documents',
+            description: 'Simply drag & drop your GSTR PDFs or Purchase Ledgers. No portal login required.'
         },
         {
             number: 2,
-            icon: 'pi-upload',
+            icon: 'pi-sync',
             image: 'assets/images/steps/step-2-upload.png',
-            title: 'Upload & Go',
-            description: 'Drag & drop your Excel file. We do the rest in seconds.'
+            title: 'Auto-Analyze',
+            description: 'Our engine auto-detects all applicable GST rules and runs a comprehensive audit in seconds.'
         },
         {
             number: 3,
-            icon: 'pi-chart-bar',
+            icon: 'pi-file-export',
             image: 'assets/images/steps/step-3-results.png',
-            title: 'Get Results',
-            description: 'See ITC reversal, interest calculations, and export to Excel.'
+            title: 'Audit Report',
+            description: 'Get a professional compliance summary with clear action items and financial risks highlighted.'
         }
     ];
 
