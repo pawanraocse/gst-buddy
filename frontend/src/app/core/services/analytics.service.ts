@@ -1,11 +1,12 @@
 import { Injectable, PLATFORM_ID, inject, isDevMode } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private readonly GTM_ID = ''; // Leave empty for now, loaded via env or config later
+  private readonly GTM_ID = environment.gtmId;
   private platformId = inject(PLATFORM_ID);
 
   /**
@@ -14,7 +15,8 @@ export class AnalyticsService {
    */
   initGTM(): void {
     if (isPlatformBrowser(this.platformId) && this.GTM_ID && !isDevMode()) {
-      this.loadGtmScript();
+      // Defer loading to prevent blocking the main thread during hydration
+      setTimeout(() => this.loadGtmScript(), 3500);
     }
   }
 

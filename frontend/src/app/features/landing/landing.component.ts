@@ -369,13 +369,6 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     private initSeo(): void {
-        this.seo.updateMeta({
-            title: 'Smart GST Compliance & Rule 37 Audit Tool',
-            description: 'Automated Rule 37 ITC reversal and interest calculator for Indian businesses. Upload Tally/Busy ledgers and get instant audit results.',
-            url: 'https://gstbuddies.com/',
-            image: 'https://gstbuddies.com/assets/seo/og-preview.png'
-        });
-
         this.seo.setSchema({
             '@context': 'https://schema.org',
             '@type': 'SoftwareApplication',

@@ -44,6 +44,17 @@ export class SeoService {
     });
   }
 
+  private updateCanonicalUrl(url: string) {
+    const head = this.document.getElementsByTagName('head')[0];
+    let element: HTMLLinkElement | null = this.document.querySelector(`link[rel='canonical']`) || null;
+    if (element === null) {
+      element = this.document.createElement('link') as HTMLLinkElement;
+      element.setAttribute('rel', 'canonical');
+      head.appendChild(element);
+    }
+    element.setAttribute('href', url);
+  }
+
   /**
    * Updates the page title and associated meta tags for SEO.
    */
@@ -68,6 +79,7 @@ export class SeoService {
     }
     if (config.url) {
       this.meta.updateTag({ property: 'og:url', content: config.url });
+      this.updateCanonicalUrl(config.url);
     }
 
     // Twitter
