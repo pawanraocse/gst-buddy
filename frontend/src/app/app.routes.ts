@@ -12,11 +12,13 @@ export const routes: Routes = [
       { path: '', redirectTo: 'login', pathMatch: 'full' },
       {
         path: 'login',
-        loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent)
+        loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent),
+        data: { title: 'Login' }
       },
       {
         path: 'signup/personal',
-        loadComponent: () => import('./features/auth/signup-personal.component').then(m => m.SignupPersonalComponent)
+        loadComponent: () => import('./features/auth/signup-personal.component').then(m => m.SignupPersonalComponent),
+        data: { title: 'Create Free Account' }
       },
       {
         path: 'verify-email',
@@ -36,7 +38,8 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        data: { title: 'Dashboard' }
       },
       {
         path: 'gstr1-late-fee',
@@ -90,19 +93,23 @@ export const routes: Routes = [
   },
   {
     path: 'privacy',
-    loadComponent: () => import('./features/legal/privacy-policy.component').then(m => m.PrivacyPolicyComponent)
+    loadComponent: () => import('./features/legal/privacy-policy.component').then(m => m.PrivacyPolicyComponent),
+    data: { title: 'Privacy Policy', description: 'Read the privacy policy of GSTBuddies and how we handle your data securely with bank-grade encryption.' }
   },
   {
     path: 'terms',
-    loadComponent: () => import('./features/legal/terms-of-service.component').then(m => m.TermsOfServiceComponent)
+    loadComponent: () => import('./features/legal/terms-of-service.component').then(m => m.TermsOfServiceComponent),
+    data: { title: 'Terms of Service', description: 'Terms of Service and User Agreement for GSTBuddies SaaS platform.' }
   },
   {
     path: 'refund',
-    loadComponent: () => import('./features/legal/refund-policy.component').then(m => m.RefundPolicyComponent)
+    loadComponent: () => import('./features/legal/refund-policy.component').then(m => m.RefundPolicyComponent),
+    data: { title: 'Refund Policy', description: 'Refund policy for GSTBuddies credit purchases and subscription plans.' }
   },
   {
     path: '',
-    loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent)
+    loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent),
+    data: { title: 'Smart GST Compliance & Rule 37 Audit Tool', description: 'Automated Rule 37 ITC reversal and interest calculator for Indian businesses. Upload Tally/Busy ledgers and get instant audit results.' }
   },
   { path: '**', redirectTo: '' }
 ];

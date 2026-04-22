@@ -39,6 +39,8 @@
               "node_modules/primeflex/primeflex.css",
               "src/styles.scss"
             ],
+            "server": "src/main.server.ts",
+            "prerender": true,
             "outputMode": "static"
           },
           "configurations": {

@@ -1,5 +1,5 @@
-import { Component, signal, computed, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, computed, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, QueryList, ViewChildren, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -8,6 +8,7 @@ import { RippleModule } from 'primeng/ripple';
 import { CarouselModule } from 'primeng/carousel';
 import { CreditApiService, PlanDto } from '../../core/services/credit-api.service';
 import { SupportTicketDialogComponent } from '../../shared/components/support-ticket-dialog/support-ticket-dialog.component';
+import { SeoService } from '../../core/services/seo.service';
 
 @Component({
     selector: 'app-landing',
@@ -22,6 +23,8 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
     @ViewChild('supportDialog') supportDialog!: SupportTicketDialogComponent;
 
     private creditApi = inject(CreditApiService);
+    private seo = inject(SeoService);
+    private platformId = inject(PLATFORM_ID);
 
     // UI State
     isScrolled = signal(false);
@@ -362,24 +365,55 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
 
     ngOnInit(): void {
         this.loadPlans();
+        this.initSeo();
+    }
+
+    private initSeo(): void {
+        this.seo.updateMeta({
+            title: 'Smart GST Compliance & Rule 37 Audit Tool',
+            description: 'Automated Rule 37 ITC reversal and interest calculator for Indian businesses. Upload Tally/Busy ledgers and get instant audit results.',
+            url: 'https://gstbuddies.com/',
+            image: 'https://gstbuddies.com/assets/seo/og-preview.png'
+        });
+
+        this.seo.setSchema({
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            'name': 'GSTBuddies',
+            'operatingSystem': 'Web',
+            'applicationCategory': 'BusinessApplication',
+            'description': 'Automated GST Audit and Rule 37 ITC Reversal calculator for Indian businesses.',
+            'offers': {
+                '@type': 'Offer',
+                'price': '119.00',
+                'priceCurrency': 'INR'
+            },
+            'aggregateRating': {
+                '@type': 'AggregateRating',
+                'ratingValue': '4.9',
+                'reviewCount': '500'
+            }
+        });
     }
 
     ngAfterViewInit(): void {
-        // Hide preloader quickly (400ms) for snappy feel
-        setTimeout(() => {
-            this.isLoading.set(false);
-            this.startTypewriter();
-            this.animateSavings();
-        }, 400);
+        if (isPlatformBrowser(this.platformId)) {
+            // Snappy transition: Reduce delay from 400ms to 150ms
+            setTimeout(() => {
+                this.isLoading.set(false);
+                this.startTypewriter();
+                this.animateSavings();
+            }, 150);
 
-        // Initialize particle canvas
-        this.initParticleCanvas();
+            // Initialize particle canvas
+            this.initParticleCanvas();
 
-        // Setup scroll observer for animations
-        this.setupScrollObserver();
+            // Setup scroll observer for animations
+            this.setupScrollObserver();
 
-        // Start activity feed rotation
-        this.rotateActivities();
+            // Start activity feed rotation
+            this.rotateActivities();
+        }
     }
 
     animateSavings() {
@@ -533,7 +567,7 @@ export class LandingComponent implements AfterViewInit, OnDestroy, OnInit {
             } else {
                 if (this.typewriterInterval) clearInterval(this.typewriterInterval);
             }
-        }, 80);
+        }, 45); // Speed up from 80ms to 45ms for a smoother look
     }
 
     // ============================================

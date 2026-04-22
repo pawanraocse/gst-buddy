@@ -15,7 +15,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { PanelModule } from 'primeng/panel';
 import { LedgerResult, UploadResult, AuditRuleInfo, AnalysisMode, FindingSummary } from '../../shared/models/audit.model';
-import { Select } from 'primeng/select';
 import { DatePicker } from 'primeng/datepicker';
 import { MessageService } from 'primeng/api';
 
@@ -34,7 +33,6 @@ import { MessageService } from 'primeng/api';
     ComplianceViewComponent,
     CalculationHistoryComponent,
     PanelModule,
-    Select,
     DatePicker
   ],
   templateUrl: './dashboard.component.html',

@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { SeoService } from './core/services/seo.service';
+import { AnalyticsService } from './core/services/analytics.service';
 
 @Component({
   selector: 'app-root',
@@ -14,4 +16,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   `,
   styleUrls: ['./app.scss']
 })
-export class App { }
+export class App implements OnInit {
+  private seo = inject(SeoService);
+  private analytics = inject(AnalyticsService);
+
+  ngOnInit() {
+    this.seo.initGlobalListener();
+    this.analytics.initGTM();
+  }
+}

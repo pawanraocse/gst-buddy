@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /privacy
+Allow: /terms
+Allow: /refund
+Disallow: /app/
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://gstbuddies.com/sitemap.xml
