@@ -1,7 +1,5 @@
 package com.learning.backendservice.domain.gstr1;
 
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -34,10 +32,9 @@ import java.util.List;
  *       for monthly filers; 13th of month following quarter-end for QRMP</li>
  * </ul>
  *
- * <p><b>Design</b>: Stateless, no Spring annotations, no DB access.
- * All amounts: {@code BigDecimal}, scale=2, {@code HALF_UP}.
+ * <p>Design: Pure logic boundary. Extracts reporting delay in days and computes
+ * interest liability. No dependency on Spring Context or DB.
  */
-@Component
 public class LateReportingGstr1CalculatorService {
 
     private static final BigDecimal INTEREST_RATE = new BigDecimal("0.18");

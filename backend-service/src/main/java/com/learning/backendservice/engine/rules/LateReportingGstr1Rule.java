@@ -42,6 +42,10 @@ public class LateReportingGstr1Rule implements AuditRule<LateReportingGstr1Input
 
     private final LateReportingGstr1CalculatorService calculator;
 
+    public LateReportingGstr1Rule() {
+        this(new LateReportingGstr1CalculatorService());
+    }
+
     public LateReportingGstr1Rule(LateReportingGstr1CalculatorService calculator) {
         this.calculator = calculator;
     }

@@ -37,6 +37,10 @@ public class Gstr1Vs3bReconciliationRule implements AuditRule<Gstr1Vs3bInput, Gs
 
     private final Gstr1Vs3bReconciliationService reconciler;
 
+    public Gstr1Vs3bReconciliationRule() {
+        this(new Gstr1Vs3bReconciliationService());
+    }
+
     public Gstr1Vs3bReconciliationRule(Gstr1Vs3bReconciliationService reconciler) {
         this.reconciler = reconciler;
     }

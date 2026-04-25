@@ -1,7 +1,5 @@
 package com.learning.backendservice.domain.gstr3b;
 
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -13,9 +11,9 @@ import java.time.temporal.ChronoUnit;
  *
  * <p><b>Legal basis:</b> Section 50(1), CGST Act 2017.
  * <p><b>Rate:</b> 18% per annum simple interest.
- * <p><b>Base:</b> Net cash tax liability (Tax paid in cash) — Table 6.1 of GSTR-3B.
+ * <p>All operations use {@link BigDecimal} rounded to {@code HALF_UP}.
+ * State-aware due dates (20th, 22nd, 24th) are automatically resolved.
  */
-@Component
 public class Gstr3bInterestCalculatorService {
 
     private static final BigDecimal INTEREST_RATE_PA = new BigDecimal("0.18");

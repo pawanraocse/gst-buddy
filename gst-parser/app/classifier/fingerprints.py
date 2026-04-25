@@ -17,7 +17,15 @@ PDF_FINGERPRINTS = [
     ),
     DocumentFingerprint(
         doc_type="GSTR3B_PDF",
-        required_keywords=["Form GSTR-3B", "[See rule 61(5)]"]
+        required_keywords=["Form GSTR-3B"]
+    ),
+    DocumentFingerprint(
+        doc_type="GSTR2A_PDF",
+        required_keywords=["FORM GSTR-2A"]
+    ),
+    DocumentFingerprint(
+        doc_type="GSTR2B_PDF",
+        required_keywords=["FORM GSTR-2B"]
     )
 ]
 

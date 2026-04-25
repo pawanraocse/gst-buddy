@@ -44,6 +44,10 @@ public class Gstr3bLateFeeAuditRule implements AuditRule<Gstr3bLateFeeInput, Gst
 
     private final Gstr3bLateFeeCalculatorService calculator;
 
+    public Gstr3bLateFeeAuditRule() {
+        this(new Gstr3bLateFeeCalculatorService());
+    }
+
     public Gstr3bLateFeeAuditRule(Gstr3bLateFeeCalculatorService calculator) {
         this.calculator = calculator;
     }

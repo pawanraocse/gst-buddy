@@ -1,7 +1,5 @@
 package com.learning.backendservice.domain.recon;
 
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.YearMonth;
@@ -40,7 +38,6 @@ import java.util.List;
  *   <li>|deltaPercent| ≥ 20% → CRITICAL</li>
  * </ul>
  */
-@Component
 public class Gstr1Vs3bReconciliationService {
 
     private static final BigDecimal HUNDRED  = new BigDecimal("100");

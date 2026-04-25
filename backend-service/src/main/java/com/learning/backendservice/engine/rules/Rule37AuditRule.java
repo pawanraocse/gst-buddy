@@ -40,6 +40,13 @@ public class Rule37AuditRule implements AuditRule<List<MultipartFile>, List<Ledg
 
     private final LedgerFileProcessor ledgerFileProcessor;
 
+    public Rule37AuditRule() {
+        this(new com.learning.backendservice.domain.ledger.Rule37LedgerFileProcessor(
+                new com.learning.backendservice.domain.ledger.LedgerExcelParser(),
+                new com.learning.backendservice.domain.rule37.Rule37InterestCalculationService()
+        ));
+    }
+
     public Rule37AuditRule(LedgerFileProcessor ledgerFileProcessor) {
         this.ledgerFileProcessor = ledgerFileProcessor;
     }

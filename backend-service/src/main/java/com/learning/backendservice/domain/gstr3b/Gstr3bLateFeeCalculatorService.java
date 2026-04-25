@@ -1,8 +1,6 @@
 package com.learning.backendservice.domain.gstr3b;
 
 import com.learning.backendservice.domain.gstr1.ReliefWindowSnapshot;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -29,9 +27,9 @@ import java.util.Set;
  * </ul>
  *
  * <p>All arithmetic uses {@code BigDecimal} with {@code HALF_UP} rounding.
- * Cap is applied per tax head independently.
+ *     <li>Identifies relief windows to adjust due date or apply fee caps</li>
+ * </ul>
  */
-@Component
 public class Gstr3bLateFeeCalculatorService {
 
     // ── Standard rates (Section 47(2)) ───────────────────────────────────────

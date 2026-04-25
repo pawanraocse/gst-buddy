@@ -8,6 +8,8 @@ from app.classifier.classifier import classify_document
 from app.engines.json_engine import JsonEngine
 from app.engines.gstr1_pdf import Gstr1PdfExtractor
 from app.engines.gstr3b_pdf import Gstr3bPdfExtractor
+from app.engines.gstr2a_pdf import Gstr2aPdfExtractor
+from app.engines.gstr2b_pdf import Gstr2bPdfExtractor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,6 +55,12 @@ async def extract_document(
             extracted_data = engine.extract(content)
         elif doc_type == "GSTR3B_PDF":
             engine = Gstr3bPdfExtractor()
+            extracted_data = engine.extract(content)
+        elif doc_type == "GSTR2A_PDF":
+            engine = Gstr2aPdfExtractor()
+            extracted_data = engine.extract(content)
+        elif doc_type == "GSTR2B_PDF":
+            engine = Gstr2bPdfExtractor()
             extracted_data = engine.extract(content)
         else:
             return JSONResponse(

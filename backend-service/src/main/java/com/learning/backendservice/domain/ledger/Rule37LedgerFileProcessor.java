@@ -3,8 +3,6 @@ package com.learning.backendservice.domain.ledger;
 import com.learning.backendservice.domain.rule37.CalculationSummary;
 import com.learning.backendservice.domain.rule37.LedgerResult;
 import com.learning.backendservice.domain.rule37.Rule37InterestCalculator;
-import org.springframework.stereotype.Component;
-
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +10,6 @@ import java.util.List;
 /**
  * Processes one ledger file: parse → Rule 37 calculate → LedgerResult.
  */
-@Component
 public class Rule37LedgerFileProcessor implements LedgerFileProcessor {
 
     private final LedgerParser ledgerParser;

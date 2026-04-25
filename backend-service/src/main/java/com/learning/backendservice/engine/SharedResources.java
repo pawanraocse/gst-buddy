@@ -1,6 +1,8 @@
 package com.learning.backendservice.engine;
 
 import com.learning.backendservice.domain.gstr1.ReliefWindowSnapshot;
+import com.learning.backendservice.domain.gstr2a.GstinStatusSnapshot;
+import com.learning.backendservice.domain.rule86b.Rule86bConfigSnapshot;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,12 +29,16 @@ import java.util.Map;
  *                                  — a delta within this amount is classified as MATCH
  * @param reconTolerancePercent     per-tenant reconciliation tolerance as a fraction
  *                                  (default 0.0001 = 0.01%) — applied alongside amount tolerance
+ * @param rule86bConfig             Rule 86B configuration thresholds and floor
+ * @param gstinStatusMap            Supplier GSTIN status map (cache)
  */
 public record SharedResources(
         Map<String, List<ReliefWindowSnapshot>> reliefWindowsByReturnType,
         Map<String, String> stateCodeLookup,
         BigDecimal reconToleranceAmount,
-        BigDecimal reconTolerancePercent
+        BigDecimal reconTolerancePercent,
+        Rule86bConfigSnapshot rule86bConfig,
+        Map<String, GstinStatusSnapshot> gstinStatusMap
 ) {
     /** Default tolerance: ₹1.00 amount, 0.01% percent. */
     private static final BigDecimal DEFAULT_TOLERANCE_AMOUNT  = new BigDecimal("1.00");
@@ -43,7 +49,11 @@ public record SharedResources(
      * Supplies safe recon-tolerance defaults so callers need no change.
      */
     public static SharedResources empty() {
-        return new SharedResources(Map.of(), Map.of(),
-                DEFAULT_TOLERANCE_AMOUNT, DEFAULT_TOLERANCE_PERCENT);
+        return new SharedResources(
+                Map.of(), Map.of(),
+                DEFAULT_TOLERANCE_AMOUNT, DEFAULT_TOLERANCE_PERCENT,
+                Rule86bConfigSnapshot.defaults(),
+                Map.of()
+        );
     }
 }

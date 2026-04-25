@@ -8,6 +8,7 @@ import com.learning.backendservice.dto.UploadResult;
 import com.learning.backendservice.engine.AuditContext;
 import com.learning.backendservice.engine.AuditRule;
 import com.learning.backendservice.engine.AuditRuleRegistry;
+import com.learning.backendservice.engine.DocumentTypeResolver;
 import com.learning.backendservice.engine.AuditRuleResult;
 import com.learning.backendservice.entity.AuditRun;
 import com.learning.backendservice.repository.AuditFindingRepository;
@@ -54,6 +55,7 @@ class AuditRunOrchestratorTest {
     @Mock private com.learning.backendservice.engine.PipelineExecutor pipelineExecutor;
     @Mock private ContextEnricher contextEnricher;
     @Mock private com.learning.backendservice.repository.AuditRunRuleResultRepository ruleResultRepository;
+    @Mock private DocumentTypeResolver documentTypeResolver;
 
     @Mock private AuditRule<List<MultipartFile>, Object> dummyRule;
 
@@ -72,7 +74,7 @@ class AuditRunOrchestratorTest {
                 uploadProperties, creditClient, memoryGuard, new ObjectMapper(),
                 parserOrchestrator, reliefWindowRepository,
                 ruleResolutionEngine, pipelineExecutor, contextEnricher, ruleResultRepository,
-                7, 50);
+                documentTypeResolver, 7, 50);
 
                 
         TenantContext.setCurrentTenant("tenant123");

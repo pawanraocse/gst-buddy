@@ -10,7 +10,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -44,7 +43,6 @@ import java.util.stream.IntStream;
  * <p>Position-based fallback: 4 columns with no credit header →
  * [Date, Debit, Credit, Supplier].
  */
-@Component
 public class LedgerExcelParser implements LedgerParser {
 
     private static final Logger log = LoggerFactory.getLogger(LedgerExcelParser.class);

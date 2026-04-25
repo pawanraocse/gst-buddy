@@ -1,7 +1,5 @@
 package com.learning.backendservice.domain.gstr1;
 
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -19,16 +17,12 @@ import java.time.temporal.ChronoUnit;
  *   <li>Nil return: ₹10/day CGST + ₹10/day SGST. Cap: ₹250 CGST + ₹250 SGST</li>
  * </ul>
  *
- * <p><b>Due dates:</b>
- * <ul>
- *   <li>Monthly filer: 11th of the following month</li>
- *   <li>QRMP filer: 13th of the month succeeding the quarter</li>
- * </ul>
+ * Financial logic for GSTR-1 late fees per Section 47(1).
  *
- * <p>All arithmetic uses {@code BigDecimal} with {@code HALF_UP} rounding.
- * Cap is applied per tax head independently — never on the combined total.
+ * <p>Rule:
+ * Non-Nil: ₹25 CGST + ₹25 SGST per day. Max ₹5,000 each.
+ * Nil: ₹10 CGST + ₹10 SGST per day. Max ₹250 each.
  */
-@Component
 public class Gstr1LateFeeCalculatorService {
 
     // ── Standard daily rates (Section 47(1), CGST Act 2017) ──────────────────

@@ -21,6 +21,10 @@ public class Gstr9LateFeeAuditRule implements AuditRule<Gstr9LateFeeInput, Gstr9
 
     private final Gstr9LateFeeCalculatorService calculator;
 
+    public Gstr9LateFeeAuditRule() {
+        this(new Gstr9LateFeeCalculatorService());
+    }
+
     public Gstr9LateFeeAuditRule(Gstr9LateFeeCalculatorService calculator) {
         this.calculator = calculator;
     }

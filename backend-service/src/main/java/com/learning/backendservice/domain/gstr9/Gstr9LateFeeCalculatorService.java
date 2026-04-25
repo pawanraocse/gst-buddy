@@ -1,7 +1,5 @@
 package com.learning.backendservice.domain.gstr9;
 
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -9,15 +7,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 /**
- * Calculator for GSTR-9 Late fees.
- * 
- * <p><b>Legal basis:</b> Section 47(2), CGST Act 2017.
- * <p><b>Rate:</b> ₹100/day CGST + ₹100/day SGST.
- * <p><b>Cap:</b> 0.25% of turnover in State for CGST and 0.25% for SGST.
- * <p><b>Amnesty:</b> ₹10,000 cap each for FY 2017-18 to 2021-22 (Notification 07/2023-CT).
- * <p><b>Exemption:</b> Turnover <= ₹2Cr exempt from GSTR-9 (Notification 77/2020-CT).
+ * Core business logic for computing GSTR-9/9C late fees per Section 47(2), CGST Act 2017.
+ * Pure domain service without Spring dependencies.
  */
-@Component
 public class Gstr9LateFeeCalculatorService {
 
     private static final BigDecimal DAILY_CGST = new BigDecimal("100.00");

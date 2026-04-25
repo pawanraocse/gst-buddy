@@ -3,6 +3,7 @@ package com.learning.backendservice.engine.rules;
 import com.learning.backendservice.domain.gstr3b.Gstr3bInterestCalculatorService;
 import com.learning.backendservice.domain.gstr3b.Gstr3bInterestInput;
 import com.learning.backendservice.domain.gstr3b.Gstr3bInterestResult;
+import com.learning.backendservice.domain.gstr3b.Gstr3bLateFeeCalculatorService;
 import com.learning.backendservice.engine.*;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,10 @@ public class Gstr3bInterestAuditRule implements AuditRule<Gstr3bInterestInput, G
     public static final String LEGAL_BASIS = "Section 50(1) of CGST Act, 2017";
 
     private final Gstr3bInterestCalculatorService calculator;
+
+    public Gstr3bInterestAuditRule() {
+        this(new Gstr3bInterestCalculatorService(new Gstr3bLateFeeCalculatorService()));
+    }
 
     public Gstr3bInterestAuditRule(Gstr3bInterestCalculatorService calculator) {
         this.calculator = calculator;

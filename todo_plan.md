@@ -1208,7 +1208,6 @@ The pipeline execution order matters because of legal interdependencies:
 - [ ] **D18** — Extend `ContextEnricher` to batch-load cached GSTIN statuses into `SharedResources` [MODIFY]
 - [ ] **D19** — Unit tests: scorer + cache service (hit / miss / expired / portal failure fallback) — ≥ 8 tests [NEW]
 
-**D-D · SECTION_16_4_GUARD**
 - [ ] **D20** — Parser: `gst-parser/app/engines/gstr2b_pdf.py` — extract ITC rows with invoice_date + tax values [NEW]
 - [ ] **D21** — Domain: `domain/itc/Section16_4Input.java` + `Section16_4Result.java` + `ExpiredItc.java` records [NEW]
 - [ ] **D22** — Service: `domain/itc/Section16_4GuardService.java` — deadline = `30-Nov of FY following invoice_date.fy` (or annual return filing date, whichever earlier per Section 16(4)) [NEW]

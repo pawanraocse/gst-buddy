@@ -79,6 +79,7 @@ public class AuditRunOrchestrator {
     private final com.learning.backendservice.engine.PipelineExecutor pipelineExecutor;
     private final ContextEnricher contextEnricher;
     private final com.learning.backendservice.repository.AuditRunRuleResultRepository ruleResultRepository;
+    private final com.learning.backendservice.engine.DocumentTypeResolver documentTypeResolver;
 
     public AuditRunOrchestrator(
             AuditRuleRegistry ruleRegistry,
@@ -94,6 +95,7 @@ public class AuditRunOrchestrator {
             com.learning.backendservice.engine.PipelineExecutor pipelineExecutor,
             ContextEnricher contextEnricher,
             com.learning.backendservice.repository.AuditRunRuleResultRepository ruleResultRepository,
+            com.learning.backendservice.engine.DocumentTypeResolver documentTypeResolver,
             @Value("${app.retention.days:7}") int retentionDays,
             @Value("${app.retention.max-runs-per-tenant:50}") int maxRunsPerTenant) {
         this.ruleRegistry = ruleRegistry;
@@ -109,6 +111,7 @@ public class AuditRunOrchestrator {
         this.pipelineExecutor = pipelineExecutor;
         this.contextEnricher = contextEnricher;
         this.ruleResultRepository = ruleResultRepository;
+        this.documentTypeResolver = documentTypeResolver;
         this.retentionDays = retentionDays;
         this.maxRunsPerTenant = maxRunsPerTenant;
         this.uploadSemaphore = new Semaphore(uploadProperties.getMaxConcurrentUploads());
@@ -165,9 +168,10 @@ public class AuditRunOrchestrator {
             com.learning.backendservice.engine.AuditUserParams userParams,
             String tenantId) {
 
-        // ── 1. Build initial context (documents populated by DocumentTypeResolver in Phase B) ──
-        // For Phase A: LEDGER_ANALYSIS wraps raw files as PURCHASE_LEDGER docs.
-        List<com.learning.backendservice.engine.AuditDocument> documents = buildDocuments(files, mode);
+        // ── 1. Build initial context (documents populated by DocumentTypeResolver) ──
+        List<com.learning.backendservice.engine.AuditDocument> documents = files.stream()
+                .map(f -> documentTypeResolver.resolve(f, mode))
+                .toList();
         com.learning.backendservice.engine.AuditContext ctx =
                 com.learning.backendservice.engine.AuditContext.forAnalysis(
                         tenantId, userId, asOnDate, mode, documents,
@@ -287,24 +291,7 @@ public class AuditRunOrchestrator {
                 .build();
     }
 
-    /**
-     * Phase A bridge: wrap raw MultipartFiles in AuditDocument records.
-     * Phase B will replace this with a full DocumentTypeResolver call.
-     */
-    private List<com.learning.backendservice.engine.AuditDocument> buildDocuments(
-            List<MultipartFile> files,
-            com.learning.backendservice.engine.AnalysisMode mode) {
-        return files.stream()
-                .map(f -> new com.learning.backendservice.engine.AuditDocument(
-                        mode == com.learning.backendservice.engine.AnalysisMode.LEDGER_ANALYSIS
-                                ? com.learning.backendservice.engine.DocumentType.PURCHASE_LEDGER
-                                : com.learning.backendservice.engine.DocumentType.GSTR_1,
-                        f.getOriginalFilename(),
-                        null,
-                        java.util.Map.of("rawFile", f),
-                        null, null))
-                .toList();
-    }
+    // Removed buildDocuments bridge since DocumentTypeResolver is now active
 
     /**
      * Process a multi-file upload for the specified audit rule.
