@@ -1223,6 +1223,60 @@ The pipeline execution order matters because of legal interdependencies:
 
 ---
 
+### Phase E: Deep Reconciliation Rules
+
+> Scope: Three cross-document reconciliation rules completing the full GSTR Rules matrix from Section 2.3. These are the heaviest rules — each requires two or three parsed documents matched by `taxPeriod` and tolerance-aware delta comparison. Depends on parser engines from Phase C + D being complete.
+
+#### E.HLD — Rule Matrix
+
+| ID | Rule | Required Docs | Legal Basis | Order | Severity Driver |
+|---|---|---|---|---|---|
+| E-A | `RECON_1_VS_3B_VS_9` | `GSTR_1` + `GSTR_3B` + `GSTR_9` | Section 37 + Section 39 + Section 44, CGST Act 2017 | 50 | 3-way liability delta across annual + monthly returns |
+| E-B | `ITC_RECO_2B` | `GSTR_2B` + `PURCHASE_REGISTER` | Section 16(2)(aa) + Rule 36(4), CGST Act 2017 | 50 | ITC claimed vs ITC eligible per auto-drafted 2B |
+| E-C | `RCM_RECO_3B` | `GSTR_3B` + `PURCHASE_REGISTER` | Section 9(3)/9(4), CGST Act 2017 + Notification 13/2017-CT(Rate) | 50 | RCM liability declared in 3B vs RCM invoices in books |
+
+**Design invariants:**
+- All rules follow the `AuditRule<I, O>` + `InputResolver<I>` + `SharedResources` contract — zero pipeline changes.
+- `RECON_1_VS_3B_VS_9` extends the Phase C `RECON_1_VS_3B` logic by adding GSTR-9 Table 4/5 annual figures as a third comparison dimension.
+- `ITC_RECO_2B` matches `PURCHASE_REGISTER` invoices against GSTR-2B supplier-wise ITC using fuzzy matching (GSTIN + invoice_no + amount within tolerance).
+- `RCM_RECO_3B` compares RCM tax declared in GSTR-3B Table 3.1(d) vs RCM invoices in Purchase Register marked as reverse charge.
+- All reconciliation rules reuse `recon_tolerance_config` from Phase C (Flyway `V6__recon_config.sql`).
+- PRD references: `resources/RULE ENGINE/1 vs 3B vs 9/`, `resources/RULE ENGINE/ITC RECO/`, `resources/RULE ENGINE/RCM reco in 3B/`.
+
+#### E.LLD — File-Level Task List
+
+**E-A · RECON_1_VS_3B_VS_9**
+- [ ] **E1** — Parser: extend `gst-parser/app/engines/` — `gstr9_pdf.py` engine to extract Table 4 (outward supplies), Table 5 (exempted/nil), Table 9 (tax payable/paid) as structured JSON [NEW]
+- [ ] **E2** — Parser tests: fixtures + unit tests for GSTR-9 table extraction [NEW]
+- [ ] **E3** — Domain: `domain/recon/Gstr1Vs3bVs9Input.java` + `Gstr1Vs3bVs9Result.java` + `ThreeWayReconDelta.java` records [NEW]
+- [ ] **E4** — Service: `domain/recon/Gstr1Vs3bVs9ReconciliationService.java` — 3-way delta computation: GSTR-1 (monthly aggregate) vs GSTR-3B (monthly aggregate) vs GSTR-9 (annual); delta per tax head (CGST/SGST/IGST/CESS); severity by delta % using tolerance from `SharedResources` [NEW]
+- [ ] **E5** — Rule + Resolver: `engine/rules/Gstr1Vs3bVs9ReconciliationRule.java` (`RECON_1_VS_3B_VS_9`, order=50, requires `{GSTR_1, GSTR_3B, GSTR_9}`) + `engine/resolvers/Gstr1Vs3bVs9InputResolver.java` — aggregates all GSTR-1 + GSTR-3B docs by `taxPeriod` for the FY, pairs with GSTR-9 annual totals [NEW]
+- [ ] **E6** — Unit tests: reconciliation service (all match / monthly under-report compensated in annual / systematic under-report / over-report / tolerance boundary / multi-rate breakdown) — ≥ 6 tests [NEW]
+
+**E-B · ITC_RECO_2B**
+- [ ] **E7** — Parser: extend `gst-parser/app/engines/gstr2b_pdf.py` (from Phase D-D) — additionally extract supplier-wise ITC rows: `supplier_gstin`, `invoice_no`, `invoice_date`, `taxable_value`, `cgst`, `sgst`, `igst`, `cess`, `itc_available` flag [MODIFY]
+- [ ] **E8** — Parser: `gst-parser/app/engines/purchase_register_excel.py` — new Excel engine for purchase register: column alias mapping (Tally/Busy/portal header variations), extract `supplier_gstin`, `invoice_no`, `invoice_date`, `taxable_value`, `cgst`, `sgst`, `igst`, `cess`, `rcm_flag` [NEW]
+- [ ] **E9** — Parser tests: fixtures + unit tests for purchase register Excel parsing (Tally format, Busy format, portal format) [NEW]
+- [ ] **E10** — Domain: `domain/itc/ItcRecoInput.java` + `ItcRecoResult.java` + `ItcMismatch.java` records (mismatch types: MISSING_IN_2B, MISSING_IN_BOOKS, AMOUNT_MISMATCH, GSTIN_MISMATCH) [NEW]
+- [ ] **E11** — Service: `domain/itc/ItcReconciliationService.java` — fuzzy match on (`supplier_gstin` exact + `invoice_no` normalised + `taxable_value` within tolerance ₹); classify mismatches; compute ITC at risk per Section 16(2)(aa) [NEW]
+- [ ] **E12** — Rule + Resolver: `engine/rules/ItcReco2bRule.java` (`ITC_RECO_2B`, order=50, requires `{GSTR_2B, PURCHASE_REGISTER}`) + `engine/resolvers/ItcReco2bInputResolver.java` [NEW]
+- [ ] **E13** — Unit tests: reconciliation service (full match / missing in 2B / missing in books / amount within tolerance / amount outside tolerance / duplicate invoice / GSTIN typo) — ≥ 7 tests [NEW]
+
+**E-C · RCM_RECO_3B**
+- [ ] **E14** — Parser: extend `gstr3b_pdf.py` — ensure Table 3.1(d) (inward supplies attracting RCM) is emitted as `table_3_1_d` with `taxable_value`, `cgst`, `sgst`, `igst`, `cess` [MODIFY]
+- [ ] **E15** — Domain: `domain/rcm/RcmRecoInput.java` + `RcmRecoResult.java` + `RcmMismatch.java` records (mismatch types: UNDECLARED_RCM, OVER_DECLARED_RCM, AMOUNT_MISMATCH) [NEW]
+- [ ] **E16** — Service: `domain/rcm/RcmReconciliationService.java` — compare GSTR-3B Table 3.1(d) aggregate vs purchase register RCM-flagged invoices aggregate; per-supplier drill-down; ITC-at-risk = undeclared RCM amount (eligible ITC missed + potential demand under Section 9(3)/9(4)) [NEW]
+- [ ] **E17** — Rule + Resolver: `engine/rules/RcmReco3bRule.java` (`RCM_RECO_3B`, order=50, requires `{GSTR_3B, PURCHASE_REGISTER}`) + `engine/resolvers/RcmReco3bInputResolver.java` [NEW]
+- [ ] **E18** — Unit tests: reconciliation service (exact match / under-declared RCM / over-declared / no RCM invoices in register / mixed RCM + forward charge / tolerance edge) — ≥ 6 tests [NEW]
+
+**Shared E-phase tasks**
+- [ ] **E19** — Frontend: reconciliation comparison views in `comprehensive-report` — side-by-side delta tables for 3-way recon, ITC mismatch list with severity badges, RCM gap summary [MODIFY]
+- [ ] **E20** — Frontend: DTO types — add `threeWayReconFindings`, `itcMismatches`, `rcmMismatches` to `UploadResult` type [MODIFY]
+- [ ] **E21** — Cross-check each rule's LLD against PRDs: `resources/RULE ENGINE/1 vs 3B vs 9/PRD for SD.docx`, `resources/RULE ENGINE/ITC RECO/`, `resources/RULE ENGINE/RCM reco in 3B/` before PR merge [VERIFY]
+- [ ] **E22** — E2E smoke: upload GSTR-1 + GSTR-3B + GSTR-9 → assert `RECON_1_VS_3B_VS_9` finding with delta breakdown; upload GSTR-2B + Purchase Register → assert `ITC_RECO_2B` mismatches; upload GSTR-3B + Purchase Register (with RCM invoices) → assert `RCM_RECO_3B` gap finding [NEW]
+
+---
+
 ## 5. Backward Compatibility
 
 | Component | Strategy |

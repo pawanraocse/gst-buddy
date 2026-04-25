@@ -2,6 +2,7 @@ package com.learning.backendservice.engine;
 
 import com.learning.backendservice.domain.gstr1.ReliefWindowSnapshot;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -22,13 +23,27 @@ import java.util.Map;
  *
  * @param reliefWindowsByReturnType pre-loaded relief windows keyed by return-type + filer-type
  * @param stateCodeLookup           state code → state name lookup (future use)
+ * @param reconToleranceAmount      per-tenant reconciliation tolerance in ₹ (default ₹1.00)
+ *                                  — a delta within this amount is classified as MATCH
+ * @param reconTolerancePercent     per-tenant reconciliation tolerance as a fraction
+ *                                  (default 0.0001 = 0.01%) — applied alongside amount tolerance
  */
 public record SharedResources(
         Map<String, List<ReliefWindowSnapshot>> reliefWindowsByReturnType,
-        Map<String, String> stateCodeLookup
+        Map<String, String> stateCodeLookup,
+        BigDecimal reconToleranceAmount,
+        BigDecimal reconTolerancePercent
 ) {
-    /** Empty resources — used before enrichment and for backward-compat {@code of()} factory. */
+    /** Default tolerance: ₹1.00 amount, 0.01% percent. */
+    private static final BigDecimal DEFAULT_TOLERANCE_AMOUNT  = new BigDecimal("1.00");
+    private static final BigDecimal DEFAULT_TOLERANCE_PERCENT = new BigDecimal("0.0001");
+
+    /**
+     * Empty resources — used before enrichment and for backward-compat {@code of()} factory.
+     * Supplies safe recon-tolerance defaults so callers need no change.
+     */
     public static SharedResources empty() {
-        return new SharedResources(Map.of(), Map.of());
+        return new SharedResources(Map.of(), Map.of(),
+                DEFAULT_TOLERANCE_AMOUNT, DEFAULT_TOLERANCE_PERCENT);
     }
 }

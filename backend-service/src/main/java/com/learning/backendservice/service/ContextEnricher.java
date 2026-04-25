@@ -5,13 +5,16 @@ import com.learning.backendservice.engine.AnalysisMode;
 import com.learning.backendservice.engine.AuditContext;
 import com.learning.backendservice.engine.DocumentType;
 import com.learning.backendservice.engine.SharedResources;
+import com.learning.backendservice.entity.ReconToleranceConfig;
 import com.learning.backendservice.repository.LateFeeReliefWindowRepository;
+import com.learning.backendservice.repository.ReconToleranceConfigRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +36,11 @@ public class ContextEnricher {
 
     private static final Logger log = LoggerFactory.getLogger(ContextEnricher.class);
 
-    private final LateFeeReliefWindowRepository reliefWindowRepository;
+    private static final BigDecimal DEFAULT_TOLERANCE_AMOUNT  = new BigDecimal("1.00");
+    private static final BigDecimal DEFAULT_TOLERANCE_PERCENT = new BigDecimal("0.0001");
+
+    private final LateFeeReliefWindowRepository    reliefWindowRepository;
+    private final ReconToleranceConfigRepository   reconToleranceRepository;
 
     /**
      * Load all shared DB resources needed for the given context.
@@ -57,10 +64,30 @@ public class ContextEnricher {
             loadReliefWindows(reliefWindows, "GSTR9", "GSTR_9");
         }
 
-        log.debug("ContextEnricher loaded {} relief window buckets for tenant={}",
-                reliefWindows.size(), context.tenantId());
+        // Load per-tenant recon tolerance; fall back to DEFAULT row if not configured.
+        BigDecimal toleranceAmount  = DEFAULT_TOLERANCE_AMOUNT;
+        BigDecimal tolerancePercent = DEFAULT_TOLERANCE_PERCENT;
 
-        return new SharedResources(Collections.unmodifiableMap(reliefWindows), Map.of());
+        ReconToleranceConfig toleranceCfg = reconToleranceRepository
+                .findByTenantId(context.tenantId())
+                .or(() -> reconToleranceRepository.findByTenantId("DEFAULT"))
+                .orElse(null);
+
+        if (toleranceCfg != null) {
+            toleranceAmount  = toleranceCfg.getToleranceAmount();
+            tolerancePercent = toleranceCfg.getTolerancePercent();
+        }
+
+        log.debug("ContextEnricher: tenant={} reliefBuckets={} reconTolerance={}₹/{}%",
+                context.tenantId(), reliefWindows.size(),
+                toleranceAmount, tolerancePercent.multiply(new BigDecimal("100")));
+
+        return new SharedResources(
+                Collections.unmodifiableMap(reliefWindows),
+                Map.of(),
+                toleranceAmount,
+                tolerancePercent
+        );
     }
 
     private void loadReliefWindows(
@@ -83,3 +110,4 @@ public class ContextEnricher {
         }
     }
 }
+
