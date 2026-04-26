@@ -37,13 +37,7 @@ public class SupplierRiskScoringService {
                     highRiskCount++;
                     highRiskExposure = highRiskExposure.add(sd.totalTax());
                 }
-                case "NON_FILER" -> {
-                    riskScore = 80;
-                    riskCategory = "HIGH";
-                    highRiskCount++;
-                    highRiskExposure = highRiskExposure.add(sd.totalTax());
-                }
-                case "SUSPENDED" -> {
+                case "NON_FILER", "SUSPENDED" -> {
                     riskScore = 80;
                     riskCategory = "HIGH";
                     highRiskCount++;

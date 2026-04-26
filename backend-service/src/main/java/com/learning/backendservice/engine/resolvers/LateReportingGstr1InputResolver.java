@@ -54,7 +54,6 @@ public class LateReportingGstr1InputResolver implements InputResolver<LateReport
 
     // ── Invoice extraction ───────────────────────────────────────────────────
 
-    @SuppressWarnings("unchecked")
     private List<InvoiceRow> extractInvoices(AuditDocument doc) {
         Object invoicesObj = doc.extractedFields().get("invoices");
         if (!(invoicesObj instanceof List<?> rawList)) {
@@ -88,7 +87,7 @@ public class LateReportingGstr1InputResolver implements InputResolver<LateReport
 
             return new InvoiceRow(invoiceNo, invoiceDate, pos,
                     taxable, cgst, sgst, igst, cess, rate);
-        } catch (Exception e) {
+        } catch (java.time.format.DateTimeParseException | NumberFormatException e) {
             // Skip malformed rows — logged at WARNING by PipelineExecutor
             return null;
         }

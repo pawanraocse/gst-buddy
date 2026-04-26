@@ -85,7 +85,7 @@ public class Rule86bAuditRule implements AuditRule<Rule86bInput, Rule86bResult> 
             findings.add(AuditFinding.info(
                     RULE_ID,
                     getLegalBasis(),
-                    "Rule 86B is not applicable (taxable outward supplies <= ₹50 lakh, zero liability, or pre-2021 period)."
+                    "Rule 86B is not applicable (taxable outward supplies <= ₹50 lakh, zero liability, or period before 01-Jan-2021 (Notification 94/2020-CT effective date))."
             ));
         } else if (result.hasExemption()) {
             findings.add(AuditFinding.info(

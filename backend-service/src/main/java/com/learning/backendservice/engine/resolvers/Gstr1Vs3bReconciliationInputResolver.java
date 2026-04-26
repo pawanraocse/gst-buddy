@@ -16,8 +16,13 @@ import java.util.Map;
  * <p>Recon tolerance is read from {@code context.sharedResources()} — pre-loaded by
  * {@code ContextEnricher} from the {@code recon_tolerance_config} table.
  */
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 public class Gstr1Vs3bReconciliationInputResolver implements InputResolver<Gstr1Vs3bInput> {
+
+    private static final Logger log = LoggerFactory.getLogger(Gstr1Vs3bReconciliationInputResolver.class);
 
     @Override
     public String getRuleId() {
@@ -70,7 +75,6 @@ public class Gstr1Vs3bReconciliationInputResolver implements InputResolver<Gstr1
 
     // ── GSTR-1 liability_summary extraction ─────────────────────────────────
 
-    @SuppressWarnings("unchecked")
     private LiabilitySummary extractGstr1Liability(AuditDocument doc) {
         Map<String, Object> fields = doc.extractedFields();
         Object summaryObj = fields.get("liability_summary");
@@ -92,7 +96,6 @@ public class Gstr1Vs3bReconciliationInputResolver implements InputResolver<Gstr1
 
     // ── GSTR-3B table_6_1 extraction ────────────────────────────────────────
 
-    @SuppressWarnings("unchecked")
     private TaxPaymentSummary extractGstr3bTaxPayable(AuditDocument doc) {
         Map<String, Object> fields = doc.extractedFields();
         Object table61Obj = fields.get("table_6_1");
@@ -124,6 +127,7 @@ public class Gstr1Vs3bReconciliationInputResolver implements InputResolver<Gstr1
         try {
             return new BigDecimal(value.toString()).setScale(2, java.math.RoundingMode.HALF_UP);
         } catch (NumberFormatException e) {
+            log.warn("Failed to parse number '{}' in Gstr1Vs3bReconciliationInputResolver, defaulting to ZERO", value);
             return BigDecimal.ZERO;
         }
     }

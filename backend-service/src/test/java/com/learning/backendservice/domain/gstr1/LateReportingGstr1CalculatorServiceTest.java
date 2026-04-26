@@ -138,6 +138,29 @@ class LateReportingGstr1CalculatorServiceTest {
         assertThat(result.totalBelated()).isZero();
     }
 
+    // ── Test 7: QRMP filer — cross quarter belated ────────────────────────────
+
+    @Test
+    @DisplayName("QRMP filer: invoice from Oct-2024 declared in Q4 (Jan-Mar 2025) → cross quarter belated")
+    void qrmpFiler_crossQuarterInvoice_belated() {
+        // Oct-2024 invoice (Oct-Dec quarter) → due 13-Jan-2025
+        // Declared in Mar-2025 (Jan-Mar quarter) → due 13-Apr-2025
+        // Delay: 13-Jan-2025 to 13-Apr-2025 = 90 days
+        // Tax: ₹1800. Interest: 1800 × 0.18 × 90 / 365 = 79.89
+        InvoiceRow inv = invoice("INV-201", LocalDate.of(2024, 10, 15),
+                bd("10000"), bd("900"), bd("900"), bd("0"), bd("0"), bd("18"));
+
+        LateReportingGstr1Input input = input(YearMonth.of(2025, 3), true, List.of(inv));
+        LateReportingGstr1Result result = service.calculate(input);
+
+        assertThat(result.totalBelated()).isEqualTo(1);
+        BelatedInvoice bi = result.belatedInvoices().get(0);
+        assertThat(bi.delayDays()).isEqualTo(90);
+        assertThat(bi.taxAmount()).isEqualByComparingTo(bd("1800.00"));
+        assertThat(bi.interestAmount()).isEqualByComparingTo(bd("79.89"));
+        assertThat(result.totalInterest()).isEqualByComparingTo(bd("79.89"));
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private InvoiceRow invoice(String no, LocalDate date, BigDecimal taxable,

@@ -55,12 +55,12 @@ class Section16_4CalculationServiceTest {
     }
 
     @Test
-    @DisplayName("should enforce 30-Sep deadline for pre-2024 FYs")
+    @DisplayName("should enforce 20-Oct deadline for pre-2024 FYs")
     void testPre2024Deadline() {
-        // FY 2022-23 invoice -> deadline 30-Sep-2023
+        // FY 2022-23 invoice -> deadline 20-Oct-2023
         Section16_4Input input = new Section16_4Input(
                 "GSTIN1",
-                LocalDate.of(2023, 10, 1), // Claimed 1 day late
+                LocalDate.of(2023, 10, 21), // Claimed 1 day late
                 null,
                 null,
                 List.of(
@@ -70,7 +70,7 @@ class Section16_4CalculationServiceTest {
 
         Section16_4Result result = service.evaluate(input);
         assertThat(result.expiredRows()).hasSize(1);
-        assertThat(result.expiredRows().get(0).deadline()).isEqualTo(LocalDate.of(2023, 9, 30));
+        assertThat(result.expiredRows().get(0).deadline()).isEqualTo(LocalDate.of(2023, 10, 20));
     }
 
     @Test
@@ -126,7 +126,7 @@ class Section16_4CalculationServiceTest {
 
         Section16_4Result result = service.evaluate(input);
         assertThat(result.expiredRows()).hasSize(1);
-        assertThat(result.expiredRows().get(0).deadline()).isEqualTo(LocalDate.of(2024, 9, 30));
+        assertThat(result.expiredRows().get(0).deadline()).isEqualTo(LocalDate.of(2024, 10, 20));
     }
 
     @Test

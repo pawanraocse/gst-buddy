@@ -143,13 +143,13 @@ public class LateReportingGstr1CalculatorService {
     private YearMonth quarterEndOf(YearMonth period) {
         int month = period.getMonthValue();
         // Quarter boundaries (GST FY starts April)
-        int quarterEndMonth = switch ((month - 1) / 3) {
-            case 0 -> 6;   // Apr-Jun
-            case 1 -> 9;   // Jul-Sep
-            case 2 -> 12;  // Oct-Dec
-            default -> 3;  // Jan-Mar
+        int quarterEndMonth = switch (month) {
+            case 1, 2, 3    -> 3;  // Jan-Mar
+            case 4, 5, 6    -> 6;  // Apr-Jun
+            case 7, 8, 9    -> 9;  // Jul-Sep
+            case 10, 11, 12 -> 12; // Oct-Dec
+            default -> throw new IllegalArgumentException("Invalid month: " + month);
         };
-        int year = (quarterEndMonth < month) ? period.getYear() + 1 : period.getYear();
-        return YearMonth.of(year, quarterEndMonth);
+        return YearMonth.of(period.getYear(), quarterEndMonth);
     }
 }

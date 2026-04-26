@@ -5,6 +5,18 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Evaluates ITC eligibility based on Section 16(4) of the CGST Act, 2017.
+ * 
+ * <p>Validates if the ITC claimed is within the permitted statutory deadlines:
+ * <ul>
+ *   <li><b>FY 2024-25 onwards:</b> 30th November of the succeeding financial year.</li>
+ *   <li><b>FY 2017-18 to 2020-21:</b> Amnesty extended the deadline up to 30th November 2021 (Section 16(5)).</li>
+ *   <li><b>FY 2021-22 to 2023-24:</b> 20th October of the succeeding financial year (due date for filing September GSTR-3B).</li>
+ * </ul>
+ * 
+ * <p>The deadline is the statutory deadline or the date of furnishing the annual return (GSTR-9), whichever is earlier.
+ */
 public class Section16_4CalculationService {
 
     public Section16_4Result evaluate(Section16_4Input input) {
@@ -50,15 +62,14 @@ public class Section16_4CalculationService {
         // Section 16(4) deadline tiers (as amended by Finance Acts 2022 and 2024):
         //   FY ≥ 2024       → 30-Nov of FY+1  (Finance Act 2024)
         //   FY 2017–2020    → 30-Nov-2021      (Section 16(5) retroactive amnesty)
-        //   FY 2021–2023    → 30-Sep of FY+1   (pre-budget 2024; actual deadline is GSTR-3B due date for Sep,
-        //                                        but 30-Sep is used as a slightly generous proxy)
+        //   FY 2021–2023    → 20-Oct of FY+1   (due date for filing September GSTR-3B)
         final LocalDate statutoryDeadline;
         if (fy >= 2024) {
             statutoryDeadline = LocalDate.of(fy + 1, 11, 30);
         } else if (fy >= 2017 && fy <= 2020) {
             statutoryDeadline = LocalDate.of(2021, 11, 30);
         } else {
-            statutoryDeadline = LocalDate.of(fy + 1, 9, 30);
+            statutoryDeadline = LocalDate.of(fy + 1, 10, 20);
         }
 
         // Section 16(4): "whichever is earlier" between statutory deadline and annual return date

@@ -47,6 +47,13 @@ public record InvoiceRow(
      * This is the base for Section 50(1) interest computation per Notification 63/2020-CT.
      */
     public BigDecimal totalTax() {
-        return cgst.add(sgst).add(igst).add(cess);
+        return zeroIfNull(cgst)
+                .add(zeroIfNull(sgst))
+                .add(zeroIfNull(igst))
+                .add(zeroIfNull(cess));
+    }
+
+    private BigDecimal zeroIfNull(BigDecimal value) {
+        return value == null ? BigDecimal.ZERO : value;
     }
 }

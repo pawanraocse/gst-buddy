@@ -7,6 +7,9 @@ import java.util.List;
 /**
  * Core domain service for validating Place of Supply vs Tax Split in GSTR-1.
  * Pure business logic — no Spring annotations, no DB access.
+ *
+ * <p><b>Legal basis:</b> Sections 10-13, IGST Act 2017 & Section 7-8, CGST Act 2017.
+ * Validates that intra-state invoices charge CGST/SGST and inter-state invoices charge IGST.
  */
 public class PosValidationService {
 

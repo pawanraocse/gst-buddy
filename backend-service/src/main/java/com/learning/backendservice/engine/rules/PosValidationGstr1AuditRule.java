@@ -114,7 +114,7 @@ public class PosValidationGstr1AuditRule implements AuditRule<PosValidationInput
                         compliancePeriod,
                         impactAmount,
                         desc,
-                        "Amend invoice in next GSTR-1 to correct the tax split.",
+                        "Amend invoice in next GSTR-1 to correct the tax split. Per Section 34, CGST Act 2017. Amendment deadline: 30-Nov of FY+1 or annual return, whichever earlier.",
                         false
                 ));
             }

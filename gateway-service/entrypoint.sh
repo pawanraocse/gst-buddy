@@ -47,10 +47,17 @@ echo ""
 echo "Fetching Cognito configuration from SSM Parameter Store..."
 echo "-----------------------------------------------------------"
 
-export COGNITO_USER_POOL_ID=$(fetch_ssm_param "user_pool_id")
-export COGNITO_SPA_CLIENT_ID=$(fetch_ssm_param "spa_client_id")
-export COGNITO_ISSUER_URI=$(fetch_ssm_param "issuer_uri")
-export COGNITO_JWKS_URI=$(fetch_ssm_param "jwks_uri")
+COGNITO_USER_POOL_ID=$(fetch_ssm_param "user_pool_id")
+export COGNITO_USER_POOL_ID
+
+COGNITO_SPA_CLIENT_ID=$(fetch_ssm_param "spa_client_id")
+export COGNITO_SPA_CLIENT_ID
+
+COGNITO_ISSUER_URI=$(fetch_ssm_param "issuer_uri" || echo "")
+export COGNITO_ISSUER_URI
+
+COGNITO_JWKS_URI=$(fetch_ssm_param "jwks_uri")
+export COGNITO_JWKS_URI
 
 echo ""
 echo "✅ Configuration loaded successfully!"

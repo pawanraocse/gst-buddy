@@ -83,9 +83,9 @@ public class Section16_4AuditRule implements AuditRule<Section16_4Input, Section
                     getLegalBasis(),
                     compliancePeriod,
                     result.totalExpiredItc(),
-                    String.format("%d invoices claiming ITC of ₹%s are past the Section 16(4) deadline.",
+                    String.format("%d invoices claiming ITC of ₹%,.2f are past the Section 16(4) deadline.",
                             result.expiredRows().size(), result.totalExpiredItc()),
-                    "Reverse the expired ITC in Table 4B(2) of GSTR-3B.",
+                    "Reverse the expired ITC in Table 4B(2) of GSTR-3B. Per Section 16(4), CGST Act 2017, as amended by Finance Act 2024.",
                     false
             ));
         } else {

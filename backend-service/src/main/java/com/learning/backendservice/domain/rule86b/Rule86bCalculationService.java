@@ -11,6 +11,8 @@ import java.util.Collections;
  */
 public class Rule86bCalculationService {
 
+    private static final BigDecimal HUNDRED = new BigDecimal("100");
+
     public Rule86bResult evaluate(Rule86bInput input) {
         if (input.period().isBefore(input.config().effectiveFrom())) {
             return notApplicable();
@@ -31,7 +33,7 @@ public class Rule86bCalculationService {
                 .setScale(2, RoundingMode.HALF_UP);
         
         BigDecimal actualCashPercent = outputPaidInCash.divide(outputTaxPayable, 4, RoundingMode.HALF_UP)
-                .multiply(new BigDecimal("100"));
+                .multiply(HUNDRED);
 
         boolean isBreached = outputPaidInCash.compareTo(requiredCashPayment) < 0;
         BigDecimal cashShortfall = isBreached ? requiredCashPayment.subtract(outputPaidInCash) : BigDecimal.ZERO;
@@ -42,9 +44,6 @@ public class Rule86bCalculationService {
             }
             if (input.hasExportInvoices()) {
                 return exempt(outputTaxPayable, outputPaidInCash, requiredCashPayment, actualCashPercent, "Zero-rated supplies / Export with refund claim");
-            }
-            if (input.paidInCash().compareTo(requiredCashPayment) >= 0) {
-                // Technically covered by actualCashPercent check, but strictly checking > 1% cumulative
             }
         }
 
@@ -72,7 +71,18 @@ public class Rule86bCalculationService {
     }
 
     private Rule86bResult notApplicable() {
-        return new Rule86bResult(false, false, false, null, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Collections.emptyList());
+        return new Rule86bResult(
+                false, 
+                false, 
+                false, 
+                null, 
+                BigDecimal.ZERO, 
+                BigDecimal.ZERO, 
+                BigDecimal.ZERO, 
+                BigDecimal.ZERO, 
+                BigDecimal.ZERO, 
+                Collections.emptyList()
+        );
     }
 
     private Rule86bResult exempt(BigDecimal taxPayable, BigDecimal paidInCash, BigDecimal required, BigDecimal percent, String reason) {

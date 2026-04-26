@@ -83,7 +83,7 @@ public class SupplierRiskAuditRule implements AuditRule<SupplierRiskInput, Suppl
                     getLegalBasis(),
                     compliancePeriod,
                     result.highRiskExposure(),
-                    String.format("%d suppliers are CANCELLED. High risk ITC exposure is ₹%s.",
+                    String.format("%d high-risk suppliers (cancelled/non-filing/suspended). High risk ITC exposure is ₹%,.2f.",
                             result.highRiskCount(), result.highRiskExposure()),
                     "Withhold payment to these suppliers and verify ITC eligibility.",
                     false
@@ -92,7 +92,7 @@ public class SupplierRiskAuditRule implements AuditRule<SupplierRiskInput, Suppl
             findings.add(AuditFinding.info(
                     RULE_ID,
                     getLegalBasis(),
-                    "No CANCELLED suppliers detected. Risk profile is normal."
+                    "No high-risk suppliers detected. Risk profile is normal."
             ));
         }
 
