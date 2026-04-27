@@ -10,6 +10,7 @@ from app.engines.gstr1_pdf import Gstr1PdfExtractor
 from app.engines.gstr3b_pdf import Gstr3bPdfExtractor
 from app.engines.gstr2a_pdf import Gstr2aPdfExtractor
 from app.engines.gstr2b_pdf import Gstr2bPdfExtractor
+from app.engines.gstr9_pdf import Gstr9PdfExtractor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -61,6 +62,13 @@ async def extract_document(
             extracted_data = engine.extract(content)
         elif doc_type == "GSTR2B_PDF":
             engine = Gstr2bPdfExtractor()
+            extracted_data = engine.extract(content)
+        elif doc_type == "GSTR9_PDF":
+            engine = Gstr9PdfExtractor()
+            extracted_data = engine.extract(content)
+        elif doc_type == "PURCHASE_REGISTER":
+            from app.engines.purchase_register_excel import PurchaseRegisterExtractor
+            engine = PurchaseRegisterExtractor()
             extracted_data = engine.extract(content)
         else:
             return JSONResponse(

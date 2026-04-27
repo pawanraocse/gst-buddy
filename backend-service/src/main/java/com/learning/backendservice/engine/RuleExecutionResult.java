@@ -23,13 +23,14 @@ public record RuleExecutionResult(
         List<AuditFinding> findings,
         BigDecimal impact,
         int durationMs,
-        String errorMessage
+        String errorMessage,
+        Object ruleSpecificData
 ) {
     /** Convenience factory for a failed rule result. */
     public static RuleExecutionResult failed(
             String ruleId, String name, String error, int durationMs) {
         return new RuleExecutionResult(
                 ruleId, name, null, "FAILED",
-                List.of(), BigDecimal.ZERO, durationMs, error);
+                List.of(), BigDecimal.ZERO, durationMs, error, null);
     }
 }

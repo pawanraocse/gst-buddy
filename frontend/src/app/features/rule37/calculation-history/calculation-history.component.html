@@ -21,10 +21,23 @@
     <!-- Viewing a run detail -->
     @if (viewingRun()) {
     <div class="run-detail">
-        <app-compliance-view [results]="normalizeResults(viewingRun()!.resultData?.ledgerResults || [])" [runId]="viewingRun()!.runId"
-            [filename]="viewingRun()!.inputMetadata?.filename || 'Calculation #' + viewingRun()!.runId" [date]="viewingRun()!.createdAt"
-            [showExportAll]="true" [showBack]="true" (back)="viewingRun.set(null)"
-            (exportAll)="downloadExport(viewingRun()!.runId, viewingRun()!.inputMetadata?.filename || 'export', $event)" />
+        <div class="flex justify-content-start mb-3">
+            <button pButton label="Back to History" icon="pi pi-arrow-left" class="p-button-text" (click)="viewingRun.set(null)"></button>
+        </div>
+
+        @if (viewingRun()!.ruleId === 'RULE_37_ITC_REVERSAL' || viewingRun()!.resultData?.ledgerResults) {
+            <app-compliance-view [results]="normalizeResults(viewingRun()!.resultData?.ledgerResults || [])" [runId]="viewingRun()!.runId"
+                [filename]="viewingRun()!.inputMetadata?.filename || 'Calculation #' + viewingRun()!.runId" [date]="viewingRun()!.createdAt"
+                [showExportAll]="true" [showBack]="false"
+                (exportAll)="downloadExport(viewingRun()!.runId, viewingRun()!.inputMetadata?.filename || 'export', $event)" />
+        } @else {
+            <app-comprehensive-report 
+                [findings]="viewingRun()!.resultData?.findings || []"
+                [threeWayReconFindings]="viewingRun()!.resultData?.threeWayReconFindings"
+                [itcMismatches]="viewingRun()!.resultData?.itcMismatches"
+                [rcmMismatches]="viewingRun()!.resultData?.rcmMismatches"
+            ></app-comprehensive-report>
+        }
     </div>
     } @else {
 

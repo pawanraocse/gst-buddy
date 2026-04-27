@@ -1,0 +1,149 @@
+<div class="surface-card border-1 surface-border border-round-xl p-4 mt-4 shadow-1">
+  <h3 class="text-xl font-semibold mb-4 text-800"><i class="pi pi-table mr-2 text-primary"></i> Comprehensive Audit Report</h3>
+
+  @if (findings.length === 0 && getThreeWayDeltas().length === 0 && getItcMismatches().length === 0 && getRcmMismatches().length === 0) {
+    <div class="text-center p-5 text-500">
+      <i class="pi pi-check-circle text-4xl mb-3" style="color: var(--teal-500);"></i>
+      <p>No critical or high-severity compliance issues detected.</p>
+    </div>
+  } @else {
+    
+    <!-- 3-Way Recon Side-by-Side Table -->
+    @if (threeWayReconFindings && threeWayReconFindings.deltas && threeWayReconFindings.deltas.length > 0) {
+      <div class="mb-5">
+        <h4 class="text-lg font-semibold text-800 mb-3"><i class="pi pi-compass mr-2 text-primary"></i> 3-Way Reconciliation (GSTR-1 vs 3B vs 9)</h4>
+        <div class="border-round overflow-hidden border-1 surface-border">
+          <p-table [value]="threeWayReconFindings.deltas" styleClass="p-datatable-sm p-datatable-gridlines">
+            <ng-template pTemplate="header">
+              <tr class="surface-100">
+                <th>Tax Head</th>
+                <th class="text-right">GSTR-1 Declared</th>
+                <th class="text-right">GSTR-3B Declared</th>
+                <th class="text-right">GSTR-9 Paid</th>
+                <th class="text-right text-orange-600">Delta (1 vs 3B)</th>
+                <th class="text-right text-orange-600">Delta (3B vs 9)</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-delta>
+              <tr>
+                <td class="font-semibold">{{ delta.taxHead }}</td>
+                <td class="text-right">{{ formatCurrency(delta.gstr1Amount) }}</td>
+                <td class="text-right">{{ formatCurrency(delta.gstr3bAmount) }}</td>
+                <td class="text-right">{{ formatCurrency(delta.gstr9PaidAmount) }}</td>
+                <td class="text-right font-medium" [ngClass]="{'text-red-500': delta.delta1Vs3b !== 0}">
+                  {{ formatCurrency(delta.delta1Vs3b) }}
+                </td>
+                <td class="text-right font-medium" [ngClass]="{'text-red-500': delta.delta3bVs9 !== 0}">
+                  {{ formatCurrency(delta.delta3bVs9) }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    }
+
+    <!-- ITC Mismatch List with Severity Badges -->
+    @if (itcMismatches && itcMismatches.mismatches && itcMismatches.mismatches.length > 0) {
+      <div class="mb-5">
+        <h4 class="text-lg font-semibold text-800 mb-3"><i class="pi pi-file-excel mr-2 text-primary"></i> ITC Mismatches (PR vs 2B)</h4>
+        <div class="border-round overflow-hidden border-1 surface-border">
+          <p-table [value]="itcMismatches.mismatches" styleClass="p-datatable-sm p-datatable-striped">
+            <ng-template pTemplate="header">
+              <tr class="surface-100">
+                <th>Invoice No</th>
+                <th>Supplier GSTIN</th>
+                <th>Mismatch Type</th>
+                <th class="text-right">PR ITC</th>
+                <th class="text-right">2B ITC</th>
+                <th class="text-right">Variance</th>
+                <th class="text-center">Severity</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-mismatch>
+              <tr>
+                <td class="font-mono text-sm">{{ mismatch.invoiceNumber }}</td>
+                <td class="font-mono text-sm">{{ mismatch.supplierGstin }}</td>
+                <td>{{ mismatch.mismatchType }}</td>
+                <td class="text-right">{{ formatCurrency(mismatch.prItcAmount) }}</td>
+                <td class="text-right">{{ formatCurrency(mismatch.gstr2bItcAmount) }}</td>
+                <td class="text-right font-medium text-orange-600">{{ formatCurrency(mismatch.variance) }}</td>
+                <td class="text-center">
+                  <span class="px-2 py-1 text-xs border-round font-semibold"
+                    [ngClass]="{'bg-red-100 text-red-700': mismatch.severity === 'HIGH',
+                                'bg-orange-100 text-orange-700': mismatch.severity === 'MEDIUM' || mismatch.severity === 'LOW'}">
+                    {{ mismatch.severity }}
+                  </span>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    }
+
+    <!-- RCM Gap Summary -->
+    @if (rcmMismatches && rcmMismatches.mismatches && rcmMismatches.mismatches.length > 0) {
+      <div class="mb-5">
+        <h4 class="text-lg font-semibold text-800 mb-3"><i class="pi pi-exclamation-triangle mr-2 text-primary"></i> Reverse Charge Mismatches (PR vs 3B)</h4>
+        <div class="border-round overflow-hidden border-1 surface-border">
+          <p-table [value]="rcmMismatches.mismatches" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr class="surface-100">
+                <th>Type</th>
+                <th>Tax Head</th>
+                <th class="text-right">PR Amount</th>
+                <th class="text-right">3B Amount</th>
+                <th class="text-right">Variance</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-mismatch>
+              <tr>
+                <td>{{ mismatch.mismatchType }}</td>
+                <td>{{ mismatch.taxHead }}</td>
+                <td class="text-right">{{ formatCurrency(mismatch.prAmount) }}</td>
+                <td class="text-right">{{ formatCurrency(mismatch.gstr3bAmount) }}</td>
+                <td class="text-right font-medium text-red-500">{{ formatCurrency(mismatch.variance) }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    }
+
+    <!-- Fallback / Old Generic Findings List -->
+    @if (findings && findings.length > 0) {
+      <div class="flex flex-column gap-3 mt-4">
+        <h4 class="text-lg font-semibold text-800 mb-2">Narrative Audit Findings</h4>
+        @for (finding of findings; track finding.ruleId) {
+          <div class="p-3 border-round-lg border-1" 
+            [ngClass]="{'border-red-200 bg-red-50': finding.severity === 'CRITICAL' || finding.severity === 'HIGH', 
+                        'border-amber-200 bg-orange-50': finding.severity === 'MEDIUM' || finding.severity === 'LOW',
+                        'border-teal-200 bg-teal-50': finding.severity === 'INFO'}">
+            <div class="flex justify-content-between align-items-start mb-2">
+              <div class="font-bold flex align-items-center gap-2">
+                <span class="px-2 py-1 text-xs border-round font-semibold"
+                  [ngClass]="{'bg-red-100 text-red-700': finding.severity === 'CRITICAL' || finding.severity === 'HIGH',
+                              'bg-orange-100 text-orange-700': finding.severity === 'MEDIUM' || finding.severity === 'LOW',
+                              'bg-teal-100 text-teal-700': finding.severity === 'INFO'}">
+                  {{ finding.severity }}
+                </span>
+                <span>{{ finding.ruleId.replace(/_/g, ' ') }}</span>
+              </div>
+              <div class="font-bold text-lg" style="color: var(--text-color);">
+                {{ formatCurrency(finding.impactAmount) }}
+              </div>
+            </div>
+            <p class="my-2 text-sm text-700">{{ finding.description }}</p>
+            <div class="flex flex-wrap gap-3 mt-3 pt-3 border-top-1 border-gray-300 text-xs text-600">
+              <div><i class="pi pi-book mr-1"></i> <span class="font-semibold">Legal Basis:</span> {{ finding.legalBasis }}</div>
+              <div><i class="pi pi-calendar mr-1"></i> <span class="font-semibold">Period:</span> {{ finding.compliancePeriod }}</div>
+              <div><i class="pi pi-sparkles mr-1 text-primary"></i> <span class="font-semibold">Recommendation:</span> {{ finding.recommendedAction }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  }
+</div>

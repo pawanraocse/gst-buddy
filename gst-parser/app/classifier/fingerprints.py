@@ -1,7 +1,7 @@
 """
 Registry of Document Types and their classification fingerprints.
 """
-from datac.lasses import dataclass
+from dataclasses import dataclass
 from typing import List
 
 @dataclass
@@ -26,6 +26,10 @@ PDF_FINGERPRINTS = [
     DocumentFingerprint(
         doc_type="GSTR2B_PDF",
         required_keywords=["FORM GSTR-2B"]
+    ),
+    DocumentFingerprint(
+        doc_type="GSTR9_PDF",
+        required_keywords=["FORM GSTR-9", "Annual Return"]
     )
 ]
 

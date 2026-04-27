@@ -1,0 +1,1082 @@
+{
+  "form_type": "GSTR-1/IFF",
+  "financial_year": "2023-24",
+  "tax_period": null,
+  "gstin": "07AABCB0984E1ZX",
+  "legal_name": "BALMER LAWRIE AND COMPANY LIMITED",
+  "trade_name": "BALMER LAWRIE AND COMPANY LIMITED",
+  "arn": null,
+  "arn_date": null,
+  "tables": {
+    "b2b_regular": {
+      "section": "4A - Taxable outward supplies made to registered persons (other than reverse charge supplies) - B2B Regular",
+      "total": {
+        "details": "Total",
+        "no_of_records": 636984,
+        "document_type": "Invoice",
+        "value": 9880149923.82,
+        "igst": 491995479.88,
+        "cgst": 175994279.92,
+        "sgst_utgst": 175994279.92,
+        "cess": 0.0
+      }
+    },
+    "b2b_reverse_charge": {
+      "section": "4B - Taxable outward supplies made to registered persons attracting tax on reverse charge - B2B Reverse charge",
+      "total": {
+        "details": "Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "b2cl_large": {
+      "section": "5A - Taxable outward inter-state supplies made to unregistered persons (where invoice value is more than Rs.2.5 lakh) - B2CL (Large)",
+      "total": {
+        "details": "Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      }
+    },
+    "exports": {
+      "section": "6A – Exports (with/without payment)",
+      "total": {
+        "details": "Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "expwp": {
+        "details": "- EXPWP",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "expwop": {
+        "details": "- EXPWOP",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      }
+    },
+    "sez": {
+      "section": "6B - Supplies made to SEZ unit or SEZ developer - SEZWP/SEZWOP",
+      "total": {
+        "details": "Total",
+        "no_of_records": 6010,
+        "document_type": "Invoice",
+        "value": 56082853.59,
+        "igst": 2943050.1,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "sezwp": {
+        "details": "- SEZWP",
+        "no_of_records": 5664,
+        "document_type": "Invoice",
+        "value": 48936449.0,
+        "igst": 2943050.1,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "sezwop": {
+        "details": "- SEZWOP",
+        "no_of_records": 346,
+        "document_type": "Invoice",
+        "value": 7146404.59,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      }
+    },
+    "deemed_exports": {
+      "section": "6C - Deemed Exports – DE",
+      "total": {
+        "details": "Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "b2cs_others": {
+      "section": "7 - Taxable supplies (Net of debit and credit notes) to unregistered persons (other than the supplies covered in Table 5) - B2CS (Others)",
+      "total": {
+        "details": "Total",
+        "no_of_records": 1042,
+        "document_type": "Net Value",
+        "value": 14317775069.61,
+        "igst": 508839176.24,
+        "cgst": 232046792.15,
+        "sgst_utgst": 232046792.15,
+        "cess": 0.0
+      }
+    },
+    "nil_exempted_non_gst": {
+      "section": "8 - Nil rated, exempted and non GST outward supplies",
+      "total": {
+        "details": "Total",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      },
+      "nil": {
+        "details": "- Nil",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      },
+      "exempted": {
+        "details": "- Exempted",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      },
+      "non_gst": {
+        "details": "- Non-GST",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      }
+    },
+    "amendment_b2b_regular": {
+      "section": "9A - Amendment to taxable outward supplies made to registered person in returns of earlier tax periods in table 4 - B2B Regular",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 6,
+        "document_type": "Invoice",
+        "value": 97098.0,
+        "igst": 9583.96,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "net_differential": {
+        "details": "Net differential amount (Amended - Original)",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 8.0,
+        "igst": -0.04,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "amendment_b2b_rc": {
+      "section": "9A - Amendment to taxable outward supplies made to registered person in returns of earlier tax periods in table 4 - B2B Reverse charge",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "net_differential": {
+        "details": "Net differential amount (Amended - Original)",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "amendment_b2cl": {
+      "section": "9A - Amendment to Inter-State supplies made to unregistered person (where invoice value is more than Rs.2.5 lakh) in returns of earlier tax periods in table 5 - B2CL (Large)",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "net_differential": {
+        "details": "Net differential amount (Amended - Original)",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      }
+    },
+    "amendment_exports": {
+      "section": "9A - Amendment to Export supplies in returns of earlier tax periods in table 6A (EXPWP/EXPWOP)",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "net_differential_total": {
+        "details": "Net differential amount (Amended - Original) - Total",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "expwp": {
+        "details": "- EXPWP",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "expwop": {
+        "details": "- EXPWOP",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      }
+    },
+    "amendment_sez": {
+      "section": "9A - Amendment to supplies made to SEZ units or SEZ developers in returns of earlier tax periods in table 6B (SEZWP/SEZWOP)",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "net_differential_total": {
+        "details": "Net differential amount (Amended - Original) - Total",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "sezwp": {
+        "details": "- SEZWP",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "sezwop": {
+        "details": "- SEZWOP",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      }
+    },
+    "amendment_deemed_exports": {
+      "section": "9A - Amendment to Deemed Exports in returns of earlier tax periods in table 6C (DE)",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Invoice",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "net_differential": {
+        "details": "Net differential amount (Amended - Original)",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "cdnr": {
+      "section": "9B - Credit/Debit Notes (Registered) – CDNR",
+      "total_net": {
+        "details": "Total - Net off debit/credit notes (Debit notes - Credit notes)",
+        "no_of_records": 73052,
+        "document_type": "Note",
+        "value": -1824752349.23,
+        "igst": -81052793.87,
+        "cgst": -75035211.49,
+        "sgst_utgst": -75035211.49,
+        "cess": 0.0
+      },
+      "credit_debit_notes_issued_to_registered_person_for_taxable_outward_supplies_in_b2b_regular": {
+        "details": "Credit / Debit notes issued to registered person for taxable outward supplies in table 4 other than table 6 - B2B Regular",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "net_total": {
+          "details": "Net Total (Debit notes – Credit notes)",
+          "no_of_records": 72524,
+          "document_type": "Note",
+          "value": -1820613571.23,
+          "igst": -80807176.95,
+          "cgst": -75035211.49,
+          "sgst_utgst": -75035211.49,
+          "cess": 0.0
+        }
+      },
+      "credit_debit_notes_issued_to_registered_person_for_taxable_outward_supplies_in_b2b_reverse_charge": {
+        "details": "Credit / Debit notes issued to registered person for taxable outward supplies in table 4 other than table 6 - B2B Reverse charge",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "net_total": {
+          "details": "Net Total (Debit notes – Credit notes)",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        }
+      },
+      "credit_debit_notes_issued_to_registered_person_for_taxable_outward_supplies_in_sezwp_sezwop": {
+        "details": "Credit / Debit notes issued to registered person for taxable outward supplies in table 6B - SEZWP/SEZWOP",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "net_total": {
+          "details": "Net Total (Debit notes – Credit notes)",
+          "no_of_records": 528,
+          "document_type": "Note",
+          "value": -4138778.0,
+          "igst": -245616.92,
+          "cgst": null,
+          "sgst_utgst": null,
+          "cess": 0.0
+        }
+      },
+      "credit_debit_notes_issued_to_registered_person_for_taxable_outward_supplies_in_de": {
+        "details": "Credit / Debit notes issued to registered person for taxable outward supplies in table 6C – DE",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "net_total": {
+          "details": "Net Total (Debit notes – Credit notes)",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        }
+      }
+    },
+    "cdnur": {
+      "section": "9B - Credit/Debit Notes (Unregistered) – CDNUR",
+      "total_net": {
+        "details": "Total - Net off debit/credit notes (Debit notes - Credit notes)",
+        "no_of_records": 0,
+        "document_type": "Note",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "unregistered_type": {
+        "details": "Unregistered Type",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "b2cl": {
+          "details": "- B2CL",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": null,
+          "sgst_utgst": null,
+          "cess": 0.0
+        },
+        "expwp": {
+          "details": "- EXPWP",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": null,
+          "sgst_utgst": null,
+          "cess": 0.0
+        },
+        "expwop": {
+          "details": "- EXPWOP",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": null,
+          "cgst": null,
+          "sgst_utgst": null,
+          "cess": null
+        }
+      }
+    },
+    "cdnra": {
+      "section": "9C - Amended Credit/Debit Notes (Registered) - CDNRA",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Note",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "net_differential_total": {
+        "details": "Net Differential amount (Net Amended Debit notes - Net Amended Credit notes) - Total",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "amended_credit_debit_notes_issued_to_registered_person_for_taxable_outward_b2b_regular": {
+        "details": "Amended Credit / Debit notes issued to registered person for taxable outward supplies in table 4 other than table 6 - B2B Regular",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "net_total": {
+          "details": "Net total (Net Amended Debit notes - Net Amended Credit notes)",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        }
+      },
+      "amended_credit_debit_notes_issued_to_registered_person_for_taxable_outward_b2b_reverse_charge": {
+        "details": "Amended Credit / Debit notes issued to registered person for taxable outward supplies in table 4 other than table 6 - B2B Reverse charge",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "net_total": {
+          "details": "Net total (Net Amended Debit notes - Net Amended Credit notes)",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        }
+      },
+      "amended_credit_debit_notes_issued_to_registered_person_for_taxable_outward_sezwp_sezwop": {
+        "details": "Amended Credit / Debit notes issued to registered person for taxable outward supplies in table 6B - SEZWP/SEZWOP",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "net_total": {
+          "details": "Net total (Net Amended Debit notes - Net Amended Credit notes)",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": null,
+          "sgst_utgst": null,
+          "cess": 0.0
+        }
+      },
+      "amended_credit_debit_notes_issued_to_registered_person_for_taxable_outward_de": {
+        "details": "Amended Credit / Debit notes issued to registered person for taxable outward supplies in table 6C – DE",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "net_total": {
+          "details": "Net total (Net Amended Debit notes - Net Amended Credit notes)",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        }
+      }
+    },
+    "cdnura": {
+      "section": "9C - Amended Credit/Debit Notes (Unregistered) - CDNURA",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Note",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "net_differential_total": {
+        "details": "Net Differential amount (Net Amended Debit notes - Net Amended Credit notes) - Total",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "unregistered_type": {
+        "details": "Unregistered Type",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "b2cl": {
+          "details": "- B2CL",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": null,
+          "sgst_utgst": null,
+          "cess": 0.0
+        },
+        "expwp": {
+          "details": "- EXPWP",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": null,
+          "sgst_utgst": null,
+          "cess": 0.0
+        },
+        "expwop": {
+          "details": "- EXPWOP",
+          "no_of_records": 0,
+          "document_type": "Note",
+          "value": 0.0,
+          "igst": null,
+          "cgst": null,
+          "sgst_utgst": null,
+          "cess": null
+        }
+      }
+    },
+    "amendment_b2cs": {
+      "section": "10 - Amendment to taxable outward supplies made to unregistered person in returns for earlier tax periods in table 7 - B2C (Others)",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "net_differential": {
+        "details": "Net differential amount (Amended - Original)",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "advances_received": {
+      "section": "11A(1), 11A(2) - Advances received for which invoice has not been issued (tax amount to be added to the output tax liability) (Net of refund vouchers)",
+      "total": {
+        "details": "Total",
+        "no_of_records": 137,
+        "document_type": "Net Value",
+        "value": 151144912.4,
+        "igst": 5438452.97,
+        "cgst": 1059396.32,
+        "sgst_utgst": 1059396.32,
+        "cess": 0.0
+      }
+    },
+    "advances_adjusted": {
+      "section": "11B(1), 11B(2) - Advance amount received in earlier tax period and adjusted against the supplies being shown in this tax period in Table Nos. 4, 5, 6 and 7",
+      "total": {
+        "details": "Total",
+        "no_of_records": 116,
+        "document_type": "Net Value",
+        "value": 89270586.8,
+        "igst": 2682556.97,
+        "cgst": 890486.18,
+        "sgst_utgst": 890486.18,
+        "cess": 0.0
+      }
+    },
+    "amendment_advances_received": {
+      "section": "11A - Amendment to advances received in returns for earlier tax periods in table 11A(1), 11A(2)",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "total": {
+        "details": "Total",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "amendment_advances_adjusted": {
+      "section": "11B - Amendment to advances adjusted in returns for earlier tax periods in table 11B(1), 11B(2)",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "total": {
+        "details": "Total",
+        "no_of_records": null,
+        "document_type": "",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "hsn_summary": {
+      "section": "12 - HSN-wise summary of outward supplies",
+      "total": {
+        "details": "Total",
+        "no_of_records": 206,
+        "document_type": "NA",
+        "value": 28837842905.52,
+        "igst": 1312457106.43,
+        "cgst": 408200946.84,
+        "sgst_utgst": 408039783.34,
+        "cess": 0.0
+      }
+    },
+    "documents_issued": {
+      "section": "13 - Documents issued",
+      "net_issued_documents": {
+        "details": "Net issued documents",
+        "no_of_records": 3189410,
+        "document_type": "All Documents",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      }
+    },
+    "ecommerce": {
+      "section": "14 - Supplies made through E-commerce Operators",
+      "total": {
+        "details": "Total",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "liable_to_collect_52": {
+        "details": "(a) Liable to collect tax u/s 52",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "liable_to_pay_9_5": {
+        "details": "(b) Liable to pay tax u/s 9(5)",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "amendment_ecommerce": {
+      "section": "14A - Amended Supplies made through E-commerce Operators",
+      "amended_total": {
+        "details": "Amended amount – Total",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "net_differential": {
+        "details": "Net differential amount (Amended - Original)",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "liable_to_collect_52": {
+        "details": "(a) Liable to collect tax u/s 52",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "amended_total": {
+          "details": "Amended amount – Total",
+          "no_of_records": 0,
+          "document_type": "Net Value",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        },
+        "net_differential": {
+          "details": "Net differential amount (Amended - Original)",
+          "no_of_records": 0,
+          "document_type": "Net Value",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        }
+      },
+      "b_liable_to_pay_tax_us_9_5": {
+        "details": "(b) Liable to pay tax u/s 9(5)",
+        "no_of_records": null,
+        "document_type": "",
+        "value": null,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null,
+        "amended_total": {
+          "details": "Amended amount – Total",
+          "no_of_records": 0,
+          "document_type": "Net Value",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        },
+        "net_differential": {
+          "details": "Net differential amount (Amended - Original)",
+          "no_of_records": 0,
+          "document_type": "Net Value",
+          "value": 0.0,
+          "igst": 0.0,
+          "cgst": 0.0,
+          "sgst_utgst": 0.0,
+          "cess": 0.0
+        }
+      }
+    },
+    "supplies_9_5": {
+      "section": "15 - Supplies U/s 9(5)",
+      "total": {
+        "details": "Total",
+        "no_of_records": 0,
+        "document_type": "Document/Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "for_registered_recipients": {
+        "details": "- For Registered Recipients",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "regular": {
+        "details": "- Regular",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "de": {
+        "details": "- DE",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "sezwp": {
+        "details": "- SEZWP",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "sezwop": {
+        "details": "- SEZWOP",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      },
+      "for_unregistered_recipients": {
+        "details": "- For Unregistered Recipients",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "amendment_9_5_registered": {
+      "section": "15A (I) - Amended Supplies U/s 9(5) – For Registered Recipients",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "net_differential": {
+        "details": "Net differential amount (Amended - Original)",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "regular": {
+        "details": "- Regular",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "de": {
+        "details": "- DE",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "sezwp": {
+        "details": "- SEZWP",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": 0.0
+      },
+      "sezwop": {
+        "details": "- SEZWOP",
+        "no_of_records": 0,
+        "document_type": "Document",
+        "value": 0.0,
+        "igst": null,
+        "cgst": null,
+        "sgst_utgst": null,
+        "cess": null
+      }
+    },
+    "amendment_9_5_unregistered": {
+      "section": "15A (II) - Amended Supplies U/s 9(5) – For Unregistered Recipients",
+      "amended_total": {
+        "details": "Amended amount - Total",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      },
+      "net_differential": {
+        "details": "Net differential amount (Amended - Original)",
+        "no_of_records": 0,
+        "document_type": "Net Value",
+        "value": 0.0,
+        "igst": 0.0,
+        "cgst": 0.0,
+        "sgst_utgst": 0.0,
+        "cess": 0.0
+      }
+    },
+    "total_liability": {
+      "details": "Total Liability (Outward supplies other than Reverse charge)",
+      "no_of_records": null,
+      "document_type": "",
+      "value": 22491129831.39,
+      "igst": 925480808.31,
+      "cgst": 333174770.72,
+      "sgst_utgst": 333174770.72,
+      "cess": 0.0
+    }
+  }
+}

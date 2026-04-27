@@ -8,13 +8,14 @@ import {
   LedgerResult,
 } from '../../../shared/models/audit.model';
 import { ComplianceViewComponent } from '../compliance-view/compliance-view.component';
+import { ComprehensiveReportComponent } from '../../reports/comprehensive-report/comprehensive-report.component';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
   selector: 'app-calculation-history',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TooltipModule, ComplianceViewComponent, PaginatorModule],
+  imports: [CommonModule, ButtonModule, TooltipModule, ComplianceViewComponent, ComprehensiveReportComponent, PaginatorModule],
   templateUrl: './calculation-history.component.html',
   styleUrls: ['./calculation-history.component.scss']
 })

@@ -1,0 +1,333 @@
+{
+  "financial_year": "2024-25",
+  "year": null,
+  "month": "April",
+  "gstin": "07ASXPD9282E1Z8",
+  "legal_name": "Kamla Devi",
+  "trade_name": "Rawan",
+  "arn": "AA070424691664V",
+  "arn_date": "17/05/2024",
+  "filed_date": null,
+  "outward_inward_supplies": {
+    "section": "3.1 Details of Outward supplies and inward supplies liable to reverse charge (other than those covered by Table 3.1.1)",
+    "outward_taxable_other": {
+      "details": "(a) Outward taxable supplies (other than zero rated, nil rated and exempted)",
+      "taxable_value": 0.0,
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "outward_taxable_zero_rated": {
+      "details": "(b) Outward taxable supplies (zero rated)",
+      "taxable_value": 0.0,
+      "igst": 0.0,
+      "cgst": null,
+      "sgst_utgst": null,
+      "cess": 0.0
+    },
+    "other_outward_nil_exempt": {
+      "details": "(c ) Other outward supplies (nil rated, exempted)",
+      "taxable_value": 0.0,
+      "igst": null,
+      "cgst": null,
+      "sgst_utgst": null,
+      "cess": null
+    },
+    "inward_reverse_charge": {
+      "details": "(d) Inward supplies (liable to reverse charge)",
+      "taxable_value": 0.0,
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "non_gst_outward": {
+      "details": "(e) Non-GST outward supplies",
+      "taxable_value": 0.0,
+      "igst": null,
+      "cgst": null,
+      "sgst_utgst": null,
+      "cess": null
+    }
+  },
+  "ecom_supplies": {
+    "section": "3.1.1 Details of Supplies notified under section 9(5) of the CGST Act, 2017 and corresponding provisions in IGST/UTGST/ SGST Acts",
+    "ecom_pays_tax": {
+      "details": "(i) Taxable supplies on which electronic commerce operator pays tax u/s 9(5) [to be furnished by electronic commerce operator]",
+      "taxable_value": 0.0,
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "registered_through_ecom": {
+      "details": "(ii) Taxable supplies made by registered person through electronic commerce operator, on which electronic commerce operator is required to pay tax u/s 9(5) [to be furnished by registered person making supplies through electronic commerce operator]",
+      "taxable_value": 0.0,
+      "igst": null,
+      "cgst": null,
+      "sgst_utgst": null,
+      "cess": null
+    }
+  },
+  "inter_state_supplies": {
+    "section": "3.2 Out of supplies made in 3.1 (a) and 3.1.1 (i), details of inter-state supplies made",
+    "unregistered_persons": {
+      "details": "Supplies made to Unregistered Persons",
+      "taxable_value": 0.0,
+      "integrated_tax": 0.0
+    },
+    "composition_taxable_persons": {
+      "details": "Supplies made to Composition Taxable Persons",
+      "taxable_value": 0.0,
+      "integrated_tax": 0.0
+    },
+    "uin_holders": {
+      "details": "Supplies made to UIN holders",
+      "taxable_value": 0.0,
+      "integrated_tax": 0.0
+    }
+  },
+  "eligible_itc": {
+    "section": "4. Eligible ITC",
+    "itc_available": {
+      "details": "A. ITC Available (whether in full or part)",
+      "igst": null,
+      "cgst": null,
+      "sgst_utgst": null,
+      "cess": null
+    },
+    "import_of_goods": {
+      "details": "(1) Import of goods",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "import_of_services": {
+      "details": "(2) Import of services",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "inward_rcm": {
+      "details": "(3) Inward supplies liable to reverse charge (other than 1 & 2 above)",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "inward_isd": {
+      "details": "(4) Inward supplies from ISD",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "all_other_itc": {
+      "details": "(5) All other ITC",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "itc_reversed": {
+      "details": "B. ITC Reversed",
+      "igst": null,
+      "cgst": null,
+      "sgst_utgst": null,
+      "cess": null
+    },
+    "reversed_rules_42_43": {
+      "details": "(1) As per rules 38,42 & 43 of CGST Rules and section 17(5)",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "reversed_others": {
+      "details": "(2) Others",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "net_itc_available": {
+      "details": "C. Net ITC available (A-B)",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "ineligible_itc": {
+      "details": "(D) Other Details",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "ineligible_itc_reclaimed": {
+      "details": "(1) ITC reclaimed which was reversed under Table 4(B)(2) in earlier tax period",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "ineligible_section_16_4": {
+      "details": "(2) Ineligible ITC under section 16(4) & ITC restricted due to PoS rules",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    }
+  },
+  "exempt_nil_non_gst_inward": {
+    "section": "5 Values of exempt, nil-rated and non-GST inward supplies",
+    "composition_exempt_nil": {
+      "details": "From a supplier under composition scheme, Exempt, Nil rated supply",
+      "inter_state": 0.0,
+      "intra_state": 0.0
+    },
+    "non_gst_supply": {
+      "details": "Non GST supply",
+      "inter_state": 0.0,
+      "intra_state": 0.0
+    }
+  },
+  "interest_late_fee": {
+    "section": "5.1 Interest and Late fee for previous tax period",
+    "system_computed_interest": {
+      "details": "System computed Interest",
+      "igst": null,
+      "cgst": null,
+      "sgst_utgst": null,
+      "cess": null
+    },
+    "interest_paid": {
+      "details": "Interest Paid",
+      "igst": 0.0,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": 0.0
+    },
+    "late_fee": {
+      "details": "Late fee",
+      "igst": null,
+      "cgst": 0.0,
+      "sgst_utgst": 0.0,
+      "cess": null
+    }
+  },
+  "tax_payment": {
+    "section": "6.1 Payment of tax",
+    "other_than_reverse_charge": {
+      "igst": {
+        "details": "Integrated tax",
+        "tax_payable": 0.0,
+        "itc_igst": 0.0,
+        "itc_cgst": 0.0,
+        "itc_sgst_utgst": 0.0,
+        "itc_cess": null,
+        "cash_tax": 0.0,
+        "cash_interest": 0.0,
+        "cash_late_fee": null
+      },
+      "cgst": {
+        "details": "Central tax",
+        "tax_payable": 0.0,
+        "itc_igst": 0.0,
+        "itc_cgst": 0.0,
+        "itc_sgst_utgst": null,
+        "itc_cess": null,
+        "cash_tax": 0.0,
+        "cash_interest": 0.0,
+        "cash_late_fee": 0.0
+      },
+      "sgst_utgst": {
+        "details": "State/UT tax",
+        "tax_payable": 0.0,
+        "itc_igst": 0.0,
+        "itc_cgst": null,
+        "itc_sgst_utgst": 0.0,
+        "itc_cess": null,
+        "cash_tax": 0.0,
+        "cash_interest": 0.0,
+        "cash_late_fee": 0.0
+      },
+      "cess": {
+        "details": "Cess",
+        "tax_payable": 0.0,
+        "itc_igst": null,
+        "itc_cgst": null,
+        "itc_sgst_utgst": null,
+        "itc_cess": 0.0,
+        "cash_tax": 0.0,
+        "cash_interest": 0.0,
+        "cash_late_fee": null
+      }
+    },
+    "reverse_charge": {
+      "igst": {
+        "details": "Integrated tax",
+        "tax_payable": 0.0,
+        "itc_igst": null,
+        "itc_cgst": null,
+        "itc_sgst_utgst": null,
+        "itc_cess": null,
+        "cash_tax": 0.0,
+        "cash_interest": null,
+        "cash_late_fee": null
+      },
+      "cgst": {
+        "details": "Central tax",
+        "tax_payable": 0.0,
+        "itc_igst": null,
+        "itc_cgst": null,
+        "itc_sgst_utgst": null,
+        "itc_cess": null,
+        "cash_tax": 0.0,
+        "cash_interest": null,
+        "cash_late_fee": null
+      },
+      "sgst_utgst": {
+        "details": "State/UT tax",
+        "tax_payable": 0.0,
+        "itc_igst": null,
+        "itc_cgst": null,
+        "itc_sgst_utgst": null,
+        "itc_cess": null,
+        "cash_tax": 0.0,
+        "cash_interest": null,
+        "cash_late_fee": null
+      },
+      "cess": {
+        "details": "Cess",
+        "tax_payable": 0.0,
+        "itc_igst": null,
+        "itc_cgst": null,
+        "itc_sgst_utgst": null,
+        "itc_cess": null,
+        "cash_tax": 0.0,
+        "cash_interest": null,
+        "cash_late_fee": null
+      }
+    },
+    "grand_total": null
+  },
+  "tds_tcs_credit": {
+    "section": null
+  },
+  "system_interest": {
+    "section": null
+  },
+  "tax_liability_breakup": [
+    {
+      "period": "April 2024",
+      "integrated_tax": 0.0,
+      "central_tax": 0.0,
+      "state_ut_tax": 0.0,
+      "cess": 0.0
+    }
+  ]
+}

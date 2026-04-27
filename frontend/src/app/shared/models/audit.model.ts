@@ -80,6 +80,9 @@ export interface UploadResult {
   findingsSummary?: FindingSummary[];
   creditsConsumed: number;
   remainingCredits: number;
+  threeWayReconFindings?: any;
+  itcMismatches?: any;
+  rcmMismatches?: any;
 }
 
 // ─────────────────────────────────────────────
@@ -120,6 +123,9 @@ export interface AuditRunResponse {
     summary?: CalculationSummary;
     findings?: AuditFindingDto[];
     ledgerResults?: LedgerResult[];
+    threeWayReconFindings?: any;
+    itcMismatches?: any;
+    rcmMismatches?: any;
   } | null;
 }
 

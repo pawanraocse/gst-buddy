@@ -306,45 +306,12 @@
             (exportLedger)="onExportLedger($event)" />
         } @else {
           <!-- Comprehensive GSTR Findings Report -->
-          <div class="surface-card border-1 surface-border border-round-xl p-4 mt-4 shadow-1">
-            <h3 class="text-xl font-semibold mb-4 text-800"><i class="pi pi-table mr-2 text-primary"></i> Comprehensive Audit Report</h3>
-            @if (gstrFindings().length === 0) {
-              <div class="text-center p-5 text-500">
-                <i class="pi pi-check-circle text-4xl mb-3" style="color: var(--teal-500);"></i>
-                <p>No critical or high-severity compliance issues detected.</p>
-              </div>
-            } @else {
-              <div class="flex flex-column gap-3">
-                @for (finding of gstrFindings(); track finding.ruleId) {
-                  <div class="p-3 border-round-lg border-1" 
-                    [ngClass]="{'border-red-200 bg-red-50': finding.severity === 'CRITICAL' || finding.severity === 'HIGH', 
-                                'border-amber-200 bg-orange-50': finding.severity === 'MEDIUM' || finding.severity === 'LOW',
-                                'border-teal-200 bg-teal-50': finding.severity === 'INFO'}">
-                    <div class="flex justify-content-between align-items-start mb-2">
-                      <div class="font-bold flex align-items-center gap-2">
-                        <span class="px-2 py-1 text-xs border-round font-semibold"
-                          [ngClass]="{'bg-red-100 text-red-700': finding.severity === 'CRITICAL' || finding.severity === 'HIGH',
-                                      'bg-orange-100 text-orange-700': finding.severity === 'MEDIUM' || finding.severity === 'LOW',
-                                      'bg-teal-100 text-teal-700': finding.severity === 'INFO'}">
-                          {{ finding.severity }}
-                        </span>
-                        <span>{{ finding.ruleId.replace(/_/g, ' ') }}</span>
-                      </div>
-                      <div class="font-bold text-lg" style="color: var(--text-color);">
-                        {{ formatCurrency(finding.impactAmount) }}
-                      </div>
-                    </div>
-                    <p class="my-2 text-sm text-700">{{ finding.description }}</p>
-                    <div class="flex flex-wrap gap-3 mt-3 pt-3 border-top-1 border-gray-300 text-xs text-600">
-                      <div><i class="pi pi-book mr-1"></i> <span class="font-semibold">Legal Basis:</span> {{ finding.legalBasis }}</div>
-                      <div><i class="pi pi-calendar mr-1"></i> <span class="font-semibold">Period:</span> {{ finding.compliancePeriod }}</div>
-                      <div><i class="pi pi-sparkles mr-1 text-primary"></i> <span class="font-semibold">Recommendation:</span> {{ finding.recommendedAction }}</div>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
+          <app-comprehensive-report 
+            [findings]="gstrFindings()"
+            [threeWayReconFindings]="threeWayReconFindings()"
+            [itcMismatches]="itcMismatches()"
+            [rcmMismatches]="rcmMismatches()"
+          ></app-comprehensive-report>
         }
 
         <div class="buddy-success-card mt-4 p-4">

@@ -53,6 +53,15 @@ def attempt_json_classification(content: bytes) -> Tuple[Optional[str], Optional
         
     return None, None
 
+def attempt_excel_csv_classification(filename: str) -> Optional[str]:
+    """Classifies based on file extension for Excel/CSV files."""
+    if not filename:
+        return None
+    lower_name = filename.lower()
+    if lower_name.endswith('.xlsx') or lower_name.endswith('.xls') or lower_name.endswith('.csv'):
+        return "PURCHASE_REGISTER"
+    return None
+
 def classify_document(content: bytes, filename: str, hint: Optional[str] = None) -> Tuple[str, ClassifierConfidence, Optional[Dict[str, Any]]]:
     """
     Evaluates the binary content to classify its document type.
@@ -67,7 +76,12 @@ def classify_document(content: bytes, filename: str, hint: Optional[str] = None)
     if doc_type:
         return doc_type, ClassifierConfidence.HIGH, None
         
-    # 3. Fallback to Hint
+    # 3. Try Excel/CSV
+    doc_type = attempt_excel_csv_classification(filename)
+    if doc_type:
+        return doc_type, ClassifierConfidence.MEDIUM, None
+        
+    # 4. Fallback to Hint
     if hint:
         logger.warning(f"Classification failed. Falling back to hint: {hint}")
         return hint, ClassifierConfidence.LOW, None

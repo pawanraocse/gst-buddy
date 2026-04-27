@@ -60,7 +60,7 @@ public class PipelineExecutor {
                 ruleResults.add(new RuleExecutionResult(
                         ruleId, rule.getDisplayName(), rule.getLegalBasis(),
                         "SUCCESS", result.findings(), result.totalImpact(),
-                        durationMs, null));
+                        durationMs, null, result.ruleSpecificOutput()));
 
                 allFindings.addAll(result.findings());
                 totalImpact = totalImpact.add(result.totalImpact());

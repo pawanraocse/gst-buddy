@@ -201,6 +201,14 @@ public class AuditRunOrchestrator {
         // ── 6. Persist run ──
         UUID runId = UuidV7.generate();
         OffsetDateTime now = OffsetDateTime.now();
+        
+        java.util.Map<String, Object> runResultData = new java.util.HashMap<>();
+        for (com.learning.backendservice.engine.RuleExecutionResult rr : pipelineResult.ruleResults()) {
+            if (rr.ruleSpecificData() != null) {
+                runResultData.put(rr.ruleId(), rr.ruleSpecificData());
+            }
+        }
+        
         AuditRun run = AuditRun.builder()
                 .id(runId)
                 .tenantId(tenantId)
@@ -212,6 +220,7 @@ public class AuditRunOrchestrator {
                         "asOnDate", asOnDate.toString(),
                         "mode", mode.name(),
                         "fileCount", files.size())))
+                .resultData(runResultData.isEmpty() ? null : toJson(runResultData))
                 .totalImpactAmount(pipelineResult.totalImpact())
                 .creditsConsumed(creditsNeeded)
                 .createdAt(now)
@@ -288,6 +297,9 @@ public class AuditRunOrchestrator {
                         .toList())
                 .creditsConsumed(creditsNeeded)
                 .remainingCredits(wallet.getRemaining())
+                .threeWayReconFindings(runResultData.get("RECON_1_VS_3B_VS_9"))
+                .itcMismatches(runResultData.get("ITC_RECO_2B"))
+                .rcmMismatches(runResultData.get("RCM_RECO_3B"))
                 .build();
     }
 

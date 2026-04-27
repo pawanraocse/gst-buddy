@@ -1,0 +1,871 @@
+{
+  "financial_year": "2022-23",
+  "gstin": "07AAHCK3010G1ZZ",
+  "legal_name": "KROYWEN SERVICES PRIVATE LIMITED",
+  "trade_name": "-",
+  "arn": "AB070323836622A",
+  "date_of_filing": "30-12-2023",
+  "outward_inward_supplies": {
+    "supplies_on_which_tax_is_payable": {
+      "b2c_unregistered": {
+        "sr_no": "A",
+        "details": "Supplies made to un-registered persons (B2C)",
+        "taxable_value": 32057606.0,
+        "central_tax": 2143051.0,
+        "state_ut_tax": 2143051.0,
+        "integrated_tax": 10034.76,
+        "cess": 0.0
+      },
+      "b2b_registered": {
+        "sr_no": "B",
+        "details": "Supplies made to registered persons (B2B)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "zero_rated_export_with_tax": {
+        "sr_no": "C",
+        "details": "Zero rated supply (Export) on payment of tax (Except supplies to SEZs)",
+        "taxable_value": 0.0,
+        "integrated_tax": 0.0
+      },
+      "supplies_to_sez_with_tax": {
+        "sr_no": "D",
+        "details": "Supplies to SEZs on payment of tax",
+        "taxable_value": 0.0,
+        "integrated_tax": 0.0
+      },
+      "deemed_exports": {
+        "sr_no": "E",
+        "details": "Deemed Exports",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "advances_tax_paid_no_invoice": {
+        "sr_no": "F",
+        "details": "Advances on which tax has been paid but invoice has not been issued (not covered under (A) to (E) above)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "inward_supplies_reverse_charge": {
+        "sr_no": "G",
+        "details": "Inward supplies on which tax is to be paid on the reverse charge basis",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "subtotal_a_to_g": {
+        "sr_no": "H",
+        "details": "Sub-total (A to G above)",
+        "taxable_value": 32057606.0,
+        "central_tax": 2143051.0,
+        "state_ut_tax": 2143051.0,
+        "integrated_tax": 10034.76,
+        "cess": 0.0
+      },
+      "credit_notes_b_to_e": {
+        "sr_no": "I",
+        "details": "Credit notes issued in respect of transactions specified in (B) to (E) above (-)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "debit_notes_b_to_e": {
+        "sr_no": "J",
+        "details": "Debit notes issued in respect of transactions specified in (B) to (E) above (+)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "supplies_declared_amendments_plus": {
+        "sr_no": "K",
+        "details": "Supplies / tax declared through Amendments (+)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "supplies_reduced_amendments_minus": {
+        "sr_no": "L",
+        "details": "Supplies / tax reduced through Amendments (-)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "subtotal_i_to_l": {
+        "sr_no": "M",
+        "details": "Sub total (I to L above)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "supplies_and_advances_tax_payable": {
+        "sr_no": "N",
+        "details": "Supplies and advances on which tax is to be paid (H + M) above",
+        "taxable_value": 32057606.0,
+        "central_tax": 2143051.0,
+        "state_ut_tax": 2143051.0,
+        "integrated_tax": 10034.76,
+        "cess": 0.0
+      },
+      "unknown_rows": {}
+    },
+    "supplies_on_which_tax_not_payable": {
+      "zero_rated_export_without_tax": {
+        "sr_no": "A",
+        "details": "Zero rated supply (Export) without payment of tax",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "supply_to_sez_without_tax": {
+        "sr_no": "B",
+        "details": "Supply to SEZs without payment of tax",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "reverse_charge_by_recipient": {
+        "sr_no": "C",
+        "details": "Supplies on which tax is to be paid by the recipient on reverse charge",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "exempted": {
+        "sr_no": "D",
+        "details": "Exempted",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "nil_rated": {
+        "sr_no": "E",
+        "details": "Nil Rated",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "non_gst_supply": {
+        "sr_no": "F",
+        "details": "Non-GST supply (includes ‘no supply’)",
+        "taxable_value": 314865988.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "subtotal_a_to_f": {
+        "sr_no": "G",
+        "details": "Sub total (A to F above)",
+        "taxable_value": 314865988.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "credit_notes_a_to_f": {
+        "sr_no": "H",
+        "details": "Credit Notes issued in respect of transactions specified in A to F above (-)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "debit_notes_a_to_f": {
+        "sr_no": "I",
+        "details": "Debit Notes issued in respect of transactions specified in A to F above (+)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "supplies_declared_amendments_plus": {
+        "sr_no": "J",
+        "details": "Supplies declared through Amendments (+)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "supplies_reduced_amendments_minus": {
+        "sr_no": "K",
+        "details": "Supplies reduced through Amendments (-)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "subtotal_h_to_k": {
+        "sr_no": "L",
+        "details": "Sub-Total (H to K above)",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "turnover_tax_not_payable": {
+        "sr_no": "M",
+        "details": "Turnover on which tax is not to be paid (G + L above)",
+        "taxable_value": 314865988.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "total_turnover_incl_advances": {
+        "sr_no": "N",
+        "details": "Total Turnover (including advances) (4N + 5M - 4G above)",
+        "taxable_value": 346923594.0,
+        "central_tax": 2143051.0,
+        "state_ut_tax": 2143051.0,
+        "integrated_tax": 10034.76,
+        "cess": 0.0
+      },
+      "unknown_rows": {}
+    }
+  },
+  "itc_details": {
+    "itc_availed": {
+      "total_itc_availed_gstr3b": {
+        "sr_no": "A",
+        "details": "Total amount of input tax credit availed through FORM GSTR-3B (sum total of Table 4A of FORM GSTR-3B)",
+        "central_tax": 2077317.5,
+        "state_ut_tax": 2077317.5,
+        "integrated_tax": 185631.89,
+        "cess": 0.0
+      },
+      "inward_supplies_excl_imports_rcm": {
+        "inputs": {
+          "sr_no": "B",
+          "details": "Inward supplies (other than imports and inward supplies liable to reverse charge but includes services received from SEZs)",
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 0.0,
+          "cess": 0.0
+        },
+        "capital_goods": {
+          "sr_no": "B",
+          "details": "Inward supplies (other than imports and inward supplies liable to reverse charge but includes services received from SEZs)",
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 0.0,
+          "cess": 0.0
+        },
+        "input_services": {
+          "sr_no": "B",
+          "details": "Inward supplies (other than imports and inward supplies liable to reverse charge but includes services received from SEZs)",
+          "central_tax": 2077317.5,
+          "state_ut_tax": 2077317.5,
+          "integrated_tax": 185631.89,
+          "cess": 0.0
+        }
+      },
+      "inward_unregistered_rcm_itc_availed": {
+        "inputs": {
+          "sr_no": "C",
+          "details": "Inward supplies received from unregistered persons liable to reverse charge (other than B above) on which tax is paid & ITC availed",
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 0.0,
+          "cess": 0.0
+        },
+        "capital_goods": {
+          "sr_no": "C",
+          "details": "Inward supplies received from unregistered persons liable to reverse charge (other than B above) on which tax is paid & ITC availed",
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 0.0,
+          "cess": 0.0
+        },
+        "input_services": {
+          "sr_no": "C",
+          "details": "Inward supplies received from unregistered persons liable to reverse charge (other than B above) on which tax is paid & ITC availed",
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 0.0,
+          "cess": 0.0
+        }
+      },
+      "inward_registered_rcm_itc_availed": {
+        "inputs": {
+          "sr_no": "D",
+          "details": "Inward supplies received from registered persons liable to reverse charge (other than B above) on which tax is paid and ITC availed",
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 0.0,
+          "cess": 0.0
+        },
+        "capital_goods": {
+          "sr_no": "D",
+          "details": "Inward supplies received from registered persons liable to reverse charge (other than B above) on which tax is paid and ITC availed",
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 0.0,
+          "cess": 0.0
+        },
+        "input_services": {
+          "sr_no": "D",
+          "details": "Inward supplies received from registered persons liable to reverse charge (other than B above) on which tax is paid and ITC availed",
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 0.0,
+          "cess": 0.0
+        }
+      },
+      "import_of_goods_incl_sez": {
+        "inputs": {
+          "sr_no": "E",
+          "details": "Import of goods (including supplies from SEZs)",
+          "integrated_tax": 0.0
+        },
+        "capital_goods": {
+          "sr_no": "E",
+          "details": "",
+          "integrated_tax": 0.0
+        }
+      },
+      "import_of_services_excl_sez": {
+        "sr_no": "F",
+        "details": "Import of services (excluding inward supplies from SEZs)",
+        "central_tax": 0.0,
+        "integrated_tax": 0.0
+      },
+      "itc_from_isd": {
+        "sr_no": "G",
+        "details": "Input Tax credit received from ISD",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "itc_reclaimed": {
+        "sr_no": "H",
+        "details": "Amount of ITC reclaimed (other than B above) under the provisions of the Act",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "subtotal_b_to_h": {
+        "sr_no": "I",
+        "details": "Sub-total (B to H above)",
+        "central_tax": 2077317.5,
+        "state_ut_tax": 2077317.5,
+        "integrated_tax": 185631.89,
+        "cess": 0.0
+      },
+      "difference_i_minus_a": {
+        "sr_no": "J",
+        "details": "Difference (I - A above)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "tran1_credit": {
+        "sr_no": "K",
+        "details": "Transition Credit through TRAN-1 (including revisions if any)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0
+      },
+      "tran2_credit": {
+        "sr_no": "L",
+        "details": "Transition Credit through TRAN-2",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0
+      },
+      "other_itc": {
+        "sr_no": "M",
+        "details": "Any other ITC availed but not specified above",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "subtotal_k_to_m": {
+        "sr_no": "N",
+        "details": "Sub-total (K to M above)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "total_itc_availed": {
+        "sr_no": "O",
+        "details": "Total ITC availed (I + N above)",
+        "central_tax": 2077317.5,
+        "state_ut_tax": 2077317.5,
+        "integrated_tax": 185631.89,
+        "cess": 0.0
+      },
+      "unknown_rows": {}
+    },
+    "itc_reversed_ineligible": {
+      "rule_37": {
+        "sr_no": "A",
+        "details": "As per Rule 37",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "rule_39": {
+        "sr_no": "B",
+        "details": "As per Rule 39",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "rule_42": {
+        "sr_no": "C",
+        "details": "As per Rule 42",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "rule_43": {
+        "sr_no": "D",
+        "details": "As per Rule 43",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "section_17_5": {
+        "sr_no": "E",
+        "details": "As per section 17(5)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "reversal_tran1": {
+        "sr_no": "F",
+        "details": "Reversal of TRAN-1 credit",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0
+      },
+      "reversal_tran2": {
+        "sr_no": "G",
+        "details": "Reversal of TRAN-2 credit",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0
+      },
+      "h1_other_reversals": {
+        "sr_no": "H1",
+        "details": "Other reversals",
+        "central_tax": 225192.77,
+        "state_ut_tax": 225192.77,
+        "integrated_tax": 129664.0,
+        "cess": 0.0
+      },
+      "total_itc_reversed": {
+        "sr_no": "I",
+        "details": "Total ITC Reversed (Sum of A to H above)",
+        "central_tax": 225192.77,
+        "state_ut_tax": 225192.77,
+        "integrated_tax": 129664.0,
+        "cess": 0.0
+      },
+      "net_itc_available_for_utilization": {
+        "sr_no": "J",
+        "details": "Net ITC Available for Utilization (6O - 7I)",
+        "central_tax": 1852124.73,
+        "state_ut_tax": 1852124.73,
+        "integrated_tax": 55967.89,
+        "cess": 0.0
+      },
+      "unknown_rows": {}
+    },
+    "other_itc_information": {
+      "itc_as_per_gstr2_": {
+        "sr_no": "A",
+        "details": "ITC as per GSTR-2A (Table 3 & 5 thereof)",
+        "central_tax": 1982732.31,
+        "state_ut_tax": 1982732.31,
+        "integrated_tax": 247944.93,
+        "cess": 0.0
+      },
+      "itc_per_6b_and_6h": {
+        "sr_no": "B",
+        "details": "ITC as per sum total of 6(B) and 6(H) above",
+        "central_tax": 2077317.5,
+        "state_ut_tax": 2077317.5,
+        "integrated_tax": 185631.89,
+        "cess": 0.0
+      },
+      "itc_availed_next_fy": {
+        "sr_no": "C",
+        "details": "ITC on inward supplies (other than imports and inward supplies liable to reverse charge but includes services received from SEZs)received during the financial year but availed in the next financial year upto specified period",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "difference_a_minus_b_plus_c": {
+        "sr_no": "D",
+        "details": "Difference [A-(B+C)]",
+        "central_tax": -94585.19,
+        "state_ut_tax": -94585.19,
+        "integrated_tax": 62313.04,
+        "cess": 0.0
+      },
+      "itc_available_not_availed": {
+        "sr_no": "E",
+        "details": "ITC available but not availed",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "itc_available_ineligible": {
+        "sr_no": "F",
+        "details": "ITC available but ineligible",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "igst_paid_import_of_goods_incl_sez": {
+        "sr_no": "G",
+        "details": "IGST paid on import of goods (including supplies from SEZ)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "igst_credit_availed_import_goods_6e": {
+        "sr_no": "H",
+        "details": "IGST credit availed on import of goods (as per 6(E) above)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "difference_g_minus_h": {
+        "sr_no": "I",
+        "details": "Difference (G-H)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "itc_not_availed_import_goods": {
+        "sr_no": "J",
+        "details": "ITC available but not availed on import of goods (Equal to I)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "total_itc_to_lapse": {
+        "sr_no": "K",
+        "details": "Total ITC to be lapsed in current financial year (E + F + J)",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "unknown_rows": {}
+    }
+  },
+  "tax_paid": {
+    "tax_paid_as_per_returns": {
+      "integrated_tax": {
+        "sr_no": "A",
+        "details": "Integrated Tax",
+        "tax_payable": 10035.0,
+        "paid_through_cash": 0.0,
+        "paid_through_itc": {
+          "central_tax": 0.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 10035.0
+        }
+      },
+      "central_tax": {
+        "sr_no": "B",
+        "details": "Central Tax",
+        "tax_payable": 2344819.0,
+        "paid_through_cash": 146507.0,
+        "paid_through_itc": {
+          "central_tax": 2154615.0,
+          "state_ut_tax": 0.0,
+          "integrated_tax": 43697.0
+        }
+      },
+      "state_ut_tax": {
+        "sr_no": "C",
+        "details": "State/UT Tax",
+        "tax_payable": 2344819.0,
+        "paid_through_cash": 748.0,
+        "paid_through_itc": {
+          "central_tax": 0.0,
+          "state_ut_tax": 2343251.0,
+          "integrated_tax": 820.0
+        }
+      },
+      "cess": {
+        "sr_no": "D",
+        "details": "Cess",
+        "tax_payable": 0.0,
+        "paid_through_cash": 0.0,
+        "paid_through_itc": {
+          "cess": 0.0
+        }
+      },
+      "interest": {
+        "sr_no": "E",
+        "details": "Interest",
+        "tax_payable": 0.0,
+        "paid_through_cash": 0.0
+      },
+      "late_fee": {
+        "sr_no": "F",
+        "details": "Late fee",
+        "tax_payable": 0.0,
+        "paid_through_cash": 0.0
+      },
+      "penalty": {
+        "sr_no": "G",
+        "details": "Penalty",
+        "tax_payable": 0.0,
+        "paid_through_cash": 0.0
+      },
+      "other": {
+        "sr_no": "H",
+        "details": "Other",
+        "tax_payable": 0.0,
+        "paid_through_cash": 0.0
+      }
+    }
+  },
+  "transactions_declared_in_next_fy": {
+    "supplies_declared_amendments_plus": {
+      "sr_no": "10",
+      "details": "Supplies / tax declared through Amendments (+) (net of debit notes)",
+      "taxable_value": 0.0,
+      "central_tax": 0.0,
+      "state_ut_tax": 0.0,
+      "integrated_tax": 0.0,
+      "cess": 0.0
+    },
+    "supplies_reduced_amendments_minus": {
+      "sr_no": "11",
+      "details": "Supplies / tax reduced through Amendments (-) (net of credit notes)",
+      "taxable_value": 0.0,
+      "central_tax": 0.0,
+      "state_ut_tax": 0.0,
+      "integrated_tax": 0.0,
+      "cess": 0.0
+    },
+    "reversal_itc_previous_fy": {
+      "sr_no": "12",
+      "details": "Reversal of ITC availed during previous financial year",
+      "central_tax": 0.0,
+      "state_ut_tax": 0.0,
+      "integrated_tax": 0.0,
+      "cess": 0.0
+    },
+    "itc_availed_previous_fy": {
+      "sr_no": "13",
+      "details": "ITC availed for the previous financial year",
+      "central_tax": 0.0,
+      "state_ut_tax": 0.0,
+      "integrated_tax": 0.0,
+      "cess": 0.0
+    },
+    "total_turnover_5n_plus_10_minus_11": {
+      "sr_no": "",
+      "details": "Total turnover(5N + 10 - 11)",
+      "taxable_value": 346923594.0,
+      "central_tax": 2143051.0,
+      "state_ut_tax": 2143051.0,
+      "integrated_tax": 10034.76,
+      "cess": 0.0
+    },
+    "differential_tax_paid": {
+      "integrated_tax": {
+        "sr_no": "A",
+        "details": "Integrated Tax",
+        "payable": 0.0,
+        "paid": 0.0
+      },
+      "central_tax": {
+        "sr_no": "B",
+        "details": "Central Tax",
+        "payable": 0.0,
+        "paid": 0.0
+      },
+      "state_ut_tax": {
+        "sr_no": "C",
+        "details": "State/UT Tax",
+        "payable": 0.0,
+        "paid": 0.0
+      },
+      "cess": {
+        "sr_no": "D",
+        "details": "Cess",
+        "payable": 0.0,
+        "paid": 0.0
+      },
+      "interest": {
+        "sr_no": "E",
+        "details": "Interest",
+        "payable": 0.0,
+        "paid": 0.0
+      }
+    }
+  },
+  "other_information": {
+    "demands_and_refunds": {
+      "total_refund_claimed": {
+        "sr_no": "A",
+        "details": "Total Refund claimed",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "total_refund_sanctioned": {
+        "sr_no": "B",
+        "details": "Total Refund sanctioned",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "total_refund_rejected": {
+        "sr_no": "C",
+        "details": "Total Refund Rejected",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "total_refund_pending": {
+        "sr_no": "D",
+        "details": "Total Refund Pending",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "total_demand_of_taxes": {
+        "sr_no": "E",
+        "details": "Total demand of taxes",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0,
+        "interest": 0.0,
+        "penalty": 0.0,
+        "late_fee_others": 0.0
+      },
+      "taxes_paid_against_E": {
+        "sr_no": "F",
+        "details": "Total taxes paid in respect of E above",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0,
+        "interest": 0.0,
+        "penalty": 0.0,
+        "late_fee_others": 0.0
+      },
+      "demands_pending_from_E": {
+        "sr_no": "G",
+        "details": "Total demands pending out of E above",
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0,
+        "interest": 0.0,
+        "penalty": 0.0,
+        "late_fee_others": 0.0
+      }
+    },
+    "composition_deemed_approval": {
+      "supplies_from_composition_taxpayers": {
+        "sr_no": "A",
+        "details": "Supplies received from Composition taxpayers",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "deemed_supply_section_143": {
+        "sr_no": "B",
+        "details": "Deemed supply under section 143",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      },
+      "goods_sent_on_approval_not_returned": {
+        "sr_no": "C",
+        "details": "Goods sent on approval basis but not returned",
+        "taxable_value": 0.0,
+        "central_tax": 0.0,
+        "state_ut_tax": 0.0,
+        "integrated_tax": 0.0,
+        "cess": 0.0
+      }
+    },
+    "hsn_summary_outward": "Not available in PDF — download Excel/JSON from GST portal",
+    "hsn_summary_inward": "Not available in PDF — download Excel/JSON from GST portal",
+    "late_fee": {
+      "central_tax": {
+        "sr_no": "A",
+        "details": "Central Tax",
+        "payable": 0.0,
+        "paid": 0.0
+      },
+      "state_tax": {
+        "sr_no": "B",
+        "details": "State Tax",
+        "payable": 0.0,
+        "paid": 0.0
+      }
+    }
+  },
+  "unknown_tables": {}
+}

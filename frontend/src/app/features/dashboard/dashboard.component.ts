@@ -8,6 +8,7 @@ import { CreditApiService, WalletDto } from '../../core/services/credit-api.serv
 import { DocumentUploadComponent } from '../rule37/document-upload/document-upload.component';
 import { ComplianceViewComponent } from '../rule37/compliance-view/compliance-view.component';
 import { CalculationHistoryComponent } from '../rule37/calculation-history/calculation-history.component';
+import { ComprehensiveReportComponent } from '../reports/comprehensive-report/comprehensive-report.component';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
@@ -32,6 +33,7 @@ import { MessageService } from 'primeng/api';
     DocumentUploadComponent,
     ComplianceViewComponent,
     CalculationHistoryComponent,
+    ComprehensiveReportComponent,
     PanelModule,
     DatePicker
   ],
@@ -76,8 +78,9 @@ export class DashboardComponent implements OnInit {
   aggregateTurnover = signal<number | null>(null);
 
   gstrFindings = signal<FindingSummary[]>([]);
-
-
+  threeWayReconFindings = signal<any>(null);
+  itcMismatches = signal<any>(null);
+  rcmMismatches = signal<any>(null);
 
   // At-risk KPIs
   atRiskCount = computed(() => {
@@ -176,6 +179,9 @@ export class DashboardComponent implements OnInit {
     this.error.set(null);
     this.results.set([]);
     this.gstrFindings.set([]);
+    this.threeWayReconFindings.set(null);
+    this.itcMismatches.set(null);
+    this.rcmMismatches.set(null);
     this.fileNames.set(files.map((f) => f.name));
 
     const obs$ = this.analysisMode() === 'LEDGER_ANALYSIS' 
@@ -207,6 +213,9 @@ export class DashboardComponent implements OnInit {
           );
         } else {
           this.gstrFindings.set(res.findingsSummary ?? []);
+          this.threeWayReconFindings.set(res.threeWayReconFindings ?? null);
+          this.itcMismatches.set(res.itcMismatches ?? null);
+          this.rcmMismatches.set(res.rcmMismatches ?? null);
         }
 
         this.fileNames.set(files.map((f) => f.name));

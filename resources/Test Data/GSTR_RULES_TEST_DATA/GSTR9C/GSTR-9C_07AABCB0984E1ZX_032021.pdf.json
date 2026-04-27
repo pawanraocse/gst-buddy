@@ -1,0 +1,940 @@
+{
+  "financial_year": "2020-21",
+  "gstin": "07AABCB0984E1ZX",
+  "legal_name": "BALMER LAWRIE AND COMPANY LIMITED",
+  "trade_name": "BALMER LAWRIE AND COMPANY LIMITED",
+  "arn": "AB0703216842094",
+  "arn_date": "28-02-2022",
+  "audit_act": "Income Tax Act 1961",
+  "turnover_reconciliation": {
+    "gross_turnover": {
+      "turnover_as_per_audited_financial_statements": {
+        "sr_no": "A",
+        "details": "Turnover (including exports) as per audited financialstatements for the State / UT (For multi-GSTIN units under same PAN, the turnover shall be derived from the audited Annual Financial Statement)",
+        "sign": null,
+        "amount": 2494521480.44
+      },
+      "unbilled_revenue_beginning_fy": {
+        "sr_no": "B",
+        "details": "Unbilled revenue at the beginning of Financial Year",
+        "sign": "(+)",
+        "amount": null
+      },
+      "unadjusted_advances_end_fy": {
+        "sr_no": "C",
+        "details": "Unadjusted advances at the end of the Financial Year",
+        "sign": "(+)",
+        "amount": null
+      },
+      "deemed_supply_schedule_i": {
+        "sr_no": "D",
+        "details": "Deemed Supply under Schedule I",
+        "sign": "(+)",
+        "amount": null
+      },
+      "credit_notes_after_end_fy": {
+        "sr_no": "E",
+        "details": "Credit Notes issued after the end of the financial year but reflected in the annual return",
+        "sign": "(+)",
+        "amount": null
+      },
+      "trade_discounts_not_permissible": {
+        "sr_no": "F",
+        "details": "Trade Discounts accounted for in the audited Annual Financial Statement but are not permissible under GST",
+        "sign": "(+)",
+        "amount": null
+      },
+      "turnover_april_to_june_2017": {
+        "sr_no": "G",
+        "details": "Turnover from April 2017 to June 2017",
+        "sign": "(-)",
+        "amount": null
+      },
+      "unbilled_revenue_end_fy": {
+        "sr_no": "H",
+        "details": "Unbilled revenue at the end of Financial Year",
+        "sign": "(-)",
+        "amount": null
+      },
+      "unadjusted_advances_beginning_fy": {
+        "sr_no": "I",
+        "details": "Unadjusted Advances at the beginning of the Financial Year",
+        "sign": "(-)",
+        "amount": 125907.0
+      },
+      "credit_notes_not_permissible": {
+        "sr_no": "J",
+        "details": "Credit notes accounted for in the audited Annual Financial Statement but are not permissible under GST",
+        "sign": "(-)",
+        "amount": null
+      },
+      "sez_to_dta_adjustments": {
+        "sr_no": "K",
+        "details": "Adjustments on account of supply of goods by SEZ units to DTA Units",
+        "sign": "(-)",
+        "amount": null
+      },
+      "turnover_under_composition": {
+        "sr_no": "L",
+        "details": "Turnover for the period under composition scheme",
+        "sign": "(-)",
+        "amount": null
+      },
+      "adjustments_section_15": {
+        "sr_no": "M",
+        "details": "Adjustments in turnover under section 15 and rules thereunder",
+        "sign": "(+/-)",
+        "amount": null
+      },
+      "adjustments_foreign_exchange": {
+        "sr_no": "N",
+        "details": "Adjustments in turnover due to foreign exchange fluctuations",
+        "sign": "(+/-)",
+        "amount": null
+      },
+      "adjustments_other_reasons": {
+        "sr_no": "O",
+        "details": "Adjustments in turnover due to reasons not listed above",
+        "sign": "(+/-)",
+        "amount": null
+      },
+      "annual_turnover_after_adjustments": {
+        "sr_no": "P",
+        "details": "Annual turnover after adjustments as above (A+B+C+D-E+F-G-H-I+J-K-L+M+N+O)",
+        "sign": null,
+        "amount": 2494395573.44
+      },
+      "turnover_as_per_annual_return_gstr9": {
+        "sr_no": "Q",
+        "details": "Turnover as declared in Annual Return (GSTR9)",
+        "sign": null,
+        "amount": 2494395573.44
+      },
+      "unreconciled_turnover": {
+        "sr_no": "R",
+        "details": "Un-Reconciled turnover (Q - P)",
+        "sign": null,
+        "amount": 0.0
+      }
+    },
+    "reasons_gross_turnover_unreconciled": [
+      {
+        "sr_no": "A",
+        "reason": "Reason number 1",
+        "details": null
+      }
+    ],
+    "taxable_turnover": {
+      "annual_turnover_after_adjustments": {
+        "sr_no": "A",
+        "details": "Annual turnover after adjustments (from 5P above)",
+        "amount": 2494395573.44
+      },
+      "exempted_nil_non_gst_no_supply": {
+        "sr_no": "B",
+        "details": "Value of Exempted, Nil Rated, Non-GST supplies, No-Supply turnover",
+        "amount": 1101458516.68
+      },
+      "zero_rated_without_payment": {
+        "sr_no": "C",
+        "details": "Zero rated supplies without payment of tax",
+        "amount": null
+      },
+      "reverse_charge_supplies": {
+        "sr_no": "D",
+        "details": "Supplies on which tax is to be paid by the recipient on reverse charge basis",
+        "amount": null
+      },
+      "taxable_turnover_as_per_adjustments": {
+        "sr_no": "E",
+        "details": "Taxable turnover as per adjustments above (A-B-C-D)",
+        "amount": 1392937056.76
+      },
+      "taxable_turnover_as_per_annual_return": {
+        "sr_no": "F",
+        "details": "Taxable turnover as per liability declared in Annual Return (GSTR9)",
+        "amount": 1392937056.76
+      },
+      "unreconciled_taxable_turnover": {
+        "sr_no": "G",
+        "details": "Unreconciled taxable turnover (F-E)",
+        "amount": 0.0
+      }
+    },
+    "reasons_taxable_turnover_unreconciled": [
+      {
+        "sr_no": "A",
+        "reason": "Reason number 1",
+        "details": null
+      }
+    ]
+  },
+  "tax_paid_reconciliation": {
+    "rate_wise_liability": {
+      "rate_5pct": {
+        "sr_no": "A",
+        "details": "5%",
+        "taxable_value": 815984597.86,
+        "cgst": 7648920.96,
+        "sgst": 7648920.96,
+        "igst": 25501387.96,
+        "cess": 0.0
+      },
+      "rate_5pct_rc": {
+        "sr_no": "B",
+        "details": "5% (RC)",
+        "taxable_value": 135139373.6,
+        "cgst": 288582.0,
+        "sgst": 288582.0,
+        "igst": 6179804.68,
+        "cess": 0.0
+      },
+      "rate_6pct": {
+        "sr_no": "C",
+        "details": "6%",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_12pct": {
+        "sr_no": "D",
+        "details": "12%",
+        "taxable_value": 120838150.0,
+        "cgst": 3944909.88,
+        "sgst": 3944909.88,
+        "igst": 6610758.24,
+        "cess": 0.0
+      },
+      "rate_12pct_rc": {
+        "sr_no": "E",
+        "details": "12% (RC)",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "rate_18pct": {
+        "sr_no": "F",
+        "details": "18%",
+        "taxable_value": 456240216.14,
+        "cgst": 17036874.22,
+        "sgst": 17036874.22,
+        "igst": 48049490.47,
+        "cess": 0.0
+      },
+      "rate_18pct_rc": {
+        "sr_no": "G",
+        "details": "18% (RC)",
+        "taxable_value": 193200.0,
+        "cgst": 13585.0,
+        "sgst": 13585.0,
+        "igst": 7606.0,
+        "cess": 0.0
+      },
+      "rate_28pct": {
+        "sr_no": "H",
+        "details": "28%",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_28pct_rc": {
+        "sr_no": "I",
+        "details": "28% (RC)",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_3pct": {
+        "sr_no": "J",
+        "details": "3%",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_0_25pct": {
+        "sr_no": "K",
+        "details": "0.25%",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_0_10pct": {
+        "sr_no": "L",
+        "details": "0.10%",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_others": {
+        "sr_no": "L1",
+        "details": "Others%",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "interest": {
+        "sr_no": "M",
+        "details": "Interest",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "late_fee": {
+        "sr_no": "N",
+        "details": "Late Fee",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "penalty": {
+        "sr_no": "O",
+        "details": "Penalty",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "others": {
+        "sr_no": "P",
+        "details": "Others",
+        "taxable_value": null,
+        "cgst": 8406795.0,
+        "sgst": 8406795.0,
+        "igst": -25200433.35,
+        "cess": null
+      },
+      "total_amount_to_be_paid": {
+        "sr_no": "Q",
+        "details": "Total amount to be paid as per tables above",
+        "taxable_value": null,
+        "cgst": 37339667.06,
+        "sgst": 37339667.06,
+        "igst": 61148614.0,
+        "cess": 0.0
+      },
+      "total_amount_paid_as_per_annual_return": {
+        "sr_no": "R",
+        "details": "Total amount paid as declared in Annual Return (GSTR 9)",
+        "taxable_value": null,
+        "cgst": 26148821.0,
+        "sgst": 26148821.0,
+        "igst": 83400174.0,
+        "cess": 0.0
+      },
+      "unreconciled_payment": {
+        "sr_no": "S",
+        "details": "Un-reconciled payment of amount",
+        "taxable_value": null,
+        "cgst": -11190846.06,
+        "sgst": -11190846.06,
+        "igst": 22251560.0,
+        "cess": 0.0
+      }
+    },
+    "reasons_payment_unreconciled": [
+      {
+        "sr_no": "A",
+        "reason": "Reason number 1",
+        "details": "Unreconciled Amount is Paid in Apr-21"
+      }
+    ],
+    "additional_amount_payable": {
+      "rate_5pct": {
+        "sr_no": "A",
+        "details": "5%",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "rate_6pct": {
+        "sr_no": "B",
+        "details": "6%",
+        "taxable_value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_12pct": {
+        "sr_no": "C",
+        "details": "12%",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "rate_18pct": {
+        "sr_no": "D",
+        "details": "18%",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "rate_28pct": {
+        "sr_no": "E",
+        "details": "28%",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "rate_3pct": {
+        "sr_no": "F",
+        "details": "3%",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "rate_0_25pct": {
+        "sr_no": "G",
+        "details": "0.25%",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "rate_0_10pct": {
+        "sr_no": "H",
+        "details": "0.10%",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "rate_others": {
+        "sr_no": "H1",
+        "details": "Others%",
+        "taxable_value": 0.0,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "interest": {
+        "sr_no": "I",
+        "details": "Interest",
+        "taxable_value": null,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "late_fee": {
+        "sr_no": "J",
+        "details": "Late Fee",
+        "taxable_value": null,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "penalty": {
+        "sr_no": "K",
+        "details": "Penalty",
+        "taxable_value": null,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      },
+      "others": {
+        "sr_no": "L",
+        "details": "Others (please specify)",
+        "taxable_value": null,
+        "cgst": 0.0,
+        "sgst": 0.0,
+        "igst": 0.0,
+        "cess": 0.0
+      }
+    }
+  },
+  "itc_reconciliation": {
+    "net_itc": {
+      "itc_availed_per_audited_financial_statement": {
+        "sr_no": "A",
+        "details": "ITC availed as per audited Annual Financial Statement for the State/ UT (For multi-GSTIN units under same PAN this should be derived from books of accounts)",
+        "amount": 107164232.0
+      },
+      "itc_booked_earlier_fy_claimed_current_fy": {
+        "sr_no": "B",
+        "details": "ITC booked in earlier Financial Years claimed in current Financial Year",
+        "amount": 816112.39
+      },
+      "itc_booked_current_fy_claimed_subsequent_fy": {
+        "sr_no": "C",
+        "details": "ITC booked in current Financial Year to be claimed in subsequent Financial Years",
+        "amount": 1111550.44
+      },
+      "itc_availed_per_books_of_account": {
+        "sr_no": "D",
+        "details": "ITC availed as per audited financial statements or books of account",
+        "amount": 106868793.95
+      },
+      "itc_claimed_in_annual_return_gstr9": {
+        "sr_no": "E",
+        "details": "ITC claimed in Annual Return (GSTR9)",
+        "amount": 105698793.95
+      },
+      "unreconciled_itc": {
+        "sr_no": "F",
+        "details": "Un-reconciled ITC",
+        "amount": -1170000.0
+      }
+    },
+    "reasons_net_itc_unreconciled": [
+      {
+        "sr_no": "A",
+        "reason": "Reason number 1",
+        "details": "Unreconciled Amount is because of entry pertaining to 2019-20 entered in 2020-21"
+      }
+    ],
+    "itc_by_expense_head": {
+      "purchases": {
+        "sr_no": "A",
+        "details": "Purchases",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "freight_carriage": {
+        "sr_no": "B",
+        "details": "Freight / Carriage",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "power_and_fuel": {
+        "sr_no": "C",
+        "details": "Power and Fuel",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "imported_goods": {
+        "sr_no": "D",
+        "details": "Imported goods (Including received from SEZs)",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "rent_and_insurance": {
+        "sr_no": "E",
+        "details": "Rent and Insurance",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "goods_lost_destroyed": {
+        "sr_no": "F",
+        "details": "Goods lost, stolen, destroyed, written off or disposed of by way of gift or free samples",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "royalties": {
+        "sr_no": "G",
+        "details": "Royalties",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "employees_cost": {
+        "sr_no": "H",
+        "details": "Employees' Cost (Salaries, wages, Bonus etc.)",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "conveyance_charges": {
+        "sr_no": "I",
+        "details": "Conveyance charges",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "bank_charges": {
+        "sr_no": "J",
+        "details": "Bank Charges",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "entertainment_charges": {
+        "sr_no": "K",
+        "details": "Entertainment charges",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "stationery_expenses": {
+        "sr_no": "L",
+        "details": "Stationery Expenses(including postage etc.)",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "repair_and_maintenance": {
+        "sr_no": "M",
+        "details": "Repair and Maintenance",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "other_miscellaneous": {
+        "sr_no": "N",
+        "details": "Other Miscellaneous expenses",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "capital_goods": {
+        "sr_no": "O",
+        "details": "Capital goods",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_1": {
+        "sr_no": "P",
+        "details": "Any other expense 1",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_2": {
+        "sr_no": "Q",
+        "details": "Any other expense 2",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_3": {
+        "sr_no": "Q1",
+        "details": "Any other expense 3",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_4": {
+        "sr_no": "Q2",
+        "details": "Any other expense 4",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_5": {
+        "sr_no": "Q3",
+        "details": "Any other expense 5",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_6": {
+        "sr_no": "Q4",
+        "details": "Any other expense 6",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_7": {
+        "sr_no": "Q5",
+        "details": "Any other expense 7",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_8": {
+        "sr_no": "Q6",
+        "details": "Any other expense 8",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_9": {
+        "sr_no": "Q7",
+        "details": "Any other expense 9",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "any_other_expense_10": {
+        "sr_no": "Q8",
+        "details": "Any other expense 10",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": null
+      },
+      "total_eligible_itc_availed": {
+        "sr_no": "R",
+        "details": "Total amount of eligible ITC availed (A to Qn)",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": 0.0
+      },
+      "itc_claimed_in_annual_return": {
+        "sr_no": "S",
+        "details": "ITC claimed in Annual Return (GSTR9)",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": 0.0
+      },
+      "unreconciled_itc": {
+        "sr_no": "T",
+        "details": "Un-reconciled ITC (S-R)",
+        "value": null,
+        "total_itc": null,
+        "eligible_itc": 0.0
+      }
+    },
+    "reasons_expense_itc_unreconciled": [
+      {
+        "sr_no": "A",
+        "reason": "Reason number 1",
+        "details": null
+      }
+    ],
+    "tax_payable_on_itc_diff": {
+      "central_tax": {
+        "sr_no": "A",
+        "details": "Central Tax",
+        "amount_payable": 0.0
+      },
+      "state_ut_tax": {
+        "sr_no": "B",
+        "details": "State/UT Tax",
+        "amount_payable": 0.0
+      },
+      "integrated_tax": {
+        "sr_no": "C",
+        "details": "Integrated Tax",
+        "amount_payable": 0.0
+      },
+      "cess": {
+        "sr_no": "D",
+        "details": "Cess",
+        "amount_payable": 0.0
+      },
+      "interest": {
+        "sr_no": "E",
+        "details": "Interest",
+        "amount_payable": 0.0
+      },
+      "penalty": {
+        "sr_no": "F",
+        "details": "Penalty",
+        "amount_payable": 0.0
+      }
+    }
+  },
+  "additional_liability": {
+    "liability_by_rate": {
+      "rate_5pct": {
+        "sr_no": "A",
+        "details": "5%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_6pct": {
+        "sr_no": "A1",
+        "details": "6%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_12pct": {
+        "sr_no": "B",
+        "details": "12%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_18pct": {
+        "sr_no": "C",
+        "details": "18%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_28pct": {
+        "sr_no": "D",
+        "details": "28%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_40pct": {
+        "sr_no": "D1",
+        "details": "40%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_3pct": {
+        "sr_no": "E",
+        "details": "3%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_0_25pct": {
+        "sr_no": "F",
+        "details": "0.25%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_0_10pct": {
+        "sr_no": "G",
+        "details": "0.10%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "rate_others": {
+        "sr_no": "G1",
+        "details": "Others%",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "input_tax_credit": {
+        "sr_no": "H",
+        "details": "Input Tax Credit",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "interest": {
+        "sr_no": "I",
+        "details": "Interest",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "late_fee": {
+        "sr_no": "J",
+        "details": "Late Fee",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "penalty": {
+        "sr_no": "K",
+        "details": "Penalty",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "other_amount_not_in_ar": {
+        "sr_no": "L",
+        "details": "Any other amount paid for supplies not included in Annual Return",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "erroneous_refund": {
+        "sr_no": "M",
+        "details": "Erroneous refund to be paid back",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "outstanding_demands": {
+        "sr_no": "N",
+        "details": "Outstanding demands to be settled",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      },
+      "other": {
+        "sr_no": "O",
+        "details": "Other (Pl. specify)",
+        "value": null,
+        "cgst": null,
+        "sgst": null,
+        "igst": null,
+        "cess": null
+      }
+    },
+    "late_fee": {
+      "central_tax": {
+        "sr_no": "A",
+        "details": "Central Tax",
+        "payable": 0.0,
+        "paid": 0.0
+      },
+      "state_tax": {
+        "sr_no": "B",
+        "details": "State Tax",
+        "payable": 0.0,
+        "paid": 0.0
+      }
+    }
+  }
+}

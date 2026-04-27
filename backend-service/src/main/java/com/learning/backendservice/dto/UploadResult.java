@@ -46,6 +46,11 @@ public class UploadResult {
     @Builder.Default
     private Integer remainingCredits = 0;
 
+    // Rule-specific structured results for the frontend side-by-side views
+    private Object threeWayReconFindings;
+    private Object itcMismatches;
+    private Object rcmMismatches;
+
     public boolean hasErrors() {
         return !errors.isEmpty();
     }
